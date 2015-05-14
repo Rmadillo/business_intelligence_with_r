@@ -6,17 +6,14 @@ The tried-and-true method for bringing data into R is via the humble csv file, a
 
 There are a wide variety of packages and functions to import data, but a few provide nearly all the functionality you'll need:
 
-[TABLE]
-    File Type & Function & Package \\ 
-    csv file & read.table("file", sep=",",...) & base \\ 
-    Flat file & read.table("file", sep=" ",...) \\ & base \\ 
-     & fread("file", sep=" ", ...) & data.table \\
-    Excel & read.xls("Excelfile",sheet,...) & gdata \\ 
-     & readWorksheet("Excelfile", sheet,...) & XLConnect \\ 
-    Hadleyverse Excel thingie & something & something \\ 
-    SPSS & spss.get("SPSSfile.sav") & Hmisc \\ 
-    Stata & read.dta("Statafile.dta") & foreign \\ 
-    SAS & read.sas7bdat("SASfile.sas7bdat") & sas7bdat \\
+| File Type | Function | Package |
+| --------- | -------- | ------- |
+| csv file | `read.table("file", sep=",", ...)` <br> `read.csv("file", ...)` | base |
+| Flat file | `read.table("file", sep=" ", ...)` <br> `fread("file", sep=" ", ...)` | base <br> data.table |
+| Excel | `read_excel("Excelfile", sheet, ...)` <br> `read.xls("Excelfile",sheet, ...)` <br> `readWorksheet("Excelfile", sheet, ...)` | readxl <br> gdata <br> XLConnect |
+| SPSS | `spss.get("SPSSfile.sav")` | Hmisc |
+| Stata | `read.dta("Statafile.dta")` | foreign |
+| SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
 
 To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since read.csv is just a wrapper for read.table, you'll likely save time in the long run by using read.table for any flat file, and changing the sep=" " value as needed, such as \\t for tab, \textbar for pipe, and so on.
 
