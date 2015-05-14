@@ -123,83 +123,76 @@ file.remove(tf)
 Note: although there is an untar function, it is no longer necessary—gzipped files can be read directly into R with the standard read.table function.  
 
 
-\section{Interfacing with a database}
+## Interfacing with a database
 
 While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful. This recipe covers the basics of RODBC, one of the packages that allows you to use ODBC to connect R to your database. I've found the sqldf package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
 
-\paragraph{Getting ready}
-
 As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Your database admin and stackoverflow can provide advice on setting up the proper drivers for your local system and adding system DSN connections. Once that's available for you, you can use RODBC package to access your database(s):
 
-\texttt{require(RODBC)}
-
-\paragraph{How to do it...}
+```
+require(RODBC)
+```
 
 Once your local system is configured for the ODBC connection, you need to define that connection within R, replacing the highlighted code with your specific values:
 
-\begin{verbatim}
-connect = odbcConnect("name_of_dsn_connection", uid="your_user_id", 
-  pwd="your_password")}
-\end{verbatim}
+```
+connect = odbcConnect("name_of_dsn_connection", uid="your_user_id", pwd="your_password")}
+```
 
 We can verify the connection is working:
 
-\texttt{odbcGetInfo(connect)}
+```
+odbcGetInfo(connect)
+```
 
 Once the connection is made, data can flow. If you don't already know the names of the tables or you want to verify their spelling, you can get a list by writing the list to an R object and then view that object:
 
-\begin{verbatim}
+```
 sqlTables(connect)
 # If there are a lot of tables or you want to make a record of
 # their names, create an object and then view it within R:
 connect_tables = sqlTables(connect)
 connect_tables
-\end{verbatim}
+```
 
-RODBC will add a \textdollar to each table's name to designate it as a system file.
+RODBC will add a `$` to each table's name to designate it as a system file.
 
 You can pull in an entire table using the sqlFetch function, but if you're using a database, you probably want to query it to get just what you need.
 
 To get a whole table (don't forget the \textdollar at the end of the table name):
 
-\begin{verbatim}
+```
 whole_table = sqlFetch(connect, "table_name$")
-\end{verbatim}
+```
 
 To make a SQL query and put it into a dataframe, set up the query in an R object and then use the sqlQuery function. The following query is identical to above as it brings in the whole table:
 
-\begin{verbatim}
+```
 # Within the double quotes you can put a valid SQL query
 # Using single quotes to name the table
 query_1 = "SELECT * FROM 'table_name$'"
 query_1_dataframe = sqlQuery(connect, query_1)
-\end{verbatim}
+```
 
 This query will pull in all columns but only those records specified by the where clause, and will sort it by the order by variable(s):
 
-\begin{verbatim}
+```
 query_2 = "SELECT * FROM 'table_name$' 
   WHERE variable_name = some_condition 
   ORDER BY ordering_variable_name"
 query_2_dataframe = sqlQuery(connect, query_2)
-\end{verbatim}
+```
 
 At the end of the session, close the database connection:
 
-\texttt{odbcCloseAll()}
-
-\paragraph{How it works...}
-
+```
+odbcCloseAll()
+```
 The RODBC package allows R to connect with any database that allows OBDC connections, and then interact with that database using SQL. Since database platforms, local systems, and server environments vary considerably, it very difficult to specify how to set up the initial DSN connection for any given combination—you'll need to consult with a database administrator or search online for your particular combination of databases, drivers, and system connections. 
-You can learn more by viewing:
+You can learn more by viewing: `vignette("RODBC", package="RODBC")`.
 
-\texttt{vignette("RODBC", package="RODBC")}
 
-\paragraph{See also}
-
-The RJDBC package is seen by many as faster—but not as stable as—the  RODBC package. There are also several other R packages that provide database connectivity as well, and if you intend to use this sort of connection often, are worth exploring further. Another option is via a SQLite setup, which is covered in the next recipe. Since there is a wide variety of unique combinations of local and server platforms and systems, no single reference could cover them all. It's best to understand your system's combinations, and search out others (e.g., via stackoverflow) who've already dealt with setting up system DSNs under the same conditions.
-
-\section{Creating a SQLite database inside R}
+## Creating a SQLite database inside R
 
 You don't even need to understand the intricacies of database planning and management to be able to create your own database on the fly from within R. While there's no need to do so if your data fits into R's memory, it can be really useful if you need to subset and merge several large files to obtain a working dataframe that can be comfortably analyzed within R's memory limits.
 
@@ -209,32 +202,33 @@ This recipe walks through creating a SQLite database and adding tables to it. Th
 
 The sqldf package provides more options for database work without dealing with a formal database—everything can be done from within R.
 
-\texttt{require(sqldf)}
+```
+require(sqldf)
+```
 
-\paragraph{How to do it...}
 
 Creating a new database with sqldf is easy:
 
-\begin{verbatim}
+```
 sqldf("attach 'PSES_database.sqlite' as new")
-\end{verbatim}
+```
 
 It's just a shell at the moment; next create a connection to that database for use in subsequent table import and manipulation:
 
-\begin{verbatim}
+```
 connect = dbConnect(SQLite(), dbname="PSES_database.sqlite ")
-\end{verbatim}
+```
 
 And now you can read csv files directly into the database (i.e., so it is not throttled by passing through R first). We'll use the PSES 2011 file we created in the There's more... section of the Loading data from files recipe earlier in this chapter.
 
-\begin{verbatim}
+```
 read.csv.sql("pses2011.csv", sql = "CREATE TABLE pses2011 AS SELECT * FROM file",
   dbname = "PSES_database.sqlite")
-\end{verbatim}
+```
 
 Because Excel files must be loaded into R first, and then passed to the database, if your Excel file has only a few sheets in it, saving them as csvs might be preferable. If you have many sheets to import, using  XLConnect to import the sheets all at once could save a little time. They'll still need to be loaded into the database individually, however, and you should remove the dataframes when you've transferred them to the database.
 
-\begin{verbatim}
+```
 # This loads the Excel file into R
 pses2011_xls = loadWorkbook("PSES2011_Documentation.xls")
 
@@ -268,95 +262,75 @@ with(pses2011_documentation, {
 # Remove the Excel objects
 rm(pses2011_xls, pses2011_documentation)
 
-\end{verbatim}
+```
 
 To see names of the tables in the database:
 
-\begin{verbatim}
+```
 sqldf("SELECT * FROM sqlite_master", dbname = "PSES_database.sqlite")$tbl_name
-\end{verbatim}
+```
 
 To see table names and SQL statements that generated them:
 
-\begin{verbatim}
+```
 sqldf("SELECT * FROM sqlite_master", dbname = "PSES_database.sqlite")}
-\end{verbatim}
+```
 
 To see names of columns in a particular table:
 
-\begin{verbatim}
+```
 # Note: PRAMA and TABLE_INFO are SQLite-specific statements
 sqldf("PRAGMA TABLE_INFO(Questions)", dbname = "PSES_database.sqlite")$name       
-\end{verbatim}
+```
 
 A shortcut for seeing a list of tables and/or fields (which may not work depending on your system):    
 
-\begin{verbatim}
+```
 dbListTables(connect)
 dbListFields(connect, "Questions")  
-\end{verbatim}
+```
 
 The equivalent of head to look at the start of a table would be:
 
-\begin{verbatim}
+```
 sqldf("SELECT * FROM Questions LIMIT 6", dbname = "PSES_database.sqlite")}
-\end{verbatim}
+```
 
 Finally, whenever you're done interacting with the database, close the connection:
 
-\begin{verbatim}
+```
 dbDisconnect(connect)
-\end{verbatim}
-
-\paragraph{How it works...}
+```
 
 SQLite was built intentionally to a be "lightweight" database, and being able to set it up and access it from entirely within R makes it perfect for occasional to moderate desktop use. As is the case with the many different flavors of SQL, there are nuances in SQLite (as we saw with the PRAGMA statement, above), but most basic uses remain the same across those different types of SQL.
 
-You can see a list of the SQL statements available with:
-
-\texttt{.SQL92Keywords}
+You can see a list of the SQL statements available with: `.SQL92Keywords`.
 
 More info on the way R interfaces with RDBMSs can be found on the homepage for the DBI package (https://github.com/rstats-db/DBI), and details on SQLite can be found at its homepage (http://www.sqlite.org/).  
 
-\paragraph{See also}
-
 Those with more sophisticated desktop database needs should consider PostgreSQL (http://www.postgresql.org/), which also plays well with R via the RPostgreSQL package.
 
-The next few recipes show ways to access and manipulate data from inside a database or while using dataframes.
 
-\section{Creating a dataframe from a SQLite database}
+## Creating a dataframe from a SQLite database
 
 Once you have a database connection, you're able to access exactly what you need and pull just that into R as a dataframe, conserving memory and saving time when working on projects that will need to access a variety of tables.
 
-\paragraph{Getting ready}
-
 Load the sqldf package and then reconnect to the database we created in the previous recipe:
 
-\begin{verbatim}
+```
 require(sqldf)
 connect = dbConnect(SQLite(), dbname="PSES_database.sqlite ")
-\end{verbatim}
-
-\paragraph{How to do it...}
+```
 
 Selecting subsets from a database table using sqldf is based on (of course) SQL select statements. For example, this statement brings in three of the columns from the LEVEL1ID table:
 
-\begin{verbatim}
-pses_acr = sqldf("SELECT Level1ID, Acronym_PSES_Acronyme_SAFF AS Acronym,
-  DeptNameE as Department FROM Agency", dbname="PSES_database.sqlite")
-\end{verbatim}
+```
+pses_acr = sqldf("SELECT Level1ID, Acronym_PSES_Acronyme_SAFF AS Acronym, DeptNameE as Department FROM Agency", dbname="PSES_database.sqlite")
+```
 
 You can join tables within the database as well before bringing it into R. For example, this code merges the main data table (pses2011) with the agency name/abbreviation table to create a dataframe called pses2011-agency:
 
-\begin{verbatim}
-pses2011_agency = sqldf("select a.*, b.DeptNameE as Agency, 
-  b.Acronym_PSES_Acronyme_SAFF as Abbr from pses2011 a 
-  left join Agency b on a.LEVEL1ID = b.Level1ID", dbname="PSES_db.sqlite")
-\end{verbatim}
-
-SQL code is traditionally laid out to be more readable than the above, so a "coding for executives" version of the above statement would be:
-
-\begin{verbatim}
+```
 pses2011_agency = sqldf("SELECT
     maintable.*
     , agencytable.DeptNameE as Agency
@@ -365,23 +339,15 @@ pses2011_agency = sqldf("SELECT
     LEFT JOIN Agency agencytable
         ON maintable.LEVEL1ID = agencytable.Level1ID",
     dbname="PSES_db.sqlite")
-\end{verbatim}
+```
 
-Don't forget to close the connection:
-
-\texttt{dbDisconnect(connect)}   
-
-or
-
-\texttt{close(connect)}
-
-\paragraph{How it works...}
+Don't forget to close the connection: `dbDisconnect(connect)` or `close(connect)`.
 
 Basically, sqldf("SQL QUERY", dbname="NAMEOFDATABASE") is all you need to use SQLite within R, and it works on both databases and dataframes—if the latter, it's just sqldf("SQL QUERY"). It is important to note that unlike R, SQLite is not case sensitive, so be careful naming tables and columns—a and A are identical to SQLite. (SQL functions are in CAPS in the code examples in this book simply to distinguish them from table and column names, which are left in the same case that R sees them.)
 
 You can do most basic types of SQL work in this fashion; for example, if you want to count the number of rows in your new dataframe where ANSWER3 ("Neutral") is more than 50\% of the total responses, have it grouped by Question and Agency, and order the result by highest to lowest counts, you can use:
 
-\begin{verbatim}
+```
 agency_row_count = sqldf("SELECT
     Question
     , Agency
@@ -390,11 +356,11 @@ agency_row_count = sqldf("SELECT
     WHERE ANSWER3 > 50
     GROUP BY Question, Agency
     ORDER BY Answer3_Count desc")  
-\end{verbatim}
+```
 
 The possibilities are fairly limitless by containing large files inside a database and bringing in only what's needed for analysis using SQL. A basic knowledge of SQL is required, of course, but the learning curve is very small and well worth taking on given its centrality in data access and manipulation. It also serves as a great bridge for those used to SQL who want to use R more extensively but are not yet accomplished in using the R functions that have SQL equivalents (e.g., R's merge vs. SQL's join). For example, the standard SQL CASE WHEN statement could be used to generate new columns that sum the number of cases in which the majority either strongly agreed or strongly disagreed:
 
-\begin{verbatim}
+```
 agency_row_count = sqldf("SELECT
     Question
     , SUM(CASE WHEN ANSWER1 > 51 THEN 1 ELSE 0 END) AS StrongAgreement
@@ -402,16 +368,14 @@ agency_row_count = sqldf("SELECT
     FROM pses2011_agency
     GROUP BY Question, Agency
     ORDER BY Question desc")  
-\end{verbatim}
+```
 
 It's worth pointing out that if your data fits in memory, there usually isn't need for a database; merging and manipulation can occur inside R—later recipes in this chapter explore ways to do that.
 
 Finally, remember that SQL is suited for data extraction and manipulation, so save the stats work for R. As one example, out-of-the-box SQLite can calculate means (via the AVG function), but not medians or standard deviations; you'd have to hardcode them by their formulas, which is not a very efficient use of code or time. Using R to do that work (see Chapter 2) is far more efficient and reproducible.
 
 
-
-
-### Working through a proxy
+## Working through a proxy
 
 If you're working behind a company firewall, you may have to use a proxy to pull data into R from the web. Hadley Wickham's httr package makes it simple.
 
@@ -427,7 +391,7 @@ set_config(use_proxy(url="YOUR_PROXY_URL", port="YOUR_PORT", username="YOUR_USER
 
 There is a bewildering array of methods to access websites from within R, particularly while having to pass through a proxy, and most of them are obscure to even the most established quants. Thanks to httr, all of that complexity has been hidden behind a few simple functions—type vignette("quickstart", package="httr") if you want more information.
 
-### Scraping data from a web table
+## Scraping data from a web table
 
 Sometimes, webpages have a treasure trove of data in tables... but don't have an option to download it as a text or Excel file. And while data scraping addins are avilable for modern web browsers like Chrome (Scraper) or Firefox (Table2Clipboard and TableTools2) that make it as easy as point-and-click, if the tables aren't set up for easy download or a simple cut-and-paste, you can use the XML package to grab what you need.
 
@@ -516,8 +480,8 @@ STUFF HERE
 
 
 
-
-\section{Creating fake data to test code}
+## Creating fake data to test code
+[KEEP? PROBABLY DELETE]
 
 Creating fake data is useful when you want to test how code will work before doing it "for real" on larger, more complicated datasets. We'll create a few fake dataframes in this recipe as both an example as how to do it, as well as for use in other recipes in this book.  
 
@@ -525,11 +489,9 @@ While creating and using fake data is useful for lots of cases, it is especially
 
 Whatever the use case, testing code on fake data can sometimes save considerable time that would have been lost debugging.
 
-\paragraph{How to do it...}
-
 Using a variety of sources, we'll develop four dataframes that mimic a customer sales type of database (of course, these datasets are all small, so a database is unnecessary here).
 
-\begin{verbatim}
+```
 # Table A – customer data
 customer_id = seq(1:10000)
 customer_gender = sample(c("M","F", "Unknown"), 10000, replace=TRUE,
@@ -567,9 +529,7 @@ survey = data.frame(customer_id, strongly_agree, agree, neutral, disagree,
 state_regions = data.frame(datasets::state.abb, datasets::state.name, 
   datasets::state.region, datasets::state.division, colnames=c("abb", "state", 
   "region", "division"))
-\end{verbatim}
-
-\paragraph{How it works...}
+```
 
 In Table A, we've created a customer demographic and sales dataset. The sample function creates a random vector of male of female genders, as well as unknown, proportional to the weights in the prob option. The age and purchase values were created using the random number generators based on the uniform and log-normal distributions, respectively. Each customer's zip code was generated from a random selection of the zip codes in Table B.
 
@@ -579,4 +539,3 @@ Table C is just a systematic selection designating a survey response from each c
 
 Finally, Table D takes advantage of R's built-in data from the datasets package to generate a lookup table of states and state regions.
 
-We'll use this fake data starting with the next chapter when we merge dataframes.
