@@ -1,0 +1,4 @@
+# Introduction
+
+The chapters in this section provides some basic but essential tools for professional data science &emdash that is, data science going on within a professional enterprise environment. Data scientists coming from a statistics background often don't know about or understand best practices from computer science, while those coming from a computer science background often don't understand issues about probability and inference that similarly have a long tradition of foundational knowledge. Therefore, these chapters attempt to provide an overview of foundational aspects that are good for anyone, regardless of experience, to ensure is in their toolbox.
+
