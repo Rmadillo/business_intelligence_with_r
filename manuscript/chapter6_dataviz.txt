@@ -1,0 +1,294 @@
+# Chapter 6: A Dog's Breakfast of Dataviz
+
+In this chapter, we will cover:
+
+- Plotting multivariate data
+- Making maps in R
+- Interactive data visualizations
+
+## Plotting multivariate distributions
+
+We’ve already explored summary plots of a set of variables earlier in this chapter, but sometimes you want to consider a set of variables all at once in a consistent way. Heatmaps and parallel coordinate plots (PCPs) are two common ways to do this (and we’ll explore a few others, such as cluster dendrograms, in later chapters); heatmaps do a good job of showing three dimensions clearly, while PCPs can work for a large number of variables, as long as there aren’t too many observations in the data.
+
+In the last chapter of this cookbook, we’ll look at interactive versions of each of these plot types, which alleviates the too-many-observations problem. But because they can be pretty useful for smaller datasets, we’ll explore static versions here.
+
+In this recipe, we’ll return to the bike share data and use ggplot2 and to create a heatmap.
+
+```
+require(ggplot2)
+require(dplyr)
+```
+
+We’ll also download a financial dataset on the 1970s-80s Spanish banking crisis (Serrano-Cinca 2001) and use GGally for the PC plot.
+
+```
+require(GGally)
+require(gdata)
+quiebra_ download = read.xls("http://ciberconta.unizar.es/leccion/multivar
+  /QUIEBRA.XLS", sheet=1, header=TRUE, stringsAsFactors=FALSE)
+quiebra = quiebra_download[,2:12]
+```
+
+We’ll first use dplyr to group the casual bike use values by month and weekday, then use summarise to calculate mean and sd values for each month/weekday combination (although since we only have 2 years, this is statistically inappropriate. Still, it illustrates the technique). Once we have that, we’ll be able to use ggplot’s geom_tile option to create heatmaps:
+
+```
+bike_share_grp = group_by(bike_share_daily, weekday, mnth)
+bike_share_mean = summarise(bike_share_grp, mean=mean(casual))
+ggplot(bike_share_mean, aes(weekday, mnth)) +
+    geom_tile(aes(fill = mean)) +
+    scale_fill_gradient(low = "white", high = "darkgreen") +
+    xlab("Day of the Week") +
+    ylab("Month") +
+    ggtitle("Mean Daily Casual-Use Bike Sharing") +
+    scale_y_discrete(limits = rev(levels(bike_share_mean$mnth))) +
+    theme_bw() +
+    theme(plot.title = element_text(vjust = 1))
+
+bike_share_grp = group_by(bike_share_daily, weekday, mnth)
+bike_share_sd = summarise(bike_share_grp, sd=sd(casual))
+
+ggplot(bike_share_sd, aes(weekday, mnth)) +
+    geom_tile(aes(fill = sd)) +
+    scale_fill_gradient(low = "white", high = "darkgreen") +
+    xlab("Day of the Week") +
+    ylab("Month") +
+    ggtitle("Standard Deviation of Daily Casual-Use Bike Sharing") +
+    scale_y_discrete(limits = rev(levels(bike_share_sd$mnth))) +
+    theme_bw() +
+    theme(plot.title = element_text(vjust = 1))
+
+```
+
+To demonstrate parallel coordinate plots, we’ll use a dataset on a set of financial ratios for some banks associated with the Spanish banking crisis of the late 1970s and early 1980s. We’ll see this dataset again, so it’s also useful to see the data in this form here for comparison with a dimension reduction technique we’ll explore in the next chapter.
+
+GGally has a parallel coordinates plot function that’s simple to use, albeit difficult to customize. Still, it gets the job done; here are each of the nine dimensions (variables) plotted, colored by whether the bank remained solvent (light blue) or not (dark blue).
+
+```
+ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, 
+  scale="globalminmax", alphaLines=0.5)
+```
+
+A neat feature of ggparcoord is the ability to put boxplots on the background of the plot:
+
+```
+ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, 
+  scale="globalminmax", boxplot=TRUE, alphaLines=0.3)
+```
+
+Visualizing multidimensional data is difficult to do in two dimensions. Heatmaps can provide an extra dimension or two via color scale and/or intensity, while parallel coordinates lays out all of your variables as a series of 1-dimensional axes. These approaches shouldn’t substitute for a set of univariate displayes of the data (e.g., as a set of density plots presented in facets, as seen in the Plotting univariate data recipe above), but they’re a great additional tool you can use when exploring the dimensions of your data. Further, interactive versions of these two plots (see Chapter 9) can be great tools for decision makers, and exploring layout and views with static versions before creating interactive ones can save time later.
+
+## Peeking at multivariate data with dplyr and a bubblechart
+
+In Chapter 3, we used dplyr to string together commands with the %>% ("then") operator to do some grouping and summarization to create a new dataframe. The following code performs essentially the same operations as we saw in Chapter 3, but outputs it to a ggplot2 bubblechart instead of a dataframe:
+
+```
+customer_survey = read.table("Data/customer_survey.csv", sep=",", header=T)
+customer_survey %>%
+    filter(customer_purchases >= 500) %>%
+    group_by(state) %>%
+    summarize(mean_purchases = mean(customer_purchases, na.rm=T),
+              sd_purchases = sd(customer_purchases, na.rm=T),
+              sum_est = sum(est)) %>%
+    mutate(cv_purchases = round(sd_purchases / mean_purchases, 2)) %>%
+   ggplot(aes(mean_purchases, sd_purchases, color=cv_purchases, size=sum_est)) +
+    geom_point() +
+    scale_size(range=c(2,6)) +
+    theme_bw()
+```
+
+## Creating calendar heat maps
+
+We covered temporal data in the previous chapter, but since a calendar heatmap is essentially just a heatmap at heart, we’ll cover it here.
+
+There are a variety of functions and scripts floating around the web that create calendar heatmaps, so those interested in custom plots might consider a search to explore those in depth. But if you just need a simple, to-the-point function to create a calendar heat map, Paul Bleicher’s calendarHeat R script posted on the Revolution R blog is probably all you need.
+
+There are three color schemes built into Paul’s script: red to blue (shown above, color=r2b), white to blue (color=w2b), and the color-blind unfriendly red to green (color=r2g), which is unfortunately the default. Opening the script via fix(calendarHeat) and scrolling down to lines 38-41 shows those schemes, which can be readily modified, extended, or added to using your own color ramp preferences. You can also put a different ramp into an object and call it from within the function. For example:
+
+```
+require(RColorBrewer)
+source("http://blog.revolutionanalytics.com/downloads/calendarHeat.R")
+new_color_ramp = brewer.pal(9, "Greens")
+calendarHeat(bike_share_daily$dteday, bike_share_daily$casual, 
+  varname="Casual Daily Bike Use", color="new_color_ramp")
+```
+
+## Plotting a table
+
+If you want a pretty table, the combination of gridExtra and ggplot2 can provide an image of a table, which is useful if you want to match the style of ggplot-based graphs. We'll first use the reshape2 package to cast the data into how we want the table to appear, and then plot it. You'll have to remove all the usual  plot elements to make it look like a table, and not like a table inside a graph—the theme function below accomplishes this.
+
+```
+require(reshape2)
+require(gridExtra)
+
+bike_share_grp = group_by(bike_share_daily, yr, mnth)
+bike_share_mean = summarise(bike_share_grp, mean=mean(casual))
+bike_share_mean$mean = round(bike_share_mean$mean, 0)
+bike_share_mean_wide = dcast(bike_share_mean, yr~mnth)
+bike_share_mean_wide = rename(bike_share_mean_wide, Year = yr)
+
+ggplot(bike_share_mean_wide, aes(Year, Jan)) +
+    annotation_custom(tableGrob(bike_share_mean_wide, show.rownames = FALSE)) +
+    ggtitle("Mean Daily Casual Bike Share Use, by Month (2011-2012)") +
+    theme_minimal() +
+    theme(panel.border = element_blank(), panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), axis.ticks = element_blank(), 
+    axis.text = element_blank(), axis.title = element_blank())
+```
+
+
+## Making maps in R
+
+If you need to do real map work, you shouldn't use R, it's just not very good at it. That being said, sometimes all you need is a quick view of a spatial distribution, or perhaps you just need a simple map and you're already in R.
+
+There are several packages that do or support map work, many of which show promise for future use, such as ggmap, a mapping package built to fit over ggplot2 and its coherent graphics approach. But most are still too clunky or buggy when compared against other open source options like QGIS, Leaflet, and others. In addition, Python is the lingua franca language among professional GISers, not R. As a result, this book only touches on mapping: here, to show how to create some quick "one-line"(ish) maps, and later in this book—since maps can be incredibly useful to decision making—we'll cover a brief use of other tools so that reports or dashboards can include maps.
+
+Probably the hardest part of making simple maps in R can just be getting set up. There are a variety of mapping and map-support packages, as a tour of the CRAN spatial task view shows (http://cran.r-project.org/web/views/Spatial.html). Many of them access different APIs as well, some of which require keys. Later in this recipe we'll explore a few more detailed examples, but for now we'll just stick with mapping simple point and area attributes within an R work session.
+
+Since there are different ways to (simply) do mapping in R, I've placed the package loading within the steps below instead of here, so you can see which package is needed for which step.
+
+Creating a map with point-location data plotted on it is deceptively simple with the maps package. To plot this packages example data of ground level ozone over states and counties in southern New England:
+
+```
+require(maps)
+map("county", xlim=c(min(ozone$x-0.5),max(ozone$x+0.5)), ylim=range(ozone$y),
+  col="gray80")
+map("state", xlim=c(min(ozone$x-0.5),max(ozone$x+0.5)), ylim=range(ozone$y),
+  col="gray60", add=TRUE)
+box(col="gray50")
+text(ozone$x, ozone$y, ozone$median, cex=0.5)
+```
+
+We say "deceptive" because as long as you don't need anything fancy or if the boundaries you intend to map haven't changed in a while, you're fine—just use a map base and a dataframe with x (longitude), y (latitude), and data values. But what if the boundaries have changed? Let's look at Europe from the world map within the map package:
+
+```
+map('world', xlim=c(-12,45), ylim=c(35,60), col="gray90", fill=T)
+box()
+```
+
+A little outdated, to say the least. A look at the database option inside the ?map help file tells us why—it's from an old CIA database that predates the collapse of the USSR (the mapdata package, which contains more maps for the maps package, has the same problem). To get newer boundaries, you'll need to download and convert a spatial data file from an online source—something we'll see an example of below.
+
+A second typical type of map is a choropleth, and again, it can appear deceptively simple if we want to, say, plot the 2012 population by county across the United States. Using the choroplethr package:
+
+```
+require(choroplethr)
+require(choroplethrMaps)
+data(df_pop_county)
+county_choropleth(df_pop_county)
+```
+
+You can subset this to states or regions with the zoom option, and display a continuous scale instead of breaks with the buckets=1 option:
+
+```
+county_choropleth(df_pop_county,
+        legend="County\nPopulation",
+        buckets=1,
+        zoom=c("arizona", "colorado", "new mexico", "utah"))
+```
+
+Want to map by zipcodes instead of counties?
+
+```
+require(zipcode)
+data(df_pop_zip)
+zip_map(df_pop_zip,
+        legend="Zip Code\nPopulation",
+        buckets=1,
+        zoom=c("arizona", "colorado", "new mexico", "utah"))
+```
+
+The world map data that choroplethr/choroplethrMaps includes is up to date. But if you want to subset on Europe? Unfortunately, you'll have to do that manually, either by extracting the countries you need by name or ISO code, since x and y lim options don't work in this package (see ?choroplethr_wdi or ?df_pop_country for more details on names/ISO codes), or by acquiring map boundaries by different means. We'll explore the latter option below, as it takes considerably less effort.  
+
+As you can see from the first example, for a simple point map all you need is longitude (x), latitude (y), and data values. For choropleths (the second example), all you need are a geographical id and data values.
+
+But both of these approaches assume that the map boundaries and scale you need are available in the package(s) you're using, of course. If you understand the geographic projection problem—how to fit a curved surface to a flat plot—you'll be able to navigate the creation of maps in other spatial packages in ways that ensure the points and the real world line up correctly. If not... you either have to learn a variety of sometimes-contradictory packages in R and their various approaches as well as how they work together, or (the better option) you can just use a tool better suited to spatial analyses.
+
+## Ozone pollution in the EU
+
+It says a lot about mapping in R that what we'll explore here is one of the simplest ways to get updated spatial boundaries into R. Using a boundary shapefile from EuroGeographics, and having looked at the metadata first to determine its projection, we can create a map of modern European boundaries using the maptools package's shapefile translation functions:
+
+```
+download.file("http://epp.eurostat.ec.europa.eu/cache/GISCO
+  /geodatafiles/CNTR_2014_03M_SH.zip", destfile="world2014.zip")
+unzip("world2014.zip")
+require(maptools)
+worldmap2014 = readShapeLines("CNTR_2014_03M_SH/Data/CNTR_BN_03M_2014.shp", 
+  proj4string = CRS("+proj=longlat +datum=ETRS89"))
+plot(worldmap2014, xlim=c(7,16), ylim=c(35,60), col="gray60")
+box(col="gray30")
+ # © EuroGeographics for the administrative boundaries
+```
+
+We plotted ground level ozone from the maps example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to download the data (http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this chapter's data files. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
+
+```
+o3stations = read.table("Data/AirBase_v8_stations.csv", sep=",", header=T, 
+  stringsAsFactors=F, quote="")
+o3data = read.table("Data/AirBase_v8_statistics.csv", sep="\t", header=T, 
+  stringsAsFactors=F, quote="")
+require(sqldf)
+eu_o3 = sqldf("SELECT
+              a.station_european_code
+              , a.component_caption
+              , a.statistics_year
+              , a.statistics_average_group
+              , a.statistic_shortname
+              , a.statistic_value
+              , b.station_european_code
+              , b.country_iso_code
+              , b.country_name
+              , b.station_city
+              , b.station_longitude_deg as longitude
+              , b.station_latitude_deg as latitude
+              , b.station_altitude as altitude
+              FROM o3data a
+              INNER JOIN o3stations b
+              ON a.station_european_code = b.station_european_code
+              WHERE a.component_caption = 'O3'
+              AND a.statistics_year = 2012
+              AND a.statistics_average_group = 'day'
+              AND a.statistic_shortname = 'P50'
+              ")
+
+plot(worldmap2014, xlim=c(2,12), ylim=c(35, 70), col="gray60")
+box(col="gray30")
+text(eu_o3$longitude, eu_o3$latitude, round(eu_o3$statistic_value,0), cex=0.5, 
+  col="gray20")
+```
+
+Too much data! Turning the values into a color scale takes a little more effort, but allows us to see the data:
+
+```
+require(RColorBrewer)
+o3_colors = brewer.pal(5, "OrRd")
+require(classInt)
+o3_breaks = classIntervals(sort(eu_o3$statistic_value), n=5, style="quantile")
+plot(worldmap2014, xlim=c(2,12), ylim=c(35, 70), col="gray60")
+box(col="gray30")
+points(eu_o3$longitude, eu_o3$latitude, pch=15, cex=0.5, 
+  col=o3_colors[findInterval(eu_o3$statistic_value, o3_breaks$brks, 
+  all.inside=TRUE)])
+legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8,
+  legend=leglabs(round(o3_breaks$brks),0), fill=o3_colors, bg="white",
+  border="gray60")
+```
+
+## Mapping with the American Community Survey
+
+If you're fortunate enough to need to map American Community Survey (ACS) data, choroplethr connects directly to it via the acs package. You'll need to acquire a key for the ACS API (http://www.census.gov/data/developers/about/terms-of-service.html) before you begin, but that key will be emailed to you within a few minutes of requesting it. And then you can make one-line maps directly from the ACS tables:
+
+```
+require(acs)
+api.key.install("YOUR KEY HERE")
+require(choroplethr)
+require(choroplethrMaps)
+choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
+```
+
+If you don't know which tables you need, the US Census provides more information here: http://factfinder2.census.gov/faces/affhelp/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS
+
+Again, it's important to remember that mapping in R is relatively easy if  the map boundaries and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
+
+Our recommendation: don't use R for mapping unless you have to. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's spatial.ly blog (http://spatial.ly/).
+
+## Interactive dataviz
+
