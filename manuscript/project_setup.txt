@@ -1,4 +1,4 @@
-# Chapter 2: Setting Up Projects
+# Appendix 2: Setting Up Projects
 
 ## Setting up a project with RStudio and Git
 
