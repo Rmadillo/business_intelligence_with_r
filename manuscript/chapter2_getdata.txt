@@ -2,51 +2,53 @@
 
 ## Loading data from files
 
-The tried-and-true method for bringing data into R is via the humble csv file, and in most cases it should be the default approach. But in most professional environments, you'll encounter a wide variety of file formats and production needs, so having a cheat sheet of data import methods is useful.
+The tried-and-true method for bringing data into R is via the humble csv file, and in many cases it will be the default approach. But in most professional environments, you'll encounter a wide variety of file formats and production needs, so having a cheat sheet of data import methods is useful.
 
 There are a wide variety of packages and functions to import data, but a few provide nearly all the functionality you'll need:
 
 | File Type | Function | Package |
 | --------- | -------- | ------- |
 | csv file | `read.table("file", sep=",", ...)` <br> `read.csv("file", ...)` | base |
-| Flat file | `read.table("file", sep=" ", ...)` <br> `fread("file", sep=" ", ...)` | base <br> data.table |
-| Excel | `read_excel("Excelfile", sheet, ...)` <br> `read.xls("Excelfile",sheet, ...)` <br> `readWorksheet("Excelfile", sheet, ...)` | readxl <br> gdata <br> XLConnect |
+| Flat file | `read.table("file", sep=" ", ...)` <br> `fread("file", sep=" ", ...)` | base  <br>  data.table |
+| Excel | `read_excel("Excelfile", sheet, ...)` <br> `read.xls("Excelfile",sheet, ...)` <br> `readWorksheet("Excelfile", sheet, ...)` |  readxl  <br>  gdata  <br>  XLConnect |
 | SPSS | `spss.get("SPSSfile.sav")` | Hmisc |
 | Stata | `read.dta("Statafile.dta")` | foreign |
 | SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
 
-To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since read.csv is just a wrapper for read.table, you'll likely save time in the long run by using read.table for any flat file, and changing the sep=" " value as needed, such as \\t for tab, \textbar for pipe, and so on.
+### Reading flat files from disk or the web
 
-While reading in a local flat file is pretty standard fare for any R user, sometimes reading in online files can require a little extra work. This example reads in a csv file from the Canadian 2011 Public Service Employee Survey (PSES):
+To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you'll likely save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as \\t for tab, | for pipe, and so on.
+
+We saw reading in a .csv file in the first chapter:
 
 ```
-pses2011 = read.table(url("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv"), sep=",", encoding="UTF-8", header=FALSE)
+vanco=read.table(
 ```
 
-To import Excel files, gdata or XLConnect provide pretty much anything you'll need; gdata is faster and more powerful but requires Perl, so Windows users must ensure that's installed on their system before they can use it. XLConnect has a lot of options for those using Windows and/or are in Excel-heavy work environments, and while it can be slow with large files, it is based on Java so it could be easier to start with on Windows platforms (as long as the Java and R architectures match, i.e., if R is x64, Java should be as well).
+While reading in a local flat file is pretty standard fare for any R user, sometimes reading in online files can require a little extra work. This example reads in a csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure special characters are read in correctly:
+```
+pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", sep=",", encoding="UTF-8", header=FALSE)
+```
 
-This example uses gdata: it imports the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the header, skip, and col.name options to ignore their header and create our own:
+### Reading Excel files
 
+To import Excel files, `readxl`, `gdata`, or `XLConnect` provide pretty much anything you'll need; `gdata` is faster and more powerful but requires Perl, so Windows users must ensure that's installed on their system before they can use it. `XLConnect` has a lot of options for those using Windows and/or are in Excel-heavy work environments, and while it can be slow with large files, it is based on Java so it could be easier to start with on Windows platforms (as long as the Java and R architectures match, i.e., if R is x64, Java should be as well). `readxl` is a new addition to the R ecosystem, and if all you need to do is pull in a worksheet as-is, it's by far the easiest method:
+
+```
+bob = read_xl(
+```
+
+The next example uses gdata: it imports the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the header, skip, and col.name options to ignore their header and create our own:
 ```
 pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls", sheet="Layout-Format", nrows=22, header=FALSE, skip=1, col.names=c("Variables", "Size", "Type", "Description"), stringsAsFactors=FALSE)
 ```
 
 The `sheet=` option can use the sheet's name or its position, e.g., using `sheet=6` in the above example retrieves the same data.
 
-### Cleaning these downloads
-
 The raw data we read in from a csv and the metadata we read in from an Excel file can be merged to create the header names using the colnames function:
 
 ```
 colnames(pses2011) = pses2011_header$Variable
-```
-
-### Writing files to disk
-
-There is no reason to save a dataframe for use outside R in any format other than a flat file: [COMMENT ON WHY SAVE AS FLAT FILE]
-
-```
-write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
 ```
 
 ### Creating a dataframe from the clipboard
@@ -120,11 +122,20 @@ file.remove(tf)
 Note: although there is an untar function, it is no longer necessary—gzipped files can be read directly into R with the standard read.table function.  
 
 
+## Writing files to disk
+
+There is no reason to save a dataframe for use outside R in any format other than a flat file: [COMMENT ON WHY SAVE AS FLAT FILE]
+
+```
+write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
+```
+
+
 ## Interfacing with a database
 
-While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful. This recipe covers the basics of RODBC, one of the packages that allows you to use ODBC to connect R to your database. I've found the sqldf package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
+While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful--for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R--choose the one that works best for your workflow.
 
-As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Your database admin and stackoverflow can provide advice on setting up the proper drivers for your local system and adding system DSN connections. Once that's available for you, you can use RODBC package to access your database(s):
+As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your local system and adding system DSN connections. Once the appropriate DSNs are available for you, you can use `RODBC` package to access your databases:
 
 ```
 require(RODBC)
@@ -133,7 +144,8 @@ require(RODBC)
 Once your local system is configured for the ODBC connection, you need to define that connection within R, replacing the highlighted code with your specific values:
 
 ```
-connect = odbcConnect("name_of_dsn_connection", uid="your_user_id", pwd="your_password")}
+connect = odbcConnect("name_of_dsn_connection", uid="your_user_id", pwd="your_password")
+# for example: connect = odbcConnect("name_of_dsn_connection", uid="your_user_id", pwd="your_password")
 ```
 
 We can verify the connection is working:
@@ -152,17 +164,17 @@ connect_tables = sqlTables(connect)
 connect_tables
 ```
 
-RODBC will add a `$` to each table's name to designate it as a system file.
+`RODBC` will add a `$` to each table's name to designate it as a system file.
 
-You can pull in an entire table using the sqlFetch function, but if you're using a database, you probably want to query it to get just what you need.
+You can pull in an entire table using the `sqlFetch` function, but if you're using a database, you probably want to query it to get just what you need.
 
-To get a whole table (don't forget the \textdollar at the end of the table name):
+To get a whole table (don't forget the $ at the end of the table name):
 
 ```
 whole_table = sqlFetch(connect, "table_name$")
 ```
 
-To make a SQL query and put it into a dataframe, set up the query in an R object and then use the sqlQuery function. The following query is identical to above as it brings in the whole table:
+To make a SQL query and put it into a dataframe, set up the query in an R object and then use the `sqlQuery` function. The following query is identical to above as it brings in the whole table:
 
 ```
 # Within the double quotes you can put a valid SQL query
