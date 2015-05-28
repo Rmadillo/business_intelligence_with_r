@@ -5,7 +5,7 @@
 Load the packages we'll use in this project:
 
 ```
-# This package 
+# This package provides quality control charts/analysis
 require(qcc)
 # This package allows us to create publication-quality plots
 require(ggplot2)
@@ -17,8 +17,12 @@ require(dygraphs)
 
 Load the data from a .csv file:
 ```
-vanco=read.table("~/Projects/Training/vanco_weekly_data.csv", sep=",", header=T)
-# convert the Date factor to a real Date
+vanco = read.table("~/Projects/Training/vanco_weekly_data.csv", sep=",", 
+    header=T)
+```
+
+Convert the ```Date``` factor to a date object
+```
 vanco_spc_results$Date = as.Date(vanco_spc_results$Date)
 ```
 
@@ -62,9 +66,11 @@ hw = HoltWinters(discharges_ts)
 predicted = predict(hw, n.ahead = 24, prediction.interval = TRUE)
 all = cbind(discharges_ts, predicted)
 # Create the widget with the slider set to current fiscal year
-discharges_prediction_widget = dygraph(all, main = "Predicted Monthly Discharges") %>%
+discharges_prediction_widget = 
+    dygraph(all, main = "Predicted Monthly Discharges") %>%
     dySeries("discharges_ts", label = "Monthly Discharges") %>%
-    dySeries(c("predicted.lwr", "predicted.fit", "predicted.upr"), label = "Predicted Discharges") %>%
+    dySeries(c("predicted.lwr", "predicted.fit", "predicted.upr"), 
+                label = "Predicted Discharges") %>%
     dyRangeSelector(dateWindow = c("2012-10-01", "2016-10-01"))
 # Open the widget
 discharges_prediction_widget
