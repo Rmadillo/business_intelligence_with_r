@@ -26,7 +26,7 @@ Run the analysis:
 ```
 vanco_spc = qcc(vanco$Weekly_Count, sizes=vanco$Weekly_Census/1000, 
                 labels=vanco$Date, nsigmas=3, type="u", digits=4)
-
+```
 
 View the results:
 ```
@@ -66,7 +66,7 @@ discharges_prediction_widget = dygraph(all, main = "Predicted Monthly Discharges
     dySeries("discharges_ts", label = "Monthly Discharges") %>%
     dySeries(c("predicted.lwr", "predicted.fit", "predicted.upr"), label = "Predicted Discharges") %>%
     dyRangeSelector(dateWindow = c("2012-10-01", "2016-10-01"))
-
+# Open the widget
 discharges_prediction_widget
 ```
 
