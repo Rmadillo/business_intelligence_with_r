@@ -1,1 +1,77 @@
 # Chapter 1: An entire project in a few lines of code
+
+**INTRO HERE**
+
+Load the packages we'll use in this project:
+
+```
+# This package 
+require(qcc)
+# This package allows us to create publication-quality plots
+require(ggplot2)
+# This package allows creation of javascript widgets for use in webpages
+require(htmlwidgets)
+# This packages makes time series widgets within htmlwidgets
+require(dygraphs)
+```
+
+Load the data from a .csv file:
+```
+vanco=read.table("~/Projects/Training/vanco_weekly_data.csv", sep=",", header=T)
+# convert the Date factor to a real Date
+vanco_spc_results$Date = as.Date(vanco_spc_results$Date)
+```
+
+Run the analysis:
+```
+vanco_spc = qcc(vanco$Weekly_Count, sizes=vanco$Weekly_Census/1000, 
+                labels=vanco$Date, nsigmas=3, type="u", digits=4)
+
+
+View the results:
+```
+plot(vanco_spc, ylab="Orders/1000 Patient Days", xlab="Date", title="Vanco 
+     Orders Control Chart", digits=4)
+vanco_spc
+```
+
+Make a publication-quality plot:
+```
+vanco_spc_figure = 
+    ggplot(vanco_spc_results, aes(Date, Rate)) +
+    ggtitle("Vanco Orders Control Chart") +
+    ylab("Orders/1000 Patient Days") +
+    geom_line(aes (Date, UCL), col="blue", lty=2) + 
+    geom_line(aes (Date, LCL), col="blue", lty=2) + 
+    geom_line(aes (Date, Mean), col="blue", lty=3) + 
+    geom_line(lwd=0.8) + # this is the actual rate
+    theme_bw()
+vanco_spc_figure
+# Save the plot to the working directory
+png("vanco_spc_figure.png", width=10, height=7.5, units="in", res=600)
+vanco_spc_figure
+dev.off()
+```
+
+Create an interactive plot:
+```
+# Create an R time series object
+discharges_ts = ts(discharges$DISCHARGES, start=c(2008,10), frequency=12)
+# Do a quick prediction (no options explored! Just an EXAMPLE!)
+hw = HoltWinters(discharges_ts)
+predicted = predict(hw, n.ahead = 24, prediction.interval = TRUE)
+all = cbind(discharges_ts, predicted)
+# Create the widget with the slider set to current fiscal year
+discharges_prediction_widget = dygraph(all, main = "Predicted Monthly Discharges") %>%
+    dySeries("discharges_ts", label = "Monthly Discharges") %>%
+    dySeries(c("predicted.lwr", "predicted.fit", "predicted.upr"), label = "Predicted Discharges") %>%
+    dyRangeSelector(dateWindow = c("2012-10-01", "2016-10-01"))
+
+discharges_prediction_widget
+```
+
+Save the widget to the working directory:
+```
+saveWidget(discharges_prediction_widget, "discharges_predictions.html")
+```
+
