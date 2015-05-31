@@ -51,13 +51,13 @@ bike_share_daily[!complete.cases(bike_share_daily),]
 
 Factors, characters, dates, values that are out-of-range for the measurement, inappropriate dummy values, and NAs tend to be the data types or results that will screw up future analyses—so using the these functions, every time you first pull in a dataset, will save a lot of time and grief in the long run.
 
-It may seem like this is too basic to be included in a cookbook aimed at people who are already R users—but to illustrate the point ironically, a few days before I started this chapter, I was trying to use a function that needed factors on a variable I just knew were factors, but R had considered them characters because as I had used the stringsAsFactors=F option when I imported the data. After banging my head for a while, I pulled up str and the problem became clear immediately.
+It may seem like this is too basic to be included in a cookbook aimed at people who are already R users—but to illustrate the point ironically, a few days before I started this chapter, I was trying to use a function that needed factors on a variable I just knew were factors, but R had considered them characters because as I had used the `stringsAsFactors=F` option when I imported the data. After banging my head for a while, I pulled up `str` and the problem became clear immediately.
 
 Always check! Even if you’re a seasoned professional!
 
 ## Dummy NA values and dropping the NAs
 
-Sometimes, you’ll find values or placeholders where no data should be; for example, -99 and 9999 are common among older data sets to represent NAs. To fix this, you can use something  like:
+Sometimes, you’ll find values or placeholders where no data should be; for example, -99 and 9999 are common among older data sets to represent NAs. To fix this, you can use something like:
 
 ```
 my_data$my_variable[my_data$my_variable==9999] = NA 
@@ -69,11 +69,11 @@ There are a variety of ways to deal with missing values—and we’ll explore so
 my_data = na.omit(my_data)
 ```
 
-It’s also useful to remember to use na.rm=TRUE when including data with NA values in calls to many base installation functions (e.g., mean).
+It’s also useful to remember to use `na.rm=TRUE` when including data with NA values in calls to many base installation functions (e.g., mean).
 
 ## Dropping duplicates
 
-Some analytics questions don't require unique identifiers, and you end up with a dataset that has more rows than you really need. Deleting duplicate rows is easy--first, delete the columns you don't need, then use unique to remove the remaining duplicates, e.g.: 
+Some analytics questions don't require unique identifiers, and you end up with a dataset that has more rows than you really need. Deleting duplicate rows is easy—first, delete the columns you don't need, then use unique to remove the remaining duplicates, e.g.: 
 
 ```
 deduped_df = unique(df)
@@ -86,9 +86,9 @@ DOUBLE CHECK ON REDUCING TO ONLY NUMERIC
 
 We've already touched on merging tables inside a SQLite database to create a dataframe, but more often you usually need to merge two dataframes inside R.
 
-Hadley Wickham is well known in the data science world largely for his ggplot2 package, which many professionals (and this book) use extensively. But he and other collaborators have quietly developed a suite of other packages that significantly reduce the mental overhead for a wide variety of common R uses. One of these is dplyr for data manipulation, and part of its greatness is that it works on dataframes in the same way as it does on databases.
+Hadley Wickham is well known in the data science world largely for his `ggplot2` package, which many professionals (and this book) use extensively. But he and other collaborators have developed a suite of other packages that significantly reduce the mental overhead for a wide variety of common R uses. One of these is `dplyr` for data manipulation, and part of its greatness is that it works on dataframes in the same way as it does on databases.
 
-The recipe provides an overview of dplyr's \_join functions, shows a little more on doing joins using sqldf, and reviews R's built-in merge function. It also covers the concepts of how the types of joins work to make it easy to visualize what you are trying to accomplish.
+The recipe provides an overview of dplyr's `_join` functions, shows a little more on doing joins using `sqldf`, and reviews R's built-in `merge` function. It also covers the concepts of how the types of joins work to make it easy to visualize what you are trying to accomplish.
 
 First, load the libraries:
 
@@ -110,7 +110,7 @@ customer_survey = left_join(customer_regions, survey, by =
   c("customer_id" = "customer_id")
 ```
 
-The base package's merge function is the old standby, but is considerably slower than dplyr, and the type of join is implied by the all option, which reduces code clarity.
+The base package's `merge` function is the old standby, but is considerably slower than `dplyr`, and the type of join is implied by the all option, which reduces code clarity.
 
 ```
 customer_locations = merge(customers, zipcodes, by.x = "customer_zip", 
@@ -121,7 +121,7 @@ customer_survey = merge(customer_regions, survey, by.x="customer_id",
   by.y="customer_id", all.x=TRUE)
 ```
 
-With both the dplyr and merge functions, you get everything in both dataframes. You either have to select only the columns you want in a new dataframe before the merge, or remove the excess columns after it. Of course, in SQL you can choose just the columns you want, which is illustrated below.
+With both the `dplyr` `*_join` and `merge` functions, you get everything in both dataframes. You either have to select only the columns you want in a new dataframe before the merge, or remove the excess columns after it. Of course, using SQL you can choose just the columns you want, which is illustrated below.
 
 ```
 customer_survey = sqldf("SELECT
@@ -145,32 +145,31 @@ customer_survey = sqldf("SELECT
     , stringsAsFactors=FALSE)
 ```
 
-If you're coming to R with some SQL in your background, you might wonder why this wasn't the primary method of this recipe—after all, we can do it all in one step, and we get exactly what we want, and we can sort (ORDER BY) or add any other SQL statement here to get what we need. The reason is that showing each join/merge in a single step allows other R coders to see exactly what was done more clearly. SQL merge code can get ugly fast, so it's useful to consider whether the project (=code) is going to be passed on to others in the future and whether they are familiar with SQL, and code accordingly.
+If you're coming to R with some SQL in your background, you might wonder why this wasn't the primary method of this recipe—after all, we can do it all in one step, and we get exactly what we want, and we can sort (`ORDER BY`) or add any other SQL statement here to get what we need. The reason is that showing each join/merge in a single step allows other R coders to see exactly what was done more clearly. SQL merge code can get ugly fast, so it's useful to consider whether the project (=code) is going to be passed on to others in the future and whether they are familiar with SQL, and code accordingly.
 
-That being said, I love using this approach. With a small set of tables, there's probably no reason not to do it this way. With a large set, you might consider this as your primary approach to if downstream users are familiar with SQL and/or there's a chance the code will be ported or used in a SQL environment.
+That said, I love using this approach. With a small set of tables, there's probably no reason not to do it this way. With a large set, you might consider this as your *primary* approach to joining if downstream users are familiar with SQL and/or there's a chance the code will be ported or used in a SQL environment.
 
 R will match on columns with the same names, so while you can get away without specifying the by variables, you should always specify them—remember your downstream users!
 
-Obviously, there's more to life than left joins. The following table lays out the different types of joins, and how dplyr, merge, and sqldf perform each, given data frames/tables A and B.
+Obviously, there's more to life than left joins. The following table lays out the different types of joins, and how `dplyr`, `merge`, and `sqldf` perform each, given data frames/tables *A* and *B*.
 
 | Type of Join | Visualization | dplyr | merge | sqldf |
 | ------------ | ------------- | ----- | ----- | ----- |
 | Left | ![Left join](/images/Ch3_sql_01.png) | `left_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.x=TRUE)` | `SELECT * FROM A LEFT JOIN B ON A.key = B.key` |
 | Inner | ![Inner join](/images/Ch3_sql_02.png) | `inner_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all=FALSE)` | `SELECT * FROM A INNER JOIN B ON A.key = B.key` |
 | Full (Outer) | ![Full join](/images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key` | 
-| Semi | ![Semi join](/images/Ch3_sql_05.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
+| Semi | ![Semi join](/images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
 | Anti | ![Anti join](/images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key WHERE A.key is NULL OR B.key iS NULL` | 
 | Right* | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key`|
-| Right Anti* ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key WHERE A.key IS NULL`
+| Right Anti* | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key WHERE A.key IS NULL`
 
+\* Although `dplyr` doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
-* Although dplyr doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
-
-You can merge large files with data.tables, but at the time of this writing, the way you specify the joins is opaque--e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time--so for now we recommend that it only be employed for single-user/casual use and not for production code.
+*Note*: you can merge large files with `data.tables`, but at the time of this writing, the way you specify the joins is opaque—e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time—so for now we recommend that it only be employed for single-user/casual use and not for production code.
 
 ## Filtering, selecting, and arranging a dataframe
 
-Even after joining, the dataset we have is rarely the dataset we need to complete a project. The dplyr package has a few really useful data manipulation functions that work on data frames just like they do on databases, and tend to be simpler, faster, and more intuitive than comparable base installation functions like merge, order, or subset.
+Even after joining, the dataset we have is rarely the dataset we need to complete a project. The `dplyr` package has a few really useful data manipulation functions that work on data frames just like they do on databases, and tend to be simpler, faster, and more intuitive than comparable `base` installation functions like `merge`, `order`, or `subset`.
 
 We'll use the same fake data generated previously to illustrate subsetting rows, selecting columns, and arranging the dataframe based on custom sorting order.
 
@@ -180,7 +179,7 @@ require(dplyr)
 
 dplyr contains SQL-like agility with much less coding for common R tasks.
 
-Need to subset on a couple of conditions? Use filter, stringing together criteria using & for AND and | (pipe) for OR:
+Need to subset on a couple of conditions? Use filter, stringing together criteria using `&` for AND and `|` (pipe) for OR:
 
 ```
 customers_marketing = filter(customer_survey, strongly_agree == 1 | agree == 1)
@@ -189,28 +188,31 @@ customers_CA_65_200_OR_500 = filter(customer_survey, state == "California" &
   customer_purchases > 500)
 ```
 
-Need to reduce the data to just some of the variables without having to spell them all out? Use select, which provides some "regular expression" type of access to make selection from a large dataset more managable:
+Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some "regular expression" type of access to make selection from a large dataset more managable:
 
 ```
 customers_only = select(customer_survey, starts_with("customer"))
 customers_only_agreement = select(customer_survey, customer_id, matches("agree"))
 ```
 
-select can also remove variables by appending a – to the front of the criteria:  
+`select` can also remove variables by appending a minus sign (`–`) to the front of the criteria:  
 
-```customers_excluded = select(customer_survey, -starts_with("customer"))```
+```
+customers_excluded = select(customer_survey, -starts_with("customer"))
+```
 
-Want to sort by a set of variables? Use arrange:
+Want to sort by a set of variables? Use `arrange`:
 
 ```
 customers_sorted = arrange(customers_CA_65_200_OR_500, state, customer_age, 
-  desc(customer_purchases))```
+  desc(customer_purchases))
+```
 
-Definitely explore the vignettes in the dplyr package (start with vignette("introduction", package="dplyr")), as they provide a wide variety of examples and use cases—there's almost certainly going to be an example of what you need to do there.
+Definitely explore the vignettes in the `dplyr` package (start with `vignette("introduction", package="dplyr"))`, as they provide a wide variety of examples and use cases—there's almost certainly going to be an example of what you need to do there.
 
 ## Stringing it together in dplyr
 
-One of the really useful features of dplyr is that you can string together a bunch of functions with the >\%> ("then") operator, a feature that is growing in popularity across a variety of R packages.
+One of the really useful additional features of `dplyr` is that you can string together a bunch of functions with the `%>%` ("then") operator, a feature that is growing in popularity across a variety of R packages.
 
 ```
 customer_500_dplyred = customer_survey %>%
@@ -223,7 +225,7 @@ customer_500_dplyred = customer_survey %>%
     mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))
 ```
 
-dplyr's mutate function creates a new column, but can perform slower on large datasets and/or be more awkward to type than simply making a new column in the usual way with \textdollar and =. For example:
+dplyr's `mutate` function creates a new column, but can perform slower on large datasets and/or be more awkward to type than simply making a new column in the usual way with `$` and `=`. For example:
 
 ```
 customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", "))
@@ -231,11 +233,11 @@ customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", ")
 customer_survey$Location = paste(city, stabbr, sep=", ")
 ```
 
-Still, it can be pretty convenient if you're stringing functions together, as above (so a \%>\% operation would simply be mutate(Location=paste(city, stabbr, sep=", "), making it as easy to type as the normal way), or want to peek at the outcome before running it for results, as below.
+Still, it can be pretty convenient if you're stringing functions together, as above (so a `%>%` operation would simply be `mutate(Location=paste(city, stabbr, sep=", ")`, making it as easy to type as the normal way), or want to peek at the outcome before running it for results, as below.
 
 ## Peeking at the outcome
 
-If you want to check on how one or more of the dplyr actions will perform in terms of output before updating or creating a dataframe, you can wrap it inside the head function:
+If you want to check on how one or more of the `dplyr` actions will perform in terms of output before updating or creating a dataframe, you can wrap it inside the head function:
 
 ```
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
@@ -246,9 +248,9 @@ head(mutate(customer_survey, Location = paste(city, stabbr, sep=", "),
 
 ## Transforming a dataframe from wide to long and back again
 
-A lot of analyses and plotting require that data be organized in long format, where the variable of interest is in one column and the id/categorical portions of the data are repeated as necessary in other columns. Then again, other tools need the data in wide format, so being able to move between the two formats is essential. The reshape2 package provides just that ability.  
+A lot of analyses and plotting require that data be organized in long format, where the variable of interest is in one column and the id/categorical portions of the data are repeated as necessary in other columns. Then again, other tools need the data in wide format, so being able to move between the two formats is essential. The `reshape2` package provides just that ability.  
 
-We'll use a different dataset to illustrate some of the possibilities reshape2 offers—this shows the verbal and nonverbal IQ test scores for children before and after neurosurgery (and in which hemisphere, i.e. "Side" of the brain). Load the package and the data:
+We'll use a different dataset to illustrate some of the possibilities `reshape2` offers—this shows the verbal and nonverbal IQ test scores for children before and after neurosurgery (and in which hemisphere, i.e. "Side" of the brain). Load the package and the data:
 
 ```
 require(reshape2)
@@ -256,120 +258,118 @@ surgery_outcomes = read.table("surgery_outcomes.csv", header=T, sep=",")
 head(surgery_outcomes, 4)
 ```
 
-TABLE HERE
 ```
-  ID  Side Phase Verbal Nonverbal
-1  1 Right  Post    146       115
-2  1 Right   Pre    129       103
-3  2 Right  Post    126       115
-4  2 Right   Pre    138       115
+row  ID  Side   Phase  Verbal  Nonverbal
+1    1   Right  Post   146     115
+2    1   Right  Pre    129     103
+3    2   Right  Post   126     115
+4    2   Right  Pre    138     115
 ```
 
 If each measurement needs its own row, you melt a dataframe from wide into long format:
 
-```surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3),
-  measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
+```
+surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3),
+    measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
 head(surgery_outcomes_melted, 4)
 ```
 
-TABLE HERE
 ```
- 
-
-
-  ID  Side Phase Test_type IQ_score
-1  1 Right  Post    Verbal      146
-2  1 Right   Pre    Verbal      129
-3  2 Right  Post    Verbal      126
-4  2 Right   Pre    Verbal      138
+row  ID  Side   Phase  Test_type  IQ_score
+1    1   Right  Post   Verbal     146
+2    1   Right  Pre    Verbal     129
+3    2   Right  Post   Verbal     126
+4    2   Right  Pre    Verbal     138
 ```
 
-Any data in long form can be cast into a variety of wide forms, with a d or an a tacked on to the front depending on whether you need a dataframe (d) or vector, matrix, or array (a). To put this data back in the shape it started as:
+Any data in long form can be cast into a variety of wide forms, with a `d` or an `a` tacked on to the front depending on whether you need a dataframe (`d`) or vector, matrix, or array (`a`). To put this data back in the shape it started as:
 
 ```
 surgery_outcomes_original = dcast(surgery_outcomes_melted, ID + Side + 
-  Phase ~ Test_type)
+    Phase ~ Test_type)
 head(surgery_outcomes_original, 4)
 ```
 
 TABLE HERE
 ```
-  ID  Side Phase Verbal Nonverbal
-1  1 Right  Post    146       115
-2  1 Right   Pre    129       103
-3  2 Right  Post    126       115
-4  2 Right   Pre    138       115
+row  ID  Side   Phase  Verbal  Nonverbal
+1    1   Right  Post   146     115
+2    1   Right  Pre    129     103
+3    2   Right  Post   126     115
+4    2   Right  Pre    138     115
 ```
 
 Being able to move back and forth between data shapes makes meeting the needs of the R packages you're working with considerably easier, especially if you're moving between some that work best with long form structures and others that work well with short.
 
-The important part to remember in melting data is to ensure you've designated the id and measurement variables appropriately. While melt can operate with neither or only one of these designated, proper coding etiquette requires that you designate each specifically to avoid ambiguity.
+The important part to remember in melting data is to ensure you've designated the id and measurement variables appropriately. While `melt` can operate with neither or only one of these designated, proper coding etiquette requires that you designate each specifically to avoid ambiguity.
 
 ## Crossing variables with ~ and +
 
-There is tremendous variety in reshaping options using the formula structure in dcast. The tilde sign (~) separates the variables you want representing the rows (left of the ~) and those you want representing the columns (right of the ~). For example, we can cross phase and the test type in the columns:
+There is tremendous variety in reshaping options using the formula structure in `dcast`. The tilde sign (`~`) separates the variables you want representing the rows (left of the ~) and those you want representing the columns (right of the ~). For example, we can cross phase and the test type in the columns:
 
 ```
 head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase), 4)
-
-
-  ID Verbal_Post Verbal_Pre Nonverbal_Post Nonverbal_Pre
-1  1         146        129            115           103
-2  2         126        138            115           115
-3  3         110        100            104           100
-4  4         104         NA            106            NA
+```
+```
+     ID  Verbal_Post  Verbal_Pre  Nonverbal_Post  Nonverbal_Pre
+1    1   146          129         115             103
+2    2   126          138         115             115
+3    3   110          100         104             100
+4    4   104          NA          106             NA
 ```
 
-We could also return the Side variable to the same shape:
+We could also return the `Side` variable to the same shape:
 
 ```
 head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase), 4)
- 
-
-  ID  Side Verbal_Post Verbal_Pre Nonverbal_Post Nonverbal_Pre
-1  1 Right         146        129            115           103
-2  2 Right         126        138            115           115
-3  3  Left         110        100            104           100
-4  4 Right         104         NA            106            NA
+```
+```
+   ID  Side   Verbal_Post  Verbal_Pre  Nonverbal_Post  Nonverbal_Pre
+1  1   Right  146          129         115             103
+2  2   Right  126          138         115             115
+3  3   Left   110          100         104             100
+4  4   Right  104          NA          106             NA
 ```
 
 And so on... the possibilities are as many as your variable set...
 
 ```
 head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type), 4)
-
-
+```
+```
   ID Phase Verbal Nonverbal
 1  1  Post    146       115
 2  1   Pre    129       103
 3  2  Post    126       115
 4  2   Pre    138       115
-
 ```
 
 ## Summarizing while reshaping
 
-While dplyr might provide you with all you need for summarizing data once your data structure is set, reshape2 offers the option to summarize while reshaping. The summarization works based on which operation you choose as well as which side of the ~ you place the variables, as described immediately above.  
+While `dply`r might provide you with all you need for summarizing data once your data structure is set, `reshape2` offers the option to summarize while reshaping. The summarization works based on which operation you choose as well as which side of the `~` you place the variables (as described above).  
 
 ```
 dcast(surgery_outcomes_melted, Phase ~ Test_type, mean, na.rm=T)
-
-
+```
+```
   Phase   Verbal Nonverbal
 1  Post 104.6667 102.26667
 2   Pre 103.0909  98.90909
+```
 
-
+```
 dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, mean, na.rm=T)
-
-
+```
+```
    Side Verbal_Post Verbal_Pre Nonverbal_Post Nonverbal_Pre
 1  Left    102.4444   97.71429       100.7778      97.42857
 2 Right    108.0000  112.50000       104.5000     101.50000
+```
 
+```
 dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
-
-
+```
+```
   Test_type  Side Phase        .
 1    Verbal  Left  Post 14.78269
 2    Verbal  Left   Pre 12.51285
@@ -380,69 +380,3 @@ dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
 7 Nonverbal Right  Post 11.46734
 8 Nonverbal Right   Pre 10.47219
 ```
-
-
-## Partitioning the data efficiently for predictive modeling
-
-There's still a fair amount of controversy over whether splitting the dataset into training/test sets (or training/test/validation), bootstrapping, or cross-validation is the best approach to effective predictive modeling. The smaller the sample size, the more difficult the choice becomes, and experience and industry norms become more important in determining which approach works best.
-
-In this recipe, we'll look at setting up partitions; later, we'll see cross-validation in action as part of the modeling process. Of course, if your aim is explanation (and not prediction), this tool is moot: you'll want to use the entire dataset.
-
-Max Kuhn's caret package is a wonderful tool covering basically the whole suite of predictive modeling needs in R. We'll see it later in this book, starting here to select a stratified random sample. We'll also use the base package's functions for a simple random sample. For both approaches, we'll continue to use the fake customer data.
-
-```
-require(caret)
-```
-
-For simple random sampling, sample and setdiff allow us to split a (large) dataset into partitions of 60\% training, 20\% test, and 20\% validation (for example, based on Andrew Ng's CS229 recommendation):
-
-```
-observations = nrow(customer_survey)
-customer_partitions = sample(nrow(customer_survey), 0.60 * observations)
-test_set = sample(setdiff(seq_len(nrow(customer_survey)), customer_partitions),
-  0.20 * observations)
-validation_set = setdiff(setdiff(seq_len(nrow(customer_survey)),
-  customer_partitions), test_set)
-customer_survey_training = customer_survey[customer_partitions, ]
-customer_survey_test = customer_survey[test_set,]
-customer_survey_validation = customer_survey[validation_set,]
-
-```
-
-If you want to ensure samples from each region are more or less evenly represented in each partition, you can use caret's createDataPartition function twice, and specify the variable to stratify on:
-
-```
-customer_partitions = createDataPartition(customer_survey$division, p = 0.60,
-  list = FALSE, times = 1)
-customer_survey_training = customer_survey[customer_partitions,]
-customer_survey_testing = customer_survey[-customer_partitions,]
-customer_test_partitions = createDataPartition(customer_survey_testing$division,
-  p = 0.50, list = FALSE, times = 1)
-customer_survey_test = customer_survey_testing[customer_test_partitions,]
-customer_survey_validation = customer_survey_testing[-customer_test_partitions,]
-rm(customer_survey_testing)
-
-```
-
-When events or distributions of the outcomes of interest are skewed and/or not evenly distributed (which can be most of the time!), you'll want to use stratified random sampling. The createDataPartition function in the caret package can do this for you.
-
-To make an 80/20 split, you can adjust the value of 0.60 in the code to 0.80, ignore or delete the lines of code referencing a validation set, tweak the test set code, and run it, i.e.,
-
-```
-customer_partitions = sample(nrow(customer_survey), 0.80 * observations)
-# or
-customer_partitions = createDataPartition(customer_survey$division, p = 0.60,
-  list = FALSE, times = 1)
-```
-
-and then
-```
-customer_survey_training = customer_survey[customer_partitions,]
-customer_survey_testing = customer_survey[-customer_partitions,]
-```
-
-## Predictive modeling with Rattle
-
-There are other all-in-one predictive modeling packages in R, of course, but perhaps the most useful among those is Graham Williams' rattle, which provides a GUI-based approach to the major predictive modeling techniques. A great feature is that each executed GUI choice is recorded in the log, allowing you to see the R commands that run the package behind the scenes. In fact, I purposely based the simple random sample code used above on how rattle does it; after loading data into the rattle GUI and executing a partition, you can look at the log tab to see the similarities in the code.
-
-As rattle has an outstanding book (Williams 2011) as well as great online documentation (http://rattle.togaware.com/) and tutorials (http://handsondatascience.com), there's no need to cover its use in this book. But I highly recommend using it no matter what your level of experience with either predictive modeling or with other R packages—it could be all you need for the majority of your work.
