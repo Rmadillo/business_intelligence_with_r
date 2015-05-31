@@ -1,0 +1,68 @@
+# PARKING LOT
+
+##Predictive Modeling set up
+
+## Partitioning the data efficiently for predictive modeling
+
+There's still a fair amount of controversy over whether splitting the dataset into training/test sets (or training/test/validation), bootstrapping, or cross-validation is the best approach to effective predictive modeling. The smaller the sample size, the more difficult the choice becomes, and experience and industry norms become more important in determining which approach works best.
+
+In this recipe, we'll look at setting up partitions; later, we'll see cross-validation in action as part of the modeling process. Of course, if your aim is explanation (and not prediction), this tool is moot: you'll want to use the entire dataset.
+
+Max Kuhn's caret package is a wonderful tool covering basically the whole suite of predictive modeling needs in R. We'll see it later in this book, starting here to select a stratified random sample. We'll also use the base package's functions for a simple random sample. For both approaches, we'll continue to use the fake customer data.
+
+```
+require(caret)
+```
+
+For simple random sampling, sample and setdiff allow us to split a (large) dataset into partitions of 60\% training, 20\% test, and 20\% validation (for example, based on Andrew Ng's CS229 recommendation):
+
+```
+observations = nrow(customer_survey)
+customer_partitions = sample(nrow(customer_survey), 0.60 * observations)
+test_set = sample(setdiff(seq_len(nrow(customer_survey)), customer_partitions),
+  0.20 * observations)
+validation_set = setdiff(setdiff(seq_len(nrow(customer_survey)),
+  customer_partitions), test_set)
+customer_survey_training = customer_survey[customer_partitions, ]
+customer_survey_test = customer_survey[test_set,]
+customer_survey_validation = customer_survey[validation_set,]
+
+```
+
+If you want to ensure samples from each region are more or less evenly represented in each partition, you can use caret's createDataPartition function twice, and specify the variable to stratify on:
+
+```
+customer_partitions = createDataPartition(customer_survey$division, p = 0.60,
+  list = FALSE, times = 1)
+customer_survey_training = customer_survey[customer_partitions,]
+customer_survey_testing = customer_survey[-customer_partitions,]
+customer_test_partitions = createDataPartition(customer_survey_testing$division,
+  p = 0.50, list = FALSE, times = 1)
+customer_survey_test = customer_survey_testing[customer_test_partitions,]
+customer_survey_validation = customer_survey_testing[-customer_test_partitions,]
+rm(customer_survey_testing)
+
+```
+
+When events or distributions of the outcomes of interest are skewed and/or not evenly distributed (which can be most of the time!), you'll want to use stratified random sampling. The createDataPartition function in the caret package can do this for you.
+
+To make an 80/20 split, you can adjust the value of 0.60 in the code to 0.80, ignore or delete the lines of code referencing a validation set, tweak the test set code, and run it, i.e.,
+
+```
+customer_partitions = sample(nrow(customer_survey), 0.80 * observations)
+# or
+customer_partitions = createDataPartition(customer_survey$division, p = 0.60,
+  list = FALSE, times = 1)
+```
+
+and then
+```
+customer_survey_training = customer_survey[customer_partitions,]
+customer_survey_testing = customer_survey[-customer_partitions,]
+```
+
+## Predictive modeling with Rattle
+
+There are other all-in-one predictive modeling packages in R, of course, but perhaps the most useful among those is Graham Williams' rattle, which provides a GUI-based approach to the major predictive modeling techniques. A great feature is that each executed GUI choice is recorded in the log, allowing you to see the R commands that run the package behind the scenes. In fact, I purposely based the simple random sample code used above on how rattle does it; after loading data into the rattle GUI and executing a partition, you can look at the log tab to see the similarities in the code.
+
+As rattle has an outstanding book (Williams 2011) as well as great online documentation (http://rattle.togaware.com/) and tutorials (http://handsondatascience.com), there's no need to cover its use in this book. But I highly recommend using it no matter what your level of experience with either predictive modeling or with other R packages—it could be all you need for the majority of your work.
