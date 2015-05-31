@@ -1,4 +1,4 @@
-# Chapter3: Cleaning and Preparing Data
+# Chapter 3: Cleaning and Preparing Data
 
 - Identifying basic structure
 - Merging dataframes
@@ -151,72 +151,22 @@ That being said, I love using this approach. With a small set of tables, there's
 
 R will match on columns with the same names, so while you can get away without specifying the by variables, you should always specify them—remember your downstream users!
 
-Obviously, there's more to life than left joins. The following table lays out the different types of joins, and how dplyr, merge, and sqldf perform each, given Tables A and B.
+Obviously, there's more to life than left joins. The following table lays out the different types of joins, and how dplyr, merge, and sqldf perform each, given data frames/tables A and B.
 
-TABLE HERE
-
-```
- 
-
-Type of Join
-Visualization
-dplyr
-merge
-sqldf
-Left
+| Type of Join | Visualization | dplyr | merge | sqldf |
+| ------------ | ------------- | ----- | ----- | ----- |
+| Left | ![Left join](/images/Ch3_sql_01.png) | `left_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.x=TRUE)` | `SELECT * FROM A LEFT JOIN B ON A.key = B.key` |
+| Inner | ![Inner join](/images/Ch3_sql_02.png) | `inner_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all=FALSE)` | `SELECT * FROM A INNER JOIN B ON A.key = B.key` |
+| Full (Outer) | ![Full join](/images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key` | 
+| Semi | ![Semi join](/images/Ch3_sql_05.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
+| Anti | ![Anti join](/images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key WHERE A.key is NULL OR B.key iS NULL` | 
+| Right* | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key`|
+| Right Anti* ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key WHERE A.key IS NULL`
 
 
-left_join(A, B, by=c("A.key" ="B.key"))
-merge(A, B, by.x="A.key", by.y="B.key", all.x=TRUE)
-SELECT * FROM A LEFT JOIN B ON A.key = B.key
-Inner
+* Although dplyr doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
-
-
-inner_join(A, B, by=c("A.key" ="B.key"))
-merge(A, B, by.x="A.key", by.y="B.key", all=FALSE)
-SELECT * FROM A INNER JOIN B ON A.key = B.key
-Full (Outer)
-
-
-
-Not yet implemented
-merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)
-SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key
-Semi
-
-
-
-semi_join(A, B, by=c("A.key" ="B.key"))
-n/a
-SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL
-Anti
-
-
-
-anti_join(A, B, by=c("A.key" ="B.key"))
-n/a
-SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key WHERE A.key is NULL OR  B.key iS NULL
-Right*
-
-
-
-left_join(B, A, by=c("B.key" ="A.key"))
-merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)
-SELECT * FROM A RIGHT JOIN B ON A.key = B.key
-Right Anti*
-
-
-
-
-semi_join(B, A, by=c("B.key" ="A.key"))
-n/a
-SELECT * FROM A RIGHT JOIN B ON A.key = B.key WHERE A.key IS NULL
-```
-
-Table Note 1: Although dplyr doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
-
-You can merge large files with data.tables, but at the time of this writing, the way you specify the joins is opaque—e.g., ```datatable_AB = datatable_A[datatable_B]``` is a left join, given you've specified the keys ahead of time—so for now we recommend that it only be employed for single-user/casual use and not for production code.
+You can merge large files with data.tables, but at the time of this writing, the way you specify the joins is opaque--e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time--so for now we recommend that it only be employed for single-user/casual use and not for production code.
 
 ## Filtering, selecting, and arranging a dataframe
 
