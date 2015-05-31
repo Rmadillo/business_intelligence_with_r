@@ -27,59 +27,63 @@ If you were to poll data scientists on the "Three Most Important Steps in Any An
 
 The recipes below are aimed at giving you a quick visual summary of the data, not to produce final plots—and so they're rough and use functions that can be difficult to modify. We'll see recipes for production plots later in this chapter and throughout the book, but we often just need to see the data before doing anything else.
 
-The ggpairs function in the GGally package has a relatively slow but visually wonderful way to plot your dataset, so load that library before continuing.
+The `ggpairs` function in the `GGally` package has a relatively slow but visually wonderful way to plot your dataset, so load that library before continuing.
 
 ```
 require(GGally)
 ```
 
-GGally is built over ggplot2 (which we'll use often in this book), and its syntax works in more or less the same manner as qplot. You can create the summary plot of a subset of the bike share data for an at-a-glance overview:
+GGally is built over `ggplot2` (which we'll use often in this book), and its syntax works in more or less the same manner as `qplot`. You can create the summary plot of a subset of the bike share data for an at-a-glance overview:
 
 ```
 ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7), 
   title="Daily Bike Sharing Data", axisLabels="show", color="season")
 ```
+![ggpairs](/images/Ch4_01.png)
 
-It’s helpful to use a non-parametric correlation method if you don’t know a priori whether the quantitative variables are linearly related in their raw forms. Unfortunately, ggpairs doesn’t yet provide this functionality, so know that for continuous pairs of variables that don’t show a linear point cloud, the correlation coefficient in this graph will be larger than it should be.
+It’s helpful to use a non-parametric correlation method if you don’t know a priori whether the quantitative variables are linearly related in their raw forms. Unfortunately, `ggpairs` doesn’t yet provide this functionality, so know that for continuous pairs of variables that don’t show a linear point cloud, the correlation coefficient in this graph will be *larger than it should be*.
 
-GGally is still in active development, so currently it's pretty difficult to customize the ggpairs plot, and it may rarely be useful to anyone other than you. Even then, it's a great way to get a sense of the data at a glance. I use this function with almost any dataset I work with.
+`GGally` is still in active development, so currently it's pretty difficult to customize the `ggpairs` plot, and it may rarely be useful to anyone other than you. Even then, it's a great way to get a sense of the data at a glance. I use this function with almost any dataset I work with.
 
 ## Create histograms of all numeric variables in one plot
 
-Sometimes you just want to see histograms, but coding and laying out a bunch of them in a grid is more work than it needs to be. The psych package's multi.hist function can do this in a single line. Note that if you specify variables that aren't numeric, it will throw an error.
+Sometimes you just want to see histograms, but coding and laying out a bunch of them in a grid is more work than it needs to be. The `psych` package's `multi.hist` function can do this in a single line. Note that if you specify variables that aren't numeric, it will throw an error.
 
 ```
 require(psych)
 multi.hist(bike_share_daily[,sapply(bike_share_daily, is.numeric)])
 ```
+![multi.hist](/images/Ch4_02.png)
 
 ## A better "pairs" plot
 
-The psych package also has a modification of the graphics package's pairs function that's more useful out of the box. As mentioned above, until you have evidence that your paired variables are indeed linear in raw form, you should modify the default calculation option to method="spearman" for continuous data or method="kendall" for ordinal data or continuous data in which you have some known outliers:
+The `psych` package also has a modification of the built-in `graphics` package's `pairs` function that's more useful out of the box. As mentioned above, until you have evidence that your paired variables are indeed linear in raw form, you should modify the default calculation option to `method="spearman"` for continuous data or `method="kendall"` for ordinal data or continuous data in which you have some known outliers:
 
 ```
 pairs.panels(bike_share_daily[,sapply(bike_share_daily, is.numeric)], 
   ellipses=FALSE, pch=".", las=2, cex.axis=0.7, method="kendall")
 ```
+![pairs.panels](/images/Ch4_03.png)
 
 ## Mosaic plots—"Scatterplots" for categorical data
 
-Once you've loaded the vcd package, the pairs function can create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object.
+Once you've loaded the `vcd` package, the `pairs` function can also create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object.
 
 ```
 require(vcd)
 pairs(table(bike_share_daily[c(3, 9)])) # not shown
 ```
 
-The dataset we've used so far in this recipe isn't a great one for mosaic plots since most of those variables are time-related, so a better view of the outcome of plotting categorical pairs can be seen with the built-in Titanic dataset, using the highlighting option to make the categories more clearly distinct at a glance:
+The dataset we've used so far in this recipe isn't a great one for mosaic plots since most of those variables are time-related, so a better view of the outcome of plotting categorical pairs can be seen with the built-in `Titanic` dataset (`?Titanic`), using the highlighting option to make the categories more clearly distinct at a glance:
 
 ```
 pairs(Titanic, highlighting=2)
 ```
+![mosaic pairs](/images/Ch4_04.png)
 
 ## Obtaining summary statistics
 
-Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the psych package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
+Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the `psych` package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
 
 It’s important to remember that each type of data can reasonably use only certain kinds of summary statistics. The following table should help when, for example, a decision maker asks you to calculate the mean of an ordinal variable (such as a Likert scale)—just show them this table so you don’t have to go on record as the one who said it was a stupid idea:
 
@@ -172,10 +176,10 @@ N
 Y\text{**
 Y
 
-Table note 1: Ratio variables have a "true zero" while interval variables do not (e.g., temperature in °C).
-Table note 1:  Discrete variables can have means/variances based on non-normal probability distributions (e.g., binomial for proportions, Poisson for counts or rates, etc.), but this should not be confused with an arithmetic mean or variance.
+\* Ratio variables have a "true zero" while interval variables do not (e.g., temperature in °C).
+\** Discrete variables can have means/variances based on non-normal probability distributions (e.g., binomial for proportions, Poisson for counts or rates, etc.), but this should not be confused with an arithmetic mean or variance.
 
-Load the psych package and the daily bike share data if they're not already loaded from the previous recipe.
+Load the `psych` package and the daily bike share data if they're not already loaded from the previous recipe.
 
 ```
 require(psych)
@@ -187,8 +191,8 @@ For numeric variables, the describe and describeBy functions do all the work for
 ```
 describe(bike_share_daily[10:16]) # not shown
 describeBy(bike_share_daily[10:16], bike_share_daily$holiday)
-
-
+```
+```
 group: No
            vars   n    mean      sd median trimmed     mad min  max range skew kurtosis    se
 casual        1 710  841.77  680.53  711.5  739.69  584.14   2 3410  3408 1.27     1.34 25.54
@@ -200,9 +204,10 @@ casual        1 21 1064.71  860.05    874  965.88  658.27 117 3065  2948 0.88   
 registered    2 21 2670.29 1492.86   2549 2604.47 1599.73 573 5172  4599 0.27    -1.26 325.77
 ```
 
-The table and prop.table functions from the base package provide the simplest summary stats for categorical and ordinal variables:
+The `table` and `prop.table` functions from the `base` package provide the simplest summary stats for categorical and ordinal variables:
 
-```table(bike_share_daily$holiday)
+```
+table(bike_share_daily$holiday)
 No Yes
 710  21
 
@@ -222,7 +227,6 @@ describeBy(bike_share_daily[14:16], bike_share_daily$temp > 0.5) # not shown
 describeBy(bike_share_daily$casual, bike_share_daily$windspeed > 
   mean(bike_share_daily$windspeed))
 
-
 group: FALSE
   vars   n   mean     sd median trimmed    mad min  max range skew kurtosis    se
 1    1 409 914.61 673.18    773  827.61 598.97   9 3410  3401 1.11     0.96 33.29
@@ -232,7 +236,7 @@ group: TRUE
 1    1 322 763.8 695.26  613.5  642.12 579.7   2 3283  3281  1.5     1.94 38.75
 ```
 
-You can create two- , three-, or n-way tables by adding variables to the table call, and use addmargins to get marginal sums:
+You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums:
 
 ```
 table(bike_share_daily[c(3,6:7)]) # not shown
@@ -247,12 +251,11 @@ season             1           2           3
   Fall   0.140902873 0.088919289 0.013679891
 ```
 
-Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can create any n-way table as a data frame using the plyr package's count function:
+Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can create any *n*-way table as a data frame using the `plyr` package's `count` function:
 
 ```
 require(plyr)
 count(bike_share_daily[c(3,6:7)])
-
 
     season holiday weekday freq
 1  Winter      No       0   27
@@ -264,35 +267,17 @@ count(bike_share_daily[c(3,6:7)])
 
 ## Inference on summary statistics: confidence intervals
 
-When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are base installation functions for most of the ones we typically need:
+When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are `base` installation functions for most of the ones we typically need:
 
-Statistic
-Data type
-Distribution
-Function
-Median
-Any
-None
-wilcox.test(x, conf.int=TRUE)$\textdollar$conf.int
-Mean
-Continuous
-Normal, t, “normal enough”
-t.test(x)$\textdollar$conf.int
-Proportion
-Percent
-Binomial
-binom.test(x, n)$\textdollar$conf.int
-Count
-Count
-Poisson
-poisson.test(x)$\textdollar$conf.int
-Rate
-Count/n
-Poisson
-poisson.test(x, n)$\textdollar$conf.int
+| Statistic | Data type | Distribution | Function |
+| --------- | --------- | ------------ | -------- |
+| Median | Any | None | `wilcox.test(x, conf.int=TRUE)$\textdollar$conf.int` |
+| Mean| Continuous | Normal, t, “normal enough” | `t.test(x)$\textdollar$conf.int` |
+| Proportion | Percentage | Binomial | `binom.test(x, n)$\textdollar$conf.int` |
+| Count | Count | Poisson | `poisson.test(x)$\textdollar$conf.int` |
+| Rate | Count/*n* | Poisson | `poisson.test(x, n)$\textdollar$conf.int` |
 
-
-Sometimes there isn’t a base function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the boot package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the CO2 dataset that comes with R for simplicity’s sake:
+Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the CO2 dataset that comes with R for simplicity’s sake:
 
 ```
 require(boot)
@@ -301,12 +286,11 @@ sd_boot = boot(CO2$conc, sd_boot_function, R=10000)
 sd(CO2$conc)
 boot.ci(sd_boot, type="bca")$bca[4:5]
 
-
 295.9241
 258.8950 333.7344
 ```
 
-The BCa method is generally the appropriate calculation unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use type="norm", i.e., use the normal approximation for very small samples that you expect are “normal enough.”  
+The BCa method is generally the appropriate calculation unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use `type="norm"`, i.e., use the normal approximation for very small samples that you expect are “normal enough,” realizing that due to sampling error you could be estimating intervals that are wildly incorrect.   
 
 We can also bootstrap confidence intervals for any summary statistic. For example, to get the bootstrapped 75th percentile, run the following:
 
@@ -316,17 +300,17 @@ q75_boot = boot(CO2$conc, q75_function, R=10000)
 quantile(CO2$conc,0.75)
 boot.ci(q75_boot, type="bca")$bca[4:5]
 
-
 675
 500 675
-
 ```
 
 ## Inference on summary statistics: tolerance intervals
 
-While confidence limits tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% confidence interval) and how long you can expect 95% of those trips will take. While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. Essentially, a good way to remember the difference is that as the sample size approaches the population size, the confidence interval will approach zero, while a tolerance interval will approach the population percentiles.
+While confidence limits tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% *confidence* interval) and how long you can expect 95% of those trips will take (using a 95% *tolerance* interval). While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. 
 
-The tolerance package contains functions for estimating tolerance intervals for distributions typically used in most engineering or industrial processes. As an example, assume you have data on commuting time for 40 randomly chosen workdays. The distribution is oddly-shaped, so we’ll use non-parametric tolerance intervals to estimate (at a 95% confidence level) the number of minutes that 75% of commutes will take:
+Essentially, a good way to remember the difference is that as the sample size approaches the population size, the confidence interval will approach zero, while a tolerance interval will approach the population percentiles.
+
+The `tolerance` package contains functions for estimating tolerance intervals for distributions typically used in most engineering or industrial processes. As an example, assume you have data on commuting time for 40 randomly chosen workdays. The distribution is oddly-shaped, so we’ll use non-parametric tolerance intervals to estimate (at a 95% confidence level) the number of minutes that 75% of commutes will take:
 
 ```
 require(tolerance)
@@ -336,11 +320,9 @@ commute_time = c(68, 42, 40, 69, 46, 37, 68, 68, 69, 38, 51, 36, 50, 37, 41,
 commute_time_npti = nptol.int(commute_time, alpha=0.05, P=0.75, side=2)
 commute_time_npti
 
-
   alpha    P 2-sided.lower 2-sided.upper
 1  0.05 0.75            37            68
 ```
-
 
 You can also obtain a graphical summary with the plottout function, which shows a control chart on the left and a histogram on the right:
 
