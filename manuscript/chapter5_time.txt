@@ -15,15 +15,14 @@ Dealing with temporal data presents its own set of unique challenges. R lessens 
 
 If you’re in the data exploration phase, and want to get a loose sense of the trend in the data, starting with a loess curve is probably the best first step. Quantile regression provides tools for evaluating trends in data with increasing or decreasing variance, or any data with a monotonic trend regardless of variance. Ordinary least squares is probably the last tool you want to use in the exploratory phase, though it can often be what you start with when doing model building.
 
-We’ll continue to use the bike share data, and plot the results of this recipe with ggplot2. We’ll also need the quantreg package in order to plot the quantile regression trend lines:
+We’ll continue to use the bike share data, and plot the results of this recipe with `ggplot2`. We’ll also need the `quantreg` package in order to plot the quantile regression trend lines:
 
 ```
 require(ggplot)
 require(quantreg)
 ```
 
-
-To see a smoothed average trend, use method="loess" in the geom_smooth function:
+To see a smoothed average trend, use `method="loess"` in the `geom_smooth` function:
 
 ```
 ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
@@ -35,7 +34,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
 ```
 
 
-To show trends based on quantiles, use the stat_quantile option, and choose which quantiles you want to show, either specifically (as below) or sequentially (e.g., quantiles = seq(0.05, 0.95, by=0.05):
+To show trends based on quantiles, use the stat_quantile option, and choose which quantiles you want to show, either specifically (as below) or sequentially (e.g., `quantiles = seq(0.05, 0.95, by=0.05)`:
 
 ```
 ggplot(bike_share_daily, aes(x=temp, y=casual)) +
@@ -49,9 +48,7 @@ ggplot(bike_share_daily, aes(x=temp, y=casual)) +
     theme_bw()
 ```
 
-
-
-Finally, to get a simple linear trend, use the lm method with geom_smooth:
+Finally, to get a simple linear trend, use the `lm` method with `geom_smooth`:
 
 ```
 ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
@@ -74,10 +71,8 @@ require(segmented)
 bike_segment = segmented(lm(cnt~atemp, data=bike_share_daily), ~atemp, psi=0.6)
 bike_segment$psi
 
-
            Initial     Est.     St.Err
 psi1.atemp     0.6 0.585762 0.01352518
-
 
 psi = bike_segment$psi[2]
 ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
@@ -88,13 +83,10 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
     theme_bw()
 ```
 
-
-
 The psi option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a psi of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same.
 
 
 ## Detecting autocorrelation
-
 
 
 
@@ -122,7 +114,6 @@ india_natl_holidays = c("Jan 26, 2014", "Apr 13, 2014", "Aug 15, 2014",
 india_natl_holidays = as.Date(india_natl_holidays, format="%b %d, %Y")
 str(india_natl_holidays)
 
-
 Date[1:5], format: "2014-01-26" "2014-04-13" "2014-08-15" "2014-10-02" "2014-12-25"
 ```
 
@@ -133,7 +124,6 @@ birthdays = c("20000101", "19991201", "19760704", "20140314")
 ymd(birthdays)
 
 "2000-01-01 UTC" "1999-12-01 UTC" "1976-07-04 UTC" "2014-03-14 UTC"
-
 
 age = ymd(today()) - ymd(birthdays)
 round(age/eyears(1), 1)
@@ -152,9 +142,6 @@ The basic thing to remember is that even when you don’t have a real day value 
 It’s useful to have a cheat-sheet of the major date and time formats; you can get a complete list with ?strptime but the major ones are as follows:
 
 
-
-```
- 
 Major date formats
 Date step
 Symbol
@@ -194,12 +181,7 @@ Sunday start (USA), Monday start (UK)
 Day of the year
 %j
 Decimal day of the year (1-366)
-```
 
-SECOND TABLE HERE
-
-
-```
 
 Major time formats
 Time step
@@ -240,7 +222,7 @@ Offset from GMT
 
 Time zone
 %Z
-```
+
 
 ## Calculate a mean or correlation in circular time (clock time)
 
@@ -252,7 +234,6 @@ wake_time = c(7.0, 7.5, 6.5, 6.25, 7.0, 7.25, 7.25)
 sleep_time = c(23.5, 0.5, 23.75, 0.25, 23.25, 23.5, 0.75)
 wake_sleep = data.frame(wake_time, sleep_time)
 circadian.mean(wake_sleep$sleep_time)
-
 
 23.92808
 
@@ -314,7 +295,8 @@ monthplot(UK_births_ts, main="Monthly Patterns in UK Births (2003-2012)",
 
 The forecast package contains another useful plot function that shows each year’s trend as a separate line, allowing you to discern whether there’s a seasonal or monthly effect at a glance:
 
-```seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)", 
+```
+seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)", 
   col=rainbow(10), year.labels=TRUE, year.labels.left=TRUE, cex=0.7, 
   cex.axis=0.8)
 ```
@@ -335,10 +317,11 @@ patient_days = c(985, 778, 1010, 834, 750, 729, 1002, 639, 985, 578, 976, 540,
 
 The qcc function takes care of everything:
 
-```infection_control = qcc(infections, sizes=patient_days, type="u",
+```
+infection_control = qcc(infections, sizes=patient_days, type="u",
   labels=month.abb[c(1:12, 1:12, 1:1)], axes.las=2, xlab="Month", ylab="", 
-    title="Hospital Acquired Infections Rate\nu-chart for Jan 2012 - Jan 2014")```
-
+  title="Hospital Acquired Infections Rate\nu-chart for Jan 2012 - Jan 2014")
+```
 
 
 ## Identifying possible breakpoints in a time series
@@ -356,7 +339,6 @@ us_co2_ts = ts(us_co2[,2], freq=12, start=c(2001,2))
 strucchange will pick the optimal number of breakpoints as determined by BIC, which can then be plotted over the time series as follows:
 
 ```
-
 breakpoints(us_co2_ts ~ 1)
 
      Optimal 2-segment partition:
@@ -367,13 +349,11 @@ Breakpoints at observation number:
 Corresponding to breakdates:
 2009(1)
 
-```
 plot(us_co2_ts, main=expression(paste("Breakpoint in Monthly US"
   ~CO[2]~Emissions)), ylab="Million Metric Tons", col="darkblue", lwd=1.5)
 lines(breakpoints(us_co2_ts ~ 1), col="darkgreen")
 text(2008.8, 555, "Jan 2009", cex=0.75, col="darkgreen", pos=4, font=3)
 ```
-
 
 
 ## Decomposing time series into components
@@ -430,7 +410,7 @@ plot(sun_spec, xlim=c(0,1))
 
 You can take the inverse of the frequency peak’s value to get a sense for cycle timings. In this data, we can see the highest peak is at about 0.1, suggesting a ~10 year cycle (1/0.1=10).
 
-You can also extract the $\textdollar$freq and $\textdollar$spec values from the spectrum object into a data frame as x and y, respectively, if you want to create a pretty plot.
+You can also extract the `$freq` and `$spec` values from the spectrum object into a data frame as x and y, respectively, if you want to create a pretty plot with ggplot.
 
 ## Fourier transforms, wavelets, and other decomposition
 
