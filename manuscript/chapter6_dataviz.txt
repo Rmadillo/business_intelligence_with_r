@@ -160,7 +160,7 @@ Probably the hardest part of making simple maps in R can just be getting set up.
 
 Since there are different ways to (simply) do mapping in R, I've placed the package loading within the steps below instead of here, so you can see which package is needed for which step.
 
-## Point maps
+## Basic point maps
 
 Creating a map with point-location data plotted on it is deceptively simple with the maps package. To plot this packages example data of ground level ozone over states and counties in southern New England:
 
@@ -229,9 +229,25 @@ As you can see from the first example, for a simple point map all you need is lo
 
 But both of these approaches assume that the map boundaries and scale you need are available in the package(s) you're using, of course. If you understand the geographic projection problem—how to fit a curved surface to a flat plot—you'll be able to navigate the creation of maps in other spatial packages in ways that ensure the points and the real world line up correctly. If not... you either have to learn a variety of sometimes-contradictory packages in R and their various approaches as well as how they work together, or (the better option) you can just use a tool better suited to spatial analyses.
 
-### Ozone pollution in the EU
+### Chloropleth mapping with the American Community Survey
 
-It says a lot about mapping in R that what we'll explore here is one of the simplest ways to get updated spatial boundaries into R. Using a boundary shapefile from EuroGeographics, and having looked at the metadata first to determine its projection, we can create a map of modern European boundaries using the maptools package's shapefile translation functions:
+If you're fortunate enough to need to map American Community Survey (ACS) data, `choroplethr` connects directly to it via the `acs` package. You'll need to acquire a key for the ACS API (http://www.census.gov/data/developers/about/terms-of-service.html) before you begin, but that key will be emailed to you within a few minutes of requesting it. And then you can make one-line maps directly from the ACS tables:
+
+```
+require(acs)
+api.key.install("YOUR KEY HERE")
+require(choroplethr)
+require(choroplethrMaps)
+choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
+```
+
+![chloropleth acs](/images/0815OS_04_15.png)
+
+If you don't know which tables you need, the US Census provides more information here: http://factfinder2.census.gov/faces/affhelp/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS
+
+### Example: Ozone pollution in the EU
+
+It says a lot about mapping in R that what we'll explore here is one of the simplest ways to get updated spatial boundaries into R. Using a boundary shapefile from EuroGeographics, and having looked at the metadata first to determine its projection, we can create a map of modern European boundaries using the `maptools` package's shapefile translation functions:
 
 ```
 download.file("http://epp.eurostat.ec.europa.eu/cache/GISCO
@@ -244,6 +260,8 @@ plot(worldmap2014, xlim=c(7,16), ylim=c(35,60), col="gray60")
 box(col="gray30")
  # © EuroGeographics for the administrative boundaries
 ```
+
+![euro map](/images/0815OS_04_12.png)
 
 We plotted ground level ozone from the maps example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to download the data (http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this chapter's data files. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
 
@@ -282,6 +300,8 @@ text(eu_o3$longitude, eu_o3$latitude, round(eu_o3$statistic_value,0), cex=0.5,
   col="gray20")
 ```
 
+![euro messy map](/images/0815OS_04_13.png)
+
 Too much data! Turning the values into a color scale takes a little more effort, but allows us to see the data:
 
 ```
@@ -299,21 +319,9 @@ legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8,
   border="gray60")
 ```
 
-## Mapping with the American Community Survey
+![euro point map](/images/0815OS_04_14.png)
 
-If you're fortunate enough to need to map American Community Survey (ACS) data, choroplethr connects directly to it via the acs package. You'll need to acquire a key for the ACS API (http://www.census.gov/data/developers/about/terms-of-service.html) before you begin, but that key will be emailed to you within a few minutes of requesting it. And then you can make one-line maps directly from the ACS tables:
-
-```
-require(acs)
-api.key.install("YOUR KEY HERE")
-require(choroplethr)
-require(choroplethrMaps)
-choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
-```
-
-If you don't know which tables you need, the US Census provides more information here: http://factfinder2.census.gov/faces/affhelp/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS
-
-Again, it's important to remember that mapping in R is relatively easy if  the map boundaries and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
+Again, it's important to remember that mapping in R is relatively easy *if* the map boundaries and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
 
 Our recommendation: don't use R for mapping unless you have to. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's spatial.ly blog (http://spatial.ly/).
 
