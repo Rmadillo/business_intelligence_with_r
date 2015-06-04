@@ -27,59 +27,63 @@ If you were to poll data scientists on the "Three Most Important Steps in Any An
 
 The recipes below are aimed at giving you a quick visual summary of the data, not to produce final plots—and so they're rough and use functions that can be difficult to modify. We'll see recipes for production plots later in this chapter and throughout the book, but we often just need to see the data before doing anything else.
 
-The ggpairs function in the GGally package has a relatively slow but visually wonderful way to plot your dataset, so load that library before continuing.
+The `ggpairs` function in the `GGally` package has a relatively slow but visually wonderful way to plot your dataset, so load that library before continuing.
 
 ```
 require(GGally)
 ```
 
-GGally is built over ggplot2 (which we'll use often in this book), and its syntax works in more or less the same manner as qplot. You can create the summary plot of a subset of the bike share data for an at-a-glance overview:
+GGally is built over `ggplot2` (which we'll use often in this book), and its syntax works in more or less the same manner as `qplot`. You can create the summary plot of a subset of the bike share data for an at-a-glance overview:
 
 ```
 ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7), 
   title="Daily Bike Sharing Data", axisLabels="show", color="season")
 ```
+![ggpairs](/images/Ch4_01.png)
 
-It’s helpful to use a non-parametric correlation method if you don’t know a priori whether the quantitative variables are linearly related in their raw forms. Unfortunately, ggpairs doesn’t yet provide this functionality, so know that for continuous pairs of variables that don’t show a linear point cloud, the correlation coefficient in this graph will be larger than it should be.
+It’s helpful to use a non-parametric correlation method if you don’t know a priori whether the quantitative variables are linearly related in their raw forms. Unfortunately, `ggpairs` doesn’t yet provide this functionality, so know that for continuous pairs of variables that don’t show a linear point cloud, the correlation coefficient in this graph will be *larger than it should be*.
 
-GGally is still in active development, so currently it's pretty difficult to customize the ggpairs plot, and it may rarely be useful to anyone other than you. Even then, it's a great way to get a sense of the data at a glance. I use this function with almost any dataset I work with.
+`GGally` is still in active development, so currently it's pretty difficult to customize the `ggpairs` plot, and it may rarely be useful to anyone other than you. Even then, it's a great way to get a sense of the data at a glance. I use this function with almost any dataset I work with.
 
 ## Create histograms of all numeric variables in one plot
 
-Sometimes you just want to see histograms, but coding and laying out a bunch of them in a grid is more work than it needs to be. The psych package's multi.hist function can do this in a single line. Note that if you specify variables that aren't numeric, it will throw an error.
+Sometimes you just want to see histograms, but coding and laying out a bunch of them in a grid is more work than it needs to be. The `psych` package's `multi.hist` function can do this in a single line. Note that if you specify variables that aren't numeric, it will throw an error.
 
 ```
 require(psych)
 multi.hist(bike_share_daily[,sapply(bike_share_daily, is.numeric)])
 ```
+![multi.hist](/images/Ch4_02.png)
 
 ## A better "pairs" plot
 
-The psych package also has a modification of the graphics package's pairs function that's more useful out of the box. As mentioned above, until you have evidence that your paired variables are indeed linear in raw form, you should modify the default calculation option to method="spearman" for continuous data or method="kendall" for ordinal data or continuous data in which you have some known outliers:
+The `psych` package also has a modification of the built-in `graphics` package's `pairs` function that's more useful out of the box. As mentioned above, until you have evidence that your paired variables are indeed linear in raw form, you should modify the default calculation option to `method="spearman"` for continuous data or `method="kendall"` for ordinal data or continuous data in which you have some known outliers:
 
 ```
 pairs.panels(bike_share_daily[,sapply(bike_share_daily, is.numeric)], 
   ellipses=FALSE, pch=".", las=2, cex.axis=0.7, method="kendall")
 ```
+![pairs.panels](/images/Ch4_03.png)
 
 ## Mosaic plots—"Scatterplots" for categorical data
 
-Once you've loaded the vcd package, the pairs function can create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object.
+Once you've loaded the `vcd` package, the `pairs` function can also create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object.
 
 ```
 require(vcd)
 pairs(table(bike_share_daily[c(3, 9)])) # not shown
 ```
 
-The dataset we've used so far in this recipe isn't a great one for mosaic plots since most of those variables are time-related, so a better view of the outcome of plotting categorical pairs can be seen with the built-in Titanic dataset, using the highlighting option to make the categories more clearly distinct at a glance:
+The dataset we've used so far in this recipe isn't a great one for mosaic plots since most of those variables are time-related, so a better view of the outcome of plotting categorical pairs can be seen with the built-in `Titanic` dataset (`?Titanic`), using the highlighting option to make the categories more clearly distinct at a glance:
 
 ```
 pairs(Titanic, highlighting=2)
 ```
+![mosaic pairs](/images/Ch4_04.png)
 
 ## Obtaining summary statistics
 
-Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the psych package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
+Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the `psych` package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
 
 It’s important to remember that each type of data can reasonably use only certain kinds of summary statistics. The following table should help when, for example, a decision maker asks you to calculate the mean of an ordinal variable (such as a Likert scale)—just show them this table so you don’t have to go on record as the one who said it was a stupid idea:
 
@@ -94,8 +98,8 @@ Continuous
 Statistic / Parameter
 Nominal
 Ordinal
-Interval/Ratio\text{*
-Interval/Ratio\text{*
+Interval/Ratio\*
+Interval/Ratio\*
 data set size (n)
 Y
 Y
@@ -154,28 +158,28 @@ Y
 mean
 N
 N
-Y\text{**
+Y\**
 Y
 variance
 N
 N
-Y\text{**
+Y\**
 Y
 standard deviation
 N
 N
-Y\text{**
+Y\**
 Y
 coefficient of variation
 N
 N
-Y\text{**
+Y\**
 Y
 
-Table note 1: Ratio variables have a "true zero" while interval variables do not (e.g., temperature in °C).
-Table note 1:  Discrete variables can have means/variances based on non-normal probability distributions (e.g., binomial for proportions, Poisson for counts or rates, etc.), but this should not be confused with an arithmetic mean or variance.
+\* Ratio variables have a "true zero" while interval variables do not (e.g., temperature in °C).
+\** Discrete variables can have means/variances based on non-normal probability distributions (e.g., binomial for proportions, Poisson for counts or rates, etc.), but this should not be confused with an arithmetic mean or variance.
 
-Load the psych package and the daily bike share data if they're not already loaded from the previous recipe.
+Load the `psych` package and the daily bike share data if they're not already loaded from the previous recipe.
 
 ```
 require(psych)
@@ -187,8 +191,8 @@ For numeric variables, the describe and describeBy functions do all the work for
 ```
 describe(bike_share_daily[10:16]) # not shown
 describeBy(bike_share_daily[10:16], bike_share_daily$holiday)
-
-
+```
+```
 group: No
            vars   n    mean      sd median trimmed     mad min  max range skew kurtosis    se
 casual        1 710  841.77  680.53  711.5  739.69  584.14   2 3410  3408 1.27     1.34 25.54
@@ -200,9 +204,10 @@ casual        1 21 1064.71  860.05    874  965.88  658.27 117 3065  2948 0.88   
 registered    2 21 2670.29 1492.86   2549 2604.47 1599.73 573 5172  4599 0.27    -1.26 325.77
 ```
 
-The table and prop.table functions from the base package provide the simplest summary stats for categorical and ordinal variables:
+The `table` and `prop.table` functions from the `base` package provide the simplest summary stats for categorical and ordinal variables:
 
-```table(bike_share_daily$holiday)
+```
+table(bike_share_daily$holiday)
 No Yes
 710  21
 
@@ -222,7 +227,6 @@ describeBy(bike_share_daily[14:16], bike_share_daily$temp > 0.5) # not shown
 describeBy(bike_share_daily$casual, bike_share_daily$windspeed > 
   mean(bike_share_daily$windspeed))
 
-
 group: FALSE
   vars   n   mean     sd median trimmed    mad min  max range skew kurtosis    se
 1    1 409 914.61 673.18    773  827.61 598.97   9 3410  3401 1.11     0.96 33.29
@@ -232,7 +236,7 @@ group: TRUE
 1    1 322 763.8 695.26  613.5  642.12 579.7   2 3283  3281  1.5     1.94 38.75
 ```
 
-You can create two- , three-, or n-way tables by adding variables to the table call, and use addmargins to get marginal sums:
+You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums:
 
 ```
 table(bike_share_daily[c(3,6:7)]) # not shown
@@ -247,12 +251,11 @@ season             1           2           3
   Fall   0.140902873 0.088919289 0.013679891
 ```
 
-Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can create any n-way table as a data frame using the plyr package's count function:
+Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can create any *n*-way table as a data frame using the `plyr` package's `count` function:
 
 ```
 require(plyr)
 count(bike_share_daily[c(3,6:7)])
-
 
     season holiday weekday freq
 1  Winter      No       0   27
@@ -264,35 +267,17 @@ count(bike_share_daily[c(3,6:7)])
 
 ## Inference on summary statistics: confidence intervals
 
-When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are base installation functions for most of the ones we typically need:
+When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are `base` installation functions for most of the ones we typically need:
 
-Statistic
-Data type
-Distribution
-Function
-Median
-Any
-None
-wilcox.test(x, conf.int=TRUE)$\textdollar$conf.int
-Mean
-Continuous
-Normal, t, “normal enough”
-t.test(x)$\textdollar$conf.int
-Proportion
-Percent
-Binomial
-binom.test(x, n)$\textdollar$conf.int
-Count
-Count
-Poisson
-poisson.test(x)$\textdollar$conf.int
-Rate
-Count/n
-Poisson
-poisson.test(x, n)$\textdollar$conf.int
+| Statistic | Data type | Distribution | Function |
+| --------- | --------- | ------------ | -------- |
+| Median | Any | None | `wilcox.test(x, conf.int=TRUE)$conf.int` |
+| Mean| Continuous | Normal, t, “normal enough” | `t.test(x)$conf.int` |
+| Proportion | Percentage | Binomial | `binom.test(x, n)$conf.int` |
+| Count | Count | Poisson | `poisson.test(x)$conf.int` |
+| Rate | Count/*n* | Poisson | `poisson.test(x, n)$conf.int` |
 
-
-Sometimes there isn’t a base function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the boot package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the CO2 dataset that comes with R for simplicity’s sake:
+Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the CO2 dataset that comes with R for simplicity’s sake:
 
 ```
 require(boot)
@@ -301,12 +286,11 @@ sd_boot = boot(CO2$conc, sd_boot_function, R=10000)
 sd(CO2$conc)
 boot.ci(sd_boot, type="bca")$bca[4:5]
 
-
 295.9241
 258.8950 333.7344
 ```
 
-The BCa method is generally the appropriate calculation unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use type="norm", i.e., use the normal approximation for very small samples that you expect are “normal enough.”  
+The BCa method is generally the appropriate calculation unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use `type="norm"`, i.e., use the normal approximation for very small samples that you expect are “normal enough,” realizing that due to sampling error you could be estimating intervals that are wildly incorrect.   
 
 We can also bootstrap confidence intervals for any summary statistic. For example, to get the bootstrapped 75th percentile, run the following:
 
@@ -316,17 +300,17 @@ q75_boot = boot(CO2$conc, q75_function, R=10000)
 quantile(CO2$conc,0.75)
 boot.ci(q75_boot, type="bca")$bca[4:5]
 
-
 675
 500 675
-
 ```
 
 ## Inference on summary statistics: tolerance intervals
 
-While confidence limits tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% confidence interval) and how long you can expect 95% of those trips will take. While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. Essentially, a good way to remember the difference is that as the sample size approaches the population size, the confidence interval will approach zero, while a tolerance interval will approach the population percentiles.
+While confidence limits tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% *confidence* interval) and how long you can expect 95% of those trips will take (using a 95% *tolerance* interval). While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. 
 
-The tolerance package contains functions for estimating tolerance intervals for distributions typically used in most engineering or industrial processes. As an example, assume you have data on commuting time for 40 randomly chosen workdays. The distribution is oddly-shaped, so we’ll use non-parametric tolerance intervals to estimate (at a 95% confidence level) the number of minutes that 75% of commutes will take:
+Essentially, a good way to remember the difference is that as the sample size approaches the population size, the confidence interval will approach zero, while a tolerance interval will approach the population percentiles.
+
+The `tolerance` package contains functions for estimating tolerance intervals for distributions typically used in most engineering or industrial processes. As an example, assume you have data on commuting time for 40 randomly chosen workdays. The distribution is oddly-shaped, so we’ll use non-parametric tolerance intervals to estimate (at a 95% confidence level) the number of minutes that 75% of commutes will take:
 
 ```
 require(tolerance)
@@ -336,18 +320,16 @@ commute_time = c(68, 42, 40, 69, 46, 37, 68, 68, 69, 38, 51, 36, 50, 37, 41,
 commute_time_npti = nptol.int(commute_time, alpha=0.05, P=0.75, side=2)
 commute_time_npti
 
-
   alpha    P 2-sided.lower 2-sided.upper
 1  0.05 0.75            37            68
 ```
-
 
 You can also obtain a graphical summary with the plottout function, which shows a control chart on the left and a histogram on the right:
 
 ```
 plottol(commute_time_npti, commute_time, side="two", plot.type="both")
 ```
-
+![tolerance interval plot](/images/0815OS_02_05.png)
 
 
 If you plotted both tolerance graphs (plot.type="both"), you'll need to return par to normal manually: 
@@ -404,7 +386,7 @@ require(ggplot2)
 require(scales)
 ```
 
-For quantitative data, business users are used to seeing histograms; quants prefer density plots. Here's how to do both, separately as well as together.
+For quantitative data, business users are used to seeing histograms; quants prefer density plots. Here's how to do both, separately...  
 
 ```
 ggplot(bike_share_daily, aes(casual)) +
@@ -416,6 +398,9 @@ ggplot(bike_share_daily, aes(casual)) +
     geom_histogram(col="blue", fill="blue", alpha=0.3) +
     xlab("Casual Use") +
     theme_bw()
+```
+
+![density and histogram](/images/0815OS_02_06a.png)
 
 ggplot(bike_share_daily, aes(casual)) +
     ylab("density and count") +
@@ -426,9 +411,15 @@ ggplot(bike_share_daily, aes(casual)) +
     theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
 ```
 
+...as well as together:
 
+![density and histogram](/images/0815OS_02_06b.png)
 
-When you have categorical data, bar or dot plots serve the same purpose:
+When asked, I’ve usually explained density plots as “more objectives histograms,” which, while not quite true, is accurate enough for business users. If you do need to explain things, see `?density` for more details on the methods and useful additional references; `?stat_density` provides an overview of calculation methods used in `ggplot2`, while `?geom_density` provides information on graphical options. 
+
+That pattern carries over to many `ggplot2` options—find details of the method by replacing the `x` with the stat or geom in `?stat_x` and `?geom_x` for calculation and plotting information, respectively.
+
+When you have categorical data, bar or dot plots serve the same purpose:  
 
 ```
 ggplot(bike_share_daily, aes(weathersit)) +
@@ -443,6 +434,12 @@ ggplot(bike_share_daily, aes(x=weathersit, y=..count.. )) +
     scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", "Cloudy/Rainy", 
     "Stormy")) +
     theme_bw()
+```
+
+![bar and dot](/images/0815OS_02_07a.png)
+
+You can also use `coord_flip()` to move from a normal bar chart to a horizontal one:
+```
 ggplot(bike_share_daily, aes(weathersit)) +
     geom_bar(col="blue", fill="blue", alpha=0.3) +
     xlab("") +
@@ -452,7 +449,8 @@ ggplot(bike_share_daily, aes(weathersit)) +
     theme_bw()
 ```
 
-When asked, I’ve usually explained density plots as “more objectives histograms,” which, while not quite true, is accurate enough for business users. If you do need to explain things, see ?density for more details on the methods and useful additional references; ?stat\_density provides an overview of calculation methods used in ggplot2, while ?geom_density provides information on graphical options. That pattern carries over to many ggplot2 options—stat_ and geom_ for calculation and plotting information, respectively.
+![horizontal bar](/images/0815OS_02_07b.png)
+
 
 ## Plotting multiple univariate distributions with faceting
 
@@ -472,7 +470,7 @@ ggplot(bike_share_daily, aes(casual, fill=season)) +
           axis.title.x = element_text(vjust=-0.5))
 ```
 
-
+![ggplot multi.hist](/images/0815OS_02_08.png)
 
 The same can be done for categorical distributions, too, of course:
 
@@ -487,6 +485,8 @@ ggplot(bike_share_daily, aes(weathersit, fill=season)) +
     facet_wrap(~season, ncol=1) +
     theme_light()
 ```
+
+![ggplot multi.bar](/images/0815OS_02_09.png)
 
 ## What about pie charts?
 
@@ -518,14 +518,19 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
     legend.position="top")
 ```
 
-The vcd package has a nice implementation of mosaic plots for categorical data called, as you might expect, mosaic:
+![double density plot](/images/0815OS_02_10.png)
+
+
+The `vcd` package has a nice implementation of mosaic plots for categorical data called, as you might expect, `mosaic`:
 
 ```
 mosaic(~ weathersit + season, data=bike_share_daily, shade=T, 
   legend=F, labeling_args = list(set_varnames = c(season = "Season", 
   weathersit = "Primary Weather Pattern"), set_labels = list(weathersit = 
   c("Clear", "Cloudy/Rainy",  "Stormy"))))
-  ```
+```
+
+![mosaic](/images/0815OS_02_11.png)
 
 The first plot is simply a plot of the distributions of each group, i.e., a set of overplotted density histograms.
 If you have categorical data, you'll probably want to use mosaic plots to visualize differences between groups; if you're not already familiar with them, think of mosaics plots as contingency tables made with shapes—the larger the shape, the higher the cell count.
@@ -557,7 +562,7 @@ Fall
 4
 10
 
-## Multivariate bivariate comparisons with faceting
+## Multiple bivariate comparisons with faceting
 
 As with univariate plots, we can facet on another variable for comparison’s sake; for example, if we take the bike share data shown above and facet by season:
 
@@ -584,6 +589,8 @@ mathiness = likert(mass[2:15])
 plot(mathiness)
 ```
 
+![basic likert plot](/images/0815OS_02_13.png)
+
 There's a known bug in likert where you have to load the reshape package manually (not reshape2) to make the grouping option work.
 
 ```
@@ -591,6 +598,8 @@ require(reshape)
 gender_math = likert(items=mass[,c(4,6,15), drop=FALSE], grouping=mass$Gender)
 plot(gender_math, include.histogram=TRUE)
 ```
+
+![grouped likert plot](/images/0815OS_02_14.png)
 
 Because the reshape package masks functions in reshape2 and dplyr, you should detach likert and reshape when you're done plotting.
 
@@ -607,7 +616,7 @@ In this recipe, we'll go through all the major effect size metrics for differenc
 
 Effect size measures that estimate a population value (such as a difference in means or a variance ratio) should be accompanied by an appropriate confidence interval whenever possible. This is usually best done by bootstrap unless you can meet distributional assumptions, although at larger sample sizes the differences will be trivial. We'll look at several ways to obtains CIs in this recipe.
 
-We'll continue to use the bike share data, but we'll cast and filter some of it for the data for this recipe. We'll also use bootES, orddom, and asympTest to acquire confidence intervals for some of the contrasts we'll consider.
+We'll continue to use the bike share data, but we'll cast and filter some of it for the data for this recipe. We'll also use `bootES`, `orddom`, and `asympTest` to acquire confidence intervals for some of the contrasts we'll consider.
 
 ```
 require(bootES)
@@ -630,7 +639,6 @@ For a difference between two proportions, we'll look at the effect of it being a
 workday_diff = prop.test(casual_workingday_use$Yes, casual_workingday_use$sum)
 round(workday_diff$estimate[1] - workday_diff$estimate[2], 2)
 
-
 -0.02
 
 round(workday_diff$conf.int, 2)
@@ -638,7 +646,7 @@ round(workday_diff$conf.int, 2)
 -0.02 -0.01
 ```
 
-When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average (or median) casual bike use between Spring and Fall non-working days, we can use t.test (or wilcox.test):
+When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average (or median) casual bike use between Spring and Fall non-working days, we can use `t.test` (or `wilcox.test`):
 
 ```
 casual_notworkingday_mean = t.test(casual~season, data=casual_notworkingday)
@@ -649,12 +657,11 @@ abs(casual_notworkingday_mean$estimate[1] -
 350.6546 922.5516
 ```
 
-Because the distribution isn't really normal, getting bootstrapped CIs on the difference of means is probably a better option in this case. Using the bootES package:
+Because the distribution isn't really normal, getting bootstrapped CIs on the difference of means is probably a better option in this case. Using the `bootES` package:
 
 ```
 bootES(casual_notworkingday, data.col="casual", group.col="season", 
   contrast=c("Fall", "Spring"), effect.type="unstandardized")
-
 
 User-specified lambdas: (Fall, Spring)
 Scaled lambdas: (-1, 1)
@@ -663,22 +670,21 @@ Stat         CI (Low)     CI (High)    bias        SE
 636.603      332.203      908.222      3.116       149.380     
 ```
 
-
-To look at a difference of medians (with a CI), use wilcox.test:
+To look at a difference of medians (with a CI), use `wilcox.test`:
 
 ```
 casual_notworkingday_median = wilcox.test(casual~season, 
   data=casual_notworkingday, conf.int=TRUE)
 casual_notworkingday_median$estimate; casual_notworkingday_median$conf.int
 
-
 684.0001
 399 997
 ```
 
-While not always easily explained to business users, standardized effect sizes are often very useful for analysts. When comparing means or medians, Hedge's g can be used for most cases (as it is an improvement on Cohen's d, its more famous predecessor), while a robust version of Cohen's d can be acquired by setting the effect.type option to "akp.robust.d".
+While not always easily explained to business users, standardized effect sizes are often very useful for analysts. When comparing means or medians, Hedge's g can be used for most cases (as it is an improvement on Cohen's d, its more famous predecessor), while a robust version of Cohen's d can be acquired by setting the `effect.type` option to `"akp.robust.d"`.
 
-```bootES(casual_notworkingday, data.col="casual", group.col="season", 
+```
+bootES(casual_notworkingday, data.col="casual", group.col="season", 
   contrast=c("Fall", "Spring"), effect.type="hedges.g")
 
 User-specified lambdas: (Fall, Spring)
@@ -686,7 +692,6 @@ Scaled lambdas: (-1, 1)
 95.00% bca Confidence Interval, 2000 replicates
 Stat        CI (Low)    CI (High)   bias        SE          
 0.825       0.374       1.252       0.004       0.219      
-
 
 bootES(casual_notworkingday, data.col="casual", group.col="season", 
   contrast=c("Fall", "Spring"), effect.type="akp.robust.d")
@@ -698,10 +703,10 @@ Stat        CI (Low)    CI (High)   bias        SE
 0.866       0.433       1.406       0.039       0.250      
 ```
 
+When you don't want to make any distributional assumptions, Cliff's delta and Vargha-Delaney's A (which is the same as the AUC statistic applied to a two-group contrast) are the best options. Both can be obtained from the `orddom` package, with CIs obtained via BCa by default:
 
-When you don't want to make any distributional assumptions, Cliff's delta and Vargha-Delaney's A (which is the same as the AUC statistic applied to a two-group contrast) are the best options. Both can be obtained from the orddom package, with CIs obtained via BCa by default:
-
-```dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
+```
+dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
   theta.es="dc")$theta
 
        dc
@@ -714,10 +719,8 @@ dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
 0.2493734
 0.6265664
 
-
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
   theta.es="Ac")$theta
-  
 
        Ac
 0.7277569
@@ -730,14 +733,14 @@ dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
 0.8132832
 ```
 
-This package also has a neat feature in that it will plot the results and summary of a Cliff's delta assessment with the delta_gr function:
+This package also has a neat feature in that it will plot the results and summary of a Cliff's delta assessment with the `delta_gr` function:
 
 ```
 delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual, 
   x.name="Fall", y.name="Spring")
 ```
 
-
+![delta gr ES plot](/images/0815OS_02_15.png)
 
 We also often want to know whether two groups differ in terms of their variances, i.e., is one group more variable than another? If both groups are normally distributed, var.test is appropriate to obtain the variance ratio:
 
@@ -752,7 +755,7 @@ var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$conf.int
 0.6498105 1.8817627
 ```
 
-More typically, our groups are not normally distributed, and when that's the case, the var.test will give misleading results because it is very sensitive to departures from normality. The asymp.test function in the asympTest package provides a suitable alternative:
+More typically, our groups are not normally distributed, and when that's the case, the `var.test` will give misleading results because it is very sensitive to departures from normality. The `asymp.test` function in the `asympTest` package provides a suitable alternative:
 
 ```
 asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
@@ -773,11 +776,11 @@ Effect sizes provide the results that business users really want to know—not j
 
 The rapid increase in computing power in recent years has put previously-intractable analytics tools at anyone's fingertips. Markov-chain Monte Carlo (MCMC) is one of the breakout stars of this revolution, which provides the mathematical basis for the resurgence of interest in Bayesian methods.
 
-Bayesian methods provide the answers to the questions we actually have, as opposed the questions classical statistics actually answer (see the Preface for more thoughts on this issue YES OR NO?). This book probably would have been written primarily from that background had the R implementations of MCMC been more developed—but since they aren't, at this time we'll just explore some basic Bayesian approaches to effect size determination.
+Bayesian methods provide the answers to the questions we actually have, as opposed the questions classical statistics actually answer (see the Preface for more thoughts on this issue ***YES OR NO?***). This book probably would have been written primarily from that background had the R implementations of MCMC been more developed—but since they aren't, at this time we'll just explore some basic Bayesian approaches to effect size determination.
 
-You'll need to install JAGS to your system before starting (http://mcmc-jags.sourceforge.net/), and also install the R package rjags to allow R to converse with JAGS.
+You'll need to install JAGS to your system before starting (http://mcmc-jags.sourceforge.net/), and also install the R package `rjags` to allow R to converse with JAGS.
 
-BayesianFirstAid provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and is best installed from Github:
+`BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from Github:
 
 ```
 require(devtools)
@@ -790,7 +793,6 @@ Using the earlier example above for the differences in proportions, we get the s
 workday_diff_bayes = bayes.prop.test(casual_workingday_use$Yes, 
   casual_workingday_use$sum)
 workday_diff_bayes
-
 
     Bayesian First Aid propotion test
 
@@ -805,19 +807,17 @@ Estimated group difference (Group 1 - Group 2):
 The relative frequency of success is larger for Group 1 by a probability
 of <0.001 and larger for Group 2 by a probability of >0.999 .
 
-
-
 plot(workday_diff_bayes)
 ```
 
+![Bayes prop ES](/images/0815OS_02_16.png)
 
-To look at the difference between means or medians, we can use the bayes.t.test function:
+To look at the difference between means of two groups, we can use the `bayes.t.test` function:
 
 ```
 casual_notworkingday_mean_bayes = bayes.t.test(casual~season, 
   data=casual_notworkingday)
 casual_notworkingday_mean_bayes
-
 
     Bayesian estimation supersedes the t test (BEST) - two sample
 
@@ -833,9 +833,10 @@ sd of group Fall: 742 [609, 904]
 The difference of the means is greater than 0 by a probability of >0.999
 and less than 0 by a probability of <0.001
 
-
 plot(casual_notworkingday_mean_bayes)
 ```
+
+![Bayes mean ES](/images/0815OS_02_17.png)
 
 The package allows the use of summary for its output; with it we can see the CIs for each statistic as well as the standardized effect size (d) on this contrast:
 
@@ -856,7 +857,7 @@ x_pred     1891.952 827.714  307.633 3559.847  0.012  0.988
 y_pred     1231.742 781.921 -290.477 2794.578  0.056  0.944
 
 'HDIlo' and 'HDIup' are the limits of a 95\% HDI credible interval.
-'\%<comp' and '\%>comp' are the probabilities of the respective parameter being smaller or larger than 0.
+'%<comp' and '%>comp' are the probabilities of the respective parameter being smaller or larger than 0.
 
   Quantiles
               q2.5%     q25%   median     q75%   q97.5%
@@ -911,7 +912,7 @@ Correlation is one of the oldest and most well-known statistical tools, and for 
 
 As before, every effect size measure should be accompanied by an appropriate confidence interval whenever possible, which is usually best done by bootstrap unless you can meet the method’s assumptions.
 
-Although correlation coefficients are easy to acquire with R’s base installation, confidence intervals are not, so we’ll use the psych package for the non-parametric correlation part of this recipe and boot/bootES for some confidence intervals. We’ll also use a piece of the bike share dataset to illustrate the methods.
+Although correlation coefficients are easy to acquire with R’s base installation, confidence intervals are not, so we’ll use the `psych` package for the non-parametric correlation part of this recipe and `boot`/`bootES` for some confidence intervals. We’ll also use a piece of the bike share dataset to illustrate the methods.
 
 ```
 require(bootES)
@@ -920,17 +921,17 @@ bike_use_atemp = data.frame(bike_share_daily$atemp, bike_share_daily$cnt)
 colnames(bike_use_atemp) = c("air_temp", "count")
 ```
 
-Traditional Pearson’s correlation (r) is easy to acquire:
+Traditional Pearson’s correlation (*r*) is easy to acquire:
 
 ```
 cor(bike_use_atemp$air_temp, bike_use_atemp$count)
 cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)$conf.int
-```
 
 0.6310657
 0.5853376 0.6727918
+```
 
-You can get BCa bootstrap CIs for Pearson’s r by using:
+You can get BCa bootstrap CIs for Pearson’s *r* by using:
 
 ```
 bootES(c(bike_use_atemp$air_temp, bike_use_atemp$count), effect.type="r")
@@ -940,9 +941,10 @@ Stat        CI (Low)    CI (High)   bias        SE
 0.650       0.633       0.667       -0.000      0.009      
 ```
 
-However, it’s pretty clear that this relationship isn’t truly linear if you plot it. Spearman’s and Kendall’s can be acquired from psych’s cor.ci function as follows (use the .emp—empirical—CI values to obtain the percentile confidence interval values, although the differences will be trivial with large sample sizes):
+However, it’s pretty clear that this relationship isn’t truly linear if you plot it. Spearman’s and Kendall’s can be acquired with the `cor.ci` function as follows (use the *x*`.emp`—empirical—CI values to obtain the percentile confidence interval values, although the differences will be trivial with large sample sizes):
 
-```cor.ci(bike_use_atemp, method="spearman", n.iter = 10000, plot=FALSE)
+```
+cor.ci(bike_use_atemp, method="spearman", n.iter = 10000, plot=FALSE)
 
 Coefficients and bootstrapped confidence intervals
          ar_tm count
@@ -952,7 +954,6 @@ count    0.62  1.00
  scale correlations and bootstrapped confidence intervals
             lower.emp lower.norm estimate upper.norm upper.emp p
 ar_tm-count      0.57       0.57     0.62       0.67      0.67 0
-
 
 cor.ci(bike_use_atemp, method="kendall", n.iter = 10000, plot=FALSE)
 
@@ -967,8 +968,9 @@ ar_tm-count      0.39       0.39     0.43       0.47      0.47 0
 
 ```
 
+### Associations between categorical variables
 
-Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore “categorical correlation” with the Aspirin data from the abd package (?Aspirin). The functions we’ll use include the oddsratio function from the epitools package, and the Yule (Yule’s Q) function from psych:
+Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore “categorical correlation” with the `Aspirin` data from the `abd` package (`?Aspirin`). The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
 
 ```
 data(Aspirin, package="abd")
@@ -979,16 +981,14 @@ treatment  estimate     lower    upper
   Aspirin 1.0000000        NA       NA
   Placebo 0.9913098 0.9187395 1.069632
 
-
 Yule(table(Aspirin))
 
 -0.004352794
-
 ```
 
 For categorical data, association coefficients provide the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users. Cohen’s kappa is probably the best tool when you want to compare agreement instead of association (see below).
 
-##nBootstrapping BCa CIs for non-parametric correlation
+### Bootstrapping BCa CIs for non-parametric correlation
 
 If you want to use the boot package to calculate BCa confidence intervals on the Spearman or Kendell correlation coefficients, here’s how to do it for each method:
 
@@ -1006,7 +1006,7 @@ boot.ci(rt_boot, type="bca")$bca[4:5]
 0.3931281 0.4665541
 ```
 
-## Partial correlations
+### Partial correlations
 
 If you have variables you want to control for in a correlation, we can turn again to the psych package. For example, if we wanted to evaluate the correlation between air temperature and bike use while controlling for windspeed, we could do it by creating a correlation matrix with the corr.test function:
 
@@ -1022,18 +1022,19 @@ bk_shr_dly.t-bk_shr_dly.w -0.1807640 -0.1096882 -0.03747266
 bk_shr_dly.c-bk_shr_dly.w -0.2173056 -0.1471101 -0.07540089
 ```
 
-Once we have a matrix (see it with atemp_wind_count$\textdollar$), we can plug it into the partial.r function, specifying that the first two variables of the matrix are the correlation of interest and the third is the variable we wish to control for (the second and third inputs, respectively):
+Once we have a matrix ***(see it with `atemp_wind_count$`)***, we can plug it into the `partial.r` function, specifying that the first two variables of the matrix are the correlation of interest and the third is the variable we wish to control for (the second and third inputs, respectively):
 
-```partial.r(as.matrix(atemp_wind_count$r), c(1:2), 3)
+```
+partial.r(as.matrix(atemp_wind_count$r), c(1:2), 3)
 
                        bike_share_daily.atemp bike_share_daily.cnt
 bike_share_daily.atemp                   1.00                 0.42
 bike_share_daily.cnt                     0.42                 1.00
 ```
 
-## Polychoric and polyserial correlation for ordinal data
+### Polychoric and polyserial correlation for ordinal data
 
-Polychoric (ordinal-ordinal) and polyserial (numeric-ordinal) correlation allows you to perform correlation when some or all of your variables of interest are on an ordinal scale. Again, psych provides the functions we'll use. To illustrate, we'll use the math attitudes survey (mass) data seen earlier in this chapter, converted from ordered factor to numeric for the polychoric function to work:
+Polychoric (ordinal-ordinal) and polyserial (numeric-ordinal) correlation allows you to perform correlation when some or all of your variables of interest are on an ordinal scale. Again, `psych` provides the functions we'll use. To illustrate, we'll use the math attitudes survey (`mass`) data seen earlier in this chapter, converted from ordered factor to numeric for the polychoric function to work:
 
 ```
 data(mass, package="likert")
@@ -1046,7 +1047,7 @@ worry  1.0000000 -0.7731209
 enjoy -0.7731209  1.0000000
 ```
 
-To perform a polyserial correlation, you need to designate the two variables in the function. We'll add a fake variable on each student's pre-college math assessment test score to see whether it relates to their stated enjoyment:
+To perform a polyserial correlation, you need to designate the two variables in the function. We'll add a fake variable representing each student's pre-college math assessment test score to see whether it relates to their stated enjoyment:
 
 ```
 math_score = c(755, 642, 626, 671, 578, 539, 769, 614, 550, 615, 749, 676, 753, 
@@ -1056,7 +1057,7 @@ polyserial(math_score, poly_math$enjoy)
 0.2664201
 ```
 
-\subparagraph{Cohen’s kappa for comparisons of agreement
+### Cohen’s kappa for comparisons of agreement
 
 Ratings on ordinal scales require special treatment, since they aren’t true numbers, and comparisons of agreement makes it even more necessary to choose a statistically-appropriate tool. Cohen’s kappa (cohen.kappa in the psych package) provides a way to compare ordinal ratings, e.g., a doctor’s ratings for a set of patients potentially eligible for care management as compared with the same output from a predictive model:
 
@@ -1091,7 +1092,7 @@ weighted kappa   -0.57  -0.0078  0.56
  Number of subjects = 13
 ```
 
-The agree output value shows the proportion of agreement for each category:
+The `$agree` output value shows the proportion of agreement for each category:
 
 ```
 cohen.kappa(doctor_vs_model)$agree
@@ -1104,7 +1105,7 @@ x1f              no     unsure        yes
 
   ```
   
-## Bayesian correlation
+### Bayesian correlation
 
 We saw the Bayesian approach to difference-based effect size calculations in the previous recipe; here's the approach for correlations:
 
@@ -1115,14 +1116,15 @@ bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
 
     Bayesian First Aid Pearson's Correlation Coefficient Test
 
-data: bike_use_atemp$\textdollar$air_temp and bike_use_atemp$\textdollar$count (n = 731)
+data: bike_use_atemp$\textdollar$air_temp and bike_use_atemp$count (n = 731)
 Estimated correlation:
   0.63
-95\% credible interval:
+95% credible interval:
   0.59 0.68
 The correlation is more than 0 by a probability of >0.999
 and less than 0 by a probability of <0.001
 
-
 plot(atemp_bike_cor_bayes)
 ```
+
+![Bayes cor](/images/0815OS_02_18.png)

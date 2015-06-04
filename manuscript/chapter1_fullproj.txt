@@ -16,23 +16,27 @@ require(dygraphs)
 ```
 
 Load the data from a .csv file:
+
 ```
 vanco = read.table("~/Projects/Training/vanco_weekly_data.csv", sep=",", 
     header=T)
 ```
 
-Convert the ```Date``` factor to a date object
+Convert the `Date` variable from a factor to a date:
+
 ```
 vanco_spc_results$Date = as.Date(vanco_spc_results$Date)
 ```
 
 Run the analysis:
+
 ```
 vanco_spc = qcc(vanco$Weekly_Count, sizes=vanco$Weekly_Census/1000, 
                 labels=vanco$Date, nsigmas=3, type="u", digits=4)
 ```
 
 View the results:
+
 ```
 plot(vanco_spc, ylab="Orders/1000 Patient Days", xlab="Date", title="Vanco 
      Orders Control Chart", digits=4)
@@ -40,6 +44,7 @@ vanco_spc
 ```
 
 Make a publication-quality plot:
+
 ```
 vanco_spc_figure = 
     ggplot(vanco_spc_results, aes(Date, Rate)) +
@@ -58,6 +63,7 @@ dev.off()
 ```
 
 Create an interactive plot:
+
 ```
 # Create an R time series object
 discharges_ts = ts(discharges$DISCHARGES, start=c(2008,10), frequency=12)
@@ -77,6 +83,7 @@ discharges_prediction_widget
 ```
 
 Save the widget to the working directory:
+
 ```
 saveWidget(discharges_prediction_widget, "discharges_predictions.html")
 ```

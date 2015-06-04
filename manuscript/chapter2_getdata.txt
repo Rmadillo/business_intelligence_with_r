@@ -17,7 +17,7 @@ There are a wide variety of packages and functions to import data, but a few pro
 
 ### Reading flat files from disk or the web
 
-To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you'll likely save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as \\t for tab, | for pipe, and so on.
+To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you'll likely save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `\t` for tab, `|` for pipe, and so on.
 
 We saw reading in a .csv file in the first chapter:
 
@@ -38,14 +38,14 @@ To import Excel files, `readxl`, `gdata`, or `XLConnect` provide pretty much any
 bob = read_xl(
 ```
 
-The next example uses gdata: it imports the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the header, skip, and col.name options to ignore their header and create our own:
+The next example uses `gdata`: it imports the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
 ```
 pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls", sheet="Layout-Format", nrows=22, header=FALSE, skip=1, col.names=c("Variables", "Size", "Type", "Description"), stringsAsFactors=FALSE)
 ```
 
 The `sheet=` option can use the sheet's name or its position, e.g., using `sheet=6` in the above example retrieves the same data.
 
-The raw data we read in from a csv and the metadata we read in from an Excel file can be merged to create the header names using the colnames function:
+The raw data we read in from a csv and the metadata we read in from an Excel file can be merged to create the header names using the `colnames` function:
 
 ```
 colnames(pses2011) = pses2011_header$Variable
@@ -61,7 +61,7 @@ my_data_frame = read.table("clipboard", sep="\t", header=TRUE)
 
 ### Another way to to read SAS files
 
-If you have a SAS license, Hmisc provides another means to import SAS files with more options than the sas7bdat package:
+If you have a SAS license, `Hmisc` provides another means to import SAS files with more options than the `sas7bdat` package:
 
 ```
 sas.get(libraryName="directoryofsasfile", member="sasfile", sasprog="full/path/to/sas.exe")
@@ -82,7 +82,7 @@ header=TRUE, sep=",")
 
 ### Reading big files with data.table
 
-The data.table package is extremely useful—and much, much faster than read.table—for larger files.
+The `data.table` package is extremely useful—and much, much faster than read.table—for larger files.
 
 ```
 require(data.table)
@@ -95,7 +95,7 @@ pses2011 = data.table("pses2011")
 
 ### Unzipping files into R
 
-Larger files are often zipped up to save space and bandwidth. Setting up a temporary file and then using the unz function inside the usual read.table takes care of bringing it into R:
+Larger files are often zipped up to save space and bandwidth. Setting up a temporary file and then using the `unz` function inside the usual `read.table` takes care of bringing it into R:
 
 [SIMPLIFY THIS]
 
@@ -119,7 +119,7 @@ bike_share_readme = readLines(unz(tf, "Readme.txt"))
 file.remove(tf)
 ```
 
-Note: although there is an untar function, it is no longer necessary—gzipped files can be read directly into R with the standard read.table function.  
+Note: although there is an `untar` function, it is no longer necessary—gzipped files can be read directly into R with the standard `read.table` function.  
 
 
 ## Writing files to disk
@@ -133,7 +133,7 @@ write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
 
 ## Interfacing with a database
 
-While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful--for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R--choose the one that works best for your workflow.
+While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful—for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
 
 As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your local system and adding system DSN connections. Once the appropriate DSNs are available for you, you can use `RODBC` package to access your databases:
 
@@ -168,7 +168,7 @@ connect_tables
 
 You can pull in an entire table using the `sqlFetch` function, but if you're using a database, you probably want to query it to get just what you need.
 
-To get a whole table (don't forget the $ at the end of the table name):
+To get a whole table (don't forget the `$` at the end of the table name):
 
 ```
 whole_table = sqlFetch(connect, "table_name$")
@@ -197,19 +197,17 @@ At the end of the session, close the database connection:
 ```
 odbcCloseAll()
 ```
-The RODBC package allows R to connect with any database that allows OBDC connections, and then interact with that database using SQL. Since database platforms, local systems, and server environments vary considerably, it very difficult to specify how to set up the initial DSN connection for any given combination—you'll need to consult with a database administrator or search online for your particular combination of databases, drivers, and system connections. 
-You can learn more by viewing: `vignette("RODBC", package="RODBC")`.
 
+The `RODBC` package allows R to connect with any database that allows OBDC connections, and then interact with that database using SQL. Since database platforms, local systems, and server environments vary considerably, it very difficult to specify how to set up the initial DSN connection for any given combination—you'll need to consult with a database administrator or search online for your particular combination of databases, drivers, and system connections. 
+You can learn more by viewing: `vignette("RODBC", package="RODBC")`.
 
 ## Creating a SQLite database inside R
 
 You don't even need to understand the intricacies of database planning and management to be able to create your own database on the fly from within R. While there's no need to do so if your data fits into R's memory, it can be really useful if you need to subset and merge several large files to obtain a working dataframe that can be comfortably analyzed within R's memory limits.
 
-This recipe walks through creating a SQLite database and adding tables to it. The next recipe will walk through obtaining data from the database for analysis in R.
+This recipe walks through creating a SQLite database and adding tables to it; the following recipe will walk through obtaining data from the database for analysis in R.
 
-\paragraph{Getting ready}
-
-The sqldf package provides more options for database work without dealing with a formal database—everything can be done from within R.
+The `sqldf` package provides more options for database work without dealing with a formal database—everything can be done from within R.
 
 ```
 require(sqldf)
@@ -240,11 +238,11 @@ Because Excel files must be loaded into R first, and then passed to the database
 ```
 # This loads the Excel file into R
 pses2011_xls = loadWorkbook("PSES2011_Documentation.xls")
-
+  
 # This reads each worksheet into separate dataframes within a list
 pses2011_documentation = readWorksheet(pses2011_xls, 
   sheet=getSheets(pses2011_xls))
-
+  
 # This file was downloaded to the working directory from
 # http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls
 # The sheet names have spaces and hyphens, which will cause
@@ -252,12 +250,12 @@ pses2011_documentation = readWorksheet(pses2011_xls,
 # So, this changes the dataframe names inside the list
 names(pses2011_documentation) = c("Questions", "Agency", "LEVELID15", "Demcode",
   "PosNegSpecs", "LayoutFormat")
-
+  
 # Add a new row to account for 0 values for LEVEL1ID in
 # main pses2011 file
 pses2011_documentation$Agency = rbind(pses2011_documentation$Agency,
   c(0,NA,"Other",NA,"OTH"))
-
+  
 # Now each sheet can be loaded into the database as a separate table
 with(pses2011_documentation, {
   dbWriteTable(conn=connect, name="Questions", value=Questions, row.names=FALSE)
@@ -267,10 +265,9 @@ with(pses2011_documentation, {
   dbWriteTable(conn=connect, name="PosNegSpecs", value=PosNegSpecs, row.names=FALSE)
   dbWriteTable(conn=connect, name="LayoutFormat", value=LayoutFormat, row.names=FALSE)   
 } )
-
+  
 # Remove the Excel objects
 rm(pses2011_xls, pses2011_documentation)
-
 ```
 
 To see names of the tables in the database:
@@ -299,7 +296,7 @@ dbListTables(connect)
 dbListFields(connect, "Questions")  
 ```
 
-The equivalent of head to look at the start of a table would be:
+The equivalent of `head` to look at the start of a table would be:
 
 ```
 sqldf("SELECT * FROM Questions LIMIT 6", dbname = "PSES_database.sqlite")}
@@ -331,7 +328,7 @@ require(sqldf)
 connect = dbConnect(SQLite(), dbname="PSES_database.sqlite ")
 ```
 
-Selecting subsets from a database table using sqldf is based on (of course) SQL select statements. For example, this statement brings in three of the columns from the LEVEL1ID table:
+Selecting subsets from a database table using `sqldf` is based on (of course) SQL select statements. For example, this statement brings in three of the columns from the LEVEL1ID table:
 
 ```
 pses_acr = sqldf("SELECT Level1ID, Acronym_PSES_Acronyme_SAFF AS Acronym, DeptNameE as Department FROM Agency", dbname="PSES_database.sqlite")
@@ -352,9 +349,9 @@ pses2011_agency = sqldf("SELECT
 
 Don't forget to close the connection: `dbDisconnect(connect)` or `close(connect)`.
 
-Basically, sqldf("SQL QUERY", dbname="NAMEOFDATABASE") is all you need to use SQLite within R, and it works on both databases and dataframes—if the latter, it's just sqldf("SQL QUERY"). It is important to note that unlike R, SQLite is not case sensitive, so be careful naming tables and columns—a and A are identical to SQLite. (SQL functions are in CAPS in the code examples in this book simply to distinguish them from table and column names, which are left in the same case that R sees them.)
+Basically, `sqldf("SQL QUERY", dbname="NAMEOFDATABASE")` is all you need to use SQLite within R, and it works on both databases and dataframes—if the latter, it's just `sqldf("SQL QUERY")`. It is important to note that unlike R, SQLite is not case sensitive, so be careful naming tables and columns—a and A are identical to SQLite. (SQL functions are in CAPS in the code examples in this book simply to distinguish them from table and column names, which are left in the same case that R sees them.)
 
-You can do most basic types of SQL work in this fashion; for example, if you want to count the number of rows in your new dataframe where ANSWER3 ("Neutral") is more than 50\% of the total responses, have it grouped by Question and Agency, and order the result by highest to lowest counts, you can use:
+You can do most basic types of SQL work in this fashion; for example, if you want to count the number of rows in your new dataframe where ANSWER3 ("Neutral") is more than 50% of the total responses, have it grouped by Question and Agency, and order the result by highest to lowest counts, you can use:
 
 ```
 agency_row_count = sqldf("SELECT
@@ -372,8 +369,8 @@ The possibilities are fairly limitless by containing large files inside a databa
 ```
 agency_row_count = sqldf("SELECT
     Question
-    , SUM(CASE WHEN ANSWER1 > 51 THEN 1 ELSE 0 END) AS StrongAgreement
-    , SUM(CASE WHEN ANSWER5 > 51 THEN 1 ELSE 0 END) AS StrongDisagreement
+    , SUM(CASE WHEN ANSWER1 > 51 THEN 1 ELSE 0 END) AS Strong_Agreement
+    , SUM(CASE WHEN ANSWER5 > 51 THEN 1 ELSE 0 END) AS Strong_Disagreement
     FROM pses2011_agency
     GROUP BY Question, Agency
     ORDER BY Question desc")  
@@ -386,7 +383,7 @@ Finally, remember that SQL is suited for data extraction and manipulation, so sa
 
 ## Working through a proxy
 
-If you're working behind a company firewall, you may have to use a proxy to pull data into R from the web. Hadley Wickham's httr package makes it simple.
+If you're working behind a company firewall, you may have to use a proxy to pull data into R from the web. Hadley Wickham's `httr` package makes it simple.
 
 ```
 require(httr)
@@ -398,13 +395,13 @@ Enter your proxy address, the port (usually 8080), and your user name/password i
 set_config(use_proxy(url="YOUR_PROXY_URL", port="YOUR_PORT", username="YOUR_USER_NAME", password="YOUR_PASSWORD")
 ```
 
-There is a bewildering array of methods to access websites from within R, particularly while having to pass through a proxy, and most of them are obscure to even the most established quants. Thanks to httr, all of that complexity has been hidden behind a few simple functions—type vignette("quickstart", package="httr") if you want more information.
+There is a bewildering array of methods to access websites from within R, particularly while having to pass through a proxy, and most of them are obscure to even the most established quants. Thanks to `httr`, all of that complexity has been hidden behind a few simple functions—type `vignette("quickstart", package="httr")` if you want more information.
 
 ## Scraping data from a web table
 
-Sometimes, webpages have a treasure trove of data in tables... but don't have an option to download it as a text or Excel file. And while data scraping addins are avilable for modern web browsers like Chrome (Scraper) or Firefox (Table2Clipboard and TableTools2) that make it as easy as point-and-click, if the tables aren't set up for easy download or a simple cut-and-paste, you can use the XML package to grab what you need.
+Sometimes, webpages have a treasure trove of data in tables... but don't have an option to download it as a text or Excel file. And while data scraping addins are avilable for modern web browsers like Chrome (Scraper) or Firefox (Table2Clipboard and TableTools2) that make it as easy as point-and-click, if the tables aren't set up for easy download or a simple cut-and-paste, you can use the `XML` package to grab what you need.
 
-While there are a few R packages that allow scraping, the XML package is the simplest to begin with, and may serve all your needs anyway.
+While there are a few R packages that allow scraping, the `XML` package is the simplest to begin with, and may serve all your needs anyway.
 
 ```
 require(XML)
@@ -422,7 +419,7 @@ then read in the first table (`which=1`) part of the html:
 drug_use_table1_1 = readHTMLTable(druguse, header=T, which=1, stringsAsFactors=FALSE)
 ```
 
-What if you want more than one table? The XML package allows you to read in entire webpages, and then scrape them to extract the information you need. For example, let's say we want tables 1.17A and 1.17B . Using the webpage's table of contents, we see that the tables we want are 31st and 32nd:
+What if you want more than one table? The `XML` package allows you to read in entire webpages, and then scrape them to extract the information you need. For example, let's say we want tables 1.17A and 1.17B . Using the webpage's table of contents, we see that the tables we want are 31st and 32nd:
 
 ```
 drug_use_table1_17a = readHTMLTable(druguse, header=T, which=31, stringsAsFactors=FALSE)
@@ -461,7 +458,7 @@ nursing_home_deficiencies = do.call(rbind, lapply(tablelist, data.frame, strings
 
 ### Cleaning up the scrape
 
-In many cases the data frame will require a little clean up. The following optional code does some cleaning for this particular data set; look at ?gsub, ?strsplit, ?substr, and related commands to see more details:
+In many cases the data frame will require a little clean up. The following optional code does some cleaning for this particular data set; look at `?gsub`, `?strsplit`, `?substr`, and related commands to see more details:
 
 ```
 colnames(nursing_home_deficiencies) = c("Date", "Home", "City", "State", "DeficiencyCount", "Severity")
@@ -490,7 +487,7 @@ STUFF HERE
 
 
 ## Creating fake data to test code
-[KEEP? PROBABLY DELETE]
+[KEEP? DELETE?]
 
 Creating fake data is useful when you want to test how code will work before doing it "for real" on larger, more complicated datasets. We'll create a few fake dataframes in this recipe as both an example as how to do it, as well as for use in other recipes in this book.  
 
@@ -507,7 +504,7 @@ customer_gender = sample(c("M","F", "Unknown"), 10000, replace=TRUE,
   prob=c(.45, .45, .10))
 customer_age = round(runif(10000, 18, 88), 0)
 customer_purchases = round(rlnorm(10000)*100, 2)
-
+  
 # Table B – city/state/zip and business density lookup table
 set.seed(1235813)
 temp = tempfile()
@@ -517,12 +514,12 @@ zipcodes = read.table(unz(temp, "zbp12totals.txt"), header=T, quote="\"",
 unlink(temp)
 zipcodes = zipcodes[,c(1,11:12,10)]
 # End of Table B
-
+  
 # Table A, continued
 customer_zip = zipcodes[sample(1:nrow(zipcodes), 10000, replace=TRUE),]$zip
 customers = data.frame(customer_id, customer_gender, customer_age,
   customer_purchases, customer_zip)
-
+  
 # TABLE C – results of a product interest survey
 ones = seq(1, 1, length.out = 2000)
 zeros = seq(0, 0, length.out = 2000)
@@ -533,14 +530,14 @@ disagree = c(zeros, zeros, zeros, ones, zeros)
 strongly_disagree = c(zeros, zeros, zeros, zeros, ones)
 survey = data.frame(customer_id, strongly_agree, agree, neutral, disagree,
   strongly_disagree)
-
+  
 # TABLE D – lookup table to match states to regions
 state_regions = data.frame(datasets::state.abb, datasets::state.name, 
   datasets::state.region, datasets::state.division, colnames=c("abb", "state", 
   "region", "division"))
 ```
 
-In Table A, we've created a customer demographic and sales dataset. The sample function creates a random vector of male of female genders, as well as unknown, proportional to the weights in the prob option. The age and purchase values were created using the random number generators based on the uniform and log-normal distributions, respectively. Each customer's zip code was generated from a random selection of the zip codes in Table B.
+In Table A, we've created a customer demographic and sales dataset. The `sample` function creates a random vector of male of female genders, as well as unknown, proportional to the weights in the `prob` option. The age and purchase values were created using the random number generators based on the uniform and log-normal distributions, respectively. Each customer's zip code was generated from a random selection of the zip codes in Table B.
 
 Table B, we've downloaded and unzipped some 2012 County Business Patterns data from the US Census to create a "locations" lookup table. (Metadata for this dataset is online at https://www.census.gov/econ/cbp/download/noise_layout/ZIP_Totals_Layout10.txt; of relevance to this recipe, in addition to the city/state/zip fields, we've also kept the est field, which is the number of business establishments in this zip code in the first quarter of 2012.)
 

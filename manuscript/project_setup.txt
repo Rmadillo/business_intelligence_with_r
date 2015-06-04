@@ -44,6 +44,7 @@ By setting up a project this way, the only additional thing you need to do is us
 
 RStudio has a good overview of its integration with version control for both Git and Subversion at https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN.
 
+
 ## Documenting R code … for executives
 
 All too often, we write code that makes perfect sense to us, but turns out to be completely opaque when given to another coder, even one familiar with the same datasets. I’ve known analysts who became (in)famous for saying, when asked to document their code, "what do you mean? The code is the documentation."
@@ -132,55 +133,56 @@ Because of system and platform nuances with pdf or Word export and slide creatio
 
 Here's a short example of a basic Rmd file that will create an HTML file in a preview window once the Knit HMTL button is pushed. It is saved automatically as an HTML file in your working directory. Once it shows in the preview window, you can press the View in browser button to see how it looks as a web page.
 
-```
----
-title: "Example of Using R for Control Charts"
-author: "Dwight Barry"
-output:
-  html_document: default
----
-
-This document shows a basic example of how R could be used for control charting infection rates at the (hypothetical) *Show No Mercy General Hospital*. First, load the required packages and the data:
-
-```{r SetupChunk}
-# Load the quality control library
-require(qcc)
-# Load library for pretty table output
-require(pander)
-# Read in example data from file
-U_Chart = read.table("UChartData.csv", header=T, sep=",")
-```
-
-Then do some data manipulation:
-```{r DataWork}
-# Calculate the rate per thousand from the raw data
-U_Chart$\textdollar$Rate = U_Chart$\textdollar$Infections / (U_Chart$\textdollar$PatientDays / 1000)
-# Convert date field to month and year format
-U_Chart$\textdollar$Month = format(as.Date(U_Chart$\textdollar$Month), "%b %Y")
-```
-
-Provide a data dictionary and show the data in a table:
-
-*Data Dictionary* 
-Month: the month for which the data are obtained during calendar year 2014
-PatientDays: the number of patients supported * the number of days in the month 
-Infections: the count of infections acquired by patients during the hopsital stay 
-Rate: Infections per 1,000 patient days calculated as Infections / (PatientDays/1000) 
-
-```{r table, results='asis', echo=FALSE}
-pander(U_Chart)
-```
-
-Finally, produce the control chart with 3-sigma control limits:
-
-```{r RunQCC, fig.width=10, fig.height=6}
-# Create quality control object and static chart for a "per 1000" display
-UChart = qcc(U_Chart$\textdollar$Infections, sizes=U_Chart$\textdollar$Rate, labels=U_Chart$\textdollar$Month, nsigmas=3, type="u", title="U-Chart for Infections per 1000 Patient Days", ylab="Infections/1000 Patient Days", xlab="", axes.las=2)
-```
-
-Printed on `r date()`.
-*End of File.*
-```
+  ---
+  title: "Example of Using R for Control Charts"
+  author: "Dwight Barry"
+  output:
+    html_document: default
+  --- 
+  
+  This document shows a basic example of how R could be used for control charting infection rates at the (hypothetical) *Show No Mercy General Hospital*. First, load the required packages and the data:
+  
+  ```{r SetupChunk}
+  # Load the quality control library
+  require(qcc)
+  # Load library for pretty table output
+  require(pander)
+  # Read in example data from file
+  U_Chart = read.table("UChartData.csv", header=T, sep=",")
+  ```
+  
+  Then do some data manipulation:
+  ```{r DataWork}
+  # Calculate the rate per thousand from the raw data
+  U_Chart$\textdollar$Rate = U_Chart$\textdollar$Infections / (U_Chart$\textdollar$PatientDays / 1000)
+  # Convert date field to month and year format
+  U_Chart$\textdollar$Month = format(as.Date(U_Chart$\textdollar$Month), "%b %Y")
+  ```
+  
+  Provide a data dictionary and show the data in a table:
+  
+  *Data Dictionary* 
+  Month: the month for which the data are obtained during calendar year 2014
+  PatientDays: the number of patients supported * the number of days in the month 
+  Infections: the count of infections acquired by patients during the hopsital stay 
+  Rate: Infections per 1,000 patient days calculated as Infections / (PatientDays/1000) 
+  
+  ```{r table, results='asis', echo=FALSE}
+  pander(U_Chart)
+  ```
+  
+  Finally, produce the control chart with 3-sigma control limits:
+  
+  ```{r RunQCC, fig.width=10, fig.height=6}
+  # Create quality control object and static chart for a "per 1000" display
+  UChart = qcc(U_Chart$\textdollar$Infections, sizes=U_Chart$\textdollar$Rate, labels=U_Chart$Month,
+    nsigmas=3, type="u", title="U-Chart for Infections per 1000 Patient Days", 
+    ylab="Infections/1000 Patient Days", xlab="", axes.las=2)
+  ```
+  
+  Printed on `r date()`.
+  *End of File.*
+  
 
 The knitr package allows you to include R code within chunks, marked by three backticks at the start and end of each chunk, as well inline with text, as marked with a single backtick at the start and end of the portion of the R code to be analyzed. The code so designated is run each time you "knit" the file, so if the data changes, the analysis will repeat as before on the new data. The benefit of this for writing reports or presentations where revisions of the data are inevitable is clear.
 
