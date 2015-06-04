@@ -18,7 +18,7 @@ If you’re in the data exploration phase, and want to get a loose sense of the 
 We’ll continue to use the bike share data, and plot the results of this recipe with `ggplot2`. We’ll also need the `quantreg` package in order to plot the quantile regression trend lines:
 
 ```
-require(ggplot)
+require(ggplot2)
 require(quantreg)
 ```
 
