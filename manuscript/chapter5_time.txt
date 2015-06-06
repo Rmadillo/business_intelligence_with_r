@@ -35,7 +35,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
 
 ![loess trend](/images/biwr_05_loess.png)
 
-To show trends based on quantiles, use the stat_quantile option, and choose which quantiles you want to show, either specifically (as below) or sequentially (e.g., `quantiles = seq(0.05, 0.95, by=0.05)`:
+To show trends based on quantiles, use the `stat_quantile` option, and choose which quantiles you want to show, either specifically (as below) or sequentially (e.g., `quantiles = seq(0.05, 0.95, by=0.05)`:
 
 ```
 ggplot(bike_share_daily, aes(x=temp, y=casual)) +
@@ -68,7 +68,7 @@ If you’re exploring trends, it’s good habit to not start with an OLS/linear 
 
 ## Segmented regression
 
-Sometimes you do want to see a linear trend, but know (or suspect) changes in the trend, as seen above in the air temperature-based plots. We’ll explore ways to evaluate change points later, but for now we’ll just quickly plot a segmented linear trend line, allowing the segmented package to choose the optimal breakpoint for us, after we specify approximately where we think it is with the `psi` option:
+Sometimes you do want to see a linear trend, but know (or suspect) that there are changes in the trend, as seen above in the air temperature-based plots. We’ll explore ways to evaluate change points later, but for now we’ll just quickly plot a segmented linear trend line. We'll allow the `segmented` package to choose the optimal breakpoint for us, after we specify approximately where we think it is with the `psi` option:
 
 ```
 require(segmented)
@@ -89,18 +89,16 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
 
 ![segmented trend](/images/biwr_05_segment.png)
 
-The `psi` option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a psi of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same.
-
-
-## Detecting autocorrelation
-
+The `psi` option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a `psi` of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same. However, with fewer data points, and/or a lot of variance, the choice of psi could change the results, so try a few different values. 
 
 
 ## Working with temporal data
 
-Date and time formats are the bane of coders everywhere. No matter which coding language you use, you’ll eventually run into the need to convert dates or times and want to punch your screen. Try to avoid that—it’d be an expensive mistake, and you don’t want to give emergency departments any more business than they already have.
+Date and time formats are the bane of coders everywhere. No matter which coding language you use, you’ll eventually run into the need to convert dates or times and end up wanting to punch your screen. Try to avoid that—it’d be an expensive mistake, and you don’t want to give emergency departments any more business than they already have.
 
-The informal consensus is that in R, `as.Date` is best for dates and `as.POSIXct` is best for times because these are the simplest ways to work with each data type. The `lubridate` package provides a more intuitive wrapper to `as.POSIXct` and can be very useful for date conversions between types. Finally, time series analysis requires specific data types or structures—we’ll explore one approach to that in the next recipe, but the CRAN Time Series task view is worth spending time exploring if you need to evaluate time series in any depth (http://cran.r-project.org/web/views/TimeSeries.html).
+The informal consensus is that in R, `as.Date` is best for dates and `as.POSIXct` is best for times because these are the simplest ways to work with each data type. The `lubridate` package provides a more intuitive wrapper to `as.POSIXct` and can be very useful for date conversions between types. 
+
+Finally, time series analysis requires specific data types or structures—we’ll explore one approach to that in the next recipe, but the CRAN Time Series task view is worth spending time exploring if you need to evaluate time series in any depth (http://cran.r-project.org/web/views/TimeSeries.html).
 
 There just isn’t the space to cover all (or even a small subset) of date/time conversions and temporal math, so we’ll just illustrate a few very common date conversion needs in this recipe.
 
@@ -120,10 +118,11 @@ india_natl_holidays = c("Jan 26, 2014", "Apr 13, 2014", "Aug 15, 2014",
 india_natl_holidays = as.Date(india_natl_holidays, format="%b %d, %Y")
 str(india_natl_holidays)
 
-Date[1:5], format: "2014-01-26" "2014-04-13" "2014-08-15" "2014-10-02" "2014-12-25"
+Date[1:5], 
+    format: "2014-01-26" "2014-04-13" "2014-08-15" "2014-10-02" "2014-12-25"
 ```
 
-Another common date function is to calculate age based on today’s date (or a reference date):
+Another common date conversion need is to calculate age based on today’s date (or any reference date):
 
 ```
 birthdays = c("20000101", "19991201", "19760704", "20140314")
@@ -132,7 +131,7 @@ ymd(birthdays)
 "2000-01-01 UTC" "1999-12-01 UTC" "1976-07-04 UTC" "2014-03-14 UTC"
 
 age = ymd(today()) - ymd(birthdays)
-round(age/eyears(1), 1)
+round(age/eyears(1), 1) # eyears is a lubridate function, not a typo!
 
 14.9 15.0 38.4  0.7
 
@@ -146,87 +145,31 @@ The basic thing to remember is that even when you don’t have a real day value 
 
 It’s useful to have a cheat-sheet of the major date and time formats; you can get a complete list with `?strptime` but the major ones are as follows:
 
-
-Major date formats
-Date step
-Symbol
-Format
-Alternate symbols
-Format
-Date (ISO)
-%F
-Y-m-d
-%x, %D
-y/m/d, m/d/y
-Year
-%Y
-4-digit year (2014)
-%y
-2-digit year (14)
-Month
-%m
-Decimal month (10)
-%b, %B
-Abbreviated month (Oct.), Full month (October)
-Day
-%d
-Decimal date (1-31)
-%e
-Decimal date (01-31)
-Weekday
-%w
-Decimal weekday (0-6, starts with Sunday)
-%a, %A, %u
-Abbreviated weekday (Sun), Full weekday (Sunday), Decimal with Monday start (7)
-Weekyear (ISO)
-%V
-Sunday start (0-53)
-%U, %W
-Sunday start (USA), Monday start (UK)
-Day of the year
-%j
-Decimal day of the year (1-366)
+***Major date formats***  
+| Date step | Symbol | Format | Alternate symbols |
+| --------- | ------ | ------ | ----------------- |
+| Format Date (ISO) | `%F` | Y-m-d | `%x`, `%D` | y/m/d, m/d/y |
+| Year | `%Y` | 4-digit year (2014) | `%y` | 2-digit year (14) |
+| Month | `%m` | Decimal month (10) | `%b`, `%B` | Abbreviated month (Oct.), Full month (October) |
+| Day | `%d` | Decimal date (1-31) | `%e` | Decimal date (01-31) | 
+| Weekday | `%w` | Decimal weekday (0-6, starts with Sunday) | `%a`, `%A`, `%u` | Abbreviated weekday (Sun), Full weekday (Sunday), Decimal with Monday start (7) |
+| Weekyear (ISO) | `%V` | Sunday start (0-53) | `%U`, `%W` | Sunday start (USA), Monday start (UK) | 
+| Day of the year | `%j` | Decimal day of the year (1-366) |  |  | 
 
 
-Major time formats
-Time step
-Symbol
-Format
-Date and time
-%c
-a b e H:M:S Y
-Time
-%T
-H:M:S
-Time (short)
-%R
-H:M
-Hours (24 hour clock)
-%H
-
-
-Hours (12 hour clock)
-%I
-
-
-Minutes
-%M
-
-
-Seconds
-%S
-
-
-AM or PM
-%p
-
-
-Offset from GMT
-%z
-
-
-Time zone
-%Z
+***Major time formats***
+| Time step | Symbol | Format |
+| --------- | ------ | ------ |
+| Date and time | `%c` | a b e H:M:S Y |
+| Time | `%T`| H:M:S |
+| Time (short) | `%R` | H:M |
+| Hours (24 hour clock) | `%H` |  |
+| Hours (12 hour clock) | `%I` |  |
+| Minutes | `%M` |  |
+| Seconds | `%S` |  | 
+| AM or PM | `%p` |  |
+| Offset from GMT | `%z` |  | 
+| Time zone | `%Z` |  |
 
 
 ## Calculate a mean or correlation in circular time (clock time)
@@ -265,7 +208,7 @@ First, we need to convert the data into a ts (time series) object:
 UK_births_ts = ts(UK_births$Value, start = c(2003, 1), frequency = 12)
 ```
 
-Then we should plot it; ts objects can be a little awkward to plot without tweaking the plot settings, so if all you need to do is look at it, you can simply use plot(my_ts_object). But if you want to use the plot for more than just your own edification, you’ll need to add some decoration manually:
+Then we should plot it; `ts` objects can be a little awkward to plot without tweaking the plot settings, so if all you need to do is look at it, you can simply use `plot(my_ts_object)`. But if you want to use the plot for more than just your own edification, you’ll need to add some decoration manually:
 
 ```
 plot(UK_births_ts, xlab="Date", ylab="Count", main="Monthly Births in the UK 
@@ -274,15 +217,16 @@ plot(UK_births_ts, xlab="Date", ylab="Count", main="Monthly Births in the UK
 
 ![time series](/images/biwr_05_ukbirths1.png)
 
-## No day value but you want to plot it in ggplot?
+### No day value but you want to plot it in ggplot?
 
-R is a little particular about date values, and if your data aren’t in a format it recognizes, it can choke. Case in point is the UK births date, which contains a year field and a month field—which makes sense, seeing as how the data are monthly values. But you’ll have to tie yourself in knots to make those two work together as time elements in a plot… so it’s actually easier if you just gave each month a fake day (i.e., the 1st), mush ‘em together as a character via the `paste` function, and then specify that you want the final result to be in Date format.
+R is a little particular about date values, and if your data aren’t in a format it recognizes, it can choke. Case in point is the UK births date, which contains a year field and a month field—which makes sense, seeing as how the data are monthly values. But you’ll have to tie yourself in knots to make those two work together as time elements in a ggplot… so it’s actually easier if you just gave each month a fake day (i.e., the 1st), mush ‘em together as a character via the `paste` function, and then specify that you want the final result to be in Date format.
 
 ```
 require(ggplot2)
-UK_births = read.table("UK_births.csv", header=T, sep=",", stringsAsFactors=F)
+
 UK_births$Date = as.Date(paste("1", UK_births$MONTH, UK_births$TIME, sep=" "), 
   format="%d %B %Y")
+
 ggplot(UK_births, aes(x=Date, y=Value)) +
     geom_line(col="darkblue") +
     ylab("Count") +
@@ -290,6 +234,16 @@ ggplot(UK_births, aes(x=Date, y=Value)) +
 ```
 
 ![time series 2](/images/biwr_05_ukbirths2.png)
+
+
+## Detecting autocorrelation
+
+Autocorrelation 
+
+```
+acf(UK_births_ts)
+```
+
 
 ## Plotting monthly patterns
 
@@ -306,12 +260,52 @@ monthplot(UK_births_ts, main="Monthly Patterns in UK Births (2003-2012)",
 The `forecast` package contains another useful plot function that shows each year’s trend as a separate line, allowing you to discern whether there’s a seasonal or monthly effect at a glance:
 
 ```
+require(forecast)
 seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)", 
   col=rainbow(10), year.labels=TRUE, year.labels.left=TRUE, cex=0.7, 
   cex.axis=0.8)
 ```
 
 ![time series 4](/images/biwr_05_ukbirths4.png)
+
+
+## Decomposing time series into components
+
+If you need to explore a time series in more depth, you'll probably want to decompose it into seasonal, trend, and random/remainder components.
+
+We’ll continue with the UK monthly births data in its time series format, acquired from the EU’s EuroStat. Most functions we’ll use in this recipe are in the `base` installation’s `stats` package, but one is in the `forecast` package, so load that with the data:
+
+```
+require(forecast)
+UK_births = read.table("UK_births.csv", header=T, sep=",", stringsAsFactors=F)
+```
+
+The `decompose` function uses a moving average for simplicity:
+
+```
+plot(decompose(UK_births_ts), col="darkblue")
+```
+
+![decomp of uk births](/images/biwr_05_decomp1.png)
+
+
+ADD MULTIPLICATIVE INFO HERE?
+
+We’ll explore the `forecast` package later, but more details on `ts` objects and the decomposition of time series can be found in the help files (`?ts`, `?decompose`) and in Rob Hyndman’s excellent online text, [Forecasting: Principles and Practice](https://www.otexts.org/fpp).
+
+
+## Decomposing when the variance changes
+
+Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. The `forecast` package also has a way to determine the best transformation automatically with the `BoxCox.lambda` function:
+
+```
+data(AirPassengers)
+plot(AirPassengers)
+AirPassengers_lambda = BoxCox.lambda(AirPassengers)
+plot(BoxCox(AirPassengers, AirPassengers_lambda))
+```
+
+![decomp of air passengers](/images/biwr_05_decomp2.png)
 
 
 ## Evaluating quality with control charts
@@ -341,9 +335,9 @@ infection_control = qcc(infections, sizes=patient_days, type="u",
 
 ## Identifying possible breakpoints in a time series
 
-We’ll explore intervention analysis in more detail later in this book, but this is a useful place to demonstrate a simple way to identify changes in the statistical structure of a time series using the `strucchange` package.
+We’ll explore intervention analysis in more detail in Part 2 of this book, but this is a useful place to demonstrate a simple way to identify changes in the statistical structure of a time series using the `strucchange` package.
 
-We’ll look at annual United States CO2 emissions between February 2001 and September 2014 (data from the US Energy Information Administration’s WEPS+ model). Load the `strucchange` package, the data, and convert the data to a time series object:
+We’ll look at annual United States CO<sub>2</sub> emissions between February 2001 and September 2014 (data from the US Energy Information Administration’s WEPS+ model). Load the `strucchange` package, the data, and convert the data to a time series object:
 
 ```
 require(strucchange)
@@ -351,7 +345,7 @@ us_co2 = read.table("US_CO2_2001_2014.csv", header=T, sep=",")
 us_co2_ts = ts(us_co2[,2], freq=12, start=c(2001,2))
 ```
 
-`strucchange` will pick the optimal number of breakpoints as determined by BIC, which can be subsequently plotted over the time series as follows:
+`strucchange` will pick the optimal number of breakpoints as determined by BIC, which can be subsequently plotted over the time series. As there does not seem to be an indication of general rises or declines in mean tendency, we can use `~ 1` in the formula in place of a dependent variable to assess whether there is a step change (or changes) in the time series:
 
 ```
 breakpoints(us_co2_ts ~ 1)
@@ -373,54 +367,15 @@ text(2008.8, 555, "Jan 2009", cex=0.75, col="darkgreen", pos=4, font=3)
 ![breakpoints diagnostics](/images/biwr_05_bps.png)
 
 
-## Decomposing time series into components
-
-If you need to explore a time series in more depth, you'll probably want to decompose it into seasonal, trend, and random/remainder components.
-
-We’ll continue with the UK monthly births data in its time series format, acquired from the EU’s EuroStat. Most functions we’ll use in this recipe are in the `base` installation’s `stats` package, but one is in the `forecast` package, so load that with the data:
-
-```
-require(forecast)
-UK_births = read.table("UK_births.csv", header=T, sep=",", stringsAsFactors=F)
-```
-
-The `decompose` function uses a moving average for simplicity:
-
-```
-plot(decompose(UK_births_ts), col="darkblue")
-```
-
-![decomp of uk births](/images/biwr_05_decomp1.png)
-
-
-ADD MULTIPLICATIVE INFO HERE?
-
-We’ll explore the `forecast` package later, but more details on `ts` objects and the decomposition of time series can be found in the help files (`?ts`, `?decompose`) and in Rob Hyndman’s excellent online text, [Forecasting: Principles and Practice](https://www.otexts.org/fpp).
-
-## Decomposing when the variance changes
-
-Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. The `forecast` package also has a way to determine the best transformation automatically with the `BoxCox.lambda` function:
-
-```
-data(AirPassengers)
-plot(AirPassengers)
-AirPassengers_lambda = BoxCox.lambda(AirPassengers)
-plot(BoxCox(AirPassengers, AirPassengers_lambda))
-```
-
-![decomp of air passengers](/images/biwr_05_decomp2.png)
-
-
 ## Using spectral analysis to find periodicity
 
-Spectral analysis provides a simple way to evaluate whether there are any cyclical patterns in your time series. The stats package’s spectrum function creates a periodogram, where the highest peak(s) in the plot represent(s) possible cycling times.
+Spectral analysis provides a simple way to evaluate whether there are any cyclical patterns in your time series. The `stats` package’s `spectrum` function creates a periodogram, where the highest peak(s) in the plot represent(s) possible cycling times.
 
 We’ll use the built-in annual sunspot dataset in this recipe.
 
 ```
 data(sunspot.year)
 ```
-
 
 To find the cycle times, look for a clear peak (or peaks) in the plot; below, the second plot is zoomed in to see the detail. The blue line shows the confidence interval for peak locations.
 
@@ -430,7 +385,6 @@ plot(sun_spec)
 ```
 
 ![sunspots spectral](/images/biwr_05_spectral.png)
-
 
 You can take the inverse of the frequency peak’s value to get a sense for cycle timings. In this data, we can see the highest peak is at about 0.1, suggesting a ~10 year cycle (1/0.1=10).
 
