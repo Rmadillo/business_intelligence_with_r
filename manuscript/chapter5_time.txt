@@ -296,13 +296,14 @@ We’ll explore the `forecast` package later, but more details on `ts` objects a
 
 ## Decomposing when the variance changes
 
-Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. The `forecast` package also has a way to determine the best transformation automatically with the `BoxCox.lambda` function:
+Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. The `forecast` package also has a way to determine the best transformation (`lambda`) automatically with the `BoxCox.lambda` function:
 
 ```
 data(AirPassengers)
 plot(AirPassengers)
 AirPassengers_lambda = BoxCox.lambda(AirPassengers)
 plot(BoxCox(AirPassengers, AirPassengers_lambda))
+plot(decompose(BoxCox(AirPassengers, AirPassengers_lambda)))
 ```
 
 ![decomp of air passengers](/images/biwr_05_decomp2.png)
