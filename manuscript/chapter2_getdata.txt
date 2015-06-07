@@ -12,7 +12,7 @@ There are a wide variety of packages and functions to import data, but a few pro
 |  | `read.csv("file", ...)` |  | 
 | Flat file | `read.table("file", sep=" ", ...)` | base |
 |  | `fread("file", sep=" ", ...)` | data.table |
-| Excel | `read_excel("Excelfile", sheet, ...)` <br> `read.xls("Excelfile",sheet, ...)` <br> `readWorksheet("Excelfile", sheet, ...)` |  readxl  <br>  gdata  <br>  XLConnect |
+| Excel | `read_excel("Excelfile", sheet, ...)`  `read.xls("Excelfile",sheet, ...)`   `readWorksheet("Excelfile", sheet, ...)` |  readxl  <br>  gdata  <br>  XLConnect |
 | SPSS | `spss.get("SPSSfile.sav")` | Hmisc |
 | Stata | `read.dta("Statafile.dta")` | foreign |
 | SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
@@ -28,6 +28,7 @@ vanco=read.table(
 ```
 
 While reading in a local flat file is pretty standard fare for any R user, sometimes reading in online files can require a little extra work. This example reads in a csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure special characters are read in correctly:
+
 ```
 pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", sep=",", encoding="UTF-8", header=FALSE)
 ```
@@ -41,6 +42,7 @@ bob = read_xl(
 ```
 
 The next example uses `gdata`: it imports the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
+
 ```
 pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls", sheet="Layout-Format", nrows=22, header=FALSE, skip=1, col.names=c("Variables", "Size", "Type", "Description"), stringsAsFactors=FALSE)
 ```
