@@ -1,20 +1,10 @@
 # Introduction
 
-The growth of R has been phenomenal over the past several years, reaching out past academia and research labs into the daily activities of business and industry. More and more line-level analysts are supplementing their SQL or Excel skills with R, and more and more businesses are hiring data scientists to bridge the gap between business needs and on-hand analytical resources. 
+The growth of R has been phenomenal over the past several years, reaching out past academia and research labs into the daily activities of business and industry. More and more line-level analysts are supplementing their SQL or Excel skills with R, and more and more businesses are hiring analysts to bridge the increasing gap between business needs and on-hand analytical resources. 
 
-While there are already many books that explore the use of R in data science, nearly all of them are set as a series of case studies or are written predominantly for academic audiences as textbooks. There are also many R cookbooks, but they tend to cover the breadth of R's capabilities and options. This book aims to provide a cookbook of R recipes that are specifically of use in the daily workflow of data scientists and analysts in business and industry. 
+While there are already many books that explore the use of R in statistics and data science, nearly all of them are set as a series of case studies or are written predominantly for academic audiences as textbooks. There are also many R cookbooks, but they tend to cover the breadth of R's capabilities and options. This book aims to provide a cookbook of R recipes that are specifically of use in the daily workflow of data scientists and analysts in business and industry. 
 
-The *NAME OF BOOK* is a practical, hands-on overview of all the major tools in data science. It is not meant to be exhaustive--there is always more than one way to acomplish a given task in R, so we aim to provide the simplest and/or most robust approaches to meet daily workflow needs. As such, this book should serve as the go-to desk reference for the professional analyst who needs to get things done in R. From setting up a project under version control to creating an interactive dashboard of a data product such as a predictive model, this book will provide you the pieces to put it all together. 
-
-Data scientists coming from a statistics background often don't know about or understand best practices from computer science, while those coming from a computer science background often don't understand issues about probability and inference that similarly have a long tradition of foundational knowledge. Therefore, these chapters attempt to provide an overview of foundational aspects that are good for anyone, regardless of experience, to ensure is in their toolbox.
-
-**WHY A COOKBOOK WHEN BUTTON PUSHING IS DANGEROUS?**
-
-You should already be comfortable with "everyday" R use for analysis (e.g., knowing how to make base plots, use lm, etc.) and R's data construct types, such as knowing the differences between a list, a dataframe, and a matrix. You should also know that any result from the functions shown in this book can be placed in an object to be called or modified later, e.g., you should know that ```bob = prop.table(table(bike_share_daily[c(3,9)]))``` saves the table of proportions in a two-way table as the object ```bob```. You don't need to be an R programmer, however; this book is aimed at people who use R to accomplish day-to-day analytic ends, not for those who want to improve their code efficiency, create custom algorithms, or develop new packages.
-
-You should also be at least familiar with the ideas behind many of the tools used in data science; for the most part, this book does not explain the intricacies of how the methods work or what the results of the examples mean. There are many fine resources out there covering theory and tools, but are necessarily limited in methodological scope as a result. In addition, most data science cookbooks currently available use a case-study approach, focusing on a few major tasks in order to explain the methods and results in greater depth. Again, this book is aimed at providing comprehensive cookbook for common data science tasks, and given how many tools there are, there just isn't the space here to provide both recipes and theory.
-
-We hope that this book serves well in its intended purpose as a desktop reference for busy professionals--giving you fingertip access to a variety of data science methods done as simply as possible.
+*Business Intelligence with R* is a practical, hands-on overview of all the major BI/analytic tasks that can be accomplished with R. It is not meant to be exhaustive--there is always more than one way to acomplish a given task in R, so we aim to provide the simplest and/or most robust approaches to meet daily workflow needs. As such, this book should serve as the go-to desk reference for the professional analyst who needs to get things done in R. From setting up a project under version control to creating an interactive dashboard of a data product such as a predictive model, this book will provide you the pieces to put it all together. 
 
 
 ## Conventions
@@ -23,11 +13,7 @@ This book contains one large and one small break from conventional R usage. Firs
 
 The one place your choice of assignment operator is important is if you want to make an assignment in the middle of a function call. This is not something you should ever actually want. ADD MORE EXPLANATION?
 
-Second, we tend to use ```pothole_case``` for variable, dataframe, and database names, and ```lowerCamelCase``` for function names MAYBE KINDA SORTA. The R community hasn't developed much consensus around this (CITE PAPER HERE) and so once again we fall back on habits learned elsewhere (cough cough Python cough). The important part is that variable names should be nouns, function names should be verbs, and all names should be clear and descriptive. The most common variable name in CRAN may be 'x' but that does not mean you should follow suit.
-
-
-
-
+Second, we tend to use ```pothole_case``` for variable, dataframe, and database names, and ```lowerCamelCase``` for function names MAYBE KINDA SORTA. The R community hasn't developed much consensus around this (CITE PAPER HERE) and so once again we fall back on habits learned elsewhere (cough cough Python cough). The important part is that variable names should be nouns, function names should be verbs, and all names should be clear and descriptive; the most common variable name in CRAN may be 'x' but that does not mean you should follow suit.
 
 
 ## What you need 
@@ -36,9 +22,9 @@ This book uses R, RStudio, and Git software. We used R 3.1 and RStudio 0.98 to c
 
 The code and datasets are available from the book's Github site at **URL**.
 
-Running ```sessionInfo()``` provides you information about your current R installation and loaded packages. 
+You should already be comfortable with "everyday" R use for analysis (e.g., knowing how to make base plots, use lm, etc.) and R's data construct types, such as knowing the differences between a list, a dataframe, and a matrix. You should also know that any result from the functions shown in this book can be placed in an object to be called or modified later, e.g., you should know that ```bob = prop.table(table(bike_share_daily[c(3,9)]))``` saves the table of proportions in a two-way table as the object ```bob```. You don't need to be an R programmer, however; this book is aimed at people who use R to accomplish day-to-day analytic ends, not for those who want to improve their code efficiency, create custom algorithms, or develop new packages.
 
-
+You should also be at least familiar with the ideas behind many of the tools used in anaytics and data science; for the most part, this book does not explain the intricacies of how the methods work or what the results of the examples mean. There are many fine resources out there covering theory and tools, but are necessarily limited in methodological scope as a result. In addition, most data science cookbooks currently available use a case-study approach, focusing on a few major tasks in order to explain the methods and results in greater depth. Again, this book is aimed at providing comprehensive cookbook for common data science tasks, and given how many tools there are, there just isn't the space here to provide both recipes and theory.
 
 ## Acknowledgements
 
@@ -52,5 +38,4 @@ Feedback is always welcome; send us an email to EMAIL.
 
 
 
-
-
+We hope that this book serves well in its intended purpose as a desktop reference for busy professionals--giving you fingertip access to a variety of BI analytic methods done as simply as possible.
