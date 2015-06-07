@@ -126,6 +126,7 @@ ggplot(UK_births, aes(x=Date, y=Value)) +
     theme_minimal()
 dev.off()
 
+
 ## Plotting monthly patterns
 
 png("biwr_05_ukbirths3.png", width=6, height=6, res=300, units="in")
