@@ -8,8 +8,10 @@ There are a wide variety of packages and functions to import data, but a few pro
 
 | File Type | Function | Package |
 | --------- | -------- | ------- |
-| csv file | `read.table("file", sep=",", ...)` <br> `read.csv("file", ...)` | base |
-| Flat file | `read.table("file", sep=" ", ...)` <br> `fread("file", sep=" ", ...)` | base  <br>  data.table |
+| csv file | `read.table("file", sep=",", ...)`  | base |
+|  | `read.csv("file", ...)` |  | 
+| Flat file | `read.table("file", sep=" ", ...)` | base |
+|  | `fread("file", sep=" ", ...)` | data.table |
 | Excel | `read_excel("Excelfile", sheet, ...)` <br> `read.xls("Excelfile",sheet, ...)` <br> `readWorksheet("Excelfile", sheet, ...)` |  readxl  <br>  gdata  <br>  XLConnect |
 | SPSS | `spss.get("SPSSfile.sav")` | Hmisc |
 | Stata | `read.dta("Statafile.dta")` | foreign |
