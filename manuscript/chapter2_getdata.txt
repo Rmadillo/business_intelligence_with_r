@@ -4,15 +4,18 @@
 
 The tried-and-true method for bringing data into R is via the humble csv file, and in many cases it will be the default approach. But in most professional environments, you'll encounter a wide variety of file formats and production needs, so having a cheat sheet of data import methods is useful.
 
-There are a wide variety of packages and functions to import data, but a few provide nearly all the functionality you'll need:
+There are a wide variety of packages and functions to import data from files, but a few provide nearly all the functionality you'll need:
 
+{width="85%"}
 | File Type | Function | Package |
 | --------- | -------- | ------- |
 | csv file | `read.table("file", sep=",", ...)`  | base |
 |  | `read.csv("file", ...)` |  | 
 | Flat file | `read.table("file", sep=" ", ...)` | base |
 |  | `fread("file", sep=" ", ...)` | data.table |
-| Excel | `read_excel("Excelfile", sheet, ...)`  `read.xls("Excelfile",sheet, ...)`   `readWorksheet("Excelfile", sheet, ...)` |  readxl  <br>  gdata  <br>  XLConnect |
+| Excel | `read_excel("Excelfile", sheet, ...)` | readxl |
+|  | `read.xls("Excelfile",sheet, ...)` | gdata |
+|  | `readWorksheet("Excelfile", sheet, ...)` | XLConnect |
 | SPSS | `spss.get("SPSSfile.sav")` | Hmisc |
 | Stata | `read.dta("Statafile.dta")` | foreign |
 | SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
