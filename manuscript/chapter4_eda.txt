@@ -191,7 +191,7 @@ When we don’t have a full population to assess, we often need to determine how
 | Count | Count | Poisson | `poisson.test(x)$conf.int` |
 | Rate | Count/*n* | Poisson | `poisson.test(x, n)$conf.int` |
 
-Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the CO2 dataset that comes with R for simplicity’s sake:
+Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the `CO2` dataset that comes with R for simplicity’s sake:
 
 ```
 require(boot)
@@ -252,7 +252,7 @@ If you plotted both tolerance graphs (plot.type="both"), you'll need to return p
 par(mfrow=c(1,1))
 ```
 
-The following table provides a short overview of the primary univariate tolerance interval functions; see ?tolerance for more details. I recommend you set alpha (confidence level), P (the coverage proportion, i.e., tolerance interval), and side (whether to calculate upper, lower, or both bounds) manually for best results; if not chosen, alpha defaults to 0.05, P defaults to 0.99, and side defaults to 1 (you’ll probably want 2 in many cases). Other settings depend on the distribution used, and each distribution sometimes has several algorithms to choose from, so it’s worth exploring the documentation before diving in here.
+The following table provides a short overview of the primary univariate tolerance interval functions; see `?tolerance` for more details. I recommend you set `alpha` (confidence level), `P` (the coverage proportion, i.e., tolerance interval), and `side` (whether to calculate upper, lower, or both bounds) manually for best results; if not chosen, `alpha` defaults to 0.05, `P` defaults to 0.99, and `side` defaults to 1 (you’ll probably want 2 in many cases). Other settings depend on the distribution used, and each distribution sometimes has several algorithms to choose from, so it’s worth exploring the documentation before diving in here.
 
 
 
@@ -289,9 +289,9 @@ extol.int(x, dist, …)
 
 ## Plotting univariate distributions
 
-We saw the quick-and-dirty way to plot a bunch of distributions at once in an earlier recipe; this one focuses on a production-ready single-distribution plot using the ggplot2 package.
+We saw the quick-and-dirty way to plot a bunch of distributions at once in an earlier recipe; this one focuses on a production-ready single-distribution plot using the `ggplot2` package.
 
-This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. The documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, Zev Ross has a great one on his blog at http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
+This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. The documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, Zev Ross has a great one on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/). 
 
 Load the bike share data we've been using, as well as the packages we'll use in this recipe (if they're not already loaded).
 
@@ -410,7 +410,7 @@ With apologies to Hunter S. Thompson, if you use pie charts for anything outside
 
 Most of the time, we want to understand how one thing compares to something else. There’s no better way to do this by plotting each group’s distribution against the other’s.
 
-We continue using the bike share data, along with ggplot2. Make sure to load the vcd package as well:  
+We continue using the bike share data, along with `ggplot2`. Make sure to load the `vcd` package as well:  
 
 ```
 require(ggplot2)
@@ -495,7 +495,7 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
 
 ## Plotting survey data
 
-There are a variety of ways you can plot survey data, but the likert package makes things really simple. We can use the mass dataset (Math Anxiety Scale Survey) built into likert to demonstrate:
+There are a variety of ways you can plot survey data, but the `likert` package makes things really simple. We can use the `mass` dataset (Math Anxiety Scale Survey) built into `likert` to demonstrate:
 
 ```
 require(likert)
@@ -505,7 +505,7 @@ plot(mathiness)
 
 ![basic likert plot](/images/0815OS_02_13.png)
 
-There's a known bug in likert where you have to load the reshape package manually (not reshape2) to make the grouping option work.
+There's a known bug in `likert` where you have to load the `reshape` package manually (not reshape2) to make the `grouping` option work.
 
 ```
 require(reshape)
@@ -515,7 +515,7 @@ plot(gender_math, include.histogram=TRUE)
 
 ![grouped likert plot](/images/0815OS_02_14.png)
 
-Because the reshape package masks functions in reshape2 and dplyr, you should detach likert and reshape when you're done plotting.
+Because the `reshape` package masks functions in `reshape2` and `dplyr`, you should detach `likert` and `reshape` when you're done plotting.
 
 ```
 detach("package:likert", unload=TRUE)
@@ -664,7 +664,7 @@ casual_notworkingday_median$estimate; casual_notworkingday_median$conf.int
 399 997
 ```
 
-While not always easily explained to business users, standardized effect sizes are often very useful for analysts. When comparing means or medians, Hedge's g can be used for most cases (as it is an improvement on Cohen's d, its more famous predecessor), while a robust version of Cohen's d can be acquired by setting the `effect.type` option to `"akp.robust.d"`.
+While not always easily explained to business users, standardized effect sizes are often very useful for analysts. When comparing means or medians, Hedge's *g* can be used for most cases (as it is an improvement on Cohen's *d*, its more famous predecessor), while a robust version of Cohen's *d* can be acquired by setting the `effect.type` option to `"akp.robust.d"`.
 
 ```
 bootES(casual_notworkingday, data.col="casual", group.col="season", 
@@ -686,7 +686,7 @@ Stat        CI (Low)    CI (High)   bias        SE
 0.866       0.433       1.406       0.039       0.250      
 ```
 
-When you don't want to make any distributional assumptions, Cliff's delta and Vargha-Delaney's A (which is the same as the AUC statistic applied to a two-group contrast) are the best options. Both can be obtained from the `orddom` package, with CIs obtained via BCa by default:
+When you don't want to make any distributional assumptions, Cliff's &Delta; and Vargha-Delaney's *A* (which is the same as the AUC statistic applied to a two-group contrast) are the best options. Both can be obtained from the `orddom` package, with CIs obtained via BCa by default:
 
 ```
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
@@ -716,16 +716,16 @@ dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
 0.8132832
 ```
 
-This package also has a neat feature in that it will plot the results and summary of a Cliff's delta assessment with the `delta_gr` function:
+This package also has a neat feature in that it will plot the results and summary of a Cliff's &Delta; assessment with the `delta_gr` function:
 
 ```
 delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual, 
   x.name="Fall", y.name="Spring")
 ```
 
-![delta gr ES plot](/images/0815OS_02_15.png)
+![delta gr ES plot](/images/0801OS_02_15.png)
 
-We also often want to know whether two groups differ in terms of their variances, i.e., is one group more variable than another? If both groups are normally distributed, var.test is appropriate to obtain the variance ratio:
+We also often want to know whether two groups differ in terms of their variances, i.e., is one group more variable than another? If both groups are normally distributed, `var.test` is appropriate to obtain the variance ratio:
 
 ```
 var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$estimate
@@ -856,7 +856,7 @@ x_pred      264.184 1346.469 1892.044 2432.797 3520.282
 y_pred     -309.647  721.162 1225.480 1743.096 2781.779
 ```
 
-Evaluations of the difference in medians and variances are planned but not yet implemented.
+Evaluations of the difference in median and variance contrasts (among otehrs) are planned but not yet implemented.
 
 The single sample functions available to acquire simple CIs as of this writing include:
 
@@ -891,11 +891,11 @@ diagnostics(casual_notworkingday_mean_bayes) # not shown
 
 The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary tool here, although a wide variety of alternative approaches exist.
 
-Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho, Kendall’s tau-b, or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this recipe.
+Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho (&rho;), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this recipe.
 
 As before, every effect size measure should be accompanied by an appropriate confidence interval whenever possible, which is usually best done by bootstrap unless you can meet the method’s assumptions.
 
-Although correlation coefficients are easy to acquire with R’s base installation, confidence intervals are not, so we’ll use the `psych` package for the non-parametric correlation part of this recipe and `boot`/`bootES` for some confidence intervals. We’ll also use a piece of the bike share dataset to illustrate the methods.
+Although correlation coefficients are easy to acquire with R’s base installation, confidence intervals are not, so we’ll use the `psych` package for the non-parametric correlation part of this recipe and `boot`/`boot.ci`/`bootES` for some confidence intervals. We’ll also use a piece of the bike share dataset to illustrate the methods.
 
 ```
 require(bootES)
@@ -956,6 +956,8 @@ ar_tm-count      0.39       0.39     0.43       0.47      0.47 0
 Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore “categorical correlation” with the `Aspirin` data from the `abd` package (`?Aspirin`). The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
 
 ```
+require(epitools)
+require(psych)
 data(Aspirin, package="abd")
 oddsratio(table(Aspirin))$measure
 
@@ -969,7 +971,7 @@ Yule(table(Aspirin))
 -0.004352794
 ```
 
-For categorical data, association coefficients provide the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users. Cohen’s kappa is probably the best tool when you want to compare agreement instead of association (see below).
+For categorical data, association coefficients provide the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users. Cohen’s &kappa; is probably the best tool when you want to compare agreement instead of association (see recipe for &kappa; below).
 
 ### Bootstrapping BCa CIs for non-parametric correlation
 
@@ -1042,7 +1044,7 @@ polyserial(math_score, poly_math$enjoy)
 
 ### Cohen’s kappa for comparisons of agreement
 
-Ratings on ordinal scales require special treatment, since they aren’t true numbers, and comparisons of agreement makes it even more necessary to choose a statistically-appropriate tool. Cohen’s kappa (cohen.kappa in the psych package) provides a way to compare ordinal ratings, e.g., a doctor’s ratings for a set of patients potentially eligible for care management as compared with the same output from a predictive model:
+Ratings on ordinal scales require special treatment, since they aren’t true numbers, and comparisons of agreement makes it even more necessary to choose a statistically-appropriate tool. Cohen’s &kappa; (`cohen.kappa` in the `psych` package) provides a way to compare ordinal ratings, e.g., a doctor’s ratings for a set of patients potentially eligible for care management as compared with the same output from a predictive model:
 
 ```
 doctor = c(1,2,3,4,1,2,3,4,1,2,3,4)
