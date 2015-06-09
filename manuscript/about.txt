@@ -1,3 +1,6 @@
+
+  
+  
 ### About the Authors
 
 stuff about us
@@ -6,3 +9,8 @@ stuff about us
 ### About the Cover
 
 stuff about cover image
+
+
+##### Session Info
+
+R session info here (from final run through)
