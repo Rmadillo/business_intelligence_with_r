@@ -1,4 +1,4 @@
-# Chapter 5: Trends and Time
+# Chapter 6: Trends and Time
 
 - Describing trends in non-temporal data
 - Detecting autocorrelation
