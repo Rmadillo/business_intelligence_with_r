@@ -4,8 +4,6 @@
 - Obtaining summary statistics
 - Plotting univariate distributions
 - Plotting bivariate and comparative distributions
-- Effect sizes: Measuring differences between groups
-- Effect sizes: Measuring relationships between groups
 
 It's often tempting to jump into analysis as soon as possible, but it is a cardinal sin to not evaluate your data with the basics first. This chapter covers the evaluations that must be done before anything else.
 
