@@ -1,5 +1,9 @@
 # Chapter 5: Effect Sizes
 
+- Effect sizes: what you *really* want to know
+- Summary of major effect size statistics
+- Effect sizes: Measuring differences between groups
+- Effect sizes: Measuring relationships between groups
 
 ## Effect sizes: Overview
 
