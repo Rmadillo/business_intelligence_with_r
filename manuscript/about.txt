@@ -1,6 +1,8 @@
+  
+| |  
+  
+| |  
 
-  
-  
 ### About the Authors
 
 stuff about us
@@ -11,6 +13,6 @@ stuff about us
 stuff about cover image
 
 
-##### Session Info
+##### Session Info  
 
 R session info here (from final run through)
