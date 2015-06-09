@@ -9,13 +9,14 @@
 
 STUFF HERE ABOUT EFFECT SIZES
 
+***Differences in tendency*** 
+
 {width="wide"}
 | Type | Statistic | Package | Function | 
 | ---- | --------- | ------- | -------- | 
-| *Differences in tendency* | | | | |  
 | | | | | |  
 | Mean difference (*t*) | \|D\| | base | `t.test(...)$estimate` | 
-| | | | |  `t.test(...)$conf.int` |  
+| | | | `t.test(...)$conf.int` |  
 | | | | | |  
 | Mean difference (bootstrapped) | \|D\| | bootES | `bootES` with `effect.type="unstandardized"` |  
 | | | | | |  
@@ -26,32 +27,67 @@ STUFF HERE ABOUT EFFECT SIZES
 | Median difference (Bayesian) |  | BayesianFirstAid | *not yet implemented* | 
 | | | | | |  
 | Standardized mean difference | Cohen's *d* | bootES | `bootES` with `effect.type="cohens.d"` | 
+| | | | | |  
 | | robust Cohen's *d* | bootES | `bootES` with `effect.type="akp.robust.d"` |
 | | Hedge's *g* | bootES | `bootES` with `effect.type="hedges.g"` | 
+| | | | | |  
 | Difference between proportions |  | base | `prop.test(...)$estimate`, `prop.test(...)$conf.int` |
+| | | | | |  
 | Difference between proportions (Bayesian) | | BayesianFirstAid | `bayes.prop.test` |
+| | | | | |  
 | Difference between counts or rates | rate ratio  | base | `poisson.test(...)$estimate`, `poisson.test(...)$conf.int` |
+| | | | | |  
 | Difference between counts or rates (Bayesian) | rate ratio | BayesianFirstAid | `bayes.prop.test`  |
+| | | | | |  
 | Standardized group differences | Cliff's &Delta; | orrdom | `dmes.boot` with `theta.es="dc"` | 
 | | Vargha-Delaney's *A* | orrdom | `dmes.boot` with `theta.es="Ac"` | 
-| *Differences in variability* | | | | | 
+
+
+***Differences in variability*** 
+
+{width="wide"}
+| Type | Statistic | Package | Function | 
+| ---- | --------- | ------- | -------- | 
+| | | | | |  
 | Variance ratio | | base | `var.test(...)$estimate`, `var(...).test$conf.int` | 
+| | | | | |  
 | Variance ratio (Bayesian) | | BayesianFirstAid | *not yet implemented* | 
+| | | | | |  
 | Difference between variances | | asympTest | `asymp.test(...)$estimate`, `asymp(...).test$conf.int` with `parameter="dVar"` | 
-| *Relationsips and Associations* | | | | | 
+
+
+***Relationships and Associations*** 
+
+{width="wide"}
+| Type | Statistic | Package | Function | 
+| ---- | --------- | ------- | -------- | 
+| | | | | |  
 | Correlation (traditional) | Pearson's *r* | base | `cor`, `cor.test(...)$conf.int` |
+| | | | | |  
 | Correlation (Bayesian) | *r* | BayesianFirstAid | `bayes.cor.test` | 
+| | | | | |  
 | Correlation (bootstrapped) | *r* | bootES | `bootES` with `effect.type="r"` |
+| | | | | |  
 | | Spearman's &rho; | pysch | `cor.ci` with `method="spearman"` |
+| | | | | |  
 | | | boot | *see below*|
+| | | | | |  
 | | Kendall's &tau;-b | pysch | `cor.ci` with `method="kendall"` |
+| | | | | |  
 | | | boot | *see below*|
+| | | | | |  
 | Partial correlation | | psych | `corr.test`, `partial.r` | 
+| | | | | |  
 | Polychoric correlation (ordinal/ordinal) | | psych | `polychoric` |
+| | | | | |  
 | Polyserial correlation (numeric/ordinal) | | psych | `polyserial` | 
+| | | | | |  
 | Proportion of variance explained | *R^2^* | boot | *see below* |
+| | | | | |  
 | Odds ratio | OR | psych | `oddsratio` |
+| | | | | |  
 | Standardized odds ratio | Yule's Q | psych | `Yule` |
+| | | | | |  
 | Comparisons of agreement | Cohen's &kappa; | psych | `cohen.kappa` | 
 
 
