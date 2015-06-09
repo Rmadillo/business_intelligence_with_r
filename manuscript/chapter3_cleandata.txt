@@ -9,7 +9,7 @@
 
 It's often tempting to jump into analysis as soon as possible, but it is a cardinal sin to not evaluate your data with the basics first. This chapter covers the evaluations that must be done before anything else.
 
-In this chapter, we'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in the Loading data recipe of Chapter 1. To make it easy, the code below downloads the particular file we'll use throughout this chapter and writes the data to a csv file saved in your working directory. The first recipe then loads the csv, adjusts the column types appropriately, and runs through the essential first step of any analysis.
+In this chapter, we'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in the Loading data recipe of Chapter 2. To make it easy, the code below downloads the particular file we'll use throughout this chapter and writes the data to a csv file saved in your working directory. The first recipe then loads the csv, adjusts the column types appropriately, and runs through the essential first step of any analysis.
 
 ```
 tf = tempfile()
@@ -179,7 +179,7 @@ require(dplyr)
 
 dplyr contains SQL-like agility with much less coding for common R tasks.
 
-Need to subset on a couple of conditions? Use filter, stringing together criteria using `&` for AND and `|` (pipe) for OR:
+Need to subset on a couple of conditions? Use `filter`, stringing together criteria using `&` for AND and `|` (pipe) for OR:
 
 ```
 customers_marketing = filter(customer_survey, strongly_agree == 1 | agree == 1)
@@ -256,9 +256,7 @@ We'll use a different dataset to illustrate some of the possibilities `reshape2`
 require(reshape2)
 surgery_outcomes = read.table("surgery_outcomes.csv", header=T, sep=",")
 head(surgery_outcomes, 4)
-```
 
-```
 row  ID  Side   Phase  Verbal  Nonverbal
 1    1   Right  Post   146     115
 2    1   Right  Pre    129     103
@@ -272,9 +270,7 @@ If each measurement needs its own row, you melt a dataframe from wide into long 
 surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3),
     measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
 head(surgery_outcomes_melted, 4)
-```
 
-```
 row  ID  Side   Phase  Test_type  IQ_score
 1    1   Right  Post   Verbal     146
 2    1   Right  Pre    Verbal     129
@@ -288,10 +284,7 @@ Any data in long form can be cast into a variety of wide forms, with a `d` or an
 surgery_outcomes_original = dcast(surgery_outcomes_melted, ID + Side + 
     Phase ~ Test_type)
 head(surgery_outcomes_original, 4)
-```
 
-TABLE HERE
-```
 row  ID  Side   Phase  Verbal  Nonverbal
 1    1   Right  Post   146     115
 2    1   Right  Pre    129     103
@@ -303,14 +296,13 @@ Being able to move back and forth between data shapes makes meeting the needs of
 
 The important part to remember in melting data is to ensure you've designated the id and measurement variables appropriately. While `melt` can operate with neither or only one of these designated, proper coding etiquette requires that you designate each specifically to avoid ambiguity.
 
-## Crossing variables with ~ and +
+### Crossing variables with ~ and +
 
 There is tremendous variety in reshaping options using the formula structure in `dcast`. The tilde sign (`~`) separates the variables you want representing the rows (left of the ~) and those you want representing the columns (right of the ~). For example, we can cross phase and the test type in the columns:
 
 ```
 head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase), 4)
-```
-```
+
      ID  Verbal_Post  Verbal_Pre  Nonverbal_Post  Nonverbal_Pre
 1    1   146          129         115             103
 2    2   126          138         115             115
@@ -322,8 +314,7 @@ We could also return the `Side` variable to the same shape:
 
 ```
 head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase), 4)
-```
-```
+
    ID  Side   Verbal_Post  Verbal_Pre  Nonverbal_Post  Nonverbal_Pre
 1  1   Right  146          129         115             103
 2  2   Right  126          138         115             115
@@ -335,8 +326,7 @@ And so on... the possibilities are as many as your variable set...
 
 ```
 head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type), 4)
-```
-```
+
   ID Phase Verbal Nonverbal
 1  1  Post    146       115
 2  1   Pre    129       103
@@ -344,14 +334,13 @@ head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type), 4)
 4  2   Pre    138       115
 ```
 
-## Summarizing while reshaping
+### Summarizing while reshaping
 
-While `dply`r might provide you with all you need for summarizing data once your data structure is set, `reshape2` offers the option to summarize while reshaping. The summarization works based on which operation you choose as well as which side of the `~` you place the variables (as described above).  
+While `dplyr` might provide you with all you need for summarizing data once your data structure is set, `reshape2` offers the option to summarize while reshaping. The summarization works based on which operation you choose as well as which side of the `~` you place the variables (as described above).  
 
 ```
 dcast(surgery_outcomes_melted, Phase ~ Test_type, mean, na.rm=T)
-```
-```
+
   Phase   Verbal Nonverbal
 1  Post 104.6667 102.26667
 2   Pre 103.0909  98.90909
@@ -359,8 +348,7 @@ dcast(surgery_outcomes_melted, Phase ~ Test_type, mean, na.rm=T)
 
 ```
 dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, mean, na.rm=T)
-```
-```
+
    Side Verbal_Post Verbal_Pre Nonverbal_Post Nonverbal_Pre
 1  Left    102.4444   97.71429       100.7778      97.42857
 2 Right    108.0000  112.50000       104.5000     101.50000
@@ -368,8 +356,7 @@ dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, mean, na.rm=T)
 
 ```
 dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
-```
-```
+
   Test_type  Side Phase        .
 1    Verbal  Left  Post 14.78269
 2    Verbal  Left   Pre 12.51285
