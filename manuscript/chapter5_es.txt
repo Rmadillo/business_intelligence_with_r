@@ -1,0 +1,594 @@
+# Chapter 5: Effect Sizes
+
+
+## Effect sizes: Overview
+
+STUFF HERE ABOUT EFFECT SIZES
+
+
+| Dimension | Name | Statistic | Package | Function | 
+| --------- | ---- | --------- | ------- | -------- | 
+| *Differences in tendency* | | | | |
+| | Mean difference (*t*) | \|D\| | base | `t.test(...)$estimate`, `t.test(...)$conf.int` |
+| | Mean difference (bootstrapped) | \|D\| | bootES | `bootES` with `effect.type="unstandardized"` | 
+| | Mean difference (Bayesian) | \|D\| | BayesianFirstAid | `bayes.t.test` | 
+| | Median difference |  | base | `wilcox.test(...)$estimate`, `wilcox.test(...)$conf.int` | 
+| | Median difference (Bayesian) |  | BayesianFirstAid | *not yet implemented* | 
+| | Standardized mean difference | Cohen's *d* | bootES | `bootES` with `effect.type="cohens.d"` | 
+| | | robust Cohen's *d* | bootES | `bootES` with `effect.type="akp.robust.d"` |
+| | | Hedge's *g* | bootES | `bootES` with `effect.type="hedges.g"` | 
+| | Difference between proportions |  | base | `prop.test(...)$estimate`, `prop.test(...)$conf.int` |
+| | Difference between proportions (Bayesian) | | BayesianFirstAid | `bayes.prop.test` |
+| | Difference between counts or rates | rate ratio  | base | `poisson.test(...)$estimate`, `poisson.test(...)$conf.int` |
+| | Difference between counts or rates (Bayesian) | rate ratio | BayesianFirstAid | `bayes.prop.test`  |
+| | Standardized group differences | Cliff's &Delta; | orrdom | `dmes.boot` with `theta.es="dc"` | 
+| | | Vargha-Delaney's *A* | orrdom | `dmes.boot` with `theta.es="Ac"` | 
+| *Differences in variability* | | | | | 
+| | Variance ratio | | base | `var.test(...)$estimate`, `var(...).test$conf.int` | 
+| | Variance ratio (Bayesian) | | BayesianFirstAid | *not yet implemented* | 
+| | Difference between variances | | asympTest | `asymp.test(...)$estimate`, `asymp(...).test$conf.int` with `parameter="dVar"` | 
+| *Relationsips and Associations* | | | | | 
+| | Correlation (traditional) | Pearson's *r* | base | `cor`, `cor.test(...)$conf.int` |
+| | Correlation (Bayesian) | *r* | BayesianFirstAid | `bayes.cor.test` | 
+| | Correlation (bootstrapped) | *r* | bootES | `bootES` with `effect.type="r"` |
+| | | Spearman's &rho; | pysch | `cor.ci` with `method="spearman"` |
+| | | | boot | *see below*|
+| | | Kendall's &tau;-b | pysch | `cor.ci` with `method="kendall"` |
+| | | | boot | *see below*|
+| | Partial correlation | | psych | `corr.test`, `partial.r` | 
+| | Polychoric correlation (ordinal/ordinal) | | psych | `polychoric` |
+| | Polyserial correlation (numeric/ordinal) | | psych | `polyserial` | 
+| | Proportion of variance explained | *R^2^* | boot | *see below* |
+| | Odds ratio | OR | psych | `oddsratio` |
+| | Standardized odds ratio | Yule's Q | psych | `Yule` |
+| | Comparisons of agreement | Cohen's &kappa; | psych | `cohen.kappa` | 
+
+
+
+
+
+code for R^2^ bootstrapped CI from: http://www.statmethods.net/advstats/bootstrapping.html
+
+```
+library(boot)
+# function to obtain R-Squared from the data
+rsq <- function(formula, data, indices) {
+  d <- data[indices,] # allows boot to select sample
+  fit <- lm(formula, data=d)
+  return(summary(fit)$r.square)
+}
+# bootstrapping with 1000 replications
+results <- boot(data=mtcars, statistic=rsq,
+   R=1000, formula=mpg~wt+disp)
+
+# view results
+results
+plot(results)
+
+# get 95% confidence interval
+boot.ci(results, type="bca")
+```
+
+
+## Effect sizes: Measuring differences between groups
+
+Perhaps the most common question an analyst will get from a business decision maker is whether or not there is a difference between groupings. There are a lot of ways to answer that, of course, but the bread-and-butter answer should always be based on effect sizes.
+
+In this recipe, we'll go through all the major effect size metrics for differences; the following recipe will explore effect sizes for comparisons between groups.
+
+Effect size measures that estimate a population value (such as a difference in means or a variance ratio) should be accompanied by an appropriate confidence interval whenever possible. This is usually best done by bootstrap unless you can meet distributional assumptions, although at larger sample sizes the differences will be trivial. We'll look at several ways to obtains CIs in this recipe.
+
+We'll continue to use the bike share data, but we'll cast and filter some of it for the data for this recipe. We'll also use `bootES`, `orddom`, and `asympTest` to acquire confidence intervals for some of the contrasts we'll consider.
+
+```
+require(bootES)
+require(orddom)
+require(asympTest)
+require(reshape2)
+casual_workingday_use = dcast(bike_share_daily, yr~workingday, 
+  value.var="casual", sum)
+casual_workingday_use$sum = casual_workingday_use$Yes + casual_workingday_use$No
+require(dplyr)
+casual_notworkingday = filter(bike_share_daily, workingday == "No" & 
+  season == "Spring" | workingday == "No" & season == "Fall")
+casual_notworking_Spring =  filter(notworkingday, season == "Spring")
+casual_notworking_Fall =  filter(notworkingday, season == "Fall")
+```
+
+For a difference between two proportions, we'll look at the effect of it being a working day on casual bike use in 2011 versus 2012:
+
+```
+workday_diff = prop.test(casual_workingday_use$Yes, casual_workingday_use$sum)
+round(workday_diff$estimate[1] - workday_diff$estimate[2], 2)
+
+-0.02
+
+round(workday_diff$conf.int, 2)
+
+-0.02 -0.01
+```
+
+When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average (or median) casual bike use between Spring and Fall non-working days, we can use `t.test` (or `wilcox.test`):
+
+```
+casual_notworkingday_mean = t.test(casual~season, data=casual_notworkingday)
+abs(casual_notworkingday_mean$estimate[1] - 
+  casual_notworkingday_mean$estimate[2]); casual_notworkingday_mean$conf.int
+
+636.6031
+350.6546 922.5516
+```
+
+Because the distribution isn't really normal, getting bootstrapped CIs on the difference of means is probably a better option in this case. Using the `bootES` package:
+
+```
+bootES(casual_notworkingday, data.col="casual", group.col="season", 
+  contrast=c("Fall", "Spring"), effect.type="unstandardized")
+
+User-specified lambdas: (Fall, Spring)
+Scaled lambdas: (-1, 1)
+95.00% bca Confidence Interval, 2000 replicates
+Stat         CI (Low)     CI (High)    bias        SE           
+636.603      332.203      908.222      3.116       149.380     
+```
+
+To look at a difference of medians (with a CI), use `wilcox.test`:
+
+```
+casual_notworkingday_median = wilcox.test(casual~season, 
+  data=casual_notworkingday, conf.int=TRUE)
+casual_notworkingday_median$estimate; casual_notworkingday_median$conf.int
+
+684.0001
+399 997
+```
+
+While not always easily explained to business users, standardized effect sizes are often very useful for analysts. When comparing means or medians, Hedge's *g* can be used for most cases (as it is an improvement on Cohen's *d*, its more famous predecessor), while a robust version of Cohen's *d* can be acquired by setting the `effect.type` option to `"akp.robust.d"`.
+
+```
+bootES(casual_notworkingday, data.col="casual", group.col="season", 
+  contrast=c("Fall", "Spring"), effect.type="hedges.g")
+
+User-specified lambdas: (Fall, Spring)
+Scaled lambdas: (-1, 1)
+95.00% bca Confidence Interval, 2000 replicates
+Stat        CI (Low)    CI (High)   bias        SE          
+0.825       0.374       1.252       0.004       0.219      
+
+bootES(casual_notworkingday, data.col="casual", group.col="season", 
+  contrast=c("Fall", "Spring"), effect.type="akp.robust.d")
+
+User-specified lambdas: (Fall, Spring)
+Scaled lambdas: (-1, 1)
+95.00% bca Confidence Interval, 2000 replicates
+Stat        CI (Low)    CI (High)   bias        SE          
+0.866       0.433       1.406       0.039       0.250      
+```
+
+When you don't want to make any distributional assumptions, Cliff's &Delta; and Vargha-Delaney's *A* (which is the same as the AUC statistic applied to a two-group contrast) are the best options. Both can be obtained from the `orddom` package, with CIs obtained via BCa by default:
+
+```
+dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
+  theta.es="dc")$theta
+
+       dc
+0.4555138
+
+dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
+  theta.es="dc")$theta.bci.lo; dmes.boot(casual_notworking_Fall$casual, 
+  casual_notworking_Spring$casual,theta.es="dc")$theta.bci.up
+
+0.2493734
+0.6265664
+
+dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
+  theta.es="Ac")$theta
+
+       Ac
+0.7277569
+
+dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
+  theta.es="Ac")$theta.bci.lo; dmes.boot(casual_notworking_Fall$casual, 
+  casual_notworking_Spring$casual,theta.es="Ac")$theta.bci.up
+
+0.6246867
+0.8132832
+```
+
+This package also has a neat feature in that it will plot the results and summary of a Cliff's &Delta; assessment with the `delta_gr` function:
+
+```
+delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual, 
+  x.name="Fall", y.name="Spring")
+```
+
+![delta gr ES plot](/images/0801OS_02_15.png)
+
+We also often want to know whether two groups differ in terms of their variances, i.e., is one group more variable than another? If both groups are normally distributed, `var.test` is appropriate to obtain the variance ratio:
+
+```
+var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$estimate
+
+ratio of variances
+          1.105087
+
+var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$conf.int
+
+0.6498105 1.8817627
+```
+
+More typically, our groups are not normally distributed, and when that's the case, the `var.test` will give misleading results because it is very sensitive to departures from normality. The `asymp.test` function in the `asympTest` package provides a suitable alternative:
+
+```
+asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
+  parameter = "dVar")$estimate
+
+difference of variances
+               58696.86
+
+asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
+  parameter = "dVar")$conf.int
+
+-197619.6  315013.4
+```
+
+Effect sizes provide the results that business users really want to know—not just whether two groups are different, but how different are they? These should become standard results alongside summary plots and statistics whenever contrasts are being made.
+
+## What are the chances? Determining the probability of a difference
+
+The rapid increase in computing power in recent years has put previously-intractable analytics tools at anyone's fingertips. Markov-chain Monte Carlo (MCMC) is one of the breakout stars of this revolution, which provides the mathematical basis for the resurgence of interest in Bayesian methods.
+
+Bayesian methods provide the answers to the questions we actually have, as opposed the questions classical statistics actually answer (see the Preface for more thoughts on this issue ***YES OR NO?***). This book probably would have been written primarily from that background had the R implementations of MCMC been more developed—but since they aren't, at this time we'll just explore some basic Bayesian approaches to effect size determination.
+
+You'll need to install JAGS to your system before starting (http://mcmc-jags.sourceforge.net/), and also install the R package `rjags` to allow R to converse with JAGS.
+
+`BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from Github:
+
+```
+require(devtools)
+devtools::install_github("rasmusab/bayesian_first_aid")
+```
+
+Using the earlier example above for the differences in proportions, we get the same sort of results (i.e., the effect size and Cis), as well as a plot of the posterior distributions:
+
+```
+workday_diff_bayes = bayes.prop.test(casual_workingday_use$Yes, 
+  casual_workingday_use$sum)
+workday_diff_bayes
+
+    Bayesian First Aid propotion test
+
+data: casual_workingday_use$Yes out of casual_workingday_use$sum
+number of successes:  118354, 184931
+number of trials:     247252, 372765
+Estimated relative frequency of success [95% credible interval]:
+  Group 1: 0.48 [0.48, 0.48]
+  Group 2: 0.50 [0.49, 0.50]
+Estimated group difference (Group 1 - Group 2):
+  -0.02 [-0.02, -0.015]
+The relative frequency of success is larger for Group 1 by a probability
+of <0.001 and larger for Group 2 by a probability of >0.999 .
+
+plot(workday_diff_bayes)
+```
+
+![Bayes prop ES](/images/0815OS_02_16.png)
+
+To look at the difference between means of two groups, we can use the `bayes.t.test` function:
+
+```
+casual_notworkingday_mean_bayes = bayes.t.test(casual~season, 
+  data=casual_notworkingday)
+casual_notworkingday_mean_bayes
+
+    Bayesian estimation supersedes the t test (BEST) - two sample
+
+data: group Spring (n = 56) and group Fall (n = 57)
+
+  Estimates [95% credible interval]
+mean of group Spring: 1892 [1684, 2107]
+mean of group Fall: 1235 [1039, 1439]
+difference of the means: 656 [357, 938]
+sd of group Spring: 780 [637, 949]
+sd of group Fall: 742 [609, 904]
+
+The difference of the means is greater than 0 by a probability of >0.999
+and less than 0 by a probability of <0.001
+
+plot(casual_notworkingday_mean_bayes)
+```
+
+![Bayes mean ES](/images/0815OS_02_17.png)
+
+The package allows the use of summary for its output; with it we can see the CIs for each statistic as well as the standardized effect size (d) on this contrast:
+
+```
+summary(casual_notworkingday_mean_bayes)
+
+  Measures
+               mean      sd    HDIlo    HDIup %<comp %>comp
+mu_x       1891.896 107.961 1684.426 2107.064  0.000  1.000
+sigma_x     784.985  80.819  636.610  949.354  0.000  1.000
+mu_y       1235.311 103.061 1038.706 1439.451  0.000  1.000
+sigma_y     747.461  76.146  609.178  904.010  0.000  1.000
+mu_diff     656.585 148.684  357.229  938.414  0.000  1.000
+sigma_diff   37.523 109.254 -181.929  249.049  0.360  0.640
+nu           46.196  32.717    5.557  110.800  0.000  1.000
+eff_size      0.860   0.206    0.450    1.259  0.000  1.000
+x_pred     1891.952 827.714  307.633 3559.847  0.012  0.988
+y_pred     1231.742 781.921 -290.477 2794.578  0.056  0.944
+
+'HDIlo' and 'HDIup' are the limits of a 95\% HDI credible interval.
+'%<comp' and '%>comp' are the probabilities of the respective parameter being smaller or larger than 0.
+
+  Quantiles
+              q2.5%     q25%   median     q75%   q97.5%
+mu_x       1680.655 1820.233 1891.884 1963.547 2103.933
+sigma_x     642.575  728.117  779.837  835.775  958.585
+mu_y       1035.024 1165.506 1235.177 1304.515 1437.405
+sigma_y     614.269  694.245  741.870  794.897  912.781
+mu_diff     365.089  556.231  656.493  756.053  947.740
+sigma_diff -178.064  -33.623   37.084  108.491  253.580
+nu            9.355   23.275   37.863   60.040  128.710
+eff_size      0.461    0.720    0.859    0.996    1.271
+x_pred      264.184 1346.469 1892.044 2432.797 3520.282
+y_pred     -309.647  721.162 1225.480 1743.096 2781.779
+```
+
+Evaluations of the difference in median and variance contrasts (among otehrs) are planned but not yet implemented.
+
+The single sample functions available to acquire simple CIs as of this writing include:
+
+Statistic
+Data type
+Distribution
+Function
+Mean
+Continuous
+Normal, t, “normal enough”
+bayes.t.test(x)
+Proportion
+Percent
+Binomial
+bayes.binom.test(x, n)
+Count
+Count
+Poisson
+bayes.poisson.test(x)
+Rate
+Count/T
+Poisson
+bayes.poisson.test(x, T)
+
+Finally, you can review the MCMC diagnostics for any of these functions by using diagnostics:
+
+```
+diagnostics(casual_notworkingday_mean_bayes) # not shown
+```
+
+## Effect sizes: Measuring relationships between groups
+
+The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary tool here, although a wide variety of alternative approaches exist.
+
+Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho (&rho;), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this recipe.
+
+As before, every effect size measure should be accompanied by an appropriate confidence interval whenever possible, which is usually best done by bootstrap unless you can meet the method’s assumptions.
+
+Although correlation coefficients are easy to acquire with R’s base installation, confidence intervals are not, so we’ll use the `psych` package for the non-parametric correlation part of this recipe and `boot`/`boot.ci`/`bootES` for some confidence intervals. We’ll also use a piece of the bike share dataset to illustrate the methods.
+
+```
+require(bootES)
+require(psych)
+bike_use_atemp = data.frame(bike_share_daily$atemp, bike_share_daily$cnt)
+colnames(bike_use_atemp) = c("air_temp", "count")
+```
+
+Traditional Pearson’s correlation (*r*) is easy to acquire:
+
+```
+cor(bike_use_atemp$air_temp, bike_use_atemp$count)
+cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)$conf.int
+
+0.6310657
+0.5853376 0.6727918
+```
+
+You can get BCa bootstrap CIs for Pearson’s *r* by using:
+
+```
+bootES(c(bike_use_atemp$air_temp, bike_use_atemp$count), effect.type="r")
+
+95.00% bca Confidence Interval, 2000 replicates
+Stat        CI (Low)    CI (High)   bias        SE          
+0.650       0.633       0.667       -0.000      0.009      
+```
+
+However, it’s pretty clear that this relationship isn’t truly linear if you plot it. Spearman’s and Kendall’s can be acquired with the `cor.ci` function as follows (use the *x*`.emp`—empirical—CI values to obtain the percentile confidence interval values, although the differences will be trivial with large sample sizes):
+
+```
+cor.ci(bike_use_atemp, method="spearman", n.iter = 10000, plot=FALSE)
+
+Coefficients and bootstrapped confidence intervals
+         ar_tm count
+air_temp 1.00       
+count    0.62  1.00
+
+ scale correlations and bootstrapped confidence intervals
+            lower.emp lower.norm estimate upper.norm upper.emp p
+ar_tm-count      0.57       0.57     0.62       0.67      0.67 0
+
+cor.ci(bike_use_atemp, method="kendall", n.iter = 10000, plot=FALSE)
+
+Coefficients and bootstrapped confidence intervals
+         ar_tm count
+air_temp 1.00       
+count    0.43  1.00
+
+ scale correlations and bootstrapped confidence intervals
+            lower.emp lower.norm estimate upper.norm upper.emp p
+ar_tm-count      0.39       0.39     0.43       0.47      0.47 0
+
+```
+
+### Associations between categorical variables
+
+Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore “categorical correlation” with the `Aspirin` data from the `abd` package (`?Aspirin`). The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
+
+```
+require(epitools)
+require(psych)
+data(Aspirin, package="abd")
+oddsratio(table(Aspirin))$measure
+
+         odds ratio with 95% C.I.
+treatment  estimate     lower    upper
+  Aspirin 1.0000000        NA       NA
+  Placebo 0.9913098 0.9187395 1.069632
+
+Yule(table(Aspirin))
+
+-0.004352794
+```
+
+For categorical data, association coefficients provide the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users. Cohen’s &kappa; is probably the best tool when you want to compare agreement instead of association (see recipe for &kappa; below).
+
+### Bootstrapping BCa CIs for non-parametric correlation
+
+If you want to use the boot package to calculate BCa confidence intervals on the Spearman or Kendell correlation coefficients, here’s how to do it for each method:
+
+```
+rs_function = function(x,i){cor(x[i,1], x[i,2], method="spearman")
+rs_boot = boot(bike_use_atemp, rs_function, R=10000)
+boot.ci(rs_boot, type="bca")$bca[4:5]
+
+0.5748000 0.6669792
+
+rt_function = function(x,i){cor(x[i,1], x[i,2], method="kendall")
+rt_boot = boot(bike_use_atemp, rt_function, R=10000)
+boot.ci(rt_boot, type="bca")$bca[4:5]
+
+0.3931281 0.4665541
+```
+
+### Partial correlations
+
+If you have variables you want to control for in a correlation, we can turn again to the psych package. For example, if we wanted to evaluate the correlation between air temperature and bike use while controlling for windspeed, we could do it by creating a correlation matrix with the corr.test function:
+
+```
+bike_use_atemp_wind = data.frame(bike_share_daily$temp, bike_share_daily$cnt, 
+  bike_share_daily$windspeed )
+atemp_wind_count = corr.test(bike_use_atemp_wind, method="kendall")
+atemp_wind_count$ci[1:3]
+
+                               lower          r       upper
+bk_shr_dly.t-bk_shr_dly.c  0.3713082  0.4321852  0.48936255
+bk_shr_dly.t-bk_shr_dly.w -0.1807640 -0.1096882 -0.03747266
+bk_shr_dly.c-bk_shr_dly.w -0.2173056 -0.1471101 -0.07540089
+```
+
+Once we have a matrix ***(see it with `atemp_wind_count$`)***, we can plug it into the `partial.r` function, specifying that the first two variables of the matrix are the correlation of interest and the third is the variable we wish to control for (the second and third inputs, respectively):
+
+```
+partial.r(as.matrix(atemp_wind_count$r), c(1:2), 3)
+
+                       bike_share_daily.atemp bike_share_daily.cnt
+bike_share_daily.atemp                   1.00                 0.42
+bike_share_daily.cnt                     0.42                 1.00
+```
+
+### Polychoric and polyserial correlation for ordinal data
+
+Polychoric (ordinal-ordinal) and polyserial (numeric-ordinal) correlation allows you to perform correlation when some or all of your variables of interest are on an ordinal scale. Again, `psych` provides the functions we'll use. To illustrate, we'll use the math attitudes survey (`mass`) data seen earlier in this chapter, converted from ordered factor to numeric for the polychoric function to work:
+
+```
+data(mass, package="likert")
+poly_math = data.frame(as.numeric(mass[,7]), as.numeric(mass[,14]))
+colnames(poly_math) = c("worry", "enjoy")
+polychoric(poly_math)$rho
+
+           worry      enjoy
+worry  1.0000000 -0.7731209
+enjoy -0.7731209  1.0000000
+```
+
+To perform a polyserial correlation, you need to designate the two variables in the function. We'll add a fake variable representing each student's pre-college math assessment test score to see whether it relates to their stated enjoyment:
+
+```
+math_score = c(755, 642, 626, 671, 578, 539, 769, 614, 550, 615, 749, 676, 753, 
+  509, 798, 783, 508, 767, 738, 660)
+polyserial(math_score, poly_math$enjoy)
+
+0.2664201
+```
+
+### Cohen’s kappa for comparisons of agreement
+
+Ratings on ordinal scales require special treatment, since they aren’t true numbers, and comparisons of agreement makes it even more necessary to choose a statistically-appropriate tool. Cohen’s &kappa; (`cohen.kappa` in the `psych` package) provides a way to compare ordinal ratings, e.g., a doctor’s ratings for a set of patients potentially eligible for care management as compared with the same output from a predictive model:
+
+```
+doctor = c(1,2,3,4,1,2,3,4,1,2,3,4)
+model = c(1,3,1,3,1,4,4,4,4,2,3,1)
+cohen.kappa(x=cbind(doctor,model))
+
+Cohen Kappa and Weighted Kappa correlation coefficients and confidence boundaries
+
+                 lower estimate upper
+unweighted kappa -0.15     0.22  0.59
+weighted kappa   -0.45     0.15  0.75
+ Number of subjects = 12
+```
+
+You can also use raw categories instead of dummy variables:
+
+```
+doctor = c("yes", "no", "yes", "unsure", "yes", "no", "unsure", "no", "no", 
+  "yes", "no", "yes", "yes")
+model = c("yes", "yes", "unsure", "yes", "no", "no", "unsure", "no", "unsure", 
+  "no", "yes", "yes", "unsure")
+doctor_vs_model = data.frame(doctor, model)
+cohen.kappa(doctor_vs_model)
+
+Cohen Kappa and Weighted Kappa correlation coefficients and confidence boundaries
+
+                 lower estimate upper
+unweighted kappa -0.34   0.0631  0.47
+weighted kappa   -0.57  -0.0078  0.56
+ Number of subjects = 13
+```
+
+The `$agree` output value shows the proportion of agreement for each category:
+
+```
+cohen.kappa(doctor_vs_model)$agree
+
+        x2f
+x1f              no     unsure        yes
+  no     0.15384615 0.07692308 0.15384615
+  unsure 0.00000000 0.07692308 0.07692308
+  yes    0.15384615 0.15384615 0.15384615
+
+  ```
+  
+### Bayesian correlation
+
+We saw the Bayesian approach to difference-based effect size calculations in the previous recipe; here's the approach for correlations:
+
+```
+require(BayesianFirstAid)
+bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
+
+
+    Bayesian First Aid Pearson's Correlation Coefficient Test
+
+data: bike_use_atemp$\textdollar$air_temp and bike_use_atemp$count (n = 731)
+Estimated correlation:
+  0.63
+95% credible interval:
+  0.59 0.68
+The correlation is more than 0 by a probability of >0.999
+and less than 0 by a probability of <0.001
+
+plot(atemp_bike_cor_bayes)
+```
+
+![Bayes cor](/images/0815OS_02_18.png)
