@@ -12,12 +12,12 @@ STUFF HERE ABOUT EFFECT SIZES
 {width="wide"}
 | Type | Statistic | Package | Function | 
 | ---- | --------- | ------- | -------- | 
-| *Differences in tendency* | | | | |
+| *Differences in tendency* | | | | |  
 | Mean difference (*t*) | \|D\| | base | `t.test(...)$estimate` | 
-| | | `t.test(...)$conf.int` |
-| Mean difference (bootstrapped) | \|D\| | bootES | `bootES` with `effect.type="unstandardized"` | 
-| Mean difference (Bayesian) | \|D\| | BayesianFirstAid | `bayes.t.test` | 
-| Median difference |  | base | `wilcox.test(...)$estimate`, `wilcox.test(...)$conf.int` | 
+| | | `t.test(...)$conf.int` |  
+| Mean difference (bootstrapped) | \|D\| | bootES | `bootES` with `effect.type="unstandardized"` |  
+| Mean difference (Bayesian) | \|D\| | BayesianFirstAid | `bayes.t.test` |   
+| Median difference |  | base | `wilcox.test(...)$estimate`, `wilcox.test(...)$conf.int` |   
 | Median difference (Bayesian) |  | BayesianFirstAid | *not yet implemented* | 
 | Standardized mean difference | Cohen's *d* | bootES | `bootES` with `effect.type="cohens.d"` | 
 | | robust Cohen's *d* | bootES | `bootES` with `effect.type="akp.robust.d"` |
