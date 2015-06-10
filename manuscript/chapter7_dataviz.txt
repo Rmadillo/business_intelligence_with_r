@@ -1,4 +1,4 @@
-# Chapter 6: A Dog's Breakfast of Dataviz
+# Chapter 7: A Dog's Breakfast of Dataviz
 
 In this chapter, we will cover:
 
