@@ -1,4 +1,4 @@
-# Chapter 7: Pattern Discovery and Dimension Reduction: Proximity, Clusters, and Outliers
+# Chapter 8: Pattern Discovery and Dimension Reduction: Proximity, Clusters, and Outliers
 
 - Mapping multivariate relationships with non-metric multidimensional scaling (nMDS) and Principal Components Analysis (PCA)
 - Grouping observations with hierarchical clustering 
