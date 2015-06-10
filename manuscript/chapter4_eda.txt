@@ -103,8 +103,7 @@ For numeric variables, the describe and describeBy functions do all the work for
 ```
 describe(bike_share_daily[10:16]) # not shown
 describeBy(bike_share_daily[10:16], bike_share_daily$holiday)
-```
-```
+
 group: No
            vars   n    mean      sd median trimmed     mad min  max range skew kurtosis    se
 casual        1 710  841.77  680.53  711.5  739.69  584.14   2 3410  3408 1.27     1.34 25.54
@@ -142,7 +141,7 @@ describeBy(bike_share_daily$casual, bike_share_daily$windspeed >
 group: FALSE
   vars   n   mean     sd median trimmed    mad min  max range skew kurtosis    se
 1    1 409 914.61 673.18    773  827.61 598.97   9 3410  3401 1.11     0.96 33.29
----------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 group: TRUE
   vars   n  mean     sd median trimmed   mad min  max range skew kurtosis    se
 1    1 322 763.8 695.26  613.5  642.12 579.7   2 3283  3281  1.5     1.94 38.75
@@ -253,37 +252,18 @@ par(mfrow=c(1,1))
 The following table provides a short overview of the primary univariate tolerance interval functions; see `?tolerance` for more details. I recommend you set `alpha` (confidence level), `P` (the coverage proportion, i.e., tolerance interval), and `side` (whether to calculate upper, lower, or both bounds) manually for best results; if not chosen, `alpha` defaults to 0.05, `P` defaults to 0.99, and `side` defaults to 1 (you’ll probably want 2 in many cases). Other settings depend on the distribution used, and each distribution sometimes has several algorithms to choose from, so it’s worth exploring the documentation before diving in here.
 
 
+| Data type | Distribution | Function |
+| --------- | ------------ | -------- |
+| Percent | Binomial | `bintol.int(x, n, m, …)` |
+| Count or Rate | Poisson | `poistol.int(x, n, m, side, …)` |
+| Nonparametric | None | `nptol.int(x, …)` |
+| Continuous | Normal, t, “normal enough” | `normtol.int(x, side, …)`|
+| Continuous | Uniform | `uniftol.int(x, …)` |
+| Lifetime/survival | Exponential | `exptol.int(x, type.2, …)` |
+| Score | Laplace | `laptol.int(x, …)` |
+| Indicies | Gamma | `gamtol.int(x, …)` |
+| Reliability, extreme values | Weibull, Gumbel | `extol.int(x, dist, …)` |
 
-Data type
-Distribution
-Function
-Percent
-Binomial
-bintol.int(x, n, m, …)
-Count
-Poisson
-poistol.int(x, n, m, side, …)
-Continuous
-None
-nptol.int(x, …)
-Continuous
-Normal, t, “normal enough”
-normtol.int(x, side, …)
-Continuous
-Uniform
-uniftol.int(x, …)
-Lifetime/survival
-Exponential
-exptol.int(x, type.2, …)
-Score
-Laplace
-laptol.int(x, …)
-Indicies
-Gamma
-gamtol.int(x, …)
-Reliability, extreme values
-Weibull, Gumbel
-extol.int(x, dist, …)
 
 ## Plotting univariate distributions
 
@@ -453,26 +433,8 @@ For comparison, here's the table that the mosaic plot represents:
 table(bike_share_daily$weathersit, bike_share_daily$season)
 ```
 
-Weather Code
-Winter
-Spring
-Summer
-Fall
-1 (Clear)
-111
-113
-136
-103
-2 (Cloud/Rainy)
-66
-68
-48
-65
-3 (Stormy)
-4
-3
-4
-10
+PUT TABLE HERE
+
 
 ## Multiple bivariate comparisons with faceting
 
