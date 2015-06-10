@@ -382,30 +382,8 @@ x_pred      264.184 1346.469 1892.044 2432.797 3520.282
 y_pred     -309.647  721.162 1225.480 1743.096 2781.779
 ```
 
-Evaluations of the difference in median and variance contrasts (among otehrs) are planned but not yet implemented.
+Evaluations of the difference in median and variance contrasts (among others) are planned but not yet implemented.
 
-The single sample functions available to acquire simple CIs as of this writing include:
-
-Statistic
-Data type
-Distribution
-Function
-Mean
-Continuous
-Normal, t, “normal enough”
-bayes.t.test(x)
-Proportion
-Percent
-Binomial
-bayes.binom.test(x, n)
-Count
-Count
-Poisson
-bayes.poisson.test(x)
-Rate
-Count/T
-Poisson
-bayes.poisson.test(x, T)
 
 Finally, you can review the MCMC diagnostics for any of these functions by using diagnostics:
 
