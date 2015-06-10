@@ -1,5 +1,70 @@
 # PARKING LOT
 
+
+##Fake data creation
+
+## Creating fake data to test code
+[KEEP? DELETE?]
+
+Creating fake data is useful when you want to test how code will work before doing it "for real" on larger, more complicated datasets. We'll create a few fake dataframes in this recipe as both an example as how to do it, as well as for use in other recipes in this book.  
+
+While creating and using fake data is useful for lots of cases, it is especially useful for merging/joining (which we'll explore in the next few recipes). Sometimes joins may not behave like you expect that they will due to intricacies in your data, so testing it first on known (fake) data helps you determine whether any problems arose because of the code, or because of something in your data. If the fake data merge as expected but the real data don't, then you know that there's something in your data (and not the code!) that is messing with the join process. In large, enterprise-scale databases, it is typically the joins that can cause the most unexpected behavior—that is, can lead to the wrong results, impacting everything downstream of that join for the worse.
+
+Whatever the use case, testing code on fake data can sometimes save considerable time that would have been lost debugging.
+
+Using a variety of sources, we'll develop four dataframes that mimic a customer sales type of database (of course, these datasets are all small, so a database is unnecessary here).
+
+```
+# Table A – customer data
+customer_id = seq(1:10000)
+customer_gender = sample(c("M","F", "Unknown"), 10000, replace=TRUE,
+  prob=c(.45, .45, .10))
+customer_age = round(runif(10000, 18, 88), 0)
+customer_purchases = round(rlnorm(10000)*100, 2)
+  
+# Table B – city/state/zip and business density lookup table
+set.seed(1235813)
+temp = tempfile()
+download.file("ftp://ftp.census.gov/econ2012/CBP_CSV/zbp12totals.zip", temp)
+zipcodes = read.table(unz(temp, "zbp12totals.txt"), header=T, quote="\"",
+  sep=",", colClasses="character")
+unlink(temp)
+zipcodes = zipcodes[,c(1,11:12,10)]
+# End of Table B
+  
+# Table A, continued
+customer_zip = zipcodes[sample(1:nrow(zipcodes), 10000, replace=TRUE),]$zip
+customers = data.frame(customer_id, customer_gender, customer_age,
+  customer_purchases, customer_zip)
+  
+# TABLE C – results of a product interest survey
+ones = seq(1, 1, length.out = 2000)
+zeros = seq(0, 0, length.out = 2000)
+strongly_agree = c(ones, zeros, zeros, zeros, zeros)
+agree = c(zeros, ones, zeros, zeros, zeros)
+neutral = c(zeros, zeros, ones, zeros, zeros)
+disagree = c(zeros, zeros, zeros, ones, zeros)
+strongly_disagree = c(zeros, zeros, zeros, zeros, ones)
+survey = data.frame(customer_id, strongly_agree, agree, neutral, disagree,
+  strongly_disagree)
+  
+# TABLE D – lookup table to match states to regions
+state_regions = data.frame(datasets::state.abb, datasets::state.name, 
+  datasets::state.region, datasets::state.division, colnames=c("abb", "state", 
+  "region", "division"))
+```
+
+In Table A, we've created a customer demographic and sales dataset. The `sample` function creates a random vector of male of female genders, as well as unknown, proportional to the weights in the `prob` option. The age and purchase values were created using the random number generators based on the uniform and log-normal distributions, respectively. Each customer's zip code was generated from a random selection of the zip codes in Table B.
+
+Table B, we've downloaded and unzipped some 2012 County Business Patterns data from the US Census to create a "locations" lookup table. (Metadata for this dataset is online at https://www.census.gov/econ/cbp/download/noise_layout/ZIP_Totals_Layout10.txt; of relevance to this recipe, in addition to the city/state/zip fields, we've also kept the est field, which is the number of business establishments in this zip code in the first quarter of 2012.)
+
+Table C is just a systematic selection designating a survey response from each customer.
+
+Finally, Table D takes advantage of R's built-in data from the datasets package to generate a lookup table of states and state regions.
+
+
+
+
 ##Predictive Modeling set up
 
 ## Partitioning the data efficiently for predictive modeling
