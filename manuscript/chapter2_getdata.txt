@@ -134,7 +134,7 @@ Note: although there is an `untar` function, it is no longer necessary—gzipped
 
 ## Working with Databases
 
-### Connecting to a Database
+### Connecting to a database
 
 While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful—for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
 
@@ -494,7 +494,7 @@ STUFF HERE?
 
 
 
-## Writing files to disk
+## Writing Files to Disk
 
 There is no reason to save a dataframe for use outside R in any format other than a flat file: [COMMENT ON WHY SAVE AS FLAT FILE]
 
