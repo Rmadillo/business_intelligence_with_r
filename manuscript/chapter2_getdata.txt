@@ -1,6 +1,8 @@
 # Chapter 2: Getting Data
 
-## Loading data from files
+## Working with Flat Files
+
+### Loading data from files
 
 The tried-and-true method for bringing data into R is via the humble csv file, and in many cases it will be the default approach. But in most professional environments, you'll encounter a wide variety of file formats and production needs, so having a cheat sheet of data import methods is useful.
 
@@ -20,7 +22,7 @@ There are a wide variety of packages and functions to import data from files, bu
 | Stata | `read.dta("Statafile.dta")` | foreign |
 | SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
 
-### Reading flat files from disk or the web
+#### Reading flat files from disk or the web
 
 To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you'll likely save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `\t` for tab, `|` for pipe, and so on.
 
@@ -36,7 +38,7 @@ While reading in a local flat file is pretty standard fare for any R user, somet
 pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", sep=",", encoding="UTF-8", header=FALSE)
 ```
 
-### Reading Excel files
+#### Reading Excel files
 
 To import Excel files, `readxl`, `gdata`, or `XLConnect` provide pretty much anything you'll need; `gdata` is faster and more powerful but requires Perl, so Windows users must ensure that's installed on their system before they can use it. `XLConnect` has a lot of options for those using Windows and/or are in Excel-heavy work environments, and while it can be slow with large files, it is based on Java so it could be easier to start with on Windows platforms (as long as the Java and R architectures match, i.e., if R is x64, Java should be as well). `readxl` is a new addition to the R ecosystem, and if all you need to do is pull in a worksheet as-is, it's by far the easiest method:
 
@@ -58,7 +60,7 @@ The raw data we read in from a csv and the metadata we read in from an Excel fil
 colnames(pses2011) = pses2011_header$Variable
 ```
 
-### Creating a dataframe from the clipboard
+#### Creating a dataframe from the clipboard
 
 A really useful short-cut to get spreadsheet or table data with a header row into R quickly is copying it into the clipboard and importing it via the "clipboard" option in the read.table function:
 
@@ -66,7 +68,7 @@ A really useful short-cut to get spreadsheet or table data with a header row int
 my_data_frame = read.table("clipboard", sep="\t", header=TRUE)
 ```
 
-### Another way to to read SAS files
+#### Another way to to read SAS files
 
 If you have a SAS license, `Hmisc` provides another means to import SAS files with more options than the `sas7bdat` package:
 
@@ -87,7 +89,7 @@ Strongly_Disagree, No"),
 header=TRUE, sep=",")
 ```
 
-### Reading big files with data.table
+#### Reading big files with data.table
 
 The `data.table` package is extremely useful—and much, much faster than read.table—for larger files.
 
@@ -100,7 +102,7 @@ pses2011 = fread("pses2011.csv", sep=",")
 pses2011 = data.table("pses2011")
 ```
 
-### Unzipping files into R
+#### Unzipping files into R
 
 Larger files are often zipped up to save space and bandwidth. Setting up a temporary file and then using the `unz` function inside the usual `read.table` takes care of bringing it into R:
 
@@ -129,16 +131,10 @@ file.remove(tf)
 Note: although there is an `untar` function, it is no longer necessary—gzipped files can be read directly into R with the standard `read.table` function.  
 
 
-## Writing files to disk
 
-There is no reason to save a dataframe for use outside R in any format other than a flat file: [COMMENT ON WHY SAVE AS FLAT FILE]
+## Working with Databases
 
-```
-write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
-```
-
-
-## Interfacing with a database
+### Connecting to a Database
 
 While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful—for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
 
@@ -208,7 +204,7 @@ odbcCloseAll()
 The `RODBC` package allows R to connect with any database that allows OBDC connections, and then interact with that database using SQL. Since database platforms, local systems, and server environments vary considerably, it very difficult to specify how to set up the initial DSN connection for any given combination—you'll need to consult with a database administrator or search online for your particular combination of databases, drivers, and system connections. 
 You can learn more by viewing: `vignette("RODBC", package="RODBC")`.
 
-## Creating a SQLite database inside R
+### Creating a SQLite database inside R
 
 You don't even need to understand the intricacies of database planning and management to be able to create your own database on the fly from within R. While there's no need to do so if your data fits into R's memory, it can be really useful if you need to subset and merge several large files to obtain a working dataframe that can be comfortably analyzed within R's memory limits.
 
@@ -324,7 +320,7 @@ More info on the way R interfaces with RDBMSs can be found on the homepage for t
 Those with more sophisticated desktop database needs should consider PostgreSQL (http://www.postgresql.org/), which also plays well with R via the RPostgreSQL package.
 
 
-## Creating a dataframe from a SQLite database
+### Creating a dataframe from a SQLite database
 
 Once you have a database connection, you're able to access exactly what you need and pull just that into R as a dataframe, conserving memory and saving time when working on projects that will need to access a variety of tables.
 
@@ -388,7 +384,9 @@ It's worth pointing out that if your data fits in memory, there usually isn't ne
 Finally, remember that SQL is suited for data extraction and manipulation, so save the stats work for R. As one example, out-of-the-box SQLite can calculate means (via the AVG function), but not medians or standard deviations; you'd have to hardcode them by their formulas, which is not a very efficient use of code or time. Using R to do that work (see Chapter 2) is far more efficient and reproducible.
 
 
-## Working through a proxy
+## Getting Data from the Web
+
+### Working through a proxy
 
 If you're working behind a company firewall, you may have to use a proxy to pull data into R from the web. Hadley Wickham's `httr` package makes it simple.
 
@@ -404,7 +402,7 @@ set_config(use_proxy(url="YOUR_PROXY_URL", port="YOUR_PORT", username="YOUR_USER
 
 There is a bewildering array of methods to access websites from within R, particularly while having to pass through a proxy, and most of them are obscure to even the most established quants. Thanks to `httr`, all of that complexity has been hidden behind a few simple functions—type `vignette("quickstart", package="httr")` if you want more information.
 
-## Scraping data from a web table
+### Scraping data from a web table
 
 Sometimes, webpages have a treasure trove of data in tables... but don't have an option to download it as a text or Excel file. And while data scraping addins are avilable for modern web browsers like Chrome (Scraper) or Firefox (Table2Clipboard and TableTools2) that make it as easy as point-and-click, if the tables aren't set up for easy download or a simple cut-and-paste, you can use the `XML` package to grab what you need.
 
@@ -433,7 +431,7 @@ drug_use_table1_17a = readHTMLTable(druguse, header=T, which=31, stringsAsFactor
 drug_use_table1_17b = readHTMLTable(druguse, header=T, which=32, stringsAsFactors=FALSE)
 ```
 
-### Scraping tables that cover multiple pages
+#### Scraping tables that cover multiple pages
 
 What about a case where you need a table that goes over many pages? For example, ProPublica has a website that lists deficiencies in nursing home care in the United States (http://projects.propublica.org/nursing-homes/); the subset that includes Texas includes more than 3,400 rows that cover 189 different (web)pages.  
 
@@ -463,7 +461,7 @@ and finally turn the list into a data frame:
 nursing_home_deficiencies = do.call(rbind, lapply(tablelist, data.frame, stringsAsFactors=FALSE))
 ```
 
-### Cleaning up the scrape
+#### Cleaning up the scrape
 
 In many cases the data frame will require a little clean up. The following optional code does some cleaning for this particular data set; look at `?gsub`, `?strsplit`, `?substr`, and related commands to see more details:
 
@@ -487,68 +485,22 @@ nursing_home_deficiencies$Date = clean(nursing_home_deficiencies$Date)
 nursing_home_deficiencies$Date = as.Date(nursing_home_deficiencies$Date, format="%B %d, %Y")
 ```
 
-## Working with APIs
+### Working with APIs
 
-STUFF HERE
+STUFF HERE?
 
 
 
-## Creating fake data to test code
-[KEEP? DELETE?]
 
-Creating fake data is useful when you want to test how code will work before doing it "for real" on larger, more complicated datasets. We'll create a few fake dataframes in this recipe as both an example as how to do it, as well as for use in other recipes in this book.  
 
-While creating and using fake data is useful for lots of cases, it is especially useful for merging/joining (which we'll explore in the next few recipes). Sometimes joins may not behave like you expect that they will due to intricacies in your data, so testing it first on known (fake) data helps you determine whether any problems arose because of the code, or because of something in your data. If the fake data merge as expected but the real data don't, then you know that there's something in your data (and not the code!) that is messing with the join process. In large, enterprise-scale databases, it is typically the joins that can cause the most unexpected behavior—that is, can lead to the wrong results, impacting everything downstream of that join for the worse.
 
-Whatever the use case, testing code on fake data can sometimes save considerable time that would have been lost debugging.
+## Writing files to disk
 
-Using a variety of sources, we'll develop four dataframes that mimic a customer sales type of database (of course, these datasets are all small, so a database is unnecessary here).
+There is no reason to save a dataframe for use outside R in any format other than a flat file: [COMMENT ON WHY SAVE AS FLAT FILE]
+
+This will save your dataframe into the working directory as a csv, without the row numbers that R provides by default:
 
 ```
-# Table A – customer data
-customer_id = seq(1:10000)
-customer_gender = sample(c("M","F", "Unknown"), 10000, replace=TRUE,
-  prob=c(.45, .45, .10))
-customer_age = round(runif(10000, 18, 88), 0)
-customer_purchases = round(rlnorm(10000)*100, 2)
-  
-# Table B – city/state/zip and business density lookup table
-set.seed(1235813)
-temp = tempfile()
-download.file("ftp://ftp.census.gov/econ2012/CBP_CSV/zbp12totals.zip", temp)
-zipcodes = read.table(unz(temp, "zbp12totals.txt"), header=T, quote="\"",
-  sep=",", colClasses="character")
-unlink(temp)
-zipcodes = zipcodes[,c(1,11:12,10)]
-# End of Table B
-  
-# Table A, continued
-customer_zip = zipcodes[sample(1:nrow(zipcodes), 10000, replace=TRUE),]$zip
-customers = data.frame(customer_id, customer_gender, customer_age,
-  customer_purchases, customer_zip)
-  
-# TABLE C – results of a product interest survey
-ones = seq(1, 1, length.out = 2000)
-zeros = seq(0, 0, length.out = 2000)
-strongly_agree = c(ones, zeros, zeros, zeros, zeros)
-agree = c(zeros, ones, zeros, zeros, zeros)
-neutral = c(zeros, zeros, ones, zeros, zeros)
-disagree = c(zeros, zeros, zeros, ones, zeros)
-strongly_disagree = c(zeros, zeros, zeros, zeros, ones)
-survey = data.frame(customer_id, strongly_agree, agree, neutral, disagree,
-  strongly_disagree)
-  
-# TABLE D – lookup table to match states to regions
-state_regions = data.frame(datasets::state.abb, datasets::state.name, 
-  datasets::state.region, datasets::state.division, colnames=c("abb", "state", 
-  "region", "division"))
+write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
 ```
-
-In Table A, we've created a customer demographic and sales dataset. The `sample` function creates a random vector of male of female genders, as well as unknown, proportional to the weights in the `prob` option. The age and purchase values were created using the random number generators based on the uniform and log-normal distributions, respectively. Each customer's zip code was generated from a random selection of the zip codes in Table B.
-
-Table B, we've downloaded and unzipped some 2012 County Business Patterns data from the US Census to create a "locations" lookup table. (Metadata for this dataset is online at https://www.census.gov/econ/cbp/download/noise_layout/ZIP_Totals_Layout10.txt; of relevance to this recipe, in addition to the city/state/zip fields, we've also kept the est field, which is the number of business establishments in this zip code in the first quarter of 2012.)
-
-Table C is just a systematic selection designating a survey response from each customer.
-
-Finally, Table D takes advantage of R's built-in data from the datasets package to generate a lookup table of states and state regions.
 
