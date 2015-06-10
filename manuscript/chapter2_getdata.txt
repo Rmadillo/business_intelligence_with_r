@@ -1,5 +1,113 @@
 # Chapter 2: Getting Data
 
+
+
+
+
+library(XML)
+url <- "http://www.w3schools.com/xml/cd_catalog.xml"
+ xmldoc <- xmlParse(url)
+rootNode <- xmlRoot(xmldoc)
+rootNode[1]
+data <- xmlSApply(rootNode,function(x) xmlSApply(x, xmlValue))
+cd.catalog <- data.frame(t(data),row.names=NULL)
+
+
+
+require(jsonlite)
+url <- "http://finance.yahoo.com/webservice/v1/symbols/allcurrencies/quote?format=json"
+jsonDoc <- fromJSON(url)
+dat <- jsonDoc$list$resources$resource$fields
+
+
+
+
+> dat <- read.csv("missing-data.csv", na.strings = "")
+> dat$Income.imp.mean <- ifelse(is.na(dat$Income), mean(dat$Income, na.rm=TRUE), dat$Income)
+
+rand.impute <- function(a) {
+Replacing missing values with the mean
+
+When you disregard cases with any missing variables, you lose useful information that the nonmissing values in that case convey. You may sometimes want to impute reasonable values (those that will not skew the results of analyses very much) for the missing values.
+Getting ready
+
+Download the missing-data.csv file and store it in your R environment's working directory.
+How to do it...
+
+Read data and replace missing values:
+
+> dat <- read.csv("missing-data.csv", na.strings = "")
+> dat$Income.imp.mean <- ifelse(is.na(dat$Income), mean(dat$Income, na.rm=TRUE), dat$Income)
+
+After this, all the NA values for Income will now be the mean value prior to imputation.
+How it works...
+
+The preceding ifelse() function returns the imputed mean value if its first argument is NA. Otherwise, it returns the first argument.
+There's more...
+
+You cannot impute the mean when a categorical variable has missing values, so you need a different approach. Even for numeric variables, we might sometimes not want to impute the mean for missing values. We discuss an often used approach here.
+Imputing random values sampled from nonmissing values
+
+If you want to impute random values sampled from the nonmissing values of the variable, you can use the following two functions:
+
+rand.impute <- function(a) {
+  missing <- is.na(a)
+  n.missing <- sum(missing)
+  a.obs <- a[!missing]
+  imputed <- a
+  imputed[missing] <- sample (a.obs, n.missing, replace=TRUE)
+  return (imputed)
+}
+
+random.impute.data.frame <- function(dat, cols) {
+  nms <- names(dat)
+  for(col in cols) {
+    name <- paste(nms[col],".imputed", sep = "")
+    dat[name] <- rand.impute(dat[,col])
+  }
+  dat
+}
+
+dat <- read.csv("missing-data.csv", na.strings="")
+> random.impute.data.frame(dat, c(1,2))
+
+
+
+duplicated(DF)
+prospect[duplicated(prospect), ]
+
+
+
+
+The scale() function takes two optional arguments, center and scale, whose default values are TRUE. The following table shows the effect of these arguments:
+
+Argument
+	
+
+Effect
+
+center = TRUE, scale = TRUE
+	
+
+Default behavior described earlier
+
+center = TRUE, scale = FALSE
+	
+
+From each value, subtract the mean of the concerned variable
+
+center = FALSE, scale = TRUE
+	
+
+Divide each value by the root mean square of the associated variable, where root mean square is sqrt(sum(x^2)/(n-1))
+
+center = FALSE, scale = FALSE
+	
+
+Return the original values unchanged
+
+
+
 ## Working with Flat Files
 
 ### Loading data from files
