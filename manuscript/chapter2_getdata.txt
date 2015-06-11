@@ -22,23 +22,6 @@ There are a wide variety of packages and functions to import data from files, bu
 | Database table(s) | `sqldf("  ) | sqldf |
 
 
-library(XML)
-url <- "http://www.w3schools.com/xml/cd_catalog.xml"
- xmldoc <- xmlParse(url)
-rootNode <- xmlRoot(xmldoc)
-rootNode[1]
-data <- xmlSApply(rootNode,function(x) xmlSApply(x, xmlValue))
-cd.catalog <- data.frame(t(data),row.names=NULL)
-
-
-
-require(jsonlite)
-url <- "http://finance.yahoo.com/webservice/v1/symbols/allcurrencies/quote?format=json"
-jsonDoc <- fromJSON(url)
-dat <- jsonDoc$list$resources$resource$fields
-
-
-
 ## Working with Flat Files
 
 ### Loading data from files
@@ -173,6 +156,31 @@ file.remove(tf)
 Note: although there is an `untar` function, it is no longer necessary—gzipped files can be read directly into R with the standard `read.table` function.  
 
 Once you have the csvs (or other files, as relevant) unzipped, you can bring them into R as a dataframe using the techniques above. 
+
+
+### Reading XML files
+
+We see a way to bring in specific tables from websites below, in the Web section, but this recipe provides an overview of bringing in a complete XML file that is already a table:
+
+```
+library(XML)
+url <- "http://www.w3schools.com/xml/cd_catalog.xml"
+ xmldoc <- xmlParse(url)
+rootNode <- xmlRoot(xmldoc)
+rootNode[1]
+data <- xmlSApply(rootNode,function(x) xmlSApply(x, xmlValue))
+cd.catalog <- data.frame(t(data),row.names=NULL)
+```
+
+
+### Reading JSON files 
+
+```
+require(jsonlite)
+url <- "http://finance.yahoo.com/webservice/v1/symbols/allcurrencies/quote?format=json"
+jsonDoc <- fromJSON(url)
+dat <- jsonDoc$list$resources$resource$fields
+```
 
 
 ## Working with Databases
