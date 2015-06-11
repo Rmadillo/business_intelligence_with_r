@@ -1,7 +1,26 @@
 # Chapter 2: Getting Data
 
 
+The tried-and-true method for bringing data into R is via the humble csv file, and in many cases it will be the default approach. But in most professional environments, you'll encounter a wide variety of file formats and production needs, so having a cheat sheet of data import methods is useful.
 
+There are a wide variety of packages and functions to import data from files, but a few provide nearly all the functionality you'll need:
+
+{width="85%"}
+| File Type | Function | Package |
+| --------- | -------- | ------- |
+| csv file | `read.table("file", sep=",", ...)`  | base |
+|  | `read.csv("file", ...)` |  | 
+| Flat file | `read.table("file", sep=" ", ...)` | base |
+|  | `fread("file", sep=" ", ...)` | data.table |
+| Excel | `read_excel("Excelfile", sheet, ...)` | readxl |
+|  | `read.xls("Excelfile",sheet, ...)` | gdata |
+|  | `readWorksheet("Excelfile", sheet, ...)` | XLConnect |
+| SPSS | `spss.get("SPSSfile.sav")` | Hmisc |
+| Stata | `read.dta("Statafile.dta")` | foreign |
+| SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
+| XML | `readHTMLTable(   )` | XML |
+| JSON | `fromJSON(   )`  | jsonlite |
+| Database table(s) | `sqldf("  ) | sqldf |
 
 
 library(XML)
@@ -21,114 +40,9 @@ dat <- jsonDoc$list$resources$resource$fields
 
 
 
-
-> dat <- read.csv("missing-data.csv", na.strings = "")
-> dat$Income.imp.mean <- ifelse(is.na(dat$Income), mean(dat$Income, na.rm=TRUE), dat$Income)
-
-rand.impute <- function(a) {
-Replacing missing values with the mean
-
-When you disregard cases with any missing variables, you lose useful information that the nonmissing values in that case convey. You may sometimes want to impute reasonable values (those that will not skew the results of analyses very much) for the missing values.
-Getting ready
-
-Download the missing-data.csv file and store it in your R environment's working directory.
-How to do it...
-
-Read data and replace missing values:
-
-> dat <- read.csv("missing-data.csv", na.strings = "")
-> dat$Income.imp.mean <- ifelse(is.na(dat$Income), mean(dat$Income, na.rm=TRUE), dat$Income)
-
-After this, all the NA values for Income will now be the mean value prior to imputation.
-How it works...
-
-The preceding ifelse() function returns the imputed mean value if its first argument is NA. Otherwise, it returns the first argument.
-There's more...
-
-You cannot impute the mean when a categorical variable has missing values, so you need a different approach. Even for numeric variables, we might sometimes not want to impute the mean for missing values. We discuss an often used approach here.
-Imputing random values sampled from nonmissing values
-
-If you want to impute random values sampled from the nonmissing values of the variable, you can use the following two functions:
-
-rand.impute <- function(a) {
-  missing <- is.na(a)
-  n.missing <- sum(missing)
-  a.obs <- a[!missing]
-  imputed <- a
-  imputed[missing] <- sample (a.obs, n.missing, replace=TRUE)
-  return (imputed)
-}
-
-random.impute.data.frame <- function(dat, cols) {
-  nms <- names(dat)
-  for(col in cols) {
-    name <- paste(nms[col],".imputed", sep = "")
-    dat[name] <- rand.impute(dat[,col])
-  }
-  dat
-}
-
-dat <- read.csv("missing-data.csv", na.strings="")
-> random.impute.data.frame(dat, c(1,2))
-
-
-
-duplicated(DF)
-prospect[duplicated(prospect), ]
-
-
-
-
-The scale() function takes two optional arguments, center and scale, whose default values are TRUE. The following table shows the effect of these arguments:
-
-Argument
-	
-
-Effect
-
-center = TRUE, scale = TRUE
-	
-
-Default behavior described earlier
-
-center = TRUE, scale = FALSE
-	
-
-From each value, subtract the mean of the concerned variable
-
-center = FALSE, scale = TRUE
-	
-
-Divide each value by the root mean square of the associated variable, where root mean square is sqrt(sum(x^2)/(n-1))
-
-center = FALSE, scale = FALSE
-	
-
-Return the original values unchanged
-
-
-
 ## Working with Flat Files
 
 ### Loading data from files
-
-The tried-and-true method for bringing data into R is via the humble csv file, and in many cases it will be the default approach. But in most professional environments, you'll encounter a wide variety of file formats and production needs, so having a cheat sheet of data import methods is useful.
-
-There are a wide variety of packages and functions to import data from files, but a few provide nearly all the functionality you'll need:
-
-{width="85%"}
-| File Type | Function | Package |
-| --------- | -------- | ------- |
-| csv file | `read.table("file", sep=",", ...)`  | base |
-|  | `read.csv("file", ...)` |  | 
-| Flat file | `read.table("file", sep=" ", ...)` | base |
-|  | `fread("file", sep=" ", ...)` | data.table |
-| Excel | `read_excel("Excelfile", sheet, ...)` | readxl |
-|  | `read.xls("Excelfile",sheet, ...)` | gdata |
-|  | `readWorksheet("Excelfile", sheet, ...)` | XLConnect |
-| SPSS | `spss.get("SPSSfile.sav")` | Hmisc |
-| Stata | `read.dta("Statafile.dta")` | foreign |
-| SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
 
 #### Reading flat files from disk or the web
 
@@ -184,18 +98,29 @@ If you have a SAS license, `Hmisc` provides another means to import SAS files wi
 sas.get(libraryName="directoryofsasfile", member="sasfile", sasprog="full/path/to/sas.exe")
 ```
 
-Longtime SAS users might remember the datalines (or cards, if you're really an old-timer) method to create tables on the fly. While the clipboard method shown above is probably better in most cases, if you're used to using this old SAS method and you only need a quick, small, use-once table, the textConnection function could be handy to have in the toolbox:
+Longtime SAS users might remember the datalines (or cards, if you're really an old-timer) method to create tables on the fly. While the clipboard method shown above is probably better in most cases, if you're used to using this old SAS method and you only need a quick, small, use-once table, the `textConnection` function could be handy to have in the toolbox:
 
 ```
 marketing = read.table(textConnection
 ("Survey_Response, Send_Email_Ad
-Strongly_Agree, Yes
+Strongly Agree, Yes
 Agree, Yes
 Neutral, No
 Disagree, No
-Strongly_Disagree, No"),
+Strongly Disagree, No"),
 header=TRUE, sep=",")
 ```
+
+Most R users would make two vectors and create a dataframe from those, like this:
+
+```
+Survey_Response = c("Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree")
+Send_Email_Ad = c("Yes", "Yes", "No", "No", "No")
+marketing = data.frame(Survey_Response, Send_Email_Ad)
+```
+
+Of course, whichever works best for you is the method to use!
+
 
 #### Reading big files with data.table
 
