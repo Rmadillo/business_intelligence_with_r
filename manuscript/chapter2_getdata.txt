@@ -1,6 +1,5 @@
 # Chapter 2: Getting Data
 
-
 The tried-and-true method for bringing data into R is via the humble csv file, and in many cases it will be the default approach. But in most professional environments, you'll encounter a wide variety of file formats and production needs, so having a cheat sheet of data import methods is useful.
 
 There are a wide variety of packages and functions to import data from files, but a few provide nearly all the functionality you'll need:
@@ -54,48 +53,48 @@ We saw reading in a .csv file in the first chapter:
 vanco=read.table(
 ```
 
-While reading in a local flat file is pretty standard fare for any R user, sometimes reading in online files can require a little extra work. This example reads in a csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure special characters are read in correctly:
+While reading in a flat file is pretty standard fare for any R user, it can require a little extra work to make sure it comes in correctly. This example downloads an online csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure that special characters are read in correctly:
 
 ```
-pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", sep=",", encoding="UTF-8", header=FALSE)
+pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", sep=",", encoding="UTF-8", header=FALSE, stringsAsFactors=FALSE)
 ```
 
 #### Reading Excel files
 
-To import Excel files, `readxl`, `gdata`, or `XLConnect` provide pretty much anything you'll need; `gdata` is faster and more powerful but requires Perl, so Windows users must ensure that's installed on their system before they can use it. `XLConnect` has a lot of options for those using Windows and/or are in Excel-heavy work environments, and while it can be slow with large files, it is based on Java so it could be easier to start with on Windows platforms (as long as the Java and R architectures match, i.e., if R is x64, Java should be as well). `readxl` is a new addition to the R ecosystem, and if all you need to do is pull in a worksheet as-is, it's by far the easiest method:
+To import Excel files, `readxl`, `gdata`, or `XLConnect` provide pretty much anything you'll need; `gdata` is faster and more powerful but requires Perl, so Windows users must ensure that's installed on their system before they can use it. `XLConnect` has a lot of options for those using Windows and/or are in Excel-heavy work environments, and while it can be slow with large files, it is based on Java so it could be easier to start with on Windows platforms (as long as the Java and R architectures match, i.e., if R is x64, Java should be as well). `readxl` is a new addition to the R ecosystem, and if all you need to do is pull in a worksheet as-is, it's by far the fastest and easiest method:
 
 ```
+require(readxl)
 bob = read_xl(
 ```
 
 The next example uses `gdata`: it imports the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
 
 ```
+require(gdata)
 pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls", sheet="Layout-Format", nrows=22, header=FALSE, skip=1, col.names=c("Variables", "Size", "Type", "Description"), stringsAsFactors=FALSE)
 ```
 
 The `sheet=` option can use the sheet's name or its position, e.g., using `sheet=6` in the above example retrieves the same data.
 
-The raw data we read in from a csv and the metadata we read in from an Excel file can be merged to create the header names using the `colnames` function:
+The raw data we read in from a csv in the previous section and the metadata we read in from an Excel file above can be merged to create the header names using the `colnames` function:
 
 ```
 colnames(pses2011) = pses2011_header$Variable
 ```
 
-#### Creating a dataframe from the clipboard
+To read in all the tabs from an Excel file at once, use `XLConnect`:
+
+```
+XLConnect Code Here
+```
+
+#### Creating a dataframe from the clipboard or direct entry
 
 A really useful short-cut to get spreadsheet or table data with a header row into R quickly is copying it into the clipboard and importing it via the "clipboard" option in the read.table function:
 
 ```
 my_data_frame = read.table("clipboard", sep="\t", header=TRUE)
-```
-
-#### Another way to to read SAS files
-
-If you have a SAS license, `Hmisc` provides another means to import SAS files with more options than the `sas7bdat` package:
-
-```
-sas.get(libraryName="directoryofsasfile", member="sasfile", sasprog="full/path/to/sas.exe")
 ```
 
 Longtime SAS users might remember the datalines (or cards, if you're really an old-timer) method to create tables on the fly. While the clipboard method shown above is probably better in most cases, if you're used to using this old SAS method and you only need a quick, small, use-once table, the `textConnection` function could be handy to have in the toolbox:
@@ -111,7 +110,7 @@ Strongly Disagree, No"),
 header=TRUE, sep=",")
 ```
 
-Most R users would make two vectors and create a dataframe from those, like this:
+Most R users would make two vectors and create a dataframe from them instead of the "datalines" approach, like this:
 
 ```
 Survey_Response = c("Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree")
@@ -120,6 +119,15 @@ marketing = data.frame(Survey_Response, Send_Email_Ad)
 ```
 
 Of course, whichever works best for you is the method to use!
+
+
+#### Another way to to read SAS files
+
+If you have a SAS license, `Hmisc` provides another means to import SAS files with more options than the `sas7bdat` package:
+
+```
+sas.get(libraryName="directoryofsasfile", member="sasfile", sasprog="full/path/to/sas.exe")
+```
 
 
 #### Reading big files with data.table
@@ -134,6 +142,7 @@ pses2011 = fread("pses2011.csv", sep=",")
 # reading and accessing it, use data.table
 pses2011 = data.table("pses2011")
 ```
+
 
 #### Unzipping files into R
 
@@ -163,6 +172,7 @@ file.remove(tf)
 
 Note: although there is an `untar` function, it is no longer necessary—gzipped files can be read directly into R with the standard `read.table` function.  
 
+Once you have the csvs (or other files, as relevant) unzipped, you can bring them into R as a dataframe using the techniques above. 
 
 
 ## Working with Databases
