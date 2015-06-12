@@ -22,27 +22,25 @@ There are a wide variety of packages and functions to import data from files, bu
 | Database table(s) | `sqldf("  ) | sqldf |
 
 
-## Working with Flat Files
+## Working with Files
 
-### Loading data from files
+### Reading flat files from disk or the web
 
-#### Reading flat files from disk or the web
-
-To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you'll likely save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `\t` for tab, `|` for pipe, and so on.
+To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you might save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `\t` for tab, `|` for pipe, and so on. I also like to use the `stringsAsFactors=FALSE` option as well, as I often pull in data that has character fields, and it's easier to designate the factor variables later.  
 
 We saw reading in a .csv file in the first chapter:
 
 ```
-vanco=read.table(
+DFNAME = read.table("FILE.csv", header=T, sep=",", stringsAsFactors=FALSE)
 ```
 
-While reading in a flat file is pretty standard fare for any R user, it can require a little extra work to make sure it comes in correctly. This example downloads an online csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure that special characters are read in correctly:
+While reading in a flat file is pretty standard fare for any R user, it can sometimes require a little extra work to make sure it comes in correctly. This example downloads an online csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure that special characters are read in correctly:
 
 ```
 pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", sep=",", encoding="UTF-8", header=FALSE, stringsAsFactors=FALSE)
 ```
 
-#### Reading Excel files
+### Reading Excel files
 
 To import Excel files, `readxl`, `gdata`, or `XLConnect` provide pretty much anything you'll need; `gdata` is faster and more powerful but requires Perl, so Windows users must ensure that's installed on their system before they can use it. `XLConnect` has a lot of options for those using Windows and/or are in Excel-heavy work environments, and while it can be slow with large files, it is based on Java so it could be easier to start with on Windows platforms (as long as the Java and R architectures match, i.e., if R is x64, Java should be as well). `readxl` is a new addition to the R ecosystem, and if all you need to do is pull in a worksheet as-is, it's by far the fastest and easiest method:
 
@@ -69,12 +67,22 @@ colnames(pses2011) = pses2011_header$Variable
 To read in all the tabs from an Excel file at once, use `XLConnect`:
 
 ```
-XLConnect Code Here
+require(XLConnect)
+wb = loadWorkbook("UChartExamples.xlsx")
+wb_list = readWorksheet(wb, sheet = getSheets(wb))
+
+invisible(  
+lapply(sheets,function(sheet) 
+    assign(sheet,readWorksheet (wb, sheet = sheet ),pos=1))
+)
+
+
+#spcexcel = readWorksheet(wb, sheet = "spcforexcel")
 ```
 
-#### Creating a dataframe from the clipboard or direct entry
+### Creating a dataframe from the clipboard or direct entry
 
-A really useful short-cut to get spreadsheet or table data with a header row into R quickly is copying it into the clipboard and importing it via the "clipboard" option in the read.table function:
+A really useful short-cut to get spreadsheet or table data with a header row into R quickly is copying it into the clipboard from a spreadsheet and importing it via the `"clipboard"` option in the `read.table` function:
 
 ```
 my_data_frame = read.table("clipboard", sep="\t", header=TRUE)
@@ -96,7 +104,8 @@ header=TRUE, sep=",")
 Most R users would make two vectors and create a dataframe from them instead of the "datalines" approach, like this:
 
 ```
-Survey_Response = c("Strongly Agree", "Agree", "Neutral", "Disagree", "Strongly Disagree")
+Survey_Response = c("Strongly Agree", "Agree", "Neutral", "Disagree", 
+  "Strongly Disagree")
 Send_Email_Ad = c("Yes", "Yes", "No", "No", "No")
 marketing = data.frame(Survey_Response, Send_Email_Ad)
 ```
@@ -109,13 +118,14 @@ Of course, whichever works best for you is the method to use!
 If you have a SAS license, `Hmisc` provides another means to import SAS files with more options than the `sas7bdat` package:
 
 ```
-sas.get(libraryName="directoryofsasfile", member="sasfile", sasprog="full/path/to/sas.exe")
+sas.get(libraryName="directoryofsasfile", member="sasfile.sas7bdat", 
+  sasprog="full/path/to/sas.exe")
 ```
 
 
 #### Reading big files with data.table
 
-The `data.table` package is extremely useful—and much, much faster than read.table—for larger files.
+The `data.table` package is extremely useful—and much, much faster than `read.table`—for larger files.
 
 ```
 require(data.table)
@@ -127,7 +137,7 @@ pses2011 = data.table("pses2011")
 ```
 
 
-#### Unzipping files into R
+### Unzipping files into R
 
 Larger files are often zipped up to save space and bandwidth. Setting up a temporary file and then using the `unz` function inside the usual `read.table` takes care of bringing it into R:
 
@@ -189,17 +199,16 @@ dat <- jsonDoc$list$resources$resource$fields
 
 While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful—for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
 
-As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your local system and adding system DSN connections. Once the appropriate DSNs are available for you, you can use `RODBC` package to access your databases:
+As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Enterprise systems often have those already set up, but if not, your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your particular context for adding system DSN connections. Once the appropriate DSNs are available for you, you can use the `RODBC` package to access your databases:
 
 ```
 require(RODBC)
 ```
 
-Once your local system is configured for the ODBC connection, you need to define that connection within R, replacing the highlighted code with your specific values:
+Once your system is configured for the ODBC connection, you need to define that connection within R, replacing the CAPS code with your specific values:
 
 ```
-connect = odbcConnect("name_of_dsn_connection", uid="your_user_id", pwd="your_password")
-# for example: connect = odbcConnect("name_of_dsn_connection", uid="your_user_id", pwd="your_password")
+connect = odbcConnect("NAME_OF_DSN_CONNECTION", uid="YOUR_USER_ID", pwd="YOUR_PASSWORD")
 ```
 
 We can verify the connection is working:
