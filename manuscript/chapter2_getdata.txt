@@ -49,14 +49,43 @@ require(readxl)
 bob = read_xl(
 ```
 
-The next example uses `gdata`: it imports the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
+The XLConnect package makes it easy to read and write to and from Excel files. Since for sake of reproducibility and permanent data structures, you really shouldn't write and/or save Excel files as the way to save results or data from R. So if you want to write/save into Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
+
+```
+# Load the package
+require(XLConnect)
+ 
+# Load the Excel file/workbook with the path and filename in " "
+# use \ to escape the \s in the path!
+wb = loadWorkbook("\\\\childrens\\files\\ICCM_Data\\Data Management\\FILE_NAME.xlsx")
+```
+ 
+If you want to read in a single tab/sheet:
+
+```
+# Read in the first tab
+data_from_sheet = readWorksheet(wb, sheet = 1)
+```
+
+The `sheet=` option can use the sheet's name or its position, e.g., using `sheet="NAME_OF_SHEET"` in the above example retrieves the same data.
+
+If you want to read in *every* tab from a single Excel file:
+
+```
+wb = loadWorkbook("\\\\childrens\\files\\ICCM_Data\\Data Management\\FILE_NAME.xlsx")
+sheets = getSheets(wb)
+invisible(  
+    lapply(sheets,function(sheet) 
+        assign(sheet,readWorksheet (wb, sheet = sheet ), pos = 1))
+    )
+```
+
+You can also use `gdata` to get a single worksheet and specify options like `read.table` at the same time: this recipe uses it to import the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
 
 ```
 require(gdata)
 pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls", sheet="Layout-Format", nrows=22, header=FALSE, skip=1, col.names=c("Variables", "Size", "Type", "Description"), stringsAsFactors=FALSE)
 ```
-
-The `sheet=` option can use the sheet's name or its position, e.g., using `sheet=6` in the above example retrieves the same data.
 
 The raw data we read in from a csv in the previous section and the metadata we read in from an Excel file above can be merged to create the header names using the `colnames` function:
 
