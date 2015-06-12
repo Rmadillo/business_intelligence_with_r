@@ -64,21 +64,33 @@ The raw data we read in from a csv in the previous section and the metadata we r
 colnames(pses2011) = pses2011_header$Variable
 ```
 
-To read in all the tabs from an Excel file at once, use `XLConnect`:
+To read in data from Excel file using `XLConnect`:
 
 ```
 require(XLConnect)
 wb = loadWorkbook("UChartExamples.xlsx")
-wb_list = readWorksheet(wb, sheet = getSheets(wb))
-
-invisible(  
-lapply(sheets,function(sheet) 
-    assign(sheet,readWorksheet (wb, sheet = sheet ),pos=1))
-)
-
-
-#spcexcel = readWorksheet(wb, sheet = "spcforexcel")
 ```
+
+To pull in a single worksheet:
+
+```
+# You can use the sheet number or name
+spcexcel = readWorksheet(wb, sheet = "spcforexcel")
+```
+
+To pull in every sheet in the workbook:
+
+```
+# Get names of sheets
+sheets = getSheets(wb)
+
+# Invisibly take each sheet and put it into its own data frame
+invisible(  
+    lapply(sheets,function(sheet) 
+        assign(sheet,readWorksheet (wb, sheet = sheet ), pos = 1))
+)
+```
+
 
 ### Creating a dataframe from the clipboard or direct entry
 
@@ -227,14 +239,12 @@ connect_tables = sqlTables(connect)
 connect_tables
 ```
 
-`RODBC` will add a `$` to each table's name to designate it as a system file.
-
 You can pull in an entire table using the `sqlFetch` function, but if you're using a database, you probably want to query it to get just what you need.
 
-To get a whole table (don't forget the `$` at the end of the table name):
+To get a whole table:
 
 ```
-whole_table = sqlFetch(connect, "table_name$")
+whole_table = sqlFetch(connect, "table_name")
 ```
 
 To make a SQL query and put it into a dataframe, set up the query in an R object and then use the `sqlQuery` function. The following query is identical to above as it brings in the whole table:
@@ -242,7 +252,7 @@ To make a SQL query and put it into a dataframe, set up the query in an R object
 ```
 # Within the double quotes you can put a valid SQL query
 # Using single quotes to name the table
-query_1 = "SELECT * FROM 'table_name$'"
+query_1 = "SELECT * FROM 'table_name'"
 query_1_dataframe = sqlQuery(connect, query_1)
 ```
 
