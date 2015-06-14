@@ -26,19 +26,24 @@ There are a wide variety of packages and functions to import data from files, bu
 
 ### Reading flat files from disk or the web
 
-To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you might save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `\t` for tab, `|` for pipe, and so on. I also like to use the `stringsAsFactors=FALSE` option as well, as I often pull in data that has character fields, and it's easier to designate the factor variables later.  
+To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you might save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `\t` for tab, `|` for pipe, and so on. I also like to use the `stringsAsFactors=FALSE` option as well, as I often pull in data that has character fields, and it's easier to designate the factor variables later. Finally, `read.table` assumes that the data you're reading in doesn't have a header, so if there is one, you have to specify that with `header=TRUE`.
 
-We saw reading in a .csv file in the first chapter:
+We saw reading in a csv file in the first chapter:
 
 ```
-DFNAME = read.table("FILE.csv", header=T, sep=",", stringsAsFactors=FALSE)
+# Read in a csv from the current working directory
+DFNAME = read.table("FILE.csv", header=TRUE, sep=",", stringsAsFactors=FALSE)
 ```
 
 While reading in a flat file is pretty standard fare for any R user, it can sometimes require a little extra work to make sure it comes in correctly. This example downloads an online csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure that special characters are read in correctly:
 
 ```
-pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2014/data/2014-results-resultats.csv", sep=",", encoding="UTF-8", header=FALSE, stringsAsFactors=FALSE)
+# Read in a csv from the internet
+pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", sep=",", encoding="UTF-8")
 ```
+
+This file has no header; in the next section, we'll download the Excel file with the documentation for this data and use that to create the header.
+
 
 ### Reading Excel files
 
@@ -47,12 +52,17 @@ To import Excel files, `readxl`, `gdata`, or `XLConnect` provide pretty much any
 We'll use an Excel file that comes with the `readxl` package to demonstrate `readxl` and `XLConnect`.
 
 ```
+# Load the package
 require(readxl)
+
+# Load the Excel workbook
 datasets = system.file("extdata/datasets.xlsx", package = "readxl")
+
+# Read in the first worksheet
 iris_xl = read_excel(datasets, sheet = 1)
 ```
 
-The `XLConnect` package makes it easy to read and write to and from Excel files. Since for sake of reproducibility and data permanency, you should always save data as plain text, e.g., as a csv, and not in proprietrary or non-text format like Excel. So if you want to write/save *into* Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
+The `XLConnect` package makes it easy to read and write to and from Excel files. For sake of reproducibility and data permanency, you should always save data as plain text, e.g., as a csv, and not in proprietrary or non-text format like Excel. So if you want to write/save *into* Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
 
 ```
 # Load the package
@@ -74,31 +84,30 @@ The `sheet=` option can use the sheet's name or its position, e.g., using `sheet
 If you want to read in *every* tab from a single Excel file:
 
 ```
-wb = loadWorkbook(system.file("extdata/datasets.xlsx", package = "readxl"))
-
-sheets = getSheets(wb2)
-
-invisible(  
-lapply(sheets,function(sheet) 
-    assign(sheet,readWorksheet (wb2, sheet = sheet ),pos=1))
-))
+# Get a list of worksheets in the workbook
 sheets = getSheets(wb)
+
+# Invisibly return each sheet as its own data frame
 invisible(  
     lapply(sheets,function(sheet) 
         assign(sheet,readWorksheet (wb, sheet = sheet ), pos = 1))
     )
 ```
 
-XLConnect doesn't support downloading an Excel file straight from the web, however. `gdata` can. You can use it to import the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the nrows function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
+`XLConnect` doesn't support downloading an Excel file straight from the web, however. `gdata` can. You can use it to import the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the `nrows` function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
 
 ```
+# Load package
 require(gdata)
-pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2014/data/2014-documentation.xlsx", sheet="Layout-Format", nrows=22, header=FALSE, skip=1, col.names=c("Variables", "Size", "Type", "Description"), stringsAsFactors=FALSE)
+
+# Download Excel file form web and read in the first sheet to a data frame
+pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls", sheet="Layout-Format", nrows=22, header=FALSE, skip=1, col.names=c("Variables", "Size", "Type", "Description"), stringsAsFactors=FALSE)
 ```
 
-The raw data we read in from a csv in the previous section and the metadata we read in from an Excel file above can be merged to create the header names using the `colnames` function:
+Using the `colnames` function, the metadata we read in from this Excel file can be used to create the header names in the raw data we read in as a csv in the previous section:
 
 ```
+# Assign the Variable column names from the Exccel file to the raw data file
 colnames(pses2011) = pses2011_header$Variable
 ```
 
@@ -108,12 +117,26 @@ colnames(pses2011) = pses2011_header$Variable
 A really useful short-cut to get spreadsheet or table data with a header row into R quickly is copying it into the clipboard from a spreadsheet and importing it via the `"clipboard"` option in the `read.table` function:
 
 ```
+# Generic code for reading data from the clipboard
 my_data_frame = read.table("clipboard", sep="\t", header=TRUE)
+```
+
+For a small amount of data, many R users would make vectors and create a data frame from them, e.g.,:
+
+```
+# Fake data in vectors
+Survey_Response = c("Strongly Agree", "Agree", "Neutral", "Disagree", 
+  "Strongly Disagree")
+Send_Email_Ad = c("Yes", "Yes", "No", "No", "No")
+
+# Combine vectors into a data frame
+marketing = data.frame(Survey_Response, Send_Email_Ad)
 ```
 
 Longtime SAS users might remember the datalines (or cards, if you're really an old-timer) method to create tables on the fly. While the clipboard method shown above is probably better in most cases, if you're used to using this old SAS method and you only need a quick, small, use-once table, the `textConnection` function could be handy to have in the toolbox:
 
 ```
+# An R take on SAS's datalines
 marketing = read.table(textConnection
 ("Survey_Response, Send_Email_Ad
 Strongly Agree, Yes
@@ -122,15 +145,6 @@ Neutral, No
 Disagree, No
 Strongly Disagree, No"),
 header=TRUE, sep=",")
-```
-
-Most R users would make two vectors and create a dataframe from them instead of the "datalines" approach, like this:
-
-```
-Survey_Response = c("Strongly Agree", "Agree", "Neutral", "Disagree", 
-  "Strongly Disagree")
-Send_Email_Ad = c("Yes", "Yes", "No", "No", "No")
-marketing = data.frame(Survey_Response, Send_Email_Ad)
 ```
 
 Of course, whichever works best for you is the method to use!
@@ -148,13 +162,15 @@ sas.get(libraryName="directoryofsasfile", member="sasfile.sas7bdat",
 
 #### Reading big files with data.table
 
-The `data.table` package is extremely useful—and much, much faster than `read.table`—for larger files.
+The `data.table` package is extremely useful—and much, *much* faster than `read.table`—for larger files.
 
 ```
 require(data.table)
-# If you want to read in a csv directly, use fread
+# If you want to read in a csv directly, use fread, e.g., if you
+# had the raw pses2011 in a local csv, you'd read it in this way:
 pses2011 = fread("pses2011.csv", sep=",")
-# If you already have a dataframe and want to speed up
+
+# If you already have a data frame and want to speed up
 # reading and accessing it, use data.table
 pses2011 = data.table("pses2011")
 ```
