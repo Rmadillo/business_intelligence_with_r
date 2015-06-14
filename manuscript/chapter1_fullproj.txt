@@ -1,16 +1,33 @@
 # Chapter 1: An entire project in a few lines of code
 
-**INTRO HERE**
+Learning R is an infamously difficult thing to do. However, learning to do *x* with R can be pretty simple. Most business intelligence analysts just need to accomplish a set of particular tasks, many of which can be done relatively easily in R.
+
+Essentially, the technial part of the typical BI workflow is
+1. Set up and develop project space
+2. Acquire data
+3. Wrangle data
+4. Perform analytics
+5. Develop report/data product
+6. Document the process
+
+This chapter shows how simple it can be do some advanced analytics in R, working through each of these six steps.
+
+## Set up
+
+First, we need to set up the working environment
 
 Load the packages we'll use in this project:
 
 ```
 # This package provides quality control charts/analysis
 require(qcc)
+
 # This package allows us to create publication-quality plots
 require(ggplot2)
+
 # This package allows creation of javascript widgets for use in webpages
 require(htmlwidgets)
+
 # This packages makes time series widgets within htmlwidgets
 require(dygraphs)
 ```
