@@ -147,17 +147,13 @@ We want to determine total daily use (kWh) and maximum daily demand (kW) over th
 power_group = group_by(power[,-2], Date)
 
 # Use 'dplyr' to get daily max demand and total use results
-power_daily = summarise(power_group, Max_Demand = max(Global_active_power), 
-        Total_Use = sum(Global_active_power)*24)
+power_daily = summarise(power_group, Max_Demand_kW = max(Global_active_power), 
+        Total_Use_kWh = sum(Global_active_power)/60)
 
 # Look at structure of the result
 str(power_daily)
 
-Classes ‘tbl_df’, ‘tbl’ and 'data.frame':	1442 obs. of  3 variables:
- $ Date      : Date, format: "2006-12-16" "2006-12-17" "2006-12-18" ...
- $ Max_Demand: num  7.71 7.06 6.16 7.84 5.99 ...
- $ Total_Use : num  29020 81371 52892 39989 53418 ...
- - attr(*, "drop")= logi TRUE
+
  ```
 
 
