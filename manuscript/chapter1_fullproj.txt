@@ -14,13 +14,38 @@ This chapter shows how simple it can be do some advanced analytics in R, working
 
 ## Set up
 
-First, we need to set up the working environment
+First, we need to set up the working environment—this is generally easiest to do using the file system (see Appendix 1), but for sake of explanation and thoroughness, we'll do the entire process in this chapter within R. To ensure clarity and reproducibility, we need to set up a single directory for each project, with subfolders that contain and separate code, data, results, and so on. 
 
-Load the packages we'll use in this project:
+Open RStudio. 
+
+R starts in the default directory, symbolized at the top of the console window as `~/`. 
+
+Create the directory space with `dir.create`, the R equivalent to `mkdir`:
 
 ```
-# This package provides quality control charts/analysis
-require(qcc)
+# Creates directory/ies, use recursive=TRUE in the first
+# command to create the entire path at once
+dir.create("~/BIWR/Chapter1/Code", recursive=T)
+dir.create("~/BIWR/Chapter1/Data")
+dir.create("~/BIWR/Chapter1/Results")
+```
+
+Normally, at this point we'd use the script window to write out the script, often using R Markdown to create the documentation as we go. For now, you either cut and paste each line into the console as we go, or open a new R Script window and put the code as-is into that. At the end of this chapter, we'll go through the entire process using an R Markdown file to document the project and create a final data product. 
+
+Move into your new directory and load the R packages we'll use in this project:
+
+```
+# Set the working directory
+setwd("~/BIWR/Chapter1")
+
+# This package allows us to explore time values separate from date values
+require(chron)
+
+# This package provides functions for easy data wrangling
+require(dplyr)
+
+# This package provides automated forecasting of time series data
+require(forecast)
 
 # This package allows us to create publication-quality plots
 require(ggplot2)
@@ -28,37 +53,115 @@ require(ggplot2)
 # This package allows creation of javascript widgets for use in webpages
 require(htmlwidgets)
 
-# This packages makes time series widgets within htmlwidgets
+# This packages uses html widgets to make time series widgets
 require(dygraphs)
 ```
 
-Load the data from a .csv file:
+
+## Acquire Data
+
+The data we'll use in this chapter contains 2+ million records of minute-scale power consumption in a single household for about 47 months, collected by Electricité de France and archived at the UCI Machine Learning Repository. The data set's page can be accessed [here](https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption) for more details, but for convience, the attributes of this dataset are as follows:
+
+1. *`date`*: Date in format dd/mm/yyyy
+2. *`time`*: time in format hh:mm:ss
+3. *`global_active_power`*: household global minute-averaged active power (in kilowatt)
+4. *`global_reactive_power`*: household global minute-averaged reactive power (in kilowatt)
+5. *`voltage`*: minute-averaged voltage (in volt)
+6. *`global_intensity`*: household global minute-averaged current intensity (in ampere)
+7. *`sub_metering_1`*: energy sub-metering No. 1 (in watt-hour of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered).
+8. *`sub_metering_2`*: energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light.
+9. *`sub_metering_3`*: energy sub-metering No. 3 (in watt-hour of active energy). It corresponds to an electric water-heater and an air-conditioner.
+
+Download the data from a zipped flat file (semi-colon delimted .txt format) on the UCI Machine Learning Repository:
 
 ```
-vanco = read.table("~/Projects/Training/vanco_weekly_data.csv", sep=",", 
-    header=T)
+# Download the zip file into the data folder
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip", destfile = "Data/household_power_consumption.zip")
+
+# Unzip the data from the zip file into the Data folder
+unzip("Data/household_power_consumption.zip", exdir="Data")
+
+# Read the data into R using data.table package's fread command
+# NAs are represented by blanks and ? in this data, so need to change
+power = read.table("Data/household_power_consumption.txt", sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
 ```
 
-Convert the `Date` variable from a factor to a date:
+***CONVERT TO fread?***
+Incidentally, reading in the data with `read.table` (see Chapter 2) took about 23 seconds on my 16G i7 core Linux laptop, and only 2 seconds using `fread`. 
+
+
+## Wrangling Data
+
+We'll look at the structure of the data to see what's been read in:
 
 ```
-vanco_spc_results$Date = as.Date(vanco_spc_results$Date)
+# str gives you the structure of the dataset
+str(power)
+
+'data.frame':	2075259 obs. of  9 variables:
+ $ Date                 : chr  "16/12/2006" "16/12/2006" "16/12/2006" "16/12/2006" ...
+ $ Time                 : chr  "17:24:00" "17:25:00" "17:26:00" "17:27:00" ...
+ $ Global_active_power  : num  4.22 5.36 5.37 5.39 3.67 ...
+ $ Global_reactive_power: num  0.418 0.436 0.498 0.502 0.528 0.522 0.52 0.52 0.51 0.51 ...
+ $ Voltage              : num  235 234 233 234 236 ...
+ $ Global_intensity     : num  18.4 23 23 23 15.8 15 15.8 15.8 15.8 15.8 ...
+ $ Sub_metering_1       : num  0 0 0 0 0 0 0 0 0 0 ...
+ $ Sub_metering_2       : num  1 1 2 1 1 2 1 1 1 2 ...
+ $ Sub_metering_3       : num  17 16 17 17 17 17 17 17 17 16 ...
 ```
 
-Run the analysis:
+The Date and Time variables were read in as characters, so we'll convert them to date and time classes, respectively, as well as create a new DateTime column:
 
 ```
-vanco_spc = qcc(vanco$Weekly_Count, sizes=vanco$Weekly_Census/1000, 
-                labels=vanco$Date, nsigmas=3, type="u", digits=4)
+# Convert data to Date object
+power$Date = as.Date(power$Date, format="%d/%m/%Y")
+
+# Convert time to Time object using the chron package
+power$Time = times(power$Time)
+
+# Create a DateTime object
+power$DateTime = as.POSIXct(paste(power$Date, power$Time))
+
+# Verify the changes
+str(power)
+
+'data.frame':	2075259 obs. of  10 variables:
+ $ Date                 : Date, format: "2006-12-16" "2006-12-16" "2006-12-16" ...
+ $ Time                 :Class 'times'  atomic [1:2075259] 0.725 0.726 0.726 0.727 0.728 ...
+  .. ..- attr(*, "format")= chr "h:m:s"
+ $ Global_active_power  : num  4.22 5.36 5.37 5.39 3.67 ...
+ $ Global_reactive_power: num  0.418 0.436 0.498 0.502 0.528 0.522 0.52 0.52 0.51 0.51 ...
+ $ Voltage              : num  235 234 233 234 236 ...
+ $ Global_intensity     : num  18.4 23 23 23 15.8 15 15.8 15.8 15.8 15.8 ...
+ $ Sub_metering_1       : num  0 0 0 0 0 0 0 0 0 0 ...
+ $ Sub_metering_2       : num  1 1 2 1 1 2 1 1 1 2 ...
+ $ Sub_metering_3       : num  17 16 17 17 17 17 17 17 17 16 ...
+ $ DateTime             : POSIXct, format: "2006-12-16 17:24:00" "2006-12-16 17:25:00" "2006-12-16 17:26:00" ...
 ```
 
-View the results:
+We want to determine total daily use (kWh) and maximum daily demand (kW) over the period of record, so we need to obtain those values in a new data frame. 
 
 ```
-plot(vanco_spc, ylab="Orders/1000 Patient Days", xlab="Date", title="Vanco 
-     Orders Control Chart", digits=4)
-vanco_spc
-```
+# Use 'dplyr' to group by date. Note: the 'chron` time format
+# is not understood by 'dplyr' so we'll drop that column
+power_group = group_by(power[,-2], Date)
+
+# Use 'dplyr' to get daily max demand and total use results
+power_daily = summarise(power_group, Max_Demand = max(Global_active_power), 
+        Total_Use = sum(Global_active_power)*24)
+
+# Look at structure of the result
+str(power_daily)
+
+Classes ‘tbl_df’, ‘tbl’ and 'data.frame':	1442 obs. of  3 variables:
+ $ Date      : Date, format: "2006-12-16" "2006-12-17" "2006-12-18" ...
+ $ Max_Demand: num  7.71 7.06 6.16 7.84 5.99 ...
+ $ Total_Use : num  29020 81371 52892 39989 53418 ...
+ - attr(*, "drop")= logi TRUE
+ ```
+
+
+
 
 Make a publication-quality plot:
 
