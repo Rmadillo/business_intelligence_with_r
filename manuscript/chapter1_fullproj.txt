@@ -131,6 +131,9 @@ power$DateTime = as.POSIXct(paste(power$Date, power$Time))
 # Obtain the Month and Year for each data point
 power$Month = format(power$Date,"%Y-%m")
 
+# Add the first to each Y-m combo and convert back to Date
+power_monthly$Month = as.Date(paste0(power_monthly$Month, "-01"))
+
 # Verify the changes
 str(power)
 
@@ -145,8 +148,8 @@ str(power)
  $ Sub_metering_2       : num  1 1 2 1 1 2 1 1 1 2 ...
  $ Sub_metering_3       : num  17 16 17 17 17 17 17 17 17 16 ...
  $ DateTime             : POSIXct, format: "2006-12-16 17:24:00" "2006-12-16 17:25:00" "2006-12-16 17:26:00" ...
- $ Month                : chr  "2006-12" "2006-12" "2006-12" "2006-12" ...
- 
+ $ Month                   : Date, format: "2006-12-01" "2006-12-01" "2006-12-01" ...
+
 # Get an overview of the variables
 summary(power)
 
@@ -167,12 +170,12 @@ summary(power)
  Max.   :254.2   Max.   :48.400   Max.   :88.000   Max.   :80.000   Max.   :31.000  
  NA's   :25979   NA's   :25979    NA's   :25979    NA's   :25979    NA's   :25979   
     DateTime                      Month          
- Min.   :2006-12-16 17:24:00   Length:2075259    
- 1st Qu.:2007-12-12 00:18:30   Class :character  
- Median :2008-12-06 07:13:00   Mode  :character  
- Mean   :2008-12-06 06:33:21                     
- 3rd Qu.:2009-12-01 14:07:30                     
- Max.   :2010-11-26 21:02:00      
+ Min.   :2006-12-16 17:24:00   Min.   :2006-12-01    
+ 1st Qu.:2007-12-12 00:18:30   1st Qu.:2007-12-01  
+ Median :2008-12-06 07:13:00   Median :2008-12-01  
+ Mean   :2008-12-06 06:33:21   Mean   :2008-11-21                  
+ 3rd Qu.:2009-12-01 14:07:30   3rd Qu.:2009-12-01                  
+ Max.   :2010-11-26 21:02:00   Max.   :2010-11-01   
 ```
 
 We can see from the summary that there are missing values (`NAs`) in our primary variable, `Global_active_power`—about 26k out of the 2 million records, or a little over 1.25%. We can quickly get a table and graph of missing data over time by using setting a counting marker for missing values with 'ifelse', then using `dplyr` to group and summarize the data, and finally pull a ready-made function from the web to create a calendar graph.  
@@ -225,11 +228,110 @@ Now that we have a complete time series, we can determine total monthly use (kWh
 power_group = group_by(power, Month)
 
 # Use 'dplyr' to get monthly max demand and total use results
-power_daily = summarise(power_group, Max_Demand_kW = max(Global_active_power_locf), 
+power_monthly = summarise(power_group, Max_Demand_kW = max(Global_active_power_locf), 
   Total_Use_kWh = sum(Global_active_power_locf)/60)
 
+# Remove partial months from data frame
+power_monthly = power_monthly[2:47,]
+
 # Look at structure of the result
-str(power_daily)
+str(power_monthly)
+```
+
+
+## Analytics
+
+### Explore data
+
+```
+# Create plot of total use by month
+total_use_plot = ggplot(power_monthly, aes(Month, Total_Use_kWh)) +
+    geom_line(col="blue", lwd=1) 
+
+# Display plot
+total_use_plot
+
+# Save plot as hi-res png to Results subfolder
+ggsave("Results/total_use_plot.png", width=6, height=4, dpi=600, units="in")
+
+# Create plot of maximum demand by month
+max_demand_plot = ggplot(power_monthly, aes(Month, Max_Demand_kW)) +
+    geom_line(col="blue", lwd=1)
+
+# Display plot
+max_demand_plot
+
+# Save plot to Results subfolder
+ggsave("Results/max_demand_plot.png", width=6, height=4, dpi=600, units="in")
+```
+
+### Forecast Total Usage
+
+```
+# Create a time series object of Total Usage
+total_use_ts = ts(power_monthly$Total_Use_kWh, start=c(2007,1), frequency=12)
+
+# Automatically obtain the forecast for the next 6 months
+# using the 'forecast' package's forecast function
+# See ?forecast for more details
+total_use_fc = forecast(total_use_ts, h=6)
+
+# View the forecast model results
+summary(total_use_fc)
+
+# "Sink" a copy of the model results into a text file
+sink("Results/Forecast_Model.txt")
+summary(total_use_fc)
+sink()
+
+# View the forecast plot
+plot(total_use_fc)
+
+# Save the plot to the Results folder
+# Note that resolution is called 'res' here
+png("Results/total_use_forecast.png", width=6, height=4, res=600, units="in")
+plot(total_use_fc)
+dev.off() 
+```
+
+## Reporting
+
+### Create an Interactive .html Plot
+
+```
+# Create a data frame with the original data
+# and space for the forecast details
+use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh, 
+                    Forecast = NA, Upper_80 = NA, 
+                    Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
+
+# Create a data frame for the forecast details
+# with a column for the original data
+use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
+                        total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
+                    Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
+
+# "Union" the two data frames into one
+use_ts_fc = rbind(use_df, use_fc)
+
+# Create a time series of the data and forecast results
+total_use_forecast = ts(use_ts_fc, start=c(2007, 1), freq=12)
+
+# Create the widget
+energy_use_prediction_widget = dygraph(total_use_forecast, 
+    main = "Predicted Monthly Electricty Use (kWh)",
+    ylab = "Total kWh", width=900, height=500) %>% 
+    dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
+    dyEvent(date = "2008-08-01", "Went on vacation", labelLoc = "top") %>%
+    dyRangeSelector(dateWindow = c("2008-09-15", "2011-06-01")) %>%
+    dyLegend(width = 800)
+
+# Display the widget in the Viewer window
+# Hit the Zoom button for a pop-out 
+energy_use_prediction_widget
+
+# Save the widget as a stand-alone html file to Results folder
+saveWidget(energy_use_prediction_widget, "energy_use_prediction_widget.html")
 ```
 
 
@@ -244,41 +346,4 @@ str(power_daily)
 
 
 
-
-
-
-
-```
-# Convert time to Time object using the chron package
-power$Time = times(power$Time)
-
-# get a mean clock time for peak demand
-
-```
-
-Create an interactive plot:
-
-```
-# Create an R time series object
-discharges_ts = ts(discharges$DISCHARGES, start=c(2008,10), frequency=12)
-# Do a quick prediction (no options explored! Just an EXAMPLE!)
-hw = HoltWinters(discharges_ts)
-predicted = predict(hw, n.ahead = 24, prediction.interval = TRUE)
-all = cbind(discharges_ts, predicted)
-# Create the widget with the slider set to current fiscal year
-discharges_prediction_widget = 
-    dygraph(all, main = "Predicted Monthly Discharges") %>%
-    dySeries("discharges_ts", label = "Monthly Discharges") %>%
-    dySeries(c("predicted.lwr", "predicted.fit", "predicted.upr"), 
-                label = "Predicted Discharges") %>%
-    dyRangeSelector(dateWindow = c("2012-10-01", "2016-10-01"))
-# Open the widget
-discharges_prediction_widget
-```
-
-Save the widget to the working directory:
-
-```
-saveWidget(discharges_prediction_widget, "discharges_predictions.html")
-```
 
