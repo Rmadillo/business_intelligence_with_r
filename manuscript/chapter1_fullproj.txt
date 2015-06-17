@@ -234,6 +234,9 @@ power_monthly = summarise(power_group, Max_Demand_kW = max(Global_active_power_l
 # Remove partial months from data frame
 power_monthly = power_monthly[2:47,]
 
+# Convert Month to Date
+power_monthly$Month = as.Date(paste0(power_monthly$Month, "-01"))
+
 # Look at structure of the result
 str(power_monthly)
 ```
