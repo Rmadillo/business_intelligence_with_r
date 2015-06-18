@@ -347,7 +347,7 @@ energy_use_prediction_widget
 saveWidget(energy_use_prediction_widget, "energy_use_prediction_widget.html")
 ```
 
-
+![energy widget](/images/energy_widget_screenshot.png)
 
 
 
