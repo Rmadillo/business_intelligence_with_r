@@ -256,7 +256,11 @@ total_use_plot
 
 # Save plot as hi-res png to Results subfolder
 ggsave("Results/total_use_plot.png", width=6, height=4, dpi=600, units="in")
+```
 
+![total use plot](/images/total_use_plot.png)
+
+```
 # Create plot of maximum demand by month
 max_demand_plot = ggplot(power_monthly, aes(Month, Max_Demand_kW)) +
     geom_line(col="blue", lwd=1)
@@ -267,6 +271,9 @@ max_demand_plot
 # Save plot to Results subfolder
 ggsave("Results/max_demand_plot.png", width=6, height=4, dpi=600, units="in")
 ```
+
+![max demand plot](/images/max_demand_plot.png)
+
 
 ### Forecast Total Usage
 
@@ -296,6 +303,9 @@ png("Results/total_use_forecast.png", width=6, height=4, res=600, units="in")
 plot(total_use_fc)
 dev.off() 
 ```
+
+![total_use_forecast](/images/total_use_forecast.png)
+
 
 ## Reporting
 
