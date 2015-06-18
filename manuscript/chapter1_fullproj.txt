@@ -3,12 +3,13 @@
 Learning R is an infamously difficult thing to do. However, learning to do *x* with R can be pretty simple. Most business intelligence analysts just need to accomplish a set of particular tasks, many of which can be done relatively easily in R.
 
 Essentially, the technial part of the typical BI workflow is
-1. Set up and develop project space
-2. Acquire data
-3. Wrangle data
-4. Perform analytics
-5. Develop report/data product
-6. Document the process
+
+1. Set up and develop project space  
+2. Acquire data  
+3. Wrangle data  
+4. Perform analytics  
+5. Develop report/data product  
+6. Document the process  
 
 This chapter shows how simple it can be do some advanced analytics in R, working through each of these six steps.
 
@@ -16,15 +17,15 @@ This chapter shows how simple it can be do some advanced analytics in R, working
 
 The data we'll use in this chapter contains 2+ million records of minute-scale power consumption in a single household for about 47 months, collected by Electricité de France and archived at the UCI Machine Learning Repository. The data set's page can be accessed [here](https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption) for more details, but for convience, the attributes of this dataset are as follows:
 
-1. *`date`*: Date in format dd/mm/yyyy
-2. *`time`*: time in format hh:mm:ss
-3. *`global_active_power`*: household global minute-averaged active power (in kilowatt)
-4. *`global_reactive_power`*: household global minute-averaged reactive power (in kilowatt)
-5. *`voltage`*: minute-averaged voltage (in volt)
-6. *`global_intensity`*: household global minute-averaged current intensity (in ampere)
-7. *`sub_metering_1`*: energy sub-metering No. 1 (in watt-hour of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered).
-8. *`sub_metering_2`*: energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light.
-9. *`sub_metering_3`*: energy sub-metering No. 3 (in watt-hour of active energy). It corresponds to an electric water-heater and an air-conditioner.
+1. **`date`**: date in format dd/mm/yyyy
+2. **`time`**: time in format hh:mm:ss
+3. **`global_active_power`**: household global minute-averaged active power (in kilowatts)
+4. **`global_reactive_power`**: household global minute-averaged reactive power (in kilowatts)
+5. **`voltage`**: minute-averaged voltage (in volts)
+6. **`global_intensity`**: household global minute-averaged current intensity (in amperes)
+7. **`sub_metering_1`**: energy sub-metering No. 1 (in watt-hours of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered).
+8. **`sub_metering_2`**: energy sub-metering No. 2 (in watt-hours of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light.
+9. **`sub_metering_3`**: energy sub-metering No. 3 (in watt-hours of active energy). It corresponds to an electric water-heater and an air-conditioner.
 
 Our purpose is to describe past monthly power usage and forecast potential usage for six months following the last full month of data in the dataset.
 
@@ -58,7 +59,7 @@ setwd("~/BIWR/Chapter1")
 # This package allows us to explore time values separate from date values
 require(chron)
 
-# This package will allow us to interpolate between missing values
+# This package will allow us to interpolate between missing time series values
 require(zoo)
 
 # This package provides functions for easy data wrangling
@@ -73,7 +74,7 @@ require(ggplot2)
 # This package allows creation of javascript widgets for use in webpages
 require(htmlwidgets)
 
-# This packages uses html widgets to make time series widgets
+# This packages uses htmlwidgets to make time series widgets
 require(dygraphs)
 ```
 
@@ -90,13 +91,11 @@ download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/ho
 # Unzip the data from the zip file into the Data folder
 unzip("Data/household_power_consumption.zip", exdir="Data")
 
-# Read the data into R using data.table package's fread command
+# Read the data into R 
 # NAs are represented by blanks and ? in this data, so need to change
-power = read.table("Data/household_power_consumption.txt", sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
+power = read.table("Data/household_power_consumption.txt", sep=";", header=T, 
+  na.strings=c("?",""), stringsAsFactors=FALSE)
 ```
-
-***CONVERT TO fread?***
-Incidentally, reading in the data with `read.table` (see Chapter 2) took about 23 seconds on my 16G i7 core Linux laptop, and only 2 seconds using `fread`. 
 
 
 ## Wrangling Data
@@ -119,7 +118,7 @@ str(power)
  $ Sub_metering_3       : num  17 16 17 17 17 17 17 17 17 16 ...
 ```
 
-The Date and Time variables were read in as characters, so we'll convert them to date and time classes, respectively, as well as create a new DateTime column:
+The `Date` and `Time` variables were read in as characters, so we'll convert them to date and time classes, respectively, as well as create a new `DateTime` column:
 
 ```
 # Convert data to Date object
@@ -152,6 +151,9 @@ str(power)
 
 # Get an overview of the variables
 summary(power)
+```
+
+***Need to figure this part out--image?***
 
       Date                Time           Global_active_power Global_reactive_power
  Min.   :2006-12-16   Length:2075259     Min.   : 0.076      Min.   :0.000        
@@ -176,9 +178,9 @@ summary(power)
  Mean   :2008-12-06 06:33:21   Mean   :2008-11-21                  
  3rd Qu.:2009-12-01 14:07:30   3rd Qu.:2009-12-01                  
  Max.   :2010-11-26 21:02:00   Max.   :2010-11-01   
-```
 
-We can see from the summary that there are missing values (`NAs`) in our primary variable, `Global_active_power`—about 26k out of the 2 million records, or a little over 1.25%. We can quickly get a table and graph of missing data over time by using setting a counting marker for missing values with 'ifelse', then using `dplyr` to group and summarize the data, and finally pull a ready-made function from the web to create a calendar graph.  
+
+We can see from the summary that there are about 26k missing values (`NAs`) in our primary variable, `Global_active_power`—about 1.25% of the 2 million records. We can quickly get a table and graph of missing data over time by using setting a counting marker for missing values with `ifelse`, then using the `dplyr` package to group and summarize the data, and finally pull a ready-made R function from the web to create a calendar graph that shows the daily distribution of the missing values.  
 
 ```
 # Use 'ifelse' to count each minute that is NA
@@ -201,27 +203,36 @@ calendarHeat(power_day_missing$Date, power_day_missing$Count_Missing,
 
 ![missing](/images/biwr_01_power_missing.png)
 
-You can view the the actual values of missing data on each day by exploring the `power_day_missing` data frame. Since we want to perform automated forecasting, we need to fill in those missing values. If we convert each missing value to 0, we'll definitely underestimate usage for those times. A reasonable first pass is to carry the last value forward, which we can do with the `na.locf` function in the `zoo` package. 
+You can view the the actual values of missing data on each day by exploring the `power_day_missing` data frame. 
+
+The "recent" 4-5 day spans of missing data may be a little concerning since we want to perform automated forecasting. However, since we're aggregating to months and forecasting into months with very few missing values, we should be ok. But to make automatic forecasting work, we need to fill in those missing values. If we convert each missing value to 0, we'll definitely underestimate usage for those times. A reasonable first pass is to carry the last value forward, which we can do with the `na.locf` function in the `zoo` package. While other approaches are possible (and perhaps better, e.g., using some sort of mean or median value instead of the last value, or even a seasonal Kalman filter), we'll proceed with this option to keep the example simple. 
 
 ```
-# Use 'zoo' to perform interpolation for missing values
+# Use 'zoo' to perform interpolation for missing time series values
 power$Global_active_power_locf = na.locf(power$Global_active_power)
 
 # Compare the original and interpolated distributions
-# Reshape the two power variables into 'long' form for ggplot
-power_long = melt(power, id.vars= "DateTime", measure.vars=c("Global_active_power", "Global_active_power_locf"))
+# Reshape the two variables into 'long' form for ggplot
+power_long = melt(power, id.vars= "DateTime", measure.vars=
+  c("Global_active_power", "Global_active_power_locf"))
 
 # Create density plot
-ggplot(power_long, aes(value, fill=variable, color=variable)) +
+density_plot = ggplot(power_long, aes(value, fill=variable, color=variable)) +
   geom_density(alpha=0.75) +
   facet_wrap(~variable)
+
+# Display plot
+density_plot
+
+# Save density plot to Results folder
+ggsave("Results/density_plot.png", width=6, height=4, dpi=600, units="in")
 ```
 
 ![power histograms](/images/biwr_02_power_histos.png)
 
 The overall shape hasn't changed, though we can see a small spike at about 1 kW. This should be fine for forecasting. 
 
-Now that we have a complete time series, we can determine total monthly use (kWh) and maximum demand for a given month (kW) over the period of record. 
+Now that we have a complete time series, we can determine total monthly use (kWh). While we're at it, we can calculate maximum demand for a given month (kW) over the period of record as an example of how to calculate multiple summaries at once. 
 
 ```
 # Use 'dplyr' to group by month
