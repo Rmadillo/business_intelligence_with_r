@@ -285,7 +285,7 @@ The following table provides a short overview of the primary univariate toleranc
 
 We saw the quick-and-dirty way to plot a bunch of distributions at once in an earlier recipe; this one focuses on a production-ready single-distribution plot using the `ggplot2` package.
 
-This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. The documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, Zev Ross has a great one on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/). 
+This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. The documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, Sharon Machlis has a *great* introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html) (see aside), and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/). 
 
 Load the bike share data we've been using, as well as the packages we'll use in this recipe (if they're not already loaded).
 
@@ -358,6 +358,13 @@ ggplot(bike_share_daily, aes(weathersit)) +
 ```
 
 ![horizontal bar](/images/0815OS_02_07b.png)
+
+A> You can scrape Sharon Machlis' ggplot cheat sheet into a local pipe-delimited text file, to format and display as works best for you.
+A> 
+A> require(XML)
+A> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")
+A> gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1, stringsAsFactors=F)
+A> write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)
 
 
 ## Plotting multiple univariate distributions with faceting
