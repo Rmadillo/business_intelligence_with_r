@@ -131,7 +131,7 @@ power$DateTime = as.POSIXct(paste(power$Date, power$Time))
 power$Month = format(power$Date,"%Y-%m")
 
 # Add the first to each Y-m combo and convert back to Date
-power_monthly$Month = as.Date(paste0(power_monthly$Month, "-01"))
+power$Month = as.Date(paste0(power_monthly$Month, "-01"))
 
 # Verify the changes
 str(power)
