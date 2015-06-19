@@ -19,16 +19,18 @@ There are a wide variety of packages and functions to import data from files, bu
 | SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
 | XML | `readHTMLTable(   )` | XML |
 | JSON | `fromJSON(   )`  | jsonlite |
-| Database table(s) | `sqldf("  ) | sqldf |
+| Database table(s) | `sqlFetch(CONNECTION, "TABLE NAME", ...)` | RODBC | 
+|  | `sqlQuery(CONNECTION, "SQL QUERY", ...)` |  |
+|  | `sqldf("SQL QUERY", dbname="database", ...)` | sqldf |
 
 
 ## Working with Files
 
 ### Reading flat files from disk or the web
 
-To import flat files, it's probably best to get in the habit of using read.table instead of read.csv. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you might save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `\t` for tab, `|` for pipe, and so on. I also like to use the `stringsAsFactors=FALSE` option as well, as I often pull in data that has character fields, and it's easier to designate the factor variables later. Finally, `read.table` assumes that the data you're reading in doesn't have a header, so if there is one, you have to specify that with `header=TRUE`.
+To import flat files, it's probably best to get in the habit of using `read.table` instead of `read.csv`. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you might save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `,` for comma, `\t` for tab, `|` for pipe, and so on. I also like to use the `stringsAsFactors=FALSE` option as well, as I often pull in data that has character fields, and it's easier to designate the factor variables later. Finally, `read.table` assumes that the data you're reading in doesn't have a header, so if there is one, you have to specify that with `header=TRUE`.
 
-We saw reading in a csv file in the first chapter:
+We saw reading in a flat file in the first chapter:
 
 ```
 # Read in a csv from the current working directory
@@ -45,6 +47,23 @@ pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/
 
 This file has no header; in the next section, we'll download the Excel file with the documentation for this data and use that to create the header.
 
+
+### Reading big files with data.table
+
+The `data.table` package is extremely useful—and much, *much* faster than `read.table`—for larger files. The `data.table` function we used at the start of Chapter 1 took about 24 seconds on my laptop; the `fread` function below only took 2.3 seconds. 
+
+```
+require(data.table)
+# If you want to read in a csv directly, use fread, e.g., if you
+# had the raw pses2011 in a local csv, you'd read it in this way:
+
+```
+
+If you already have a data frame and want to speed up reading and accessing it, use the `data.table` function:
+
+````
+ = data.table("pses2011")
+```
 
 ### Reading Excel files
 
@@ -63,15 +82,14 @@ datasets = system.file("extdata/datasets.xlsx", package = "readxl")
 iris_xl = read_excel(datasets, sheet = 1)
 ```
 
-The `XLConnect` package makes it easy to read and write to and from Excel files. For sake of reproducibility and data permanency, you should always save data as plain text, e.g., as a csv, and not in proprietrary or non-text format like Excel. So if you want to write/save *into* Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
+The `XLConnect` package makes it easy to read and write to and from Excel files. For sake of reproducibility and data permanency, you should always save data as plain text, e.g., as a csv, and not in proprietrary or non-text formats like Excel. So if you must write/save *into* Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
 
 ```
 # Load the package
 require(XLConnect)
  
 # Load the Excel workbook
-wb = loadWorkbook(system.file("extdata/datasets.xlsx", 
-  package = "readxl"))
+wb = loadWorkbook(system.file("extdata/datasets.xlsx", package = "readxl"))
 ```
  
 If you want to read in a single tab/sheet:
@@ -81,7 +99,7 @@ If you want to read in a single tab/sheet:
 data_from_sheet = readWorksheet(wb, sheet = 1)
 ```
 
-The `sheet=` option can use the sheet's name or its position, e.g., using `sheet="NAME_OF_SHEET"` in either `readxl` or `XLConnect` retrieves the same data.
+The `sheet=` option can use the sheet's name or its position, e.g., using `sheet="NAME OF SHEET"` in either `readxl` or `XLConnect` retrieves the same data.
 
 If you want to read in *every* tab from a single Excel file:
 
@@ -96,7 +114,7 @@ invisible(
     )
 ```
 
-`XLConnect` doesn't support downloading an Excel file straight from the web, however. `gdata` can. You can use it to import the documentation file for the 2011 PSES dataset imported in the previous step, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the `nrows` function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
+`XLConnect` doesn't support downloading an Excel file straight from the web. However, `gdata` can. You can use it to import the documentation file for the 2011 PSES dataset imported in the previous section, and since the sheet has non-data rows in it (at the bottom), we'll exclude those by using the `nrows` function. It also contains "multi-string" headers, so we'll use the `header`, `skip`, and `col.name` options to ignore their header and create our own:
 
 ```
 # Load package
@@ -109,7 +127,7 @@ pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2011/
   "Description"), stringsAsFactors=FALSE)
 ```
 
-Using the `colnames` function, the metadata we read in from this Excel file can be used to create the header names in the raw data we read in as a csv in the previous section:
+Using the `colnames` function, the metadata we read in from this Excel file can be used to create the header names for the raw data we read in as a csv in the previous section:
 
 ```
 # Assign the Variable column names from the Exccel file to the raw data file
@@ -155,76 +173,59 @@ header=TRUE, sep=",")
 Of course, whichever works best for you is the method to use!
 
 
-#### Another way to to read SAS files
-
-If you have a SAS license, `Hmisc` provides another means to import SAS files with more options than the `sas7bdat` package:
-
-```
-sas.get(libraryName="full/path/to/sasfile", member="sasfile.sas7bdat", 
-  sasprog="full/path/to/sas.exe")
-```
-
-
-#### Reading big files with data.table
-
-The `data.table` package is extremely useful—and much, *much* faster than `read.table`—for larger files.
-
-```
-require(data.table)
-# If you want to read in a csv directly, use fread, e.g., if you
-# had the raw pses2011 in a local csv, you'd read it in this way:
-pses2011 = fread("pses2011.csv", sep=",")
-
-# If you already have a data frame and want to speed up
-# reading and accessing it, use data.table
-pses2011 = data.table("pses2011")
-```
+A> **Another way to to read SAS files**
+A> 
+A> If you have a SAS license, `Hmisc` provides another means to import SAS files with more options than the `sas7bdat` package:
+A> 
+A> `sas.get(libraryName="full/path/to/sasfile", member="sasfile.sas7bdat",` 
+A>     `sasprog="full/path/to/sas.exe")`
 
 
 ### Unzipping files into R
 
-Larger files are often zipped up to save space and bandwidth. Setting up a temporary file and then using the `unz` function inside the usual `read.table` takes care of bringing it into R:
-
-[SIMPLIFY THIS]
+Larger files are often zipped up to save space and bandwidth. Using the `unz` function inside the usual `read.table` takes care of bringing a single file into R. We'll download the zip file for the Bike Sharing dataset from the UCI Machine Learning Archive and unzip the daily use file from it:
 
 ```
-tf = tempfile()
-download.file("ftp://ftp.census.gov/econ2012/CBP_CSV/zbp12totals.zip", tf)
-zipcodes = read.table(unz(tf, "zbp12totals.txt"), header=T, quote="\"", sep=",", colClasses="character")
-file.remove(tf)
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip", "Bike-Data.zip")
+bike_share_daily = read.table(unz("Bike-Data.zip", "day.csv"), header=T, quote="\"", sep=",")
 ```
 
-If the zip file has more than one file in it, you can unzip them from within R in this way:
+If the zip file has more than one file in it, you can unzip them from within R, and then load them as you would normally:
 
 ```
-td = tempdir()
-tf = tempfile(tmpdir=td, fileext=".zip")
-download.file("http://archive.ics.uci.edu/ml/
-  machine-learning-databases/00275/Bike-Sharing-Dataset.zip", tf)
-unzip(tf, exdir=td)
-bike_share_daily = read.table(unz(tf, "day.csv"), header=T, sep=",")
-bike_share_hourly = read.table(unz(tf, "hour.csv"), header=T, sep=",")
-bike_share_readme = readLines(unz(tf, "Readme.txt"))
-file.remove(tf)
+unzip("Bike-Data.zip")
 ```
 
 Note: although there is an `untar` function, it is no longer necessary—gzipped files can be read directly into R with the standard `read.table` function.  
 
-Once you have the csvs (or other files, as relevant) unzipped, you can bring them into R as a dataframe using the techniques above. 
+Once you have the data files (or other files) unzipped, you can bring them into R as data frames or other formats using the relevant "reading data" functions, e.g.: 
+
+```
+bike_share_daily = read.table("day.csv", header=T, sep=",")
+bike_share_hourly = read.table("hour.csv", header=T, sep=",")
+bike_share_readme = readLines("Readme.txt")
+```
 
 
 ### Reading XML files
 
-We see a way to bring in specific tables from websites below, in the Web section, but this recipe provides an overview of bringing in a complete XML file that is already a table:
+We see a way to bring in specific tables from websites below, in the Web section, but this recipe provides an overview of bringing in a complete XML file. For a simple example, we'll use the 2010 Patient Satisfaction results from the Veterans Health Adminstration's [Hospital Report Card](http://www1.va.gov/health/HospitalReportCard.asp). 
 
 ```
-library(XML)
-url <- "http://www.w3schools.com/xml/cd_catalog.xml"
- xmldoc <- xmlParse(url)
-rootNode <- xmlRoot(xmldoc)
-rootNode[1]
-data <- xmlSApply(rootNode,function(x) xmlSApply(x, xmlValue))
-cd.catalog <- data.frame(t(data),row.names=NULL)
+require(XML)
+# Read in the webpage as-is
+vha_pt_sat_raw = readLines("http://www1.va.gov/VETDATA/docs/Datagov/Data_Gov_VHA_2010_Dataset11_Patient_Satisfaction.xml")
+
+# Convert xml to a data frame
+VHA_Patient_Satisfaction = xmlToDataFrame(vha_pt_sat_raw)
+```
+
+When there are more complex structures in the file, you may have to use another approach. Here we'll use the Federal Housing Finance Agency's [House Price Index (HPI)](http://www.fhfa.gov/DataTools/Downloads/Pages/House-Price-Index.aspx), which measures average price changes in repeat sales or refinancings on single-family homes. If you try the simple approach shown above, it will fail, with the warning `'data' must be of a vector type, was 'NULL'`. Going through a list first and then into a data frame can often make these types of xml files import successfully:
+
+```
+FHFA_HPI_raw = readLines("http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_master.xml")
+FHFA_HPI_list = xmlToList(xmlParse(FHFA_HPI_raw))
+FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list)) 
 ```
 
 
