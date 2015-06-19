@@ -321,8 +321,8 @@ use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh,
 # Create a data frame for the forecast details
 # with a column for the original data
 use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
-                        total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
-                    Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
+    total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
+    Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
 
 # "Union" the two data frames into one
 use_ts_fc = rbind(use_df, use_fc)
