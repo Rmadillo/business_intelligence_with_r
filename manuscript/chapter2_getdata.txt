@@ -33,24 +33,24 @@ To import flat files, it's probably best to get in the habit of using `read.tabl
 We saw reading in a flat file in the first chapter:
 
 ```
-# Read in a csv from the current working directory
-DFNAME = read.table("FILE.csv", header=TRUE, sep=",", stringsAsFactors=FALSE)
+power = read.table("Data/household_power_consumption.txt", sep=";", header=T, 
+  na.strings=c("?",""), stringsAsFactors=FALSE)
 ```
 
 While reading in a flat file is pretty standard fare for any R user, it can sometimes require a little extra work to make sure it comes in correctly. This example downloads an online csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure that special characters are read in correctly:
 
 ```
-# Read in a csv from the internet
+# Read in a csv from the internet with non-ASCII characters
 pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/
   2011_results-resultats.csv", sep=",", encoding="UTF-8")
 ```
 
-This file has no header; in the next section, we'll download the Excel file with the documentation for this data and use that to create the header.
+Note: this file has no header; in the next section, we'll download the Excel file with the documentation for this data and use that to create the header.
 
 
 ### Reading big files with data.table
 
-The `data.table` package is extremely useful—and much, *much* faster than `read.table`—for larger files. The `data.table` function we used at the start of Chapter 1 took about 24 seconds on my laptop; the `fread` function below only took 2.3 seconds. 
+The `data.table` package is extremely useful—and much, *much* faster than `read.table`—for larger files. The `data.table` function we used at the start of Chapter 1 on household power consumption took about 24 seconds on my laptop; the `fread` function below only took 2.3 seconds. 
 
 ```
 require(data.table)
@@ -59,10 +59,10 @@ require(data.table)
 
 ```
 
-If you already have a data frame and want to speed up reading and accessing it, use the `data.table` function:
+If you *already* have a data frame and want to speed up reading and accessing it, use the `data.table` function:
 
 ````
- = data.table("pses2011")
+power = data.table("power")
 ```
 
 ### Reading Excel files
@@ -245,7 +245,18 @@ dat <- jsonDoc$list$resources$resource$fields
 
 While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful—for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
 
-As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Enterprise systems often have those already set up, but if not, your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your particular context for adding system DSN connections. Once the appropriate DSNs are available for you, you can use the `RODBC` package to access your databases:
+As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Enterprise systems often have those already set up, but if not, your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your particular context for adding user or system DSN connections. As an example, this is how you might set up a user DSN in Windows 7 to access a SQL Server database:
+
+1. Click the Start button. Type in data in the Search programs and files box and select Data Sources (ODBC).
+2. Click Add.
+3. Select SQL Server Native Client 11.0, or choose the appropriate driver if that's not the one you need. Click Finish.
+4. Put the name you want to use to access the database in the Name box, e.g., `SQL3`. Put the actual name of the server in the Server box, e.g., perhaps this server is called `EDWSQLDB3`. Click Next.
+5. Leave it as Integrated Windows Authentication unless for some reason you like doing things manually. Click Next.
+6. Choose the database to match the specific one one the server you wish to access. If you have read/write privs to the data, leave that box as is. Otherwise, change READWRITE to READONLY in the dropdown list. Click Next.
+7. Adjust settings as you prefer or just click Finish.
+8. Click Test Data Source. Click OK. Click OK again to close the data source adminsitrator.
+
+Once the appropriate DSNs are available for you, you can use the `RODBC` package to access your databases:
 
 ```
 require(RODBC)
@@ -254,59 +265,67 @@ require(RODBC)
 Once your system is configured for the ODBC connection, you need to define that connection within R, replacing the CAPS code with your specific values:
 
 ```
-connect = odbcConnect("NAME_OF_DSN_CONNECTION", uid="YOUR_USER_ID", pwd="YOUR_PASSWORD")
+# For example, if you'd followed the user DSN naming, above, 
+# the "NAME OF DSN CONNECTION" would be "SQL3"
+connection = odbcConnect("NAME OF DSN CONNECTION", uid="YOUR USER ID", 
+    pwd="YOUR PASSWORD")
 ```
 
 We can verify the connection is working:
 
 ```
-odbcGetInfo(connect)
+odbcGetInfo(connection)
 ```
 
 Once the connection is made, data can flow. If you don't already know the names of the tables or you want to verify their spelling, you can get a list by writing the list to an R object and then view that object:
 
 ```
-sqlTables(connect)
-# If there are a lot of tables or you want to make a record of
-# their names, create an object and then view it within R:
-connect_tables = sqlTables(connect)
-connect_tables
+# To see all tables:
+sqlTables(connection)
+# To see all tables in a given schema, e.g. dbo:
+sqlTables(connection, schema="dbo")
 ```
 
-You can pull in an entire table using the `sqlFetch` function, but if you're using a database, you probably want to query it to get just what you need.
-
-To get a whole table:
+If there are a lot of tables or you want to make a record of their names, create an object and then view it within R:
 
 ```
-whole_table = sqlFetch(connect, "table_name")
+connection_tables = sqlTables(connection)
+connection_tables
 ```
 
-To make a SQL query and put it into a dataframe, set up the query in an R object and then use the `sqlQuery` function. The following query is identical to above as it brings in the whole table:
+You can pull in an entire table using the `sqlFetch` function, but if you're using a database, you probably want to query it to get just what you need. To get a whole table, use `sqlFetch`:
+
+```
+whole_table = sqlFetch(connection, "table_name")
+```
+
+To make a SQL query and put the results into a dataframe, set up the query in an R object and then use the `sqlQuery` function. The following query is identical to above as it brings in the whole table:
 
 ```
 # Within the double quotes you can put a valid SQL query
 # Using single quotes to name the table
 query_1 = "SELECT * FROM 'table_name'"
-query_1_dataframe = sqlQuery(connect, query_1)
+query_1_dataframe = sqlQuery(connection, query_1)
 ```
 
-This query will pull in all columns but only those records specified by the where clause, and will sort it by the order by variable(s):
+Any typical SQL query will work; for example, this query will pull in all columns but only those records specified by the where clause, and will sort it by the order by variable(s):
 
 ```
 query_2 = "SELECT * FROM 'table_name$' 
-  WHERE variable_name = some_condition 
-  ORDER BY ordering_variable_name"
-query_2_dataframe = sqlQuery(connect, query_2)
+    WHERE variable_name = some_condition 
+    ORDER BY ordering_variable_name"
+query_2_dataframe = sqlQuery(connection, query_2)
 ```
 
-At the end of the session, close the database connection:
+When you have the data you need, or at least by the end of the R session, close the database connection:
 
 ```
 odbcCloseAll()
 ```
 
-The `RODBC` package allows R to connect with any database that allows OBDC connections, and then interact with that database using SQL. Since database platforms, local systems, and server environments vary considerably, it very difficult to specify how to set up the initial DSN connection for any given combination—you'll need to consult with a database administrator or search online for your particular combination of databases, drivers, and system connections. 
+The `RODBC` package allows R to connect with any database that allows OBDC connections, and then interact with that database using SQL. Since database platforms, local systems, and server environments vary considerably, it can be difficult to specify how to set up the initial DSN connection for any given combination—you'll need to consult with a database administrator or search online for your particular combination of databases, drivers, and system connections. 
 You can learn more by viewing: `vignette("RODBC", package="RODBC")`.
+
 
 ### Creating a SQLite database inside R
 
@@ -330,47 +349,50 @@ sqldf("attach 'PSES_database.sqlite' as new")
 It's just a shell at the moment; next create a connection to that database for use in subsequent table import and manipulation:
 
 ```
-connect = dbConnect(SQLite(), dbname="PSES_database.sqlite ")
+connect = dbConnect(SQLite(), dbname="PSES_database.sqlite")
 ```
 
-And now you can read csv files directly into the database (i.e., so it is not throttled by passing through R first). We'll use the PSES 2011 file we created in the There's more... section of the Loading data from files recipe earlier in this chapter.
+And now you can read csv files directly into the database (i.e., so it is not throttled by passing through R first). We'll use the PSES 2011 file we downloaded in the flat files section earlier in this chapter.
 
 ```
 read.csv.sql("pses2011.csv", sql = "CREATE TABLE pses2011 AS SELECT * FROM file",
-  dbname = "PSES_database.sqlite")
+    dbname = "PSES_database.sqlite")
 ```
 
-Because Excel files must be loaded into R first, and then passed to the database, if your Excel file has only a few sheets in it, saving them as csvs might be preferable. If you have many sheets to import, using  XLConnect to import the sheets all at once could save a little time. They'll still need to be loaded into the database individually, however, and you should remove the dataframes when you've transferred them to the database.
+Because an Excel file must be loaded into R first, and then passed to the database, you need to consider other options. If your Excel file has only a few sheets in it, saving them as csvs might be preferable. If you have many sheets to import, using `XLConnect` to import the sheets all at once could save a little time. They'll still need to be loaded into the database individually, however, and you should remove the dataframes when you've transferred them to the database.
+
+***TEST ON LINUX***
 
 ```
-# This loads the Excel file into R
+# Download the Excel file
+download.file("http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls", "PSES2011_Documentation.xls")
+
+# Load the Excel file into R
 pses2011_xls = loadWorkbook("PSES2011_Documentation.xls")
   
-# This reads each worksheet into separate dataframes within a list
+# Read each worksheet into separate dataframes within a list
 pses2011_documentation = readWorksheet(pses2011_xls, 
-  sheet=getSheets(pses2011_xls))
+    sheet=getSheets(pses2011_xls))
   
-# This file was downloaded to the working directory from
-# http://www.tbs-sct.gc.ca/pses-saff/2011/data/PSES2011_Documentation.xls
 # The sheet names have spaces and hyphens, which will cause
 # trouble for SQLite; run names(pses2011_documentation) to see
 # So, this changes the dataframe names inside the list
 names(pses2011_documentation) = c("Questions", "Agency", "LEVELID15", "Demcode",
-  "PosNegSpecs", "LayoutFormat")
+    "PosNegSpecs", "LayoutFormat")
   
 # Add a new row to account for 0 values for LEVEL1ID in
 # main pses2011 file
 pses2011_documentation$Agency = rbind(pses2011_documentation$Agency,
-  c(0,NA,"Other",NA,"OTH"))
+    c(0,NA,"Other",NA,"OTH"))
   
 # Now each sheet can be loaded into the database as a separate table
 with(pses2011_documentation, {
-  dbWriteTable(conn=connect, name="Questions", value=Questions, row.names=FALSE)
-  dbWriteTable(conn=connect, name="Agency", value=Agency, row.names=FALSE)
-  dbWriteTable(conn=connect, name="LEVELID15", value=LEVELID15, row.names=FALSE)
-  dbWriteTable(conn=connect, name="Demcode", value=Demcode, row.names=FALSE)
-  dbWriteTable(conn=connect, name="PosNegSpecs", value=PosNegSpecs, row.names=FALSE)
-  dbWriteTable(conn=connect, name="LayoutFormat", value=LayoutFormat, row.names=FALSE)   
+    dbWriteTable(conn=connect, name="Questions", value=Questions, row.names=FALSE)
+    dbWriteTable(conn=connect, name="Agency", value=Agency, row.names=FALSE)
+    dbWriteTable(conn=connect, name="LEVELID15", value=LEVELID15, row.names=FALSE)
+    dbWriteTable(conn=connect, name="Demcode", value=Demcode, row.names=FALSE)
+    dbWriteTable(conn=connect, name="PosNegSpecs", value=PosNegSpecs, row.names=FALSE)
+    dbWriteTable(conn=connect, name="LayoutFormat", value=LayoutFormat, row.names=FALSE)   
 } )
   
 # Remove the Excel objects
@@ -383,17 +405,17 @@ To see names of the tables in the database:
 sqldf("SELECT * FROM sqlite_master", dbname = "PSES_database.sqlite")$tbl_name
 ```
 
-To see table names and SQL statements that generated them:
+To see table names and the SQL statements that generated them:
 
 ```
-sqldf("SELECT * FROM sqlite_master", dbname = "PSES_database.sqlite")}
+sqldf("SELECT * FROM sqlite_master", dbname = "PSES_database.sqlite")
 ```
 
 To see names of columns in a particular table:
 
 ```
 # Note: PRAMA and TABLE_INFO are SQLite-specific statements
-sqldf("PRAGMA TABLE_INFO(Questions)", dbname = "PSES_database.sqlite")$name       
+sqldf("PRAGMA TABLE_INFO(Questions)", dbname = "PSES_database.sqlite")$name
 ```
 
 A shortcut for seeing a list of tables and/or fields (which may not work depending on your system):    
@@ -406,7 +428,7 @@ dbListFields(connect, "Questions")
 The equivalent of `head` to look at the start of a table would be:
 
 ```
-sqldf("SELECT * FROM Questions LIMIT 6", dbname = "PSES_database.sqlite")}
+sqldf("SELECT * FROM Questions LIMIT 6", dbname = "PSES_database.sqlite")
 ```
 
 Finally, whenever you're done interacting with the database, close the connection:
@@ -417,22 +439,26 @@ dbDisconnect(connect)
 
 SQLite was built intentionally to a be "lightweight" database, and being able to set it up and access it from entirely within R makes it perfect for occasional to moderate desktop use. As is the case with the many different flavors of SQL, there are nuances in SQLite (as we saw with the PRAGMA statement, above), but most basic uses remain the same across those different types of SQL.
 
-You can see a list of the SQL statements available with: `.SQL92Keywords`.
+You can see a list of the SQL statements available with: 
 
-More info on the way R interfaces with RDBMSs can be found on the homepage for the DBI package (https://github.com/rstats-db/DBI), and details on SQLite can be found at its homepage (http://www.sqlite.org/).  
+```
+.SQL92Keywords
+```
 
-Those with more sophisticated desktop database needs should consider PostgreSQL (http://www.postgresql.org/), which also plays well with R via the RPostgreSQL package.
+More info on the way R interfaces with RDBMSs can be found on the homepage for the [DBI package](https://github.com/rstats-db/DBI), and details on SQLite can be found at its [homepage](http://www.sqlite.org/).  
+
+Those with more sophisticated desktop database needs might consider [PostgreSQL](http://www.postgresql.org/), which also plays well with R via the `RPostgreSQL` package.
 
 
 ### Creating a dataframe from a SQLite database
 
 Once you have a database connection, you're able to access exactly what you need and pull just that into R as a dataframe, conserving memory and saving time when working on projects that will need to access a variety of tables.
 
-Load the sqldf package and then reconnect to the database we created in the previous recipe:
+Load the `sqldf` package if it's not already loaded, and then reconnect to the database we created in the previous recipe:
 
 ```
 require(sqldf)
-connect = dbConnect(SQLite(), dbname="PSES_database.sqlite ")
+connection = dbConnect(SQLite(), dbname="PSES_database.sqlite")
 ```
 
 Selecting subsets from a database table using `sqldf` is based on (of course) SQL select statements. For example, this statement brings in three of the columns from the LEVEL1ID table:
@@ -441,7 +467,7 @@ Selecting subsets from a database table using `sqldf` is based on (of course) SQ
 pses_acr = sqldf("SELECT Level1ID, Acronym_PSES_Acronyme_SAFF AS Acronym, DeptNameE as Department FROM Agency", dbname="PSES_database.sqlite")
 ```
 
-You can join tables within the database as well before bringing it into R. For example, this code merges the main data table (pses2011) with the agency name/abbreviation table to create a dataframe called pses2011-agency:
+You can join tables within the database as well before bringing it into R. For example, this code merges the main data table (`pses2011`) with the agency name/abbreviation table to create a dataframe called `pses2011-agency`:
 
 ```
 pses2011_agency = sqldf("SELECT
@@ -454,11 +480,11 @@ pses2011_agency = sqldf("SELECT
     dbname="PSES_db.sqlite")
 ```
 
-Don't forget to close the connection: `dbDisconnect(connect)` or `close(connect)`.
+Don't forget to close the connection:  `dbDisconnect(connection)` or `close(connection)`.
 
-Basically, `sqldf("SQL QUERY", dbname="NAMEOFDATABASE")` is all you need to use SQLite within R, and it works on both databases and dataframes—if the latter, it's just `sqldf("SQL QUERY")`. It is important to note that unlike R, SQLite is not case sensitive, so be careful naming tables and columns—a and A are identical to SQLite. (SQL functions are in CAPS in the code examples in this book simply to distinguish them from table and column names, which are left in the same case that R sees them.)
+Basically, `sqldf("SQL QUERY", dbname="NAME OF DATABASE")` is all you need to use SQLite within R, and it works on both databases and dataframes—if the latter, it's just `sqldf("SQL QUERY")`. It is important to note that unlike R, SQLite is not case sensitive, so be careful naming tables and columns—a and A are identical to SQLite. (SQL functions are in CAPS in the code examples in this book simply to distinguish them from table and column names, which are left in the same case that R sees them.)
 
-You can do most basic types of SQL work in this fashion; for example, if you want to count the number of rows in your new dataframe where ANSWER3 ("Neutral") is more than 50% of the total responses, have it grouped by Question and Agency, and order the result by highest to lowest counts, you can use:
+You can do most basic types of SQL work in this fashion; for example, if you want to count the number of rows in your new dataframe where `ANSWER3` ("Neutral") is more than 50% of the total responses, have it grouped by `Question` and `Agency`, and order the result by highest to lowest counts, you can use:
 
 ```
 agency_row_count = sqldf("SELECT
@@ -471,7 +497,7 @@ agency_row_count = sqldf("SELECT
     ORDER BY Answer3_Count desc")  
 ```
 
-The possibilities are fairly limitless by containing large files inside a database and bringing in only what's needed for analysis using SQL. A basic knowledge of SQL is required, of course, but the learning curve is very small and well worth taking on given its centrality in data access and manipulation. It also serves as a great bridge for those used to SQL who want to use R more extensively but are not yet accomplished in using the R functions that have SQL equivalents (e.g., R's merge vs. SQL's join). For example, the standard SQL CASE WHEN statement could be used to generate new columns that sum the number of cases in which the majority either strongly agreed or strongly disagreed:
+The possibilities are fairly limitless by containing large files inside a database and bringing in only what's needed for analysis using SQL, such as via `sqldf` or `RODBC`. A basic knowledge of SQL is required, of course, but the learning curve is very small for R users and well worth taking on given its centrality in data access and manipulation. It also serves as a great bridge for those used to SQL who want to use R more extensively but are not yet accomplished in using the R functions that have SQL equivalents (e.g., R's `merge` vs. SQL joins). For example, the standard SQL `CASE WHEN` statement could be used to generate new columns that sum the number of cases in which the majority either strongly agreed or strongly disagreed:
 
 ```
 agency_row_count = sqldf("SELECT
@@ -483,16 +509,16 @@ agency_row_count = sqldf("SELECT
     ORDER BY Question desc")  
 ```
 
-It's worth pointing out that if your data fits in memory, there usually isn't need for a database; merging and manipulation can occur inside R—later recipes in this chapter explore ways to do that.
+It's worth pointing out that if your data fits in memory, there usually isn't need for a database; merging and manipulation can occur inside R—recipes in the next chapter explore ways to do that.
 
-Finally, remember that SQL is suited for data extraction and manipulation, so save the stats work for R. As one example, out-of-the-box SQLite can calculate means (via the AVG function), but not medians or standard deviations; you'd have to hardcode them by their formulas, which is not a very efficient use of code or time. Using R to do that work (see Chapter 2) is far more efficient and reproducible.
+Finally, remember that SQL is best suited for data extraction and manipulation, so save the stats work for R. 
 
 
 ## Getting Data from the Web
 
 ### Working through a proxy
 
-If you're working behind a company firewall, you may have to use a proxy to pull data into R from the web. Hadley Wickham's `httr` package makes it simple.
+If you're working behind a company firewall, you may have to use a proxy to pull data into R from the web. The `httr` package makes it simple.
 
 ```
 require(httr)
@@ -508,7 +534,7 @@ There is a bewildering array of methods to access websites from within R, partic
 
 ### Scraping data from a web table
 
-Sometimes, webpages have a treasure trove of data in tables... but don't have an option to download it as a text or Excel file. And while data scraping addins are avilable for modern web browsers like Chrome (Scraper) or Firefox (Table2Clipboard and TableTools2) that make it as easy as point-and-click, if the tables aren't set up for easy download or a simple cut-and-paste, you can use the `XML` package to grab what you need.
+Sometimes, webpages have a treasure trove of data in tables... but don't have an option to download it as a text or Excel file. And while data scraping addins are avilable for modern web browsers like Chrome (*Scraper*) or Firefox (*Table2Clipboard* and *TableTools2*) that make it as easy as point-and-click, if the tables aren't set up for easy download or a simple cut-and-paste, you can use the `XML` package to grab what you need.
 
 While there are a few R packages that allow scraping, the `XML` package is the simplest to begin with, and may serve all your needs anyway.
 
@@ -516,28 +542,31 @@ While there are a few R packages that allow scraping, the `XML` package is the s
 require(XML)
 ```
 
-As a simple example, we can explore the 2010 National Survey on Drug Use and Health. Like many websites, it has pages that contain multiple tables. Say we just want Table 1.1A. First, read in the raw html:
+As a simple example, we can explore the [2010 National Survey on Drug Use and Health](http://oas.samhsa.gov/NSDUH/2k10NSDUH/tabs/Sect1peTabs1to46.htm). Like many websites, it has pages that contain multiple tables. Say we just want Table 1.1A. First, read in the raw html:
 
 ```
 drug_use_2010_table = readLines("http://oas.samhsa.gov/NSDUH/2k10NSDUH/tabs/Sect1peTabs1to46.htm")
 ```
 
-then read in the first table (`which=1`) part of the html:
+Then read in the first table (`which=1`) part of the html:
 
 ```
-drug_use_table1_1 = readHTMLTable(druguse, header=T, which=1, stringsAsFactors=FALSE)
+drug_use_table1_1 = readHTMLTable(druguse, header=T, which=1, 
+    stringsAsFactors=FALSE)
 ```
 
-What if you want more than one table? The `XML` package allows you to read in entire webpages, and then scrape them to extract the information you need. For example, let's say we want tables 1.17A and 1.17B . Using the webpage's table of contents, we see that the tables we want are 31st and 32nd:
+What if you want more than one table? Since we've read in the entire webpage, we can scrape it to extract whatever information we need. For example, let's say we want tables 1.17A and 1.17B. Using the webpage's [table of contents](http://oas.samhsa.gov/NSDUH/2k10NSDUH/tabs/TOC.htm#TopOfPage), we see that the tables we want are 31st and 32nd:
 
 ```
-drug_use_table1_17a = readHTMLTable(druguse, header=T, which=31, stringsAsFactors=FALSE)
-drug_use_table1_17b = readHTMLTable(druguse, header=T, which=32, stringsAsFactors=FALSE)
+drug_use_table1_17a = readHTMLTable(druguse, header=T, which=31, 
+    stringsAsFactors=FALSE)
+drug_use_table1_17b = readHTMLTable(druguse, header=T, which=32, 
+    stringsAsFactors=FALSE)
 ```
 
 #### Scraping tables that cover multiple pages
 
-What about a case where you need a table that goes over many pages? For example, ProPublica has a website that lists deficiencies in nursing home care in the United States (http://projects.propublica.org/nursing-homes/); the subset that includes Texas includes more than 3,400 rows that cover 189 different (web)pages.  
+What about a case where you need a table that goes over many pages? For example, ProPublica has a website that lists [deficiencies in nursing home care in the United States](http://projects.propublica.org/nursing-homes/); the subset that includes Texas includes more than 3,400 rows that cover 189 different (web)pages.  
 
 Obviously, cutting and pasting that would seriously suck.
 
@@ -562,32 +591,12 @@ for(i in seq_along(allpages)){
 and finally turn the list into a data frame:
 
 ```
-nursing_home_deficiencies = do.call(rbind, lapply(tablelist, data.frame, stringsAsFactors=FALSE))
+nursing_home_deficiencies = do.call(rbind, lapply(tablelist, data.frame, 
+    stringsAsFactors=FALSE))
 ```
 
-#### Cleaning up the scrape
+This result still needs some cleaning before we can move to analysis; Chapter 3 provides an example of cleaning this particular scrape in addition to the more general recipes. 
 
-In many cases the data frame will require a little clean up. The following optional code does some cleaning for this particular data set; look at `?gsub`, `?strsplit`, `?substr`, and related commands to see more details:
-
-```
-colnames(nursing_home_deficiencies) = c("Date", "Home", "City", "State", "DeficiencyCount", "Severity")
-nursing_home_deficiencies$State = gsub("Tex.", "TX", nursing_home_deficiencies$State, fixed = TRUE)
-nursing_home_deficiencies$Home = gsub(" (REPORT)  Home Info", "", nursing_home_deficiencies$Home, fixed = TRUE)
-nursing_home_deficiencies$Severity = substr(nursing_home_deficiencies$Severity, 1, 1)
-nursing_home_deficiencies$Date = gsub(".", "", nursing_home_deficiencies$Date, fixed = TRUE)
-clean = function(col) {
-    col = gsub('Jan', 'January', col, fixed = TRUE)
-    col = gsub('Feb', 'February', col, fixed = TRUE)
-    col = gsub('Aug', 'August', col, fixed = TRUE)
-    col = gsub('Sept', 'September', col, fixed = TRUE)
-    col = gsub('Oct', 'October', col, fixed = TRUE)
-    col = gsub('Nov', 'November', col, fixed = TRUE)
-    col = gsub('Dec', 'December', col, fixed = TRUE)
-    return(col)
-  }
-nursing_home_deficiencies$Date = clean(nursing_home_deficiencies$Date)
-nursing_home_deficiencies$Date = as.Date(nursing_home_deficiencies$Date, format="%B %d, %Y")
-```
 
 ### Working with APIs
 
@@ -600,11 +609,16 @@ STUFF HERE?
 
 ## Writing Files to Disk
 
-There is no reason to save a dataframe for use outside R in any format other than a flat file: [COMMENT ON WHY SAVE AS FLAT FILE]
+There is usually no reason to save a dataframe for use outside R in any format other than a flat file: the only way to provide truly reproducible analytics is to ensure everything can be read by any program, language, or platform. 
 
-This will save your dataframe into the working directory as a csv, without the row numbers that R provides by default:
+`write.table` using `sep=","` will save your dataframe as a csv, and setting `row.names=FALSE` will save it without the row numbers that R provides by default.
 
 ```
 write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
 ```
+
+
+
+
+
 
