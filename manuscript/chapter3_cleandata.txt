@@ -1,6 +1,7 @@
 # Chapter 3: Cleaning and Preparing Data
 
 - Identifying basic structure
+- Cleaning up
 - Merging dataframes
 - Filtering, selecting, and arranging a dataframe
 - Transforming a dataframe from wide to long and back again
@@ -54,6 +55,36 @@ Factors, characters, dates, values that are out-of-range for the measurement, in
 It may seem like this is too basic to be included in a cookbook aimed at people who are already R users—but to illustrate the point ironically, a few days before I started this chapter, I was trying to use a function that needed factors on a variable I just knew were factors, but R had considered them characters because as I had used the `stringsAsFactors=F` option when I imported the data. After banging my head for a while, I pulled up `str` and the problem became clear immediately.
 
 Always check! Even if you’re a seasoned professional!
+
+## Cleaning up
+
+### Cleaning up a web-scraped table
+
+In many cases the data frame will require a little clean up after it's loaded. As an example, the following code does some cleaning of the Pro Publica data set scraped from the web in the previous chapter; look at `?gsub`, `?strsplit`, `?substr`, and related commands to see more details:
+
+```
+colnames(nursing_home_deficiencies) = c("Date", "Home", "City", "State", "DeficiencyCount", "Severity")
+nursing_home_deficiencies$State = gsub("Tex.", "TX", nursing_home_deficiencies$State, fixed = TRUE)
+nursing_home_deficiencies$Home = gsub(" (REPORT)  Home Info", "", nursing_home_deficiencies$Home, fixed = TRUE)
+nursing_home_deficiencies$Severity = substr(nursing_home_deficiencies$Severity, 1, 1)
+nursing_home_deficiencies$Date = gsub(".", "", nursing_home_deficiencies$Date, fixed = TRUE)
+clean = function(col) {
+    col = gsub('Jan', 'January', col, fixed = TRUE)
+    col = gsub('Feb', 'February', col, fixed = TRUE)
+    col = gsub('Aug', 'August', col, fixed = TRUE)
+    col = gsub('Sept', 'September', col, fixed = TRUE)
+    col = gsub('Oct', 'October', col, fixed = TRUE)
+    col = gsub('Nov', 'November', col, fixed = TRUE)
+    col = gsub('Dec', 'December', col, fixed = TRUE)
+    return(col)
+  }
+nursing_home_deficiencies$Date = clean(nursing_home_deficiencies$Date)
+nursing_home_deficiencies$Date = as.Date(nursing_home_deficiencies$Date, format="%B %d, %Y")
+```
+
+## Fixing values within cells
+
+
 
 ## Missing values: Dummy NA values and dropping the NAs
 
