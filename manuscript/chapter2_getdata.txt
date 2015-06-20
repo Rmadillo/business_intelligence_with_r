@@ -173,14 +173,6 @@ header=TRUE, sep=",")
 Of course, whichever works best for you is the method to use!
 
 
-A> **Another way to to read SAS files**
-A> 
-A> If you have a SAS license, `Hmisc` provides another means to import SAS files with more options than the `sas7bdat` package:
-A> 
-A> `sas.get(libraryName="full/path/to/sasfile", member="sasfile.sas7bdat",` 
-A>     `sasprog="full/path/to/sas.exe")`
-
-
 ### Unzipping files into R
 
 Larger files are often zipped up to save space and bandwidth. Using the `unz` function inside the usual `read.table` takes care of bringing a single file into R. We'll download the zip file for the Bike Sharing dataset from the UCI Machine Learning Archive and unzip the daily use file from it:
@@ -231,7 +223,7 @@ FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list))
 
 ### Reading JSON files 
 
-JSON data can be really useful for nested data, so it is becoming more popular for data visualizations (e.g., in d3-based web apps) and other applications where the usual row x column format would make for a large and unweidly data structure. Still, sometimes we need to work with these data structures in R, so reading them into a data frame is required. The `jsonlite` package is probably the best way to do this. 
+JSON data can be really useful for nested data, so it is becoming more popular for data visualizations (e.g., in d3-based web apps) and other applications where the usual row *x* column format would make for a large and unweidly data structure. Still, sometimes we need to work with these data structures in R, so reading them into a data frame is required. The `jsonlite` package is probably the best way to do this. 
 
 ```
 # Load the jsonlite package
@@ -419,12 +411,18 @@ pses2011_documentation$Agency = rbind(pses2011_documentation$Agency,
   
 # Now each sheet can be loaded into the database as a separate table
 with(pses2011_documentation, {
-    dbWriteTable(conn=connect, name="Questions", value=Questions, row.names=FALSE)
-    dbWriteTable(conn=connect, name="Agency", value=Agency, row.names=FALSE)
-    dbWriteTable(conn=connect, name="LEVELID15", value=LEVELID15, row.names=FALSE)
-    dbWriteTable(conn=connect, name="Demcode", value=Demcode, row.names=FALSE)
-    dbWriteTable(conn=connect, name="PosNegSpecs", value=PosNegSpecs, row.names=FALSE)
-    dbWriteTable(conn=connect, name="LayoutFormat", value=LayoutFormat, row.names=FALSE)   
+    dbWriteTable(conn=connect, name="Questions", value=Questions, 
+      row.names=FALSE)
+    dbWriteTable(conn=connect, name="Agency", value=Agency, 
+      row.names=FALSE)
+    dbWriteTable(conn=connect, name="LEVELID15", value=LEVELID15, 
+      row.names=FALSE)
+    dbWriteTable(conn=connect, name="Demcode", value=Demcode, 
+      row.names=FALSE)
+    dbWriteTable(conn=connect, name="PosNegSpecs", value=PosNegSpecs, 
+      row.names=FALSE)
+    dbWriteTable(conn=connect, name="LayoutFormat", value=LayoutFormat, 
+      row.names=FALSE)   
 } )
   
 # Remove the Excel objects
@@ -543,7 +541,7 @@ agency_row_count = sqldf("SELECT
 
 It's worth pointing out that if your data fits in memory, there usually isn't need for a database; merging and manipulation can occur inside R—recipes in the next chapter explore ways to do that.
 
-Finally, remember that SQL is best suited for data extraction and manipulation, so save the stats work for R. 
+Finally, remember that SQL is best suited for data extraction and manipulation, so save the analytics work for R. 
 
 
 ## Getting Data from the Web
@@ -559,7 +557,8 @@ require(httr)
 Enter your proxy address, the port (usually 8080), and your user name/password in place of the CAPS code:
 
 ```
-set_config(use_proxy(url="YOUR_PROXY_URL", port="YOUR_PORT", username="YOUR_USER_NAME", password="YOUR_PASSWORD")
+set_config(use_proxy(url="YOUR_PROXY_URL", port="YOUR_PORT", 
+    username="YOUR_USER_NAME", password="YOUR_PASSWORD"))
 ```
 
 There is a bewildering array of methods to access websites from within R, particularly while having to pass through a proxy, and most of them are obscure to even the most established quants. Thanks to `httr`, all of that complexity has been hidden behind a few simple functions—type `vignette("quickstart", package="httr")` if you want more information.
