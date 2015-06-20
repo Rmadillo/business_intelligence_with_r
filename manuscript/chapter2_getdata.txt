@@ -231,12 +231,31 @@ FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list))
 
 ### Reading JSON files 
 
+JSON data can be really useful for nested data, so it is becoming more popular for data visualizations (e.g., in d3-based web apps) and other applications where the usual row x column format would make for a large and unweidly data structure. Still, sometimes we need to work with these data structures in R, so reading them into a data frame is required. The `jsonlite` package is probably the best way to do this. Usually, the `fromJSON` function will return a list, so you'll need to either call the data frame from within the list, or convert that portion of the list into a data frame.   
+
 ```
+# Load the jsonlite package
 require(jsonlite)
-url <- "http://finance.yahoo.com/webservice/v1/symbols/allcurrencies/quote?format=json"
-jsonDoc <- fromJSON(url)
-dat <- jsonDoc$list$resources$resource$fields
+# Acquire the JSON data from 
+json_list = fromJSON("http://finance.yahoo.com/webservice/v1/symbols/allcurrencies/quote?format=json")
+# This takes the piece of the list we need and brings it out as a data frame
+currency_data = json_list$list$resources$resource$fields
 ```
+
+You'll notice that every variable is in character format, so you'll need to do a little cleaning to get this data into a format we can analyze. We'll see more
+
+Sometimes you encounter streaming JSON (aka "pseudo-JSON"), which contains JSON formatted-data but throws an error when you try to use the `fromJSON` function. Instead, use the `stream_in` function as follows:
+
+```
+# Download Enron emails to the working directory from jsonstudio
+download.file("http://jsonstudio.com/wp-content/uploads/2014/02/enron.zip", "enron.zip")
+# Unzip it
+unzip("enron.zip")
+# Bring in the streaming json as a data frame
+enron = stream_in(file("enron.json"))
+```
+
+As above, each variable in the data frame is in `chr` format, so you'll have to convert to other data types where relevant (e.g., the `date` column). 
 
 
 ## Working with Databases
@@ -360,8 +379,6 @@ read.csv.sql("pses2011.csv", sql = "CREATE TABLE pses2011 AS SELECT * FROM file"
 ```
 
 Because an Excel file must be loaded into R first, and then passed to the database, you need to consider other options. If your Excel file has only a few sheets in it, saving them as csvs might be preferable. If you have many sheets to import, using `XLConnect` to import the sheets all at once could save a little time. They'll still need to be loaded into the database individually, however, and you should remove the dataframes when you've transferred them to the database.
-
-***TEST ON LINUX***
 
 ```
 # Download the Excel file
@@ -617,8 +634,13 @@ There is usually no reason to save a dataframe for use outside R in any format o
 write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
 ```
 
+If you want to save data in JSON format, use `jsonlite` with the `pretty` option set to true to have it formatted cleanly. Then `sink` it into a file in the working directory.
 
-
-
-
+```
+require(jsonlite)
+myjson = toJSON(iris, pretty=TRUE)
+sink("myjson.json")
+myjson
+sink()
+```
 
