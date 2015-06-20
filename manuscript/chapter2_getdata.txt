@@ -4,7 +4,7 @@ The tried-and-true method for bringing data into R is via the humble csv file, a
 
 There are a wide variety of packages and functions to import data from files, but a few provide nearly all the functionality you'll need:
 
-{width="85%"}
+{width="90%"}
 | File Type | Function | Package |
 | --------- | -------- | ------- |
 | csv file | `read.table("file", sep=",", ...)`  | base |
@@ -14,11 +14,12 @@ There are a wide variety of packages and functions to import data from files, bu
 | Excel | `read_excel("Excelfile", sheet, ...)` | readxl |
 |  | `read.xls("Excelfile",sheet, ...)` | gdata |
 |  | `readWorksheet("Excelfile", sheet, ...)` | XLConnect |
+| XML | `xmlToDataFrame("xmlfile", ...)` | XML |
+|  | `readHTMLTable("htmlfile", which= , ...)` |  |
+| JSON | `fromJSON(   )`  | jsonlite |
 | SPSS | `spss.get("SPSSfile.sav")` | Hmisc |
 | Stata | `read.dta("Statafile.dta")` | foreign |
 | SAS | `read.sas7bdat("SASfile.sas7bdat")` | sas7bdat |
-| XML | `readHTMLTable(   )` | XML |
-| JSON | `fromJSON(   )`  | jsonlite |
 | Database table(s) | `sqlFetch(CONNECTION, "TABLE NAME", ...)` | RODBC | 
 |  | `sqlQuery(CONNECTION, "SQL QUERY", ...)` |  |
 |  | `sqldf("SQL QUERY", dbname="database", ...)` | sqldf |
@@ -64,6 +65,33 @@ If you *already* have a data frame and want to speed up reading and accessing it
 ````
 power = data.table("power")
 ```
+
+
+### Unzipping files within R
+
+Larger files are often zipped up to save space and bandwidth. Using the `unz` function inside the usual `read.table` takes care of bringing a single file into R. We'll download the zip file for the [Bike Sharing dataset](https://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset) from the UCI Machine Learning Archive and unzip the daily use file from it.
+
+```
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip", "Bike-Data.zip")
+bike_share_daily = read.table(unz("Bike-Data.zip", "day.csv"), header=T, quote="\"", sep=",")
+```
+
+If the zip file has more than one file in it, you can unzip them all from within R with `unzip`.
+
+```
+unzip("Bike-Data.zip")
+```
+
+Note: although there is an `untar` function, it is no longer necessary—gzipped files can be read directly into R with the standard `read.table` function.  
+
+Once you have the data files (or other files) unzipped, you can bring them into R as data frames or other formats using the relevant "reading data" functions, e.g.: 
+
+```
+bike_share_daily = read.table("day.csv", header=T, sep=",")
+bike_share_hourly = read.table("hour.csv", header=T, sep=",")
+bike_share_readme = readLines("Readme.txt")
+```
+
 
 ### Reading Excel files
 
@@ -170,33 +198,7 @@ Strongly Disagree, No"),
 header=TRUE, sep=",")
 ```
 
-Of course, whichever works best for you is the method to use!
-
-
-### Unzipping files into R
-
-Larger files are often zipped up to save space and bandwidth. Using the `unz` function inside the usual `read.table` takes care of bringing a single file into R. We'll download the zip file for the Bike Sharing dataset from the UCI Machine Learning Archive and unzip the daily use file from it:
-
-```
-download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip", "Bike-Data.zip")
-bike_share_daily = read.table(unz("Bike-Data.zip", "day.csv"), header=T, quote="\"", sep=",")
-```
-
-If the zip file has more than one file in it, you can unzip them from within R, and then load them as you would normally:
-
-```
-unzip("Bike-Data.zip")
-```
-
-Note: although there is an `untar` function, it is no longer necessary—gzipped files can be read directly into R with the standard `read.table` function.  
-
-Once you have the data files (or other files) unzipped, you can bring them into R as data frames or other formats using the relevant "reading data" functions, e.g.: 
-
-```
-bike_share_daily = read.table("day.csv", header=T, sep=",")
-bike_share_hourly = read.table("hour.csv", header=T, sep=",")
-bike_share_readme = readLines("Readme.txt")
-```
+Of course, whichever works best for you is the method to use.
 
 
 ### Reading XML files
