@@ -321,7 +321,9 @@ connection_tables = sqlTables(connection)
 connection_tables
 ```
 
-You can pull in an entire table using the `sqlFetch` function, but if you're using a database, you probably want to query it to get just what you need. To get a whole table, use `sqlFetch`:
+### Creating data frames from a database
+
+Once you're connected to database, you can pull in an entire table using the `sqlFetch` function, but if you're using a database, you probably want to query it to get just what you need. To get a whole table, use `sqlFetch`:
 
 ```
 whole_table = sqlFetch(connection, "table_name")
@@ -344,6 +346,8 @@ query_2 = "SELECT * FROM 'table_name$'
     ORDER BY ordering_variable_name"
 query_2_dataframe = sqlQuery(connection, query_2)
 ```
+
+### Disconnecting from a database
 
 When you have the data you need, or at least by the end of the R session, close the database connection:
 
