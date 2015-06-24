@@ -633,11 +633,25 @@ This result still needs some cleaning before we can move to analysis; Chapter 3 
 
 ### Working with APIs
 
-STUFF HERE?
+Many data-oriented sites have APIs that make it easy to pull in data to R. Some are wide open, but most true APIs  require keys. And of course, each one has its own terms of service and ways to implement. 
 
+A good example of a typical API is via the US Census Bureau's American Community Survey (ACS). First, go to their [*Terms of Service* page](http://www.census.gov/data/developers/about/terms-of-service.html), and if you agree with those terms, click the **Request a KEY** button at the bottom of the left side menu bar. A pop-up will ask for your organization and email address (and agreement to the *Terms*, of course), and it will return a key to that email within a few minutes. 
 
+The `acs` R package provides the link between the API and R, and also provides a function to permanently install the key so you don't have to enter it every time you hit the API:
 
+```
+require(acs)
+api.key.install(key="y0uR K3y H3rE")
+```
 
+The ACS is *vast*. Since this is simply a recipe for example's sake, we'll assume you know the table and geographies you want data on... say, population by county in Texas. `acs` keeps the data frame part of the object in the `estimate` slot:
+
+```
+tx_pops_acs = acs.fetch(geography=geo.make(state="TX", county="Harris"), table.number="B01003")
+tx_county_pops = data.frame(tx_pops_acs@estimate)
+```
+
+We'll see more use of the `acs` package in the *Maps* section of Chapter 7. 
 
 
 ## Writing Files to Disk
