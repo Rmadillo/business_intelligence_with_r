@@ -56,14 +56,12 @@ Move into your new directory and load the R packages we'll use in this project:
 # Set the working directory
 setwd("~/BIWR/Chapter1")
 
-# This package allows us to explore time values separate from date values
-require(chron)
-
 # This package will allow us to interpolate between missing time series values
 require(zoo)
 
-# This package provides functions for easy data wrangling
+# These packages provides functions for easy data wrangling
 require(dplyr)
+require(reshape2)
 
 # This package provides automated forecasting of time series data
 require(forecast)
