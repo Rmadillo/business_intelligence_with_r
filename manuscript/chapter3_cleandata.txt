@@ -138,9 +138,22 @@ my_data = na.omit(my_data)
 It’s also useful to remember to use `na.rm=TRUE` when including data with NA values in calls to many base installation functions (e.g., `mean`).
 
 
+### Rounding
+
+```
+round(OBJECT, DIGITS)
+```
+
+
+### Concatenation
+
+paste 
+paste0
+
+
 ### Converting between data types
 
-In the previous chapter, we saw a JSON import that turned all of the variables into character data types. While this result is relatively rare, there is almost *always* a need to convert a column from one data type to another. Atfer you've used `str` to figure out what type(s) of data you have, you can use conversion functions to change them as you need. The following are the primary conversion functions:
+In the previous chapter, we saw a JSON import that turned all of the variables into character data types. While this result is relatively rare, there is almost *always* a need to convert a column from one data type to another. After you've used `str` to figure out what type(s) of data you have, you can use conversion functions to change them as you need. The following are the primary conversion functions:
 
 | Data type you want | Function |
 | ------------------ | -------- |
@@ -149,17 +162,14 @@ In the previous chapter, we saw a JSON import that turned all of the variables i
 | Numeric / Double | `as.numeric(OBJECT, ...)` |
 | Integer | `as.integer(OBJECT, ...)` |
 | Date | `as.Date(OBJECT, format="yyyy-mm-dd", ...)` |
-| Datetime / Time | `as.POSIXct(OBJECT, tz="CURRENT TIME ZONE", ...)` |
+| Datetime | `as.POSIXct(OBJECT, tz="CURRENT TIME ZONE", ...)` |
 
 Note that conversion to and between dates and times can be tricky, depending on the structure of the existing date/time variable. If it's already in standard ISO format (e.g., `yyyy-mm-dd`), these basic conversions will work fine. If not, you'll have to mess with the `format` option and/or use other techniques. See Chapter 8 (*Trends and Time*) for lots of details on working with and converting date and time values. 
 
 Commas in values (Excel, looking at you). 
 dataset$Variable2=as.numeric(paste(gsub(",", "", dataset$Variable)))
 
-Rounding
-```
-round(OBJECT, DIGITS)
-```
+
 
 
 ## Imputation
@@ -332,6 +342,13 @@ Obviously, there's more to life than left joins. The following table lays out th
 ### Unions and bindings
 
 Concatenating two tables can be handled two ways: via `sqldf` or through R's native binding functions. 
+
+TABLE WITH SQUARE VENNS
+| Type of Join | Visualization | *bind | sqldf |
+| ------------ | ------------- | ----- | ----- |
+| Union | ![union](/images/Ch3_sql_01.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
+| Semi-union | ![semi union](/images/Ch3_sql_01.png) | *see below* | *see below* |
+| Concatenate | ![concat](/images/Ch3_sql_01.png) | `cbind(A, B)` | *n/a* |
 
 If you need to stack two tables with the same columns—`UNION` in SQL terms—and prefer the SQL approach (and/or already have `sqldf` loaded), just include it in your query, e.g.:
 
