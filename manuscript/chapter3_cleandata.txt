@@ -324,6 +324,7 @@ R will match on columns with the same names, so while you can get away without s
 
 Obviously, there's more to life than left joins. The following table lays out the different types of joins, and how `dplyr`, `merge`, and `sqldf` perform each, given data frames/tables *A* and *B*.
 
+{width="90%"}
 | Type of Join | Visualization | dplyr | merge | sqldf |
 | ------------ | ------------- | ----- | ----- | ----- |
 | Left | ![Left join](/images/Ch3_sql_01.png) | `left_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.x=TRUE)` | `SELECT * FROM A LEFT JOIN B ON A.key = B.key` |
