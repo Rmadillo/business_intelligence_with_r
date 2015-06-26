@@ -101,6 +101,8 @@ nursing_home_deficiencies$Home = gsub(" (REPORT)  Home Info", "",
     nursing_home_deficiencies$Home, fixed = TRUE)
 nursing_home_deficiencies$Severity = substr(nursing_home_deficiencies$Severity,
     1, 1)
+    
+# Clean the date data
 nursing_home_deficiencies$Date = gsub(".", "", nursing_home_deficiencies$Date,
     fixed = TRUE)
 clean = function(col) {
@@ -118,7 +120,7 @@ nursing_home_deficiencies$Date = as.Date(nursing_home_deficiencies$Date,
     format="%B %d, %Y")
 ```
 
-The use of `fixed = TRUE` option above tells `gsub` to use exact matching; the default is `false`, which uses POSIX 1003.2 extended regular expressions. 
+The use of `fixed = TRUE` option above tells `gsub` to use exact matching; the default is `false`, which uses [POSIX 1003.2 extended regular expressions](http://www.cheatography.com/davechild/cheat-sheets/regular-expressions/). 
 
 
 ### Missing values: Dummy NA values and dropping the observations with NAs
