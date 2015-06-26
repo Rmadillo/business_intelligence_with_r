@@ -316,4 +316,4 @@ Opening the `energy_use_prediction_widget.html` from the Reports folder shows us
 
 ## Documenting the Project
 
-blah blah blah
+Create .Rmd example
