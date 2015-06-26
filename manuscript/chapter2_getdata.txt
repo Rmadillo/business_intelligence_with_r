@@ -1,5 +1,11 @@
 # Chapter 2: Getting Data
 
+- Working with Files
+- Working with Databases
+- Getting Data from the Web
+- Creating Fake Data to Test Code
+- Writing Files to Disk
+
 The tried-and-true method for bringing data into R is via the humble csv file, and in many cases it will be the default approach. But in most professional environments, you'll encounter a wide variety of file formats and production needs, so having a cheat sheet of data import methods is useful.
 
 There are a wide variety of packages and functions to import data from files, but a few provide nearly all the functionality you'll need:
