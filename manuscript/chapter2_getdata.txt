@@ -63,7 +63,8 @@ The `data.table` package is extremely useful—and much, *much* faster than `rea
 require(data.table)
 # If you want to read in a csv directly, use fread, e.g., if you
 # had the raw pses2011 in a local csv, you'd read it in this way:
-
+power = fread("Data/household_power_consumption.txt", sep=";", header=T, 
+  na.strings=c("?",""), stringsAsFactors=FALSE)
 ```
 
 If you *already* have a data frame and want to speed up reading and accessing it, use the `data.table` function:
@@ -161,12 +162,12 @@ pses2011_header = read.xls("http://www.tbs-sct.gc.ca/pses-saff/2011/
   "Description"), stringsAsFactors=FALSE)
 ```
 
-Using the `colnames` function, the metadata we read in from this Excel file can be used to create the header names for the raw data we read in as a csv in the previous section:
-
-```
-# Assign the Variable column names from the Exccel file to the raw data file
-colnames(pses2011) = pses2011_header$Variable
-```
+A> Using the `colnames` function, the metadata we read in from this Excel file can be used to create the header names for the raw data we read in as a csv in the previous section:
+A>
+A> ~~~~~~~~
+A> # Assign the Variable column names from the Excel file to the raw data file
+A> colnames(pses2011) = pses2011_header$Variable
+A> ~~~~~~~~
 
 
 ### Creating a dataframe from the clipboard or direct entry
@@ -332,16 +333,20 @@ connection_tables
 Once you're connected to database, you can pull in an entire table using the `sqlFetch` function, but if you're using a database, you probably want to query it to get just what you need. To get a whole table, use `sqlFetch`:
 
 ```
+# Fetch a table
 whole_table = sqlFetch(connection, "table_name")
 ```
 
 To make a SQL query and put the results into a dataframe, set up the query in an R object and then use the `sqlQuery` function. The following query is identical to above as it brings in the whole table:
 
 ```
-# Within the double quotes you can put a valid SQL query
-# Using single quotes to name the table
+# Within the double quotes you can put a valid SQL query,
+# using single quotes to name the table
 query_1 = "SELECT * FROM 'table_name'"
 query_1_dataframe = sqlQuery(connection, query_1)
+
+# While not as clear for large queries, you can combine them into one step:
+query_1_dataframe = sqlQuery(connection, "SELECT * FROM 'table_name'")
 ```
 
 Any typical SQL query will work; for example, this query will pull in all columns but only those records specified by the where clause, and will sort it by the order by variable(s):
@@ -553,8 +558,6 @@ agency_row_count = sqldf("SELECT
 
 It's worth pointing out that if your data fits in memory, there usually isn't need for a database; merging and manipulation can occur inside R—recipes in the next chapter explore ways to do that.
 
-Finally, remember that SQL is best suited for data extraction and manipulation, so save the analytics work for R. 
-
 
 ## Getting Data from the Web
 
@@ -676,19 +679,20 @@ Using a variety of sources, we'll develop four dataframes that mimic a customer 
 
 ```
 # Table A – customer data
+set.seed(1235813)
 customer_id = seq(1:10000)
 customer_gender = sample(c("M","F", "Unknown"), 10000, replace=TRUE,
   prob=c(.45, .45, .10))
 customer_age = round(runif(10000, 18, 88), 0)
+make_NAs = which(customer_age %in% sample(customer_age, 25))
+customer_age[make_NAs] = NA
 customer_purchases = round(rlnorm(10000)*100, 2)
   
 # Table B – city/state/zip and business density lookup table
-set.seed(1235813)
-temp = tempfile()
-download.file("ftp://ftp.census.gov/econ2012/CBP_CSV/zbp12totals.zip", temp)
-zipcodes = read.table(unz(temp, "zbp12totals.txt"), header=T, quote="\"",
+download.file("ftp://ftp.census.gov/econ2012/CBP_CSV/zbp12totals.zip", 
+  "temp.zip")
+zipcodes = read.table(unz("temp.zip", "zbp12totals.txt"), header=T, quote="\"",
   sep=",", colClasses="character")
-unlink(temp)
 zipcodes = zipcodes[,c(1,11:12,10)]
 # End of Table B
   
@@ -710,17 +714,19 @@ survey = data.frame(customer_id, strongly_agree, agree, neutral, disagree,
   
 # TABLE D – lookup table to match states to regions
 state_regions = data.frame(datasets::state.abb, datasets::state.name, 
-  datasets::state.region, datasets::state.division, colnames=c("abb", "state", 
-  "region", "division"))
+  datasets::state.region, datasets::state.division)
+colnames(state_regions) = c("abb", "state", "region", "division")
 ```
 
-In Table A, we've created a customer demographic and sales dataset. The `sample` function creates a random vector of male and female genders, as well as unknown, proportional to the weights in the `prob` option. The age and purchase values were created using the random number generators based on the uniform and log-normal distributions, respectively. Each customer's zip code was generated from a random selection of the zip codes in Table B.
+In Table A, we've created a customer demographic and sales dataset. The `sample` function creates a random vector of male and female genders, as well as unknown, proportional to the weights in the `prob` option. The age and purchase values were created using the random number generators based on the uniform and log-normal distributions, respectively. The age value vector was subsequently replaced with 25% NAs. Each customer's zip code was generated from a random selection of the zip codes in Table B. All vectors are then brought together into the `customers` data frame. 
 
 Table B, we've downloaded and unzipped some 2012 County Business Patterns data from the US Census to create a "locations" lookup table. (Metadata for this dataset is online at https://www.census.gov/econ/cbp/download/noise_layout/ZIP_Totals_Layout10.txt; in addition to the city/state/zip fields, we've also kept the `est` field, which is the number of business establishments in this zip code in the first quarter of 2012.)
 
 Table C is just a systematic selection designating a survey response from each customer. This could also be done randomly, but is done this way here simply for illustraion. 
 
 Finally, Table D takes advantage of R's built-in data from the `datasets` package to generate a lookup table of states and state regions.
+
+I> `wakefield` is a new R package at the time of this writing that will generate random datasets for you. In addition to the random data frame generation, it also has a nice function to visualize the distribution of NAs in a data frame. Check out [its GitHub site](https://github.com/trinker/wakefield) for more info.
 
 
 ## Writing Files to Disk
