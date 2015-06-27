@@ -43,6 +43,7 @@ GGally is built over `ggplot2` (which we'll use often in this book), and its syn
 ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7), 
   title="Daily Bike Sharing Data", axisLabels="show", color="season")
 ```
+
 ![ggpairs](/images/Ch4_01.png)
 
 It’s helpful to use a non-parametric correlation method if you don’t know a priori whether the quantitative variables are linearly related in their raw forms. Unfortunately, `ggpairs` doesn’t yet provide this functionality, so know that for continuous pairs of variables that don’t show a linear point cloud, the correlation coefficient in this graph will be *larger than it should be*.
@@ -57,6 +58,7 @@ Sometimes you just want to see histograms, but coding and laying out a bunch of 
 require(psych)
 multi.hist(bike_share_daily[,sapply(bike_share_daily, is.numeric)])
 ```
+
 ![multi.hist](/images/Ch4_02.png)
 
 ## A better "pairs" plot
@@ -67,6 +69,7 @@ The `psych` package also has a modification of the built-in `graphics` package's
 pairs.panels(bike_share_daily[,sapply(bike_share_daily, is.numeric)], 
   ellipses=FALSE, pch=".", las=2, cex.axis=0.7, method="kendall")
 ```
+
 ![pairs.panels](/images/Ch4_03.png)
 
 ## Mosaic plots—"Scatterplots" for categorical data
@@ -83,6 +86,7 @@ The dataset we've used so far in this recipe isn't a great one for mosaic plots 
 ```
 pairs(Titanic, highlighting=2)
 ```
+
 ![mosaic pairs](/images/Ch4_04.png)
 
 ## Obtaining summary statistics
@@ -262,6 +266,7 @@ You can also obtain a graphical summary with the plottout function, which shows 
 ```
 plottol(commute_time_npti, commute_time, side="two", plot.type="both")
 ```
+
 ![tolerance interval plot](/images/0815OS_02_05.png)
 
 
@@ -316,6 +321,7 @@ ggplot(bike_share_daily, aes(casual)) +
 
 ![density and histogram](/images/0815OS_02_06a.png)
 
+```
 ggplot(bike_share_daily, aes(casual)) +
     ylab("density and count") +
     xlab("Casual Use") +
@@ -365,12 +371,12 @@ ggplot(bike_share_daily, aes(weathersit)) +
 
 ![horizontal bar](/images/0815OS_02_07b.png)
 
-A> You can scrape Sharon Machlis' ggplot cheat sheet into a local pipe-delimited text file, to format and display as works best for you.
-A> 
-A> require(XML)
-A> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")
-A> gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1, stringsAsFactors=F)
-A> write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)
+I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet into a local pipe-delimited text file, to format and display as works best for you.
+I> 
+I> require(XML)
+I> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")
+I> gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1, stringsAsFactors=F)
+I> write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)
 
 
 ## Plotting multiple univariate distributions with faceting
@@ -444,6 +450,7 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
 
 ![double density plot](/images/0815OS_02_10.png)
 
+
 ### Scatterplots and marginal distributions
 
 The `ggExtra` package provides a simple way to plot scatterplots with marginal distributions with the `ggMarginal` function. It defaults to density curves, but the histogram option presents a clearer picture. First, build the scatterplot and assign it to an object.
@@ -468,6 +475,7 @@ Sometimes density plots can be useful, or perhaps you want to keep it simple and
 
 ![marginal density](/images/scatter_marginal_density.png)
 ![marginal boxplot](/images/scatter_marginal_boxplot.png)
+
 
 ### Mosaic plots
 
@@ -514,6 +522,8 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
     theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), 
     legend.position="top")
 ```
+
+***NEED PLOT***
 
 ## Plotting survey data
 
