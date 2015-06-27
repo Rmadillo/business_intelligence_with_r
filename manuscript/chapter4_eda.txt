@@ -415,9 +415,12 @@ We continue using the bike share data, along with `ggplot2`. Make sure to load t
 
 ```
 require(ggplot2)
+require(ggExtra)
 require(scales)
 require(vcd)
 ```
+
+### Double density plots
 
 For quantitative data, plotting the two distributions over each other provides a clear, direct comparison:
 
@@ -435,6 +438,32 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
 
 ![double density plot](/images/0815OS_02_10.png)
 
+### Scatterplots and marginal distributions
+
+The `ggExtra` package provides a simple way to plot scatterplots with marginal distributions with the `ggMarginal` function. It defaults to density curves, but the histogram option presents a clearer picture. First, build the scatterplot and assign it to an object.
+
+```
+bike_air_temp = ggplot(bike_share_daily, aes(x=atemp, y=casual)) +
+    xlab("Daily Mean Normalized Air Temperature") +
+    ylab("Number of Total Casual Bike Uses") +
+    geom_point(col="gray50") +
+    theme_bw()
+```
+
+Then, use `ggMarginal` to create the final product:
+
+```
+bike_air_temp_mh = ggMarginal(bike_air_temp, type="histogram")
+```
+
+![marginal histograms](/images/scatter_marginal_hist.png)
+
+Sometimes density plots can be useful, or perhaps you want to keep it simple and show a boxplot. Just change the `type` option:
+
+![marginal density](/images/scatter_marginal_density.png)
+![marginal boxplot](/images/scatter_marginal_boxplot.png)
+
+### Mosaic plots
 
 The `vcd` package has a nice implementation of mosaic plots for categorical data called, as you might expect, `mosaic`:
 
@@ -456,7 +485,11 @@ For comparison, here's the table that the mosaic plot represents:
 table(bike_share_daily$weathersit, bike_share_daily$season)
 ```
 
-PUT TABLE HERE
+|  | Winter | Spring | Summer | Fall |
+|--| ------:| ------:| ------:| ----:|
+| 1 | 111 | 113 | 136 | 103 |
+| 2 | 66 | 68 | 48 | 65 |
+| 3 | 4 | 3 | 4 | 10 |
 
 
 ## Multiple bivariate comparisons with faceting
