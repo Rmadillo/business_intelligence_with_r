@@ -1,12 +1,10 @@
 # Chapter 3: Cleaning and Preparing Data
 
-- Identifying basic structure
+- Understanding Your Data
 - Cleaning up
 - Merging dataframes
 - Filtering, selecting, and arranging a dataframe
-- Transforming a dataframe from wide to long and back again
-- Partitioning the data efficiently for predictive modeling
-- Censored data (here or in survival analysis type stuff?)
+- Reshaping: Transforming a dataframe from wide to long and back again
 
 
 ## Understanding Your Data
@@ -366,18 +364,18 @@ Binding two tables together side-by-side is done with the `cbind` function. `cbi
 cbind(A,B)
 ```
 
-Add NA columns to allow stacking with different #s of columns
-
-See example in Chapter 1
-
 As in the last recipe, here's a visualization summary:  
 
 | Type of Join | Visualization | *bind | sqldf |
 | ------------ | ------------- | ----- | ----- |
-| Union | ![union](/images/Ch3_sql_01.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
-| Semi-union | ![semi union](/images/Ch3_sql_01.png) | *see below* | *see below* |
-| Concatenate | ![concat](/images/Ch3_sql_01.png) | `cbind(A, B)` | *n/a* |
+| Union | ![union](/images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
+| Semi-union | ![semi union](/images/rbind_semi_union.png) | *see below* | *see below* |
+| Concatenate | ![concat](/images/cbind.png) | `cbind(A, B)` | *n/a* |
 
+
+Add NA columns to allow stacking with different #s of columns
+
+See example in Chapter 1
 
 
 ## Filtering, selecting, and arranging a dataframe
