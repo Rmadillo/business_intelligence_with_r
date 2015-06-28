@@ -1,10 +1,5 @@
-  
-| |  
-  
-| |  
+# About 
 
-| |  
-  
 | |  
 
 ### About the Authors
@@ -26,3 +21,8 @@ stuff about cover image
 ### Session Info  
 
 R session info here (from final run through)
+  
+| |  
+
+{icon=download}
+G> The code is available from the book's GitHub site at **URL**.
