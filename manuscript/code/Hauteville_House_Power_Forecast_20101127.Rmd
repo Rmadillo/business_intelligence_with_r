@@ -1,25 +1,29 @@
 ---
-title: "Six Month Electricty Use Forecast: Nov 2010-Apr 2011"
-date: "27 November 2010"
+title: ""
 output: html_document
 ---
 
-| Prepared For: | Prepared By: |
-| ------------- | --- ---------:|
-| Jean Valjean, CFO | Jean Prouvaire, Data Scientist |
-| Marius Pontmercy, Utilities Director | Courfeyrac Consulting |
-| Hauteville House, Guernsey | Paris | 
+## Six Month Electricty Use Forecast for Hauteville House: November 2010 - April 2011
+*27 November 2010*  
 
-<br>
+Prepared For  | Prepared By
+------------- | -------------:
+Jean Valjean, CFO  | Jean Prouvaire, Data Scientist
+Marius Pontmercy, Utilities Director  | Courfeyrac Consulting
+Hauteville House, Guernsey  | Paris
+
+ 
 <hr>
 
-## Purpose
+### Purpose
 
 Describe past monthly power usage and forecast potential usage for the coming six months.
 
-## Results
+### Results
 
-#### Total monthly power use follows a predictable annual cycle, with winter peaks and summer troughs. In coming months, usage will peak between 900-1200 kWh (95% prediction range) in December and January, then steadily fall over the winter and early spring.   
+**Total monthly power use follows a predictable annual cycle, with winter peaks and summer troughs. In coming months, usage will peak between 900-1200 kWh (95% prediction range) in December and January, then steadily fall over the winter and early spring.**   
+
+<br>
 
 ```{r everything, echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -41,7 +45,8 @@ require(htmlwidgets)
 require(dygraphs)
 
 # Download the zip file into the data folder
-download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip", destfile = "Data/household_power_consumption.zip")
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip",     
+    destfile = "Data/household_power_consumption.zip")
 
 # Unzip the data from the zip file into the Data folder
 unzip("Data/household_power_consumption.zip", exdir="Data")
@@ -49,7 +54,7 @@ unzip("Data/household_power_consumption.zip", exdir="Data")
 # Read the data into R 
 # NAs are represented by blanks and ? in this data, so need to change to NA
 power = read.table("Data/household_power_consumption.txt", sep=";", header=T, 
-na.strings=c("?",""), stringsAsFactors=FALSE)
+    na.strings=c("?",""), stringsAsFactors=FALSE)
 
 # Convert data to Date object
 power$Date = as.Date(power$Date, format="%d/%m/%Y")
@@ -61,7 +66,7 @@ power$DateTime = as.POSIXct(paste(power$Date, power$Time))
 power$Month = format(power$Date,"%Y-%m")
 
 # Add the first to each Y-m combo and convert back to Date
-power$Month = as.Date(paste0(power_monthly$Month, "-01"))
+power$Month = as.Date(paste0(power$Month, "-01"))
 
 # Use 'ifelse' to count each minute that is NA
 power$Missing = ifelse(is.na(power$Global_active_power), 1, 0)
@@ -81,8 +86,8 @@ power_group = group_by(power, Month)
 
 # Use 'dplyr' to get monthly max demand and total use results
 power_monthly = summarise(power_group, 
-Max_Demand_kW = max(Global_active_power_locf), 
-Total_Use_kWh = sum(Global_active_power_locf)/60)
+    Max_Demand_kW = max(Global_active_power_locf), 
+    Total_Use_kWh = sum(Global_active_power_locf)/60)
 
 # Remove partial months from data frame
 power_monthly = power_monthly[2:47,]
@@ -99,14 +104,14 @@ total_use_fc = forecast(total_use_ts, h=6)
 # Create a data frame with the original data
 # and space for the forecast details
 use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh, 
-Forecast = NA, Upper_80 = NA, 
-Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
+    Forecast = NA, Upper_80 = NA, 
+    Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
 
 # Create a data frame for the forecast details
 # with a column for the original data
 use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
-total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
-Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
+    total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
+    Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
 
 # "Union" the two data frames into one
 use_ts_fc = rbind(use_df, use_fc)
@@ -116,26 +121,28 @@ total_use_forecast = ts(use_ts_fc, start=c(2007, 1), freq=12)
 
 # Create the widget
 energy_use_prediction_widget = dygraph(total_use_forecast, 
-main = "Predicted Monthly Electricty Use (kWh)",
-ylab = "Total kWh", width=900, height=500) %>% 
-dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
-dyEvent(date = "2008-08-01", "Closed for vacation", labelLoc = "top") %>%
-dyRangeSelector(dateWindow = c("2008-09-15", "2011-06-01")) %>%
-dyLegend(width = 800)
+      main = "Predicted Monthly Electricty Use (kWh)",
+      ylab = "Total kWh", width=900, height=500) %>% 
+    dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
+    dyEvent(date = "2008-08-01", "Closed for vacation", labelLoc = "top") %>%
+    dyRangeSelector(dateWindow = c("2008-09-15", "2011-06-01")) %>%
+    dyLegend(width = 800)
 
 # Display the widget in the Viewer window
 # Hit the Zoom button for a pop-out 
 energy_use_prediction_widget
 ```
 
+<br>
 
-Using the upper 80% prediction interval is a reasonable way to plan conservatively for power costs.   
+***Using the upper 80% prediction interval is a reasonable way to plan conservatively for power costs.***   
 
 ```{r forecasttable, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+require(knitr)
 kable(total_use_fc)
 ```
 
-<br>
+<br>  
 <hr>
 
 ## Methods and Analytics Details
@@ -156,19 +163,19 @@ https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+cons
 
 Dimensions: 2,075,259 observations of 13 variables
 
-1. **`date`**: date in format dd/mm/yyyy
-2. **`time`**: time in format hh:mm:ss
-3. **`global_active_power`**: household global minute-averaged active power (in kilowatts)
-4. **`global_reactive_power`**: household global minute-averaged reactive power (in kilowatts)
-5. **`voltage`**: minute-averaged voltage (in volts)
-6. **`global_intensity`**: household global minute-averaged current intensity (in amperes)
-7. **`sub_metering_1`**: energy sub-metering No. 1 (in watt-hours of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered).
-8. **`sub_metering_2`**: energy sub-metering No. 2 (in watt-hours of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light.
-9. **`sub_metering_3`**: energy sub-metering No. 3 (in watt-hours of active energy). It corresponds to an electric water-heater and an air-conditioner.  
+1. **`date`**: date in format dd/mm/yyyy  
+2. **`time`**: time in format hh:mm:ss  
+3. **`global_active_power`**: household global minute-averaged active power (in kilowatts)  
+4. **`global_reactive_power`**: household global minute-averaged reactive power (in kilowatts)  
+5. **`voltage`**: minute-averaged voltage (in volts)  
+6. **`global_intensity`**: household global minute-averaged current intensity (in amperes)   
+7. **`sub_metering_1`**: energy sub-metering No. 1 (in watt-hours of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered).  
+8. **`sub_metering_2`**: energy sub-metering No. 2 (in watt-hours of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light.  
+9. **`sub_metering_3`**: energy sub-metering No. 3 (in watt-hours of active energy). It corresponds to an electric water-heater and an air-conditioner.   
 
 **`global_active_power`** is the variable of interest. 
 
-Missing values pattern:
+Missing values pattern:  
 
 ```{r missingplot, echo=FALSE, warning=FALSE, message=FALSE}
 # Download the 'calendarHeat' function from revolutionanalytics.com
@@ -176,19 +183,19 @@ source("http://blog.revolutionanalytics.com/downloads/calendarHeat.R")
 
 # Plot the calendar graph to view the missing data pattern
 calendarHeat(power_day_missing$Date, power_day_missing$Count_Missing, 
-             varname="Missing Data", color="w2b")
+    varname="Missing Data", color="w2b")
 ```
 
 
 *Transformations*  
 
-Missing values were interpolated using the 'carry last value forward' approach. Comparison of distributions:
+Missing values were interpolated using the 'carry last value forward' approach. Comparison of distributions:  
 
 ```{r missingvalues, echo=FALSE, warning=FALSE, message=FALSE}
 # Compare the original and interpolated distributions
 # Reshape the two variables into 'long' form for ggplot
 power_long = melt(power, id.vars= "DateTime", measure.vars=
-c("Global_active_power", "Global_active_power_locf"))
+    c("Global_active_power", "Global_active_power_locf"))
 
 # Create density plot
 density_plot = ggplot(power_long, aes(value, fill=variable, 
@@ -200,7 +207,7 @@ density_plot = ggplot(power_long, aes(value, fill=variable,
 density_plot
 ```
 
-Values were aggregated to a monthly time step. 
+Values were aggregated to a monthly time step.   
 
 ```{r monthlyuse, echo=FALSE, warning=FALSE, message=FALSE}
 # Create plot of total use by month
@@ -214,16 +221,16 @@ total_use_plot
 
 *Final*  
 
-Dimensions: 56 observations of 7 variables
+Dimensions: 56 observations of 7 variables  
 
 R time series object  
 1. **`Month`**: Observation or forecast month (`ts` identifier, not a variable in the object)  
-2. **`Total_Use`**: Total monthly active power use for period of record (in kilowatt-hours)
-3. **`Forecast`**: Point forecast of total monthly active power use (in kilowatt-hours)
-4. **`Upper_80`**: Upper 80% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)
-5. **`Lower_80`**: Lower 80% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)
-6. **`Upper_95`**: Upper 95% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)
-7. **`Lower_95`**: Lower 95% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)
+2. **`Total_Use`**: Total monthly active power use for period of record (in kilowatt-hours)  
+3. **`Forecast`**: Point forecast of total monthly active power use (in kilowatt-hours)  
+4. **`Upper_80`**: Upper 80% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)  
+5. **`Lower_80`**: Lower 80% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)  
+6. **`Upper_95`**: Upper 95% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)  
+7. **`Lower_95`**: Lower 95% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)  
 
 ```{r basic_fc_plot, echo=FALSE, warning=FALSE, message=FALSE}
 # View model summary
@@ -233,16 +240,12 @@ summary(total_use_fc)
 plot(total_use_fc)
 ```
 
+***Session Info***
 
-<br>
-<hr>
-
-***R Session Info***  
-Code location/File name: `Hauteville_House_Power_Forecast_20101127.Rmd`  
-
-This file compiled `r Sys.time()`.  
-`r sessionInfo()`  
-
-
+File compiled: 
+```{r sessioninfo, echo=FALSE, warning=FALSE, message=FALSE}
+Sys.time()
+sessionInfo()
+```
 
 ***End of File***
