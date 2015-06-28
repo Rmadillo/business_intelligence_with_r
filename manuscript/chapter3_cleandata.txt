@@ -53,7 +53,8 @@ levels(customers$customer_gender)
 If you do need to change the order for example, if you want them to display in plots in a different order, you can use the `ordered` function:
 
 ```
-customers$customer_gender = ordered(customers$customer_gender, c("Unknown", "F", "M"))
+customers$customer_gender = ordered(customers$customer_gender, 
+    c("Unknown", "F", "M"))
 
 [1] "Unknown" "F"       "M" 
 ```
@@ -138,12 +139,17 @@ In many cases the data frame will require a little clean up after it's loaded. M
 There are many possible approaches to cleaning, so as an example, the following code does some cleaning of the Pro Publica *Nursing Home Deficiencies* data set scraped from the web in the previous chapter, using a few different functions:
 
 ```
+# Create column names
 colnames(nursing_home_deficiencies) = c("Date", "Home", "City", "State", 
     "Deficiency_Count", "Severity")
+
+# Replace abbreviations and extraneous text
 nursing_home_deficiencies$State = gsub("Tex.", "TX", 
     nursing_home_deficiencies$State, fixed = TRUE)
 nursing_home_deficiencies$Home = gsub(" (REPORT)  Home Info", "", 
     nursing_home_deficiencies$Home, fixed = TRUE)
+    
+# Take the first 
 nursing_home_deficiencies$Severity = substr(nursing_home_deficiencies$Severity,
     1, 1)
     
@@ -494,9 +500,10 @@ If you want to check on how one or more of the `dplyr` actions will perform in t
 
 ```
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
-head(arrange(customer_survey, region, desc(customer_age), desc(customer_purchases)))
+head(arrange(customer_survey, region, desc(customer_age), 
+    desc(customer_purchases)))
 head(mutate(customer_survey, Location = paste(city, stabbr, sep=", "), 
-  purchase_proportion=round(customer_purchases/length(customer_purchases),2)))
+    purchase_proportion=round(customer_purchases/length(customer_purchases),2)))
 ```
 
 ## Transforming a dataframe from wide to long and back again
