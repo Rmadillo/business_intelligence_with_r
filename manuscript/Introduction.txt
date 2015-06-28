@@ -20,7 +20,8 @@ Second, we tend to use ```pothole_case``` for variable, dataframe, and database 
 
 This book uses R, RStudio, and Git software. We used R 3.1 and RStudio 0.98 to create this book. If you are on a Windows system, you'll need to ensure either Perl and/or Java are installed to use the Excel import functions (if you are using Mac or Unix/Linux, Perl was probably installed with the OS). Make sure that the architecture for Perl/Java you have or install matches that of your R install, i.e., if you are using 64-bit R make sure your Java is also x64. You will also need Java for some of the packages in Chapter 8 (Text Mining).
 
-The code and datasets are available from the book's Github site at **URL**.
+{icon=download}
+G> The code and datasets are available from the book's Github site at **URL**.
 
 You should already be comfortable with "everyday" R use for analysis (e.g., knowing how to make base plots, use lm, etc.) and R's data construct types, such as knowing the differences between a list, a dataframe, and a matrix. You should also know that any result from the functions shown in this book can be placed in an object to be called or modified later, e.g., you should know that ```bob = prop.table(table(bike_share_daily[c(3,9)]))``` saves the table of proportions in a two-way table as the object ```bob```. You don't need to be an R programmer, however; this book is aimed at people who use R to accomplish day-to-day analytic ends, not for those who want to improve their code efficiency, create custom algorithms, or develop new packages.
 
