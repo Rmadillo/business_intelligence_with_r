@@ -187,7 +187,7 @@ ggsave("Results/density_plot.png", width=6, height=4, dpi=600, units="in")
 
 The overall shape hasn't changed, though we can see a small spike at about 1 kW. This should be fine for forecasting. 
 
-Now that we have a complete time series, we can determine total monthly use (kWh). While we're at it, we can calculate maximum demand for a given month (kW) over the period of record as an example of how to calculate multiple summaries at once. kWh measures use, i.e., how much energy is used, while kW measures demand. We're interested in usage, because that's what power companies use to charge us.
+Now that we have a complete time series, we can determine total monthly use (kWh). While we're at it, we can calculate maximum demand for a given month (kW) over the period of record as an example of how to calculate multiple summaries at once. kWh measures use, i.e., how much energy is used, while kW measures demand. We're interested in usage, because that's how power companies charge us.
 
 ```
 # Use 'dplyr' to group by month
@@ -214,6 +214,8 @@ str(power_monthly)
 
 ### Explore data
 
+Plotting your data is the single most important part of analytics, so this book spends a lot of space on graphical representation. Here, as we're focused on power use over time, we'll plot the monthy summary we've calculated above. 
+
 ```
 # Create plot of total use by month
 total_use_plot = ggplot(power_monthly, aes(Month, Total_Use_kWh)) +
@@ -228,8 +230,12 @@ ggsave("Results/total_use_plot.png", width=6, height=4, dpi=600, units="in")
 
 ![total use plot](/images/total_use_plot.png)
 
+We can see clear patterns in the data—higher in the winter and lower in the summer. 
+
 
 ### Forecast Total Usage
+
+Now we want to forecast total use for the next six months. We'll create the model with the automated `forecast` function from the `forecast` package, then plot the results and view the model itself. 
 
 ```
 # Create a time series object of Total Usage
@@ -244,7 +250,7 @@ total_use_fc = forecast(total_use_ts, h=6)
 summary(total_use_fc)
 ```
 
-![fprecast model output](/images/forecast_model_output.png)
+![forecast model output](/images/forecast_model_output.png)
 
 ```
 # "Sink" a copy of the model results into a text file in the Results folder
@@ -326,13 +332,15 @@ To run this file manually, just load it into R Studio and click the *Knit HTML* 
 render("Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
 ```
 
-Note: as I like the entire `.Rmd` file to be self-contained, I often include the directory creation steps in the code. This will *fail* if you've already created the directories; what I do is comment those sections out if I'm running it locally for testing.  
+![html report for Hautevill House](/images/Hauteville_screenshot.png)
+
+W> Note: as I like the entire `.Rmd` file to be self-contained, I often include the directory creation steps in the code. This will *fail* if you've already created the directories; what I do is comment those sections out if I'm running it locally for testing.  
 
 `rmarkdown` (and `pandoc`, for exporting to a wide variety of file types) are included in the installation of RStudio. (If you don't use RStudio, install instructions are [here](https://github.com/rstudio/rmarkdown#installation).) 
 
-<br>
-<hr>
 
-The entire analytics workflow for this project—from directory set-up through creating a forecast model and developing the final report—took only 50 lines of code.  
+## Summary
 
-The rest of this book provides code snippets, examples, and full recipes for using R throughout the main portions of the analytics workflow: data acquisition through exploration and reporting. Predictive modeling (including forecasting) and more advanced analytics will be covered in Part 2 (forthcoming in late 2015 or early 2016). But we've seen in this chapter how much can be accomplished in just a few lines of R code; there are very few languages in which you really can do it all.
+The entire analytics workflow for this project—from directory set-up through creating a forecast model and developing the final report—took only about 50 lines of code, excluding comments. We've seen in this chapter how much can be accomplished in just a few lines of R code; there are very few languages in which you really can do this much so succinctly.   
+
+The rest of this book provides code snippets, examples, and full recipes for using R throughout the main portions of the analytics workflow: data acquisition through exploration and reporting. Predictive modeling (including forecasting) and more advanced analytics will be covered in Part 2 (forthcoming in late 2015 or early 2016). 
