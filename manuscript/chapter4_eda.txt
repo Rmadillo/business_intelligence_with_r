@@ -477,8 +477,8 @@ bike_air_temp_mh = ggMarginal(bike_air_temp, type="histogram")
 
 Sometimes density plots can be useful, or perhaps you want to keep it simple and show a boxplot. Just change the `type` option:
 
-![marginal density](/images/scatter_marginal_density.png)
-![marginal boxplot](/images/scatter_marginal_boxplot.png)
+![marginal density](/images/scatter_marginal_density.png)  
+![marginal boxplot](/images/scatter_marginal_boxplot.png)  
 
 
 ### Mosaic plots
