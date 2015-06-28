@@ -2,7 +2,6 @@
 title: ""
 output: html_document
 ---
-
 ## Six Month Electricty Use Forecast for Hauteville House: November 2010 - April 2011
 *27 November 2010*  
 
@@ -12,7 +11,6 @@ Jean Valjean, CFO  | Jean Prouvaire, Data Scientist
 Marius Pontmercy, Utilities Director  | Courfeyrac Consulting
 Hauteville House, Guernsey  | Paris
 
- 
 <hr>
 
 ### Purpose
@@ -45,8 +43,8 @@ require(htmlwidgets)
 require(dygraphs)
 
 # Download the zip file into the data folder
-download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip",     
-    destfile = "Data/household_power_consumption.zip")
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/
+  household_power_consumption.zip", destfile = "Data/household_power_consumption.zip")
 
 # Unzip the data from the zip file into the Data folder
 unzip("Data/household_power_consumption.zip", exdir="Data")
@@ -54,7 +52,7 @@ unzip("Data/household_power_consumption.zip", exdir="Data")
 # Read the data into R 
 # NAs are represented by blanks and ? in this data, so need to change to NA
 power = read.table("Data/household_power_consumption.txt", sep=";", header=T, 
-    na.strings=c("?",""), stringsAsFactors=FALSE)
+  na.strings=c("?",""), stringsAsFactors=FALSE)
 
 # Convert data to Date object
 power$Date = as.Date(power$Date, format="%d/%m/%Y")
@@ -86,8 +84,8 @@ power_group = group_by(power, Month)
 
 # Use 'dplyr' to get monthly max demand and total use results
 power_monthly = summarise(power_group, 
-    Max_Demand_kW = max(Global_active_power_locf), 
-    Total_Use_kWh = sum(Global_active_power_locf)/60)
+  Max_Demand_kW = max(Global_active_power_locf), 
+  Total_Use_kWh = sum(Global_active_power_locf)/60)
 
 # Remove partial months from data frame
 power_monthly = power_monthly[2:47,]
@@ -104,14 +102,14 @@ total_use_fc = forecast(total_use_ts, h=6)
 # Create a data frame with the original data
 # and space for the forecast details
 use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh, 
-    Forecast = NA, Upper_80 = NA, 
-    Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
+  Forecast = NA, Upper_80 = NA, 
+  Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
 
 # Create a data frame for the forecast details
 # with a column for the original data
 use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
-    total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
-    Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
+  total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
+  Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
 
 # "Union" the two data frames into one
 use_ts_fc = rbind(use_df, use_fc)
@@ -121,12 +119,12 @@ total_use_forecast = ts(use_ts_fc, start=c(2007, 1), freq=12)
 
 # Create the widget
 energy_use_prediction_widget = dygraph(total_use_forecast, 
-      main = "Predicted Monthly Electricty Use (kWh)",
-      ylab = "Total kWh", width=900, height=500) %>% 
-    dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
-    dyEvent(date = "2008-08-01", "Closed for vacation", labelLoc = "top") %>%
-    dyRangeSelector(dateWindow = c("2008-09-15", "2011-06-01")) %>%
-    dyLegend(width = 800)
+    main = "Predicted Monthly Electricty Use (kWh)",
+    ylab = "Total kWh", width=900, height=500) %>% 
+  dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
+  dyEvent(date = "2008-08-01", "Closed for vacation", labelLoc = "top") %>%
+  dyRangeSelector(dateWindow = c("2008-09-15", "2011-06-01")) %>%
+  dyLegend(width = 800)
 
 # Display the widget in the Viewer window
 # Hit the Zoom button for a pop-out 
@@ -145,23 +143,23 @@ kable(total_use_fc)
 <br>  
 <hr>
 
-## Methods and Analytics Details
+### Methods and Analytics Details
 
 **Measurement Period**  
 
-Data: 1-minute time step, 16 December 2006 through 26 November 2010
-Analysis: 1-month time step, January 2007 through October 2010
-Forecast: 1-month time step, November 2010 - April 2011
+Data: 1-minute time step, 16 December 2006 through 26 November 2010  
+Analysis: 1-month time step, January 2007 through October 2010  
+Forecast: 1-month time step, November 2010 - April 2011  
 
 **Data Source**  
 
-https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption
+https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption  
 
 **Data Dictionary**  
 
 *Original*  
 
-Dimensions: 2,075,259 observations of 13 variables
+Dimensions: 2,075,259 observations of 13 variables  
 
 1. **`date`**: date in format dd/mm/yyyy  
 2. **`time`**: time in format hh:mm:ss  
@@ -173,7 +171,7 @@ Dimensions: 2,075,259 observations of 13 variables
 8. **`sub_metering_2`**: energy sub-metering No. 2 (in watt-hours of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light.  
 9. **`sub_metering_3`**: energy sub-metering No. 3 (in watt-hours of active energy). It corresponds to an electric water-heater and an air-conditioner.   
 
-**`global_active_power`** is the variable of interest. 
+**`global_active_power`** is the variable of interest.  
 
 Missing values pattern:  
 
@@ -185,7 +183,6 @@ source("http://blog.revolutionanalytics.com/downloads/calendarHeat.R")
 calendarHeat(power_day_missing$Date, power_day_missing$Count_Missing, 
     varname="Missing Data", color="w2b")
 ```
-
 
 *Transformations*  
 
@@ -217,7 +214,6 @@ total_use_plot = ggplot(power_monthly, aes(Month, Total_Use_kWh)) +
 # Display plot
 total_use_plot
 ```
-
 
 *Final*  
 
