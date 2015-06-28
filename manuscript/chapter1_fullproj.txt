@@ -332,7 +332,7 @@ To run this file manually, just load it into R Studio and click the *Knit HTML* 
 render("Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
 ```
 
-![html report for Hautevill House](/images/Hauteville_screenshot.png)
+![html report for Hautevill House](/images/biwr_c1_knitr_ex.png)
 
 W> Note: as I like the entire `.Rmd` file to be self-contained, I often include the directory creation steps in the code. This will *fail* if you've already created the directories; what I do is comment those sections out if I'm running it locally for testing.  
 
