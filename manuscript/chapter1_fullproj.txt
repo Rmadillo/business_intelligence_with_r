@@ -324,7 +324,7 @@ I like to have a script window (`.R`) and an R Markdown (.`Rmd`) window open at 
 
 Even better is when it's a small project—I can make the code, documentation, and report all one file. Since decision makers want the answer first, I include all of the code except for results inside a single code chunk. The results I place in separate code chunks, placed where appropriate. For example, had the forecasting project above required a report, I'd structure it all inside an `.Rmd` as follows: 
 
-<<(code/Hauteville_House_Power_Forecast_20101127.Rmd)
+A> <<(code/Hauteville_House_Power_Forecast_20101127.Rmd)
 
 To run this file manually, just load it into R Studio and click the *Knit HTML* button in the Source window. A preview window will pop up, while the .html file is concurrently saved to the working directory. To run it programatically, the `rmarkdown` package allows you to run it from the console, a command line, or a "make" file (see Appendix 2) via the `render` function:
 
@@ -336,7 +336,6 @@ render("Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
 
 W> Note: as I like the entire `.Rmd` file to be self-contained, I often include the directory creation steps in the code. This will *fail* if you've already created the directories; what I do is comment those sections out if I'm running it locally for testing.  
 
-`rmarkdown` (and `pandoc`, for exporting to a wide variety of file types) are included in the installation of RStudio. (If you don't use RStudio, install instructions are [here](https://github.com/rstudio/rmarkdown#installation).) 
 
 
 ## Summary
