@@ -497,17 +497,13 @@ mosaic(~ weathersit + season, data=bike_share_daily, shade=T,
 The first plot is simply a plot of the distributions of each group, i.e., a set of overplotted density histograms.
 If you have categorical data, you'll probably want to use mosaic plots to visualize differences between groups; if you're not already familiar with them, think of mosaics plots as contingency tables made with shapes—the larger the shape, the higher the cell count.
 
-For comparison, here's the table that the mosaic plot represents:
+For comparison, here's the table that the mosaic plot represents:  
 
-```
-table(bike_share_daily$weathersit, bike_share_daily$season)
-```
-
-|  | Winter | Spring | Summer | Fall |
-|--| ------:| ------:| ------:| ----:|
-| 1 | 111 | 113 | 136 | 103 |
-| 2 | 66 | 68 | 48 | 65 |
-| 3 | 4 | 3 | 4 | 10 |
+| Winter | Spring | Summer | Fall |
+|:------:|:------:|:------:|:----:|
+| 111 | 113 | 136 | 103 |
+| 66 | 68 | 48 | 65 |
+| 4 | 3 | 4 | 10 |
 
 
 ## Multiple bivariate comparisons with faceting
