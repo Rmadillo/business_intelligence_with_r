@@ -17,66 +17,113 @@ We saw the frequent use of `str` in the Chapter 1 example to understand our data
 
 Factors, characters, dates, values that are out-of-range for the measurement, inappropriate dummy values, and NAs tend to be the data types or results that will screw up future analyses—so using the the following functions, every time you first pull in a dataset, will save a lot of time and grief in the long run.
 
-Using the same power usage data from Chapter 1, we might explore our data one or more times a session with the following functions
+Using Table A from the fake data created in Chapter 2, we might explore our data one or more times a session with the following functions
 
 ```
 # View the structure of the dataset, particularly data types
-str(power)
+str(customers)
 
 # Look at the first (or last) 6 lines of the data frame
-head(power)
-tail(power)
+head(customers)
+tail(customers)
 
 # Obtain basic summary stats
-summary(power)
+summary(customers)
 
 # Look at the rows with missing data
-power[!complete.cases(power),]
+missing_data = customers[!complete.cases(customers),]
+missing_data
 ```
 
-It may seem like this is too basic to be included in a cookbook aimed at people who are already R users—but to illustrate the point ironically, a few days before I started this chapter, I was trying to use a function that needed factors on a variable I just knew were factors, but R had considered them characters because as I had used the `stringsAsFactors=FALSE` option when I imported the data. After banging my head for a while, I pulled up `str` and the problem became clear immediately.
+Ironically, a few days before I started this chapter, I was trying to use a function that needed factors on a variable I just *knew* were factors, but R had considered them characters because as I had used the `stringsAsFactors=FALSE` option when I imported the data. After banging my head for a while, I pulled up `str` and the problem became clear immediately.
 
 Always check! Even if you’re a seasoned professional!
 
 
-### Sorting 
-
-order (one or more variables)
-order(..., na.last = TRUE, decreasing = FALSE)
-
-
-sort (one variable only)
-sort(x, decreasing = FALSE, na.last = NA, ...)
-
-
 ### Identifying (and ordering) factor levels
 
-levels
-ordered
+Factors can be ordered or unordered; when created they usually are arranged alphabetically. 
+
+```
+levels(customers$customer_gender)
+
+[1] "F"       "M"       "Unknown"
+```
+
+If you do need to change the order for example, if you want them to display in plots in a different order, you can use the `ordered` function:
+
+```
+customers$customer_gender = ordered(customers$customer_gender, c("Unknown", "F", "M"))
+
+[1] "Unknown" "F"       "M" 
+```
 
 
 ### Identifying unique values or duplicates
 
-unique
-
-duplicated (GIVES TRUE/FALSE)
-
-
-
-
-duplicated(d2)
-
-d2[duplicated(d2), ]
-
-[1] FOR_MONTH                   DISCHARGES                 
-[3] IP_CENSUS_OR_DISCHARGE_UNIT
-<0 rows> (or 0-length row.names)
-
-
-QUOTE: Some analytics questions don't require unique identifiers, and you end up with a dataset that has more rows than you really need. Deleting duplicate rows is easy—first, delete the columns you don't need (as otherwise `unique` will consider them as part of the comparison process), then use `unique` to remove the remaining duplicates, e.g.: 
+The `unique` function will provide the distinct values in a variable, in the order that they appear in the data. 
 
 ```
-deduped_dataframe = unique(dataframe)
+unique(customers$customer_age)
+
+ [1] 72 44 83 74 66 42 18 NA 34 35 32 50 76 23 36 54 47 49 33 70 71 68 43 61 45 41 86 85 60 87 24 19 31 78 59
+[36] 48 40 69 22 21 67 80 65 84 39 81 51 58 30
+```
+
+You can use the `sort` function to see the unique values in order:
+
+```
+sort(unique(customers$customer_age))
+
+[1] 18 19 21 22 23 24 30 31 32 33 34 35 36 39 40 41 42 43 44 45 47 48 49 50 51 54 58 59 60 61 65 66 67 68 69
+[36] 70 71 72 74 76 78 80 81 83 84 85 86 87
+```
+
+You can see if any rows are duplicated in the data frame with the `duplicated` function, but by itself just returns TRUE/FALSE. Use this structure to find any duplicated rows:
+
+```
+customers[duplicated(customers), ]
+
+[1] customer_id        customer_gender    customer_age       customer_purchases customer_zip      
+<0 rows> (or 0-length row.names)
+```
+
+There aren't any, so to illustrate what it shows when it finds a duplicate, we'll create a new row that is the duplicate of row 2718:
+
+```
+customers[10001,] = customers[2718,]
+
+      customer_id customer_gender customer_age customer_purchases customer_zip
+10001        2718               M           47              75.43        73140
+```
+
+Before moving on, make sure you remove the duplicated row:
+
+```
+customers = unique(customers)
+```
+
+![unique customers](/images/R_unique_screenshot.png)
+
+
+### Sorting 
+
+The `dplyr` package is incredibly useful for data manipulation, as we'll see later in this chapter, but it's also useful for understanding your data. Even in Excel, lots of us want to sort on variables and see the results to start to get a sense of the data and its patterns. The `base` R installation includes `sort` and `order` functions, but they are clunky when you try to use this this way. `dplyr`'s `arrange` function makes it easy. 
+
+```
+require(dplyr)
+
+# Look at top 10 customers by purchases (descending)
+head(arrange(customers, desc(customer_purchases)), 10)
+
+# Look at top 10 customers by age (ascending) and purchases (descending)
+head(arrange(customers, customer_age, desc(customer_purchases)), 10)
+
+# NAs are placed last
+tail(arrange(customers, customer_age, desc(customer_purchases)), 10)
+
+# You can store the sorted data frame, of course
+customers = arrange(customers, customer_age, desc(customer_purchases))
 ```
 
 
@@ -259,7 +306,7 @@ Perhaps the best package to do this in R is `dplyr`, and part of its greatness i
 
 ### Joins
 
-The recipe provides an overview of joining tables via dplyr's `\*_join` functions, shows a little more on doing joins using `sqldf`, and reviews R's built-in `merge` function. We'll also cover the concepts of how the types of joins work to make it easy to visualize what we are trying to accomplish.
+The recipe provides an overview of joining tables via dplyr's `*_join` functions, shows a little more on doing joins using `sqldf`, and reviews R's built-in `merge` function. We'll also cover the concepts of how the types of joins work to make it easy to visualize what we are trying to accomplish.
 
 First, load the libraries:
 
@@ -366,6 +413,7 @@ cbind(A,B)
 
 As in the last recipe, here's a visualization summary:  
 
+{width="90%"}
 | Type of Join | Visualization | *bind | sqldf |
 | ------------ | ------------- | ----- | ----- |
 | Union | ![union](/images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
@@ -412,14 +460,8 @@ customers_only_agreement = select(customer_survey, customer_id, matches("agree")
 customers_excluded = select(customer_survey, -starts_with("customer"))
 ```
 
-Want to sort by a set of variables? Use `arrange`:
-
-```
-customers_sorted = arrange(customers_CA_65_200_OR_500, state, customer_age, 
-  desc(customer_purchases))
-```
-
 Definitely explore the vignettes in the `dplyr` package (start with `vignette("introduction", package="dplyr"))`, as they provide a wide variety of examples and use cases—there's almost certainly going to be an example of what you need to do there.
+
 
 ## Stringing it together in dplyr
 
