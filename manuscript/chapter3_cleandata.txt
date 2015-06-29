@@ -477,26 +477,36 @@ require(dplyr)
 Need to subset on a couple of conditions? Use `filter`, stringing together criteria using `&` for AND and `|` (pipe) for OR:
 
 ```
+# Subset the data to only those customers who agree or strongly agree with the survey question
 customers_marketing = filter(customer_survey, strongly_agree == 1 | agree == 1)
+
+# Subset the data to customers who are Californians over age 64 who have spent at 
+# least $200 OR Oregonians of any age who have spent more than $500
 customers_CA_65_200_OR_500 = filter(customer_survey, state == "California" &
   customer_age >= 65 & customer_purchases >= 200 | state == "Oregon" &
   customer_purchases > 500)
 ```
 
-Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some "regular expression" type of access to make selection from a large dataset more managable:
+Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some "regular expression" type of access to make selection of columns from a large dataset more managable:
 
 ```
+# Subset the data to only columns with names that start with "customer"
 customers_only = select(customer_survey, starts_with("customer"))
+
+# Subset the data to only ID and columns with names that contain "agree"
 customers_only_agreement = select(customer_survey, customer_id, matches("agree"))
 ```
 
 `select` can also remove variables by appending a minus sign (`–`) to the front of the criteria:  
 
 ```
+# Subset the data to only columns with names that DO NOT start with "customer"
 customers_excluded = select(customer_survey, -starts_with("customer"))
 ```
 
 Definitely explore the vignettes in the `dplyr` package (start with `vignette("introduction", package="dplyr"))`, as they provide a wide variety of examples and use cases—there's almost certainly going to be an example of what you need to do there.
+
+T> RStudio has a great `dplyr` cheat sheet you can download [here](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf).
 
 
 ## Stringing it Together in `dplyr`
@@ -514,7 +524,9 @@ customer_500_dplyred = customer_survey %>%
     mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))
 ```
 
-dplyr's `mutate` function creates a new column, but can perform slower on large datasets and/or be more awkward to type than simply making a new column in the usual way with `$` and `=`. For example:
+W> Not everyone is enamored with this new piping trend; when you need to provide verbose code or examples for beginners to understand the processing steps it [may not be the best coding choice](http://www.fromthebottomoftheheap.net/2015/06/03/my-aversion-to-pipes/). As with all "coding standards" advice, do as you think best for you and your context. 
+
+At the end of this piping string we see dplyr's `mutate` function. This creates a new column, but can perform slower on large datasets and/or be more awkward to type than simply making a new column in the usual way with `$` and `=` in `base` R. 
 
 ```
 customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", "))
@@ -524,23 +536,37 @@ customer_survey$Location = paste(city, stabbr, sep=", ")
 
 Still, it can be pretty convenient if you're stringing functions together, as above (so a `%>%` operation would simply be `mutate(Location=paste(city, stabbr, sep=", ")`, making it as easy to type as the normal way), or want to peek at the outcome before running it for results, as below.
 
+
 ## Peeking at the Outcome with `dplyr`
 
-If you want to check on how one or more of the `dplyr` actions will perform in terms of output before updating or creating a dataframe, you can wrap it inside the `head` function:
+If you want to check on how one or more of the `dplyr` actions will perform in terms of output before updating or creating a dataframe, you can wrap it inside the `head` function. For example:
 
 ```
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
+```
+
+![](/images/IMAGE.png)
+
+```
 head(arrange(customer_survey, region, desc(customer_age), 
     desc(customer_purchases)))
+```
+
+![](/images/IMAGE.png)
+
+```
 head(mutate(customer_survey, Location = paste(city, stabbr, sep=", "), 
     purchase_proportion=round(customer_purchases/length(customer_purchases),2)))
 ```
+
+![](/images/IMAGE.png)
+
 
 ## Transforming a Dataframe Between Wide and Long
 
 A lot of analysis and plotting functions require that data be organized in *long* format, where the variable of interest is in one column and the id/categorical portions of the data are repeated as necessary in other columns. Then again, other tools need the data in *wide* format, so being able to move between the two formats is essential. The `reshape2` package provides just that ability.  
 
-### Reshaping
+### Reshaping: `melt` and `cast`
 
 We'll use a small dataset to illustrate some of the possibilities `reshape2` offers—this shows the verbal and nonverbal IQ test scores for children before and after neurosurgery (and in which hemisphere, i.e. "Side" of the brain). Load the package and the data:
 
@@ -556,7 +582,9 @@ row  ID  Side   Phase  Verbal  Nonverbal
 4    2   Right  Pre    138     115
 ```
 
-If each measurement needs its own row, you melt a dataframe from wide into long format:
+As is, this data is both wide and long. If you're only interested in looking at either Verbal score or Nonverbal scores, it's long, as the other variables are already long. If you want to look at Verbal and Nonverbal together, it's wide. 
+
+Suppose each measurement needs its own row, that is, we need to make this a long data frame so we can compare Verbal and Nonverbal scores. We need to contain those two scores within a single column, such as `IQ_score`. To do this, you `melt` a dataframe from wide into long format:
 
 ```
 surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3),
@@ -570,7 +598,9 @@ row  ID  Side   Phase  Test_type  IQ_score
 4    2   Right  Pre    Verbal     138
 ```
 
-Any data in long form can be cast into a variety of wide forms, with a `d` or an `a` tacked on to the front depending on whether you need a dataframe (`d`) or vector, matrix, or array (`a`). To put this data back in the shape it started as:
+We now have a completely long form data set, as we have the primary variable of analytic interest contained in a single column. 
+
+Any data in long form can be `cast` into a variety of wide forms, with a `d` or an `a` tacked on to the front depending on whether you need a dataframe (`d`) or vector, matrix, or array (`a`). To put this data back into the wide/long shape it started as, use `dcast`:
 
 ```
 surgery_outcomes_original = dcast(surgery_outcomes_melted, ID + Side + 
@@ -588,7 +618,10 @@ Being able to move back and forth between data shapes makes meeting the needs of
 
 The important part to remember in melting data is to ensure you've designated the id and measurement variables appropriately. While `melt` can operate with neither or only one of these designated, proper coding etiquette requires that you designate each specifically to avoid ambiguity.
 
-### Crossing variables with ~ and +
+I> The `tidyr` package is a new, simpler way to reshape data. At the time of this writing, it can accomplish any simple `melt`/`cast` (called `gather`/`spread`) task. However, more complicated data set transformations can fail in `tidyr`; the current consensus is to keep `reshape2` in the toolbox until `tidyr` is mature enough to accomplish the full suite of transformation needs. A useful cheat sheet on `tidyr` is co-packaged with `dplyr` by RStudio [here](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf), and a more complete treatment is available [here](http://vita.had.co.nz/papers/tidy-data.html) or by checking out the vignette: `vignette("tidy-data")`.
+
+
+### Reshaping: Crossing Variables with ~ and +
 
 There is tremendous variety in reshaping options using the formula structure in `dcast`. The tilde sign (`~`) separates the variables you want representing the rows (left of the ~) and those you want representing the columns (right of the ~). For example, we can cross phase and the test type in the columns:
 
@@ -627,6 +660,7 @@ head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type), 4)
 ```
 
 And so on... the possibilities are as many as your variable set...
+
 
 ### Summarizing while Reshaping
 
