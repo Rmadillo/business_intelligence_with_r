@@ -449,13 +449,33 @@ The above SQL `UNION` above would be done with `rbind` as follows:
 rbind(A, B)
 ```
 
-Binding two tables together side-by-side is done with the `cbind` function. `cbind` is *row-blind*: it will line up the two tables *in the order that they occur*. It is up to you to ensure the observations (rows) match across the two data frames. The two data frames must also have the same numbers of observations (i.e., the same length). 
+Binding two tables together side-by-side is done with the `cbind` or `data.frame` functions (`cbind` is just a wrapper for `data.frame`). This approach is *row-blind*: it will line up the two tables *in the order that they occur*. It is up to you to ensure the observations (rows) match across the two data frames. The two data frames must also have the same numbers of observations (i.e., the same length). 
 
 ```
 cbind(A,B)
+data.frame(A,B)
 ```
 
-As in the last recipe, here's a visualization summary:  
+If you have some variables in one table that don't occur in the other table, you can assign them in the other table as a new variable of `NA` values, and then bind them together; we saw an example of this in Chapter 1 when combining the actual and forecast values together into a single data frame for plotting:
+
+```
+# Create a data frame with the original data
+# and space for the forecast details
+use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh, 
+                    Forecast = NA, Upper_80 = NA, 
+                    Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
+
+# Create a data frame for the forecast details
+# with a column for the original data
+use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
+    total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
+    Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
+
+# "Union" the two data frames into one
+use_ts_fc = rbind(use_df, use_fc)
+```
+
+As in the last recipe, here's a visualization and function summary for unions and concatenated tables:  
 
 {width="90%"}
 | Type of Join | Visualization | *bind | sqldf |
@@ -463,11 +483,9 @@ As in the last recipe, here's a visualization summary:
 | Union | ![union](/images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
 | Semi-union | ![semi union](/images/rbind_semi_union.png) | *see below* | *see below* |
 | Concatenate | ![concat](/images/cbind.png) | `cbind(A, B)` | *n/a* |
+| | | `data.frame(A, B)` | *n/a* |
 
 
-Add NA columns to allow stacking with different #s of columns
-
-See example in Chapter 1
 
 
 ## Filtering and Selecting a Dataframe: Subseting Rows and Columns
