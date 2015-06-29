@@ -142,7 +142,7 @@ In many cases the data frame will require a little clean up after it's loaded. C
 There are many possible approaches to cleaning, so as an example, the following code does some cleaning of the Pro Publica *Nursing Home Deficiencies* data set scraped from the web in the previous chapter, using a few different functions:
 
 ```
-# Create column names
+# Create cleaner column names
 colnames(nursing_home_deficiencies) = c("Date", "Home", "City", "State", 
     "Deficiency_Count", "Severity")
 
@@ -152,11 +152,12 @@ nursing_home_deficiencies$State = gsub("Tex.", "TX",
 nursing_home_deficiencies$Home = gsub(" (REPORT)  Home Info", "", 
     nursing_home_deficiencies$Home, fixed = TRUE)
     
-# Take the first 
+# Take the first letter (severity score) and remove the 
+# duplicate and extraneous text
 nursing_home_deficiencies$Severity = substr(nursing_home_deficiencies$Severity,
     1, 1)
     
-# Clean the date data
+# Clean the date information and convert to date objcet
 nursing_home_deficiencies$Date = gsub(".", "", nursing_home_deficiencies$Date,
     fixed = TRUE)
 clean = function(col) {
@@ -288,11 +289,6 @@ random.impute.data.frame <- function(dat, cols) {
 
 dat <- read.csv("missing-data.csv", na.strings="")
 > random.impute.data.frame(dat, c(1,2))
-
-
-
-
-
 
 
 
