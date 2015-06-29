@@ -1,6 +1,6 @@
 # Chapter 1: An entire project in a few lines of code
 
-Learning R is an infamously difficult thing to do. However, if you need to accomplish a particular analytics goal, the solution in R can be done relatively easily if you focus on that single task. Over time, tha focus on completing a variety of tasks leads you to a practical working knowledge of R.  
+Learning R is an infamously difficult thing to do. However, if you need to accomplish a particular analytics goal, a solution in R can be found relatively easily if you focus on that single task. Over time, completing a variety of single tasks leads you to a practical working knowledge of R in general. So don't think about "learning R"—think instead about "learning how to solve the problem at hand with R," and things get a lot easier.  
 
 Essentially, the technical part of the typical BI workflow is
 
