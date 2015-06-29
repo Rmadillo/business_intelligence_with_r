@@ -198,9 +198,10 @@ It’s also useful to remember to use `na.rm=TRUE` when including data with NA v
 
 ```
 mean(customers$customer_age)
+[1] NA
 
 mean(customers$customer_age, na.rm=TRUE)
-
+[1] 53.42279
 ```
 
 
@@ -222,11 +223,20 @@ Note that conversion to and between dates and times can be tricky, depending on 
 
 ### Rounding
 
-Sometimes you'll have data that's already summarized in some form (e.g., means) and you need to reduce the number of significant figures, either for display purposes or to avoid spurious precision. Use `round`, using the :
+Sometimes you'll have data that's already summarized in some form (e.g., means) and you need to reduce the number of significant figures or decimal places, either for display purposes or to avoid spurious precision. Use `round` for decimal places, and `signif` for significant figures, using the `digits=` option as necessary:
 
 ```
-round(mean(customers$customer_age, na.rm=TRUE), )
+round(mean(customers$customer_age, na.rm=TRUE), 1)
+[1] 53.4
+
+signif(mean(customers$customer_age, na.rm=TRUE), 1)
+[1] 50
+
+signif(mean(customers$customer_age, na.rm=TRUE), 3)
+[1] 53.4
 ```
+
+`ceiling`, `floor`, and `trunc` provide other ways to round numbers to an integer if you need to always round up, down, or remove the decimal, respectively.  
 
 
 ### Concatenation
