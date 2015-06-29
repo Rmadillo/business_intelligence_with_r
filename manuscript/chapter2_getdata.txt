@@ -280,16 +280,16 @@ As above, each variable in the data frame is in `chr` format, so you'll have to 
 
 While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful—for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
 
-As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Enterprise systems often have those already set up, but if not, your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your particular context for adding user or system DSN connections. As an example, this is how you might set up a user DSN in Windows 7 to access a SQL Server database:
+As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Enterprise systems often have those already set up, but if not, your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your particular context for adding user or system DSN connections. As an example, this is how you might set up a user DSN in a Windows Server environment to access a SQL Server database:
 
 1. Click the Start button. Type in data in the Search programs and files box and select Data Sources (ODBC).
 2. Click Add.
-3. Select SQL Server Native Client 11.0, or choose the appropriate driver if that's not the one you need. Click Finish.
+3. Select SQL Server Native Client xx.x, or choose the appropriate driver if that's not the one you need. Click Finish.
 4. Put the name you want to use to access the database in the Name box, e.g., `SQL3`. Put the actual name of the server in the Server box, e.g., perhaps this server is called `EDWSQLDB3`. Click Next.
 5. Leave it as Integrated Windows Authentication unless for some reason you like doing things manually. Click Next.
-6. Choose the database to match the specific one one the server you wish to access. If you have read/write privs to the data, leave that box as is. Otherwise, change READWRITE to READONLY in the dropdown list. Click Next.
+6. Choose the database to match the specific one on the server you wish to access. If you have read/write privs to the data, leave that box as is. Otherwise, change `READWRITE` to `READONLY` in the dropdown list. Click Next.
 7. Adjust settings as you prefer or just click Finish.
-8. Click Test Data Source. Click OK. Click OK again to close the data source adminsitrator.
+8. Click `Test Data Source`. Click OK. Click OK again to close the data source adminsitrator.
 
 Once the appropriate DSNs are available for you, you can use the `RODBC` package to access your databases:
 
@@ -297,7 +297,7 @@ Once the appropriate DSNs are available for you, you can use the `RODBC` package
 require(RODBC)
 ```
 
-Once your system is configured for the ODBC connection, you need to define that connection within R, replacing the CAPS code with your specific values:
+Once your system is configured for the ODBC connection, you need to define that connection within R, replacing the CAPS with your specific values:
 
 ```
 # For example, if you'd followed the user DSN naming, above, 
