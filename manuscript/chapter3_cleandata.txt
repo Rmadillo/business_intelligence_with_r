@@ -66,10 +66,10 @@ The `unique` function will provide the distinct values in a variable, in the ord
 
 ```
 unique(customers$customer_age)
-
- [1] 72 44 83 74 66 42 18 NA 34 35 32 50 76 23 36 54 47 49 33 70 71 68 43 61 
- 45 41 86 85 60 87 24 19 31 78 59
-[36] 48 40 69 22 21 67 80 65 84 39 81 51 58 30
+ [1] 72 44 83 74 66 42 18 NA 34 35 32 50 76 23 36 54
+[17] 47 49 33 70 71 68 43 61 45 41 86 85 60 87 24 19
+[33] 31 78 59 48 40 69 22 21 67 80 65 84 39 81 51 58
+[49] 30
 ```
 
 You can use the `sort` function to see the unique values in order:
@@ -77,9 +77,9 @@ You can use the `sort` function to see the unique values in order:
 ```
 sort(unique(customers$customer_age))
 
-[1] 18 19 21 22 23 24 30 31 32 33 34 35 36 39 40 41 42 43 44 45 47 48 49 50
-51 54 58 59 60 61 65 66 67 68 69
-[36] 70 71 72 74 76 78 80 81 83 84 85 86 87
+ [1] 18 19 21 22 23 24 30 31 32 33 34 35 36 39 40 41
+[17] 42 43 44 45 47 48 49 50 51 54 58 59 60 61 65 66
+[33] 67 68 69 70 71 72 74 76 78 80 81 83 84 85 86 87
 ```
 
 You can see if any rows are duplicated in the data frame with the `duplicated` function, but by itself just returns TRUE/FALSE. Use this structure to find any duplicated rows:
@@ -87,8 +87,9 @@ You can see if any rows are duplicated in the data frame with the `duplicated` f
 ```
 customers[duplicated(customers), ]
 
-[1] customer_id        	customer_gender    customer_age       
-customer_purchases 	customer_zip      
+[1] customer_id        customer_gender   
+[3] customer_age       customer_purchases
+[5] customer_zip      
 <0 rows> (or 0-length row.names)
 ```
 
@@ -220,6 +221,12 @@ In the previous chapter, we saw a JSON import that turned all of the variables i
 
 Note that conversion to and between dates and times can be tricky, depending on the structure of the existing date/time variable. If it's already in standard ISO format (e.g., `yyyy-mm-dd`), these basic conversions will work fine. If not, you'll have to mess with the `format` option and/or use other techniques. See Chapter 8 (*Trends and Time*) for lots of details on working with and converting date and time values. 
 
+Sometimes you may need to reduce your data set to only a certain type of variable, say all numeric and none of the other variable types. Use the `sapply` function as follows:
+
+```
+customers_numeric = customers[sapply(customers,is.numeric)]
+```
+
 
 ### Rounding
 
@@ -236,7 +243,7 @@ signif(mean(customers$customer_age, na.rm=TRUE), 3)
 [1] 53.4
 ```
 
-`ceiling`, `floor`, and `trunc` provide other ways to round numbers to an integer if you need to always round up, down, or remove the decimal, respectively.  
+`ceiling`, `floor`, and `trunc` provide other ways to round numbers to an integer if you need to always round up, down, or remove the decimal portion, respectively.  
 
 
 ### Concatenation
@@ -250,13 +257,17 @@ my_data$date = as.Date(paste(mydata$yyyy_mm, "01", sep="-"))
 my_data$date = as.Date(paste0(mydata$yyyy_mm, "-01"))
 ```
 
-`paste` works for anything, but you'll have to pay attention to the data type it creates. The commands above would have created character variables without specifying you wanted a date object, for example. 
+`paste` works for anything, but you'll have to pay attention to the data type it creates. The commands above would have created character variables if we hadn't specifyied that we wanted a date object, for example. 
 
-It can also be useful for including variables or changing values in a title or a plot, axis, annotation, etc.:
+It can also be useful for including soft-coded values in a title or a plot, axis, annotation, etc.:
 
 ```
-EXAMPLE OF BASE PLOT WITH A VARIABLE IN TITLE
+plot(customers$customer_age, customers$customer_purchase, 
+     main=paste("Age vs Purchase Amount for", 
+     length(customers$customer_age), "Customers"))
 ```
+
+![](images/PASTEPLOT.png)
 
 Every once in a while you'll get a file that has commas in a numeric field (cough Excel cough). A data type conversion, `paste`, and `gsub` can be used together to clean that up in one line:
 
@@ -332,10 +343,6 @@ center = FALSE, scale = FALSE
 	
 
 Return the original values unchanged
-
-
-
-***DOUBLE CHECK ON REDUCING TO ONLY NUMERIC***  
 
 
 ## Merging dataframes
