@@ -320,11 +320,13 @@ Opening the `energy_use_prediction_widget.html` from the Reports folder shows us
 
 ## Documenting the Project
 
-I like to have a script window (`.R`) and an R Markdown (.`Rmd`) window open at the same time when working on projects; once I have the code the way I want it, I transfer that to the `.Rmd` file. When I have steps or results and want to jot down my rationale for the methods I'm using, interpretations and ideas for future use, and so on, I do that in the `.Rmd` file as well. At the end, I aim for an `.Rmd` file that will allow another user to reproduce the entire analysis and have an understanding of why I chose certain methods or came to the conclusions I report. 
+I like to have a script window (`.R`) and an R Markdown (.`Rmd`) window open at the same time when working on projects; once I have the code the way I want it, I transfer that to the `.Rmd` file if I intend to include it in any data/reporting products. When I have steps or results and want to jot down my rationale for the methods I'm using, interpretations and ideas for future use, and so on, I do that in an `.Rmd` file as well. At the end, I aim for an `.Rmd` file that will allow another user to reproduce the entire analysis and have an understanding of why I chose certain methods or came to the conclusions I report. For longer analyses, this may require a "make" file type of setup (see Appendix 1). 
 
-Even better is when it's a small project—I can make the code, documentation, and report all one file. Since decision makers want the answer first, I include all of the code except for results inside a single code chunk. The results I place in separate code chunks, placed where appropriate. For example, had the forecasting project above required a report, I'd structure it all inside an `.Rmd` (code available in Appendix 2).  
+Even better is when it's a small project—I can make the code, documentation, and report all one file. Since decision makers want the answer first, I include all of the code except for results inside a single code chunk near the top. The results I place in separate code chunks, placed where appropriate. For example, had the forecasting project above required a report, I'd structure it all inside an `.Rmd` like I've shown in *Appendix 2*.  
 
-To run that file manually, just load it into R Studio and click the *Knit HTML* button in the Source window. A preview window will pop up. In some systems, the .html file is concurrently saved to the working directory, while in others you may need to *Open in browser* and then *Save as* from there. 
+To run that file manually, just load it into RStudio and click the *Knit HTML* button in the Source window. A preview window will pop up. In some systems, the .html file is concurrently saved to the working directory, while in others you may need to *Open in browser* and then *Save as* from there. 
+
+![html report for Hautevill House](/images/biwr_ch1_knitr_ex.png)
 
 To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run it from the console, a command line, or a "make" file (see Appendix 1) via the `render` function:
 
@@ -332,9 +334,7 @@ To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run
 render("Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
 ```
 
-![html report for Hautevill House](/images/biwr_ch1_knitr_ex.png)
-
-W> Note: as I like the entire `.Rmd` file to be self-contained, I sometimes include the directory creation steps in the code. This will *fail* if you've already created the directories; what I do is comment those sections out if I'm running it locally for testing.  
+W> Note: as I prefer to have the `.Rmd` file self-contained, I sometimes include the directory creation steps in the code. This will *fail* if you've already created the directories; what I do is comment those sections out if I'm running it locally for testing.  
 
 
 ## Summary
