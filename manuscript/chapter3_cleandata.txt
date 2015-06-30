@@ -85,7 +85,7 @@ sort(unique(customers$customer_age))
 You can see if any rows are duplicated in the data frame with the `duplicated` function, but by itself just returns TRUE/FALSE. Use this structure to find any duplicated rows:
 
 ```
-customers[duplicated(customers), ]
+customers[duplicated(customers),]
 
 [1] customer_id        customer_gender   
 [3] customer_age       customer_purchases
@@ -249,7 +249,7 @@ my_data$date = as.Date(paste(mydata$yyyy_mm, "01", sep="-"))
 my_data$date = as.Date(paste0(mydata$yyyy_mm, "-01"))
 ```
 
-`paste` works for anything, but you'll have to pay attention to the data type it creates. The commands above would have created character variables if we hadn't specifyied that we wanted a date object, for example. 
+`paste` works for anything, but you'll have to pay attention to the data type it creates. The commands above would have created character variables if we hadn't specified that we wanted a date object, for example. 
 
 It can also be useful for including soft-coded values in a title or a plot, axis, annotation, etc.:
 
@@ -259,7 +259,7 @@ plot(customers$customer_age, customers$customer_purchase,
      length(customers$customer_age), "Customers"))
 ```
 
-![](images/PASTEPLOT.png)
+![put plot here](images/PASTEPLOT.png)
 
 Every once in a while you'll get a file that has commas in a numeric field (cough Excel cough). A data type conversion, `paste`, and `gsub` can be used together to clean that up in one line:
 
@@ -347,14 +347,10 @@ Obviously, there's more to life than left joins. The following table lays out th
 | Full (Outer) | ![Full join](/images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key` | 
 | Semi | ![Semi join](/images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
 | Anti | ![Anti join](/images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key WHERE A.key is NULL OR B.key iS NULL` | 
-| Right[^*] | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key`|
-| Right Anti* | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key WHERE A.key IS NULL`
+| Right[^a] | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key`|
+| Right Anti[^a] | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key WHERE A.key IS NULL`
 
-[^*] Although `dplyr` doesn't have a right join function, simply reversing 
-    the table order and using left join serves the same purpose. Though why
-    you'd want to use a right join anyway is beyond me—right joins are just 
-    backwards left joins and it makes more sense to focus on your primary 
-    dataset as the "A" table.
+[^a] Although `dplyr` doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
 W> R will match on columns with the same names, so while you can get away without specifying the `by` variables, you should always specify them—remember your downstream users!
 
@@ -379,14 +375,7 @@ The above SQL `UNION` above would be done with `rbind` as follows:
 rbind(A, B)
 ```
 
-Binding two tables together side-by-side is done with the `cbind` or `data.frame` functions (`cbind` is just a wrapper for `data.frame`). This approach is *row-blind*: it will line up the two tables *in the order that they occur*. It is up to you to ensure the observations (rows) match across the two data frames. The two data frames must also have the same numbers of observations (i.e., the same length). 
-
-```
-cbind(A,B)
-data.frame(A,B)
-```
-
-If you have some variables in one table that don't occur in the other table, you can assign them in the other table as a new variable of `NA` values, and then bind them together; we saw an example of this in Chapter 1 when combining the actual and forecast values together into a single data frame for plotting:
+If you have some variables in one table that don't occur in the other table, you can assign them in the other table as a new variable of `NA` values, and then `rbind` them together; we saw an example of this in Chapter 1 when combining the actual and forecast values together into a single data frame for plotting:
 
 ```
 # Create a data frame with the original data
@@ -405,6 +394,16 @@ use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 =
 use_ts_fc = rbind(use_df, use_fc)
 ```
 
+Binding two tables together side-by-side is done with the `cbind` or `data.frame` functions (`cbind` is just a wrapper for `data.frame`). This approach is *row-blind*: it will line up the two tables *in the order that they occur*. It is up to you to ensure the observations (rows) match across the two data frames. The two data frames must also have the same numbers of observations (i.e., the same length). 
+
+```
+cbind(A,B)
+data.frame(A,B)
+```
+
+An alternative to the `cbind` is a join with `sqldf`; either an inner or an outer join will work if you have an appropriate key in each table and they match in length. Then you don't need to ensure the order is correct, either. In addition, if you have rows in one table that don't appear in the other and want to keep them, a full outer join will do the job.
+
+
 As in the last recipe, here's a visualization and function summary for unions and concatenated tables:  
 
 {width="90%"}
@@ -414,7 +413,7 @@ As in the last recipe, here's a visualization and function summary for unions an
 | Semi-union | ![semi union](/images/rbind_semi_union.png) | *see below* | *see below* |
 | Concatenate | ![concat](/images/cbind.png) | `cbind(A, B)` | *n/a* |
 | | | `data.frame(A, B)` | *n/a* |
-
+| | | *n/a* | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key` |
 
 
 
@@ -460,38 +459,54 @@ customers_excluded = select(customer_survey, -starts_with("customer"))
 
 Definitely explore the vignettes in the `dplyr` package (start with `vignette("introduction", package="dplyr"))`, as they provide a wide variety of examples and use cases—there's almost certainly going to be an example of what you need to do there.
 
-T> RStudio has a great `dplyr` cheat sheet you can download [here](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf).
+i> RStudio has a great `dplyr` cheat sheet you can download [here](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf).
 
 
-## Stringing it Together in `dplyr`
+## Creating a Derived Column
 
-A potentially useful additional feature of `dplyr` is that you can string together a bunch of functions with the `%>%` ("then") operator, a feature that is growing in popularity across a variety of R packages.
+You can create a new column based on other columns using either `dplyr`'s `mutate` function or simply by assignment in `base` R. Both create a new column, but `mutate` can perform slower on large datasets and/or be more awkward to type than simply making a new column in the usual way with `$` and `=`. 
 
-```
-customer_500_dplyred = customer_survey %>%
-    filter(customer_purchases >= 500) %>%
-    group_by(state) %>%
-    summarize(count_purchases = n(),
-              mean_purchases = mean(customer_purchases, na.rm=T),
-              sd_purchases = sd(customer_purchases, na.rm=T),
-              sum_est = sum(est)) %>%
-    mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))
-```
-
-W> Not everyone is enamored with this new piping trend; when you need to provide verbose code or examples for beginners to understand the processing steps it [may not be the best coding choice](http://www.fromthebottomoftheheap.net/2015/06/03/my-aversion-to-pipes/). As with all "coding standards" advice, do as you think best for you and your context. 
-
-At the end of this piping string we see dplyr's `mutate` function. This creates a new column, but can perform slower on large datasets and/or be more awkward to type than simply making a new column in the usual way with `$` and `=` in `base` R. 
+Both of these commands create a new column that combine city and the state names. 
 
 ```
-customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", "))
-# vs
 customer_survey$Location = paste(city, stabbr, sep=", ")
+# vs
+require(dplyr)
+customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", "))
 ```
 
-Still, it can be pretty convenient if you're stringing functions together, as above (so a `%>%` operation would simply be `mutate(Location=paste(city, stabbr, sep=", ")`, making it as easy to type as the normal way), or want to peek at the outcome before running it for results, as below.
+Of course, math operations work with both methods, e.g., to get the proportion an observation is of the whole:
+
+```
+customer_survey$proportion = customer_survey$customer_purchases / 
+  sum(customer_survey$customer_purchases)
+# vs
+customer_survey = mutate(customer_survey, proportion2 = customer_purchases / 
+  sum(customer_purchases))
+```
 
 
-## Peeking at the Outcome with `dplyr`
+A> ### Stringing it Together in `dplyr`
+A>  
+A> A potentially useful additional feature of `dplyr` is that you can string together a bunch of functions with the `%>%` ("then") operator, a feature that is growing in popularity across a variety of R packages.
+A>  
+A> ~~~~~~~~  
+A> customer_500_dplyred = customer_survey %>%  
+A>     filter(customer_purchases >= 500) %>%   
+A>     group_by(state) %>%  
+A>     summarize(count_purchases = n(),  
+A>               mean_purchases = mean(customer_purchases, na.rm=T),  
+A>               sd_purchases = sd(customer_purchases, na.rm=T),  
+A>               sum_est = sum(est)) %>%  
+A>     mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
+A> ~~~~~~~~  
+A>   
+A> This is also a good example where `mutate` is more convenient than traditional assignment.  
+A> 
+A> However, not everyone is enamored with this new "piping" trend; when you need to provide verbose code or examples for beginners to understand the processing steps it [may not be the best coding choice](http://www.fromthebottomoftheheap.net/2015/06/03/my-aversion-to-pipes/). As with all "coding standards" advice, do as you think best for you and your context. 
+
+
+## Peeking at the outcome with `dplyr`
 
 If you want to check on how one or more of the `dplyr` actions will perform in terms of output before updating or creating a dataframe, you can wrap it inside the `head` function. For example:
 
@@ -509,8 +524,8 @@ head(arrange(customer_survey, region, desc(customer_age),
 ![](/images/IMAGE.png)
 
 ```
-head(mutate(customer_survey, Location = paste(city, stabbr, sep=", "), 
-    purchase_proportion=round(customer_purchases/length(customer_purchases),2)))
+head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
+    purchase_proportion=customer_purchases/sum(customer_purchases)))
 ```
 
 ![](/images/IMAGE.png)
@@ -616,9 +631,9 @@ head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type), 4)
 And so on... the possibilities are as many as your variable set...
 
 
-### Summarizing while Reshaping
+### Summarizing while reshaping
 
-While `dplyr` might provide you with all you need for summarizing data once your data structure is set, `reshape2` offers the option to summarize while reshaping. The summarization works based on which operation you choose as well as which side of the `~` you place the variables (as described above).  
+While `dplyr` provides you with all you need for summarizing data once your data structure is set, `reshape2` offers the option to summarize while reshaping. The summarization works based on which operation you choose as well as which side of the `~` you place the variables (as described above).  
 
 ```
 dcast(surgery_outcomes_melted, Phase ~ Test_type, mean, na.rm=T)
