@@ -1,0 +1,191 @@
+# Appendix 1: Setting Up Projects and "Make" files
+
+## Setting up a project with RStudio and Git
+
+Setting up a project before you begin any analysis takes a little time, but is an essential task for professional data science. Having a standard set of processes makes redoing, recreating, or reproducing any analysis a breeze.
+
+First, if you don't already have Git or Subversion installed, you'll need to install at least one of them, depending on your preference. If you're new to version control, you should go with Git. While it can provide all a solitary coder needs locally, Git is especially useful as it allows for concurrent and asynchronous collaboration and development via Github, which also serves as an online version control/backup.
+
+Outside of R, create a separate directory for every project, and within that directory, set up folders that allow you to contain code, data, and output in logical groupings. At a minimum, it's best to have separate folders for data, analysis, and products. For example, a project for which you expect to produce a static report, a presentation, and an interactive app might be set up as follows:
+
+[IMAGE]
+
+The particular folder names and organization are not important. What's important is having a system that is general enough to use for any project and straightforward enough to share with others with minimal explanation.
+
+After completing the directory setup, open RStudio.
+
+The best way to organize a project within R and put it under version control is through RStudio. Under the File menu, click New Project. Then click Create project from: Existing directory. A blank RStudio environment will open. Then select the Tools menu, click Version Control, and then Project Setup. A window will open:
+
+[IMAGE]
+
+Select Git from the Version control system: button, then click yes, and yes again. RStudio will reboot, and your project is now under local version control. The directory will now look like this (including hidden files):
+
+[IMAGE]
+
+Making a habit of setting up folders like this in a systematic way makes it easy for others to understand and replicate your work. Adding version control gives you the ability review every change you made since the start of the project, to roll back to a previous state if a path of coding turns out to be a dead end or if something is accidentally deleted, and also allows for more efficient and safe collaboration with others.
+
+Git works by storing the project as a set of "snapshots" that keep unmodified files alongside links to changes in modified files that will allow a rollback to a previous changepoint.
+
+It's important to remember to not use spaces in any of your folder or file names, as Git (as well as other data science tools) often may not deal with them appropriately.
+
+### Committing your changes
+
+Once your project is under version control with Git, a new tab will be available in your RStudio session titled "Git." Each file appears in the list, and whenever changes are made and saved in your project files, the modified files in this list will have a set of question marks appear in the Status field. Clicking the checkbox alongside those files and then clicking the Commit button saves the project state at that point.
+
+A dialogue box will then pop up that will allow you to provide notes on what changes were made. The level of detail to include is up to you, but it's good practice to use enough detail that someone unfamiliar with your project could understand it enough to recreate or roll it back safely. 
+
+### Rolling back to a previous state
+
+Rolling back to a previous state is as simple as clicking the Revert button in the Git tab.
+
+### Packaging a project
+
+By setting up a project this way, the only additional thing you need to do is use relative paths in all scripts and R markdown files—you'll be able to tar/zip up the entire project and ship it to others, knowing it is already set up to run as-is.
+
+RStudio has a good overview of its integration with version control for both Git and Subversion at https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN.
+
+
+## Documenting R code … for executives
+
+All too often, we write code that makes perfect sense to us, but turns out to be completely opaque when given to another coder, even one familiar with the same datasets. I’ve known analysts who became (in)famous for saying, when asked to document their code, "what do you mean? The code is the documentation."
+
+Most of us realize that documentation is really important, but we tend to think like coders when we comment code or write out specs. If we change our mindset toward a) thinking about what executives would want to know if they were going through our program, and b) make a point to create data products (pdfs, webpages, slide decks, etc.) that are integrated within the project as it develops, our work will be considerably more useful and reusable, no matter who picks it up later.
+
+It's doubtful we'd ever actually write code for executives. But if we think along those lines, we'll write code that's more useful to anyone—including our future selves—who reads or implements it in the future.
+
+RStudio has integrated Yihui Xie's brilliant knitr package with a flavor of markdown (in the form of the rmarkdown2 package) that allows you to produce a wide variety of data products using the same code. Once you’ve developed the directory structure and placed it under version control (Recipe 1), it’s good practice to create an R Markdown (.Rmd) file that will serve as the basis for the project’s data products or even as a means for "plain language" documentation. You'll also need to start a "makefile" R script that can run the entire analysis when complete.
+
+Open RStudio if it’s not already open. Click the New File button or select the New File option from the File menu, and create an R Markdown file. Do this again to create an R Script file (keyboard shortcut: Ctrl-Shift-N).
+
+Generally, coders write comments that state what the code segment does, like `# Calculate mean by group`. While that’s useful, we also need to add comments, as much as reasonably possible, on what the segment is meant to provide. For example, 
+
+```
+# Calculate mean by group for the summary table in final report (page 5) and presentation (slide 3)
+```
+
+would provide a future user with essentially everything they need to know about possible downstream impacts if they were to modify that segment. This approach is termed "clear text commenting."
+
+## "Make" files in R
+
+The "makefile" is so named with a hat-tip to Make, a program that builds programs from source code. An R "makefile" runs a set of independent R scripts, which allows you to create modular code (which is far easier to debug than one long script), as well as mix and match scripts as needed across a variety of projects. For any given project, this R script could be run once and it would (re)create the entire analysis and output. An example of an R "makefile" is below, which also highlights the "clear text commenting" approach:
+
+```
+################################################################ 
+# Analysis of Canada's 2011 Public Service Employment Survey
+# R-"makefile" to run all programs
+# Created by: Dwight Barry
+# Last edited: 13 Sept 2014
+################################################################
+
+# Set the working directory
+setwd("~/Projects/PSES2011")
+
+# Load the packages used in this analysis
+require(gdata)
+require(ggplot2)
+require(reshape2)
+require(tidyr)
+require(dplyr)
+require(xtable)
+require(rmarkdown)
+require(vcd)
+
+# Import raw data from web and clean for analysis,
+# and write data to flat files to save future bandwidth
+# Uncomment if this is the first time run on the local drive
+# source("./data/PSES_ImportData.R")
+
+# Load data for analysis once import is finished,
+# then add to a SQLite database to save memory
+source("./data/PSES_LoadData.R")
+
+# Obtain summary statistics on answer percentages
+# for each survey question
+source("./analysis/PSES_SummaryStatistics.R")
+
+# Create heatmaps of answer percentages
+# for each survey question group
+source("./analysis/PSES_HeatMaps.R")
+
+# Create mosaic plots of Questions 18a and 54
+# to help support management planning discussions
+# Note: must run PSES_HeatMaps.R before running this script
+source("./analysis/PSES_Mosaics.R")
+
+# Create a pdf handout of the complete set of PSES questions
+render("./reports/PSES_Questions.Rmd", "pdf_document")
+
+# Create a slide deck for the management planning discussion
+render("./reports/PSES_ManagementSlides.Rmd", "ioslides_presentation")
+
+# Provide status of R's session at time of analysis
+print(date())
+print(sessionInfo())
+
+# Clean up
+# Uncomment and run if desired
+# rm(list = ls())
+
+#### End of File ####
+```
+
+Alongside the "makefile," it's useful to have an R Markdown file open in which you can document methods and results as you develop the project. This makes final product development considerably easier, but it also serves as a reminder to code with the audience in mind. If you habitually write out what you did and what it means alongside the code that generates the results, you'll save time later—for you, as well as for for any downstream or future users.
+
+Because of system and platform nuances with pdf or Word export and slide creation styles, it's usually best to use the html document option for the main markdown file's format. It's slightly easier to modify and convert that to LaTeX/pdf or Word, for example, than the other way around, especially if you haven't yet set up RStudio to create pdfs. Once you've selected R Markdown in the New File menu, you'll get a dialogue box that provides you an opportunity to add a title and your name. The choice defaults to HTML, so simply clicking on OK opens a default example.
+
+Here's a short example of a basic Rmd file that will create an HTML file in a preview window once the Knit HMTL button is pushed. It is saved automatically as an HTML file in your working directory. Once it shows in the preview window, you can press the View in browser button to see how it looks as a web page.
+
+  ---
+  title: "Example of Using R for Control Charts"
+  author: "Dwight Barry"
+  output:
+    html_document: default
+  --- 
+  
+  This document shows a basic example of how R could be used for control charting infection rates at the (hypothetical) *Show No Mercy General Hospital*. First, load the required packages and the data:
+  
+  ```{r SetupChunk}
+  # Load the quality control library
+  require(qcc)
+  # Load library for pretty table output
+  require(pander)
+  # Read in example data from file
+  U_Chart = read.table("UChartData.csv", header=T, sep=",")
+  ```
+  
+  Then do some data manipulation:
+  ```{r DataWork}
+  # Calculate the rate per thousand from the raw data
+  U_Chart$\textdollar$Rate = U_Chart$\textdollar$Infections / (U_Chart$\textdollar$PatientDays / 1000)
+  # Convert date field to month and year format
+  U_Chart$\textdollar$Month = format(as.Date(U_Chart$\textdollar$Month), "%b %Y")
+  ```
+  
+  Provide a data dictionary and show the data in a table:
+  
+  *Data Dictionary* 
+  Month: the month for which the data are obtained during calendar year 2014
+  PatientDays: the number of patients supported * the number of days in the month 
+  Infections: the count of infections acquired by patients during the hopsital stay 
+  Rate: Infections per 1,000 patient days calculated as Infections / (PatientDays/1000) 
+  
+  ```{r table, results='asis', echo=FALSE}
+  pander(U_Chart)
+  ```
+  
+  Finally, produce the control chart with 3-sigma control limits:
+  
+  ```{r RunQCC, fig.width=10, fig.height=6}
+  # Create quality control object and static chart for a "per 1000" display
+  UChart = qcc(U_Chart$\textdollar$Infections, sizes=U_Chart$\textdollar$Rate, labels=U_Chart$Month,
+    nsigmas=3, type="u", title="U-Chart for Infections per 1000 Patient Days", 
+    ylab="Infections/1000 Patient Days", xlab="", axes.las=2)
+  ```
+  
+  Printed on `r date()`.
+  *End of File.*
+  
+
+The `knitr` package allows you to include R code within chunks, marked by three backticks at the start and end of each chunk, as well inline with text, as marked with a single backtick at the start and end of the portion of the R code to be analyzed. The code so designated is run each time you "knit" the file, so if the data changes, the analysis will repeat as before on the new data. The benefit of this for writing reports or presentations where revisions of the data are inevitable is clear.
+
+Click the **?** or **MD** button in the `.Rmd` script window of RStudio for a quick overview of Rmarkdown syntax.
