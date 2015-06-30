@@ -8,4 +8,5 @@ chapter5_es.txt
 chapter6_time.txt
 chapter7_dataviz.txt
 chapter8_cluster.txt
-project_setup.txt
+Appendix1.txt
+Appendix2.txt
