@@ -35,16 +35,18 @@ There are a wide variety of packages and functions to import data from files, bu
 
 ### Reading flat files from disk or the web
 
-To import flat files, it's probably best to get in the habit of using `read.table` instead of `read.csv`. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you might save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `,` for comma, `\t` for tab, `|` for pipe, and so on. I also like to use the `stringsAsFactors=FALSE` option as well, as I often pull in data that has character fields, and it's easier to designate the factor variables later. Finally, `read.table` assumes that the data you're reading in doesn't have a header, so if there is one, you have to specify that with `header=TRUE`.
+To import flat files, it's probably best to get in the habit of using `read.table` instead of `read.csv`. While comma-delimited files are indeed the most common, tab- and pipe-delimited can also be quite prevalent depending on the context. And, since `read.csv` is just a wrapper for `read.table`, you might save time in the long run by using read.table for any flat file, and changing the `sep=" "` value as needed, such as `sep=","` for comma, `sep="\t"` for tab, `sep="|"` for pipe, and so on. I also like to use the `stringsAsFactors=FALSE` option as well, as I often pull in data that has character fields, and it's easier to designate the factor variables later. Finally, `read.table` assumes that the data you're reading in doesn't have a header, so if there is one, you have to specify that with `header=TRUE`.
 
-We saw reading in a flat file in the first chapter:
+We saw reading in a semi-colon delimited flat file in the first chapter:
 
 ```
 power = read.table("Data/household_power_consumption.txt", sep=";", header=T, 
   na.strings=c("?",""), stringsAsFactors=FALSE)
 ```
 
-While reading in a flat file is pretty standard fare for any R user, it can sometimes require a little extra work to make sure it comes in correctly. This example downloads an online csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure that special characters are read in correctly:
+While reading in a flat file is pretty standard fare for any R user, it can sometimes require a little extra work to make sure it comes in correctly. One important option to remember is `na.strings`; while R will read missing data from blank cells as `NA` automatically, you find a wide variety of ways people code missing values, from `-99` to `?` and sometimes even '0'. Occasionally you find more than one `NA` designator in the same file, as you can see in the `power` dataset example, above.
+
+Sometimes file encoding matters as well. This example downloads an online .csv file from the Canadian 2011 Public Service Employee Survey (PSES), using UTF-8 encoding to ensure that special characters are read in correctly:
 
 ```
 # Read in a csv from the internet with non-ASCII characters
