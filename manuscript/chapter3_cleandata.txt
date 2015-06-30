@@ -179,21 +179,13 @@ nursing_home_deficiencies$Date = as.Date(nursing_home_deficiencies$Date,
 The use of `fixed = TRUE` option above tells `gsub` to use exact matching; the default is `false`, which uses [POSIX 1003.2 extended regular expressions](http://www.cheatography.com/davechild/cheat-sheets/regular-expressions/). 
 
 
-### Missing values: Dummy NA values and dropping the observations with NAs
+### Missing data: Converting dummy NA values
 
-Sometimes, you’ll find values or placeholders where no data should be; for example, -99 and 9999 are common among older data sets to represent NAs. To fix this, you can use `gsub`, but you could also do something like:
+Sometimes, you’ll find values or placeholders where no data should be; for example, `-99` and `9999` are common among older data sets to represent missing values (represented by `NA` in R). To fix this, you can use `gsub`, but you could also do something like:
 
 ```
 my_data$my_variable[my_data$my_variable==9999] = NA 
 ```
-
-There are a variety of ways to deal with missing values—and we’ll explore some later in this chapter, under *Imputation*—but the simplest is to just remove the rows that contain them:
-
-```
-my_data = na.omit(my_data)
-```
-
-This is usually a bad idea. You lose a lot of information this way, so unless you data set is massive, eitehr work with the NAs as-is, or perform imputation on the NAs using the best possible method relative to your data set and your analytic aims. 
 
 It’s also useful to remember to use `na.rm=TRUE` when including data with NA values in calls to many base installation functions (e.g., `mean`); they will throw an error otherwise. 
 
@@ -274,75 +266,6 @@ Every once in a while you'll get a file that has commas in a numeric field (coug
 ```
 my_data$my_variable = as.numeric(paste(gsub(",", "", my_data$my_variable)))
 ```
-
-
-## Imputation
-
-When you disregard cases with any missing variables, you lose useful information that the nonmissing values in that case convey. You may sometimes want to impute reasonable values (those that will not skew the results of analyses very much) for the missing values.
-
-Read data and replace missing values with mean:
-
-> dat <- read.csv("missing-data.csv", na.strings = "")
-> dat$Income.imp.mean <- ifelse(is.na(dat$Income), mean(dat$Income, na.rm=TRUE), dat$Income)
-
-
-Imputing random values sampled from nonmissing values
-
-If you want to impute random values sampled from the nonmissing values of the variable, you can use the following two functions:
-
-rand.impute <- function(a) {
-  missing <- is.na(a)
-  n.missing <- sum(missing)
-  a.obs <- a[!missing]
-  imputed <- a
-  imputed[missing] <- sample (a.obs, n.missing, replace=TRUE)
-  return (imputed)
-}
-
-random.impute.data.frame <- function(dat, cols) {
-  nms <- names(dat)
-  for(col in cols) {
-    name <- paste(nms[col],".imputed", sep = "")
-    dat[name] <- rand.impute(dat[,col])
-  }
-  dat
-}
-
-dat <- read.csv("missing-data.csv", na.strings="")
-> random.impute.data.frame(dat, c(1,2))
-
-
-
-
-
-## Scaling
-
-The scale() function takes two optional arguments, center and scale, whose default values are TRUE. The following table shows the effect of these arguments:
-
-Argument
-	
-
-Effect
-
-center = TRUE, scale = TRUE
-	
-
-Default behavior described earlier
-
-center = TRUE, scale = FALSE
-	
-
-From each value, subtract the mean of the concerned variable
-
-center = FALSE, scale = TRUE
-	
-
-Divide each value by the root mean square of the associated variable, where root mean square is sqrt(sum(x^2)/(n-1))
-
-center = FALSE, scale = FALSE
-	
-
-Return the original values unchanged
 
 
 ## Merging dataframes
