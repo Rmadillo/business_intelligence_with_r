@@ -453,16 +453,16 @@ ggplot(bike_share_daily, aes(weathersit)) +
 
 ![horizontal bar](/images/0815OS_02_07b.png)
 
-I> ## `ggplot` cheat sheet
-I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet into a local pipe-delimited text file, to format and display as works best for you.
-I> ~~~~~~~~
+I> #### `ggplot` cheat sheet
+I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet into a local pipe-delimited text file, to format and display as works best for you.  
+I> ~~~~~~~~  
 I> require(XML)  
-I> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/
-I>    2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")  
-I> gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1, 
-I>    stringsAsFactors=F)  
-I> write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)  
-I> ~~~~~~~~
+I> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/  
+I>    2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")   
+I> gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1,  
+I>    stringsAsFactors=F)   
+I> write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)   
+I> ~~~~~~~~  
 
 
 ## Plotting multiple univariate distributions with faceting
