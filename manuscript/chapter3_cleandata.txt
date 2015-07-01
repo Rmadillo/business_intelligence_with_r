@@ -259,7 +259,7 @@ plot(customers$customer_age, customers$customer_purchase,
      length(customers$customer_age), "Customers"))
 ```
 
-![put plot here](images/PASTEPLOT.png)
+![paste plot](images/pasteplot.png)
 
 Every once in a while you'll get a file that has commas in a numeric field (cough Excel cough). A data type conversion, `paste`, and `gsub` can be used together to clean that up in one line:
 
@@ -549,21 +549,21 @@ If you want to check on how one or more of the `dplyr` actions will perform in t
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
 ```
 
-![image here](/images/IMAGE.png)
+![image here](/images/head1full.png)
 
 ```
 head(arrange(customer_survey, region, desc(customer_age), 
     desc(customer_purchases)))
 ```
 
-![image here](/images/IMAGE.png)
+![image here](/images/head2full.png)
 
 ```
 head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
     purchase_proportion=customer_purchases/sum(customer_purchases)))
 ```
 
-![image here](/images/IMAGE.png)
+![image here](/images/head3full.png)
 
 
 ## Transforming a Dataframe Between Wide and Long
