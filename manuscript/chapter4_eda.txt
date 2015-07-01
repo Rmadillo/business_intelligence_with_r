@@ -1,7 +1,9 @@
 # Chapter 4: Know Thy Data
 
 - Creating summary plots
+- Missing data  
 - Obtaining summary statistics
+- Inference on summary statistics
 - Plotting univariate distributions
 - Plotting bivariate and comparative distributions
 
@@ -268,7 +270,9 @@ count(bike_share_daily[c(3,6:7)])
 …
 ```
 
-## Inference on summary statistics: confidence intervals
+## Inference on summary statistics
+
+### Confidence intervals
 
 When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are `base` installation functions for most of the ones we typically need:
 
@@ -307,7 +311,7 @@ boot.ci(q75_boot, type="bca")$bca[4:5]
 500 675
 ```
 
-## Inference on summary statistics: credible intervals
+### Credible intervals
 
 STUFF ON BCIs here
 
@@ -323,7 +327,7 @@ The single sample functions available to acquire simple CIs as of this writing i
 
 
 
-## Inference on summary statistics: tolerance intervals
+### Tolerance intervals
 
 While confidence and credible limits tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% *confidence* interval) and how long you can expect 95% of those trips will take (using a 95% *tolerance* interval). While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. 
 
