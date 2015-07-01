@@ -344,15 +344,15 @@ Obviously, there's more to life than left joins. The following table lays out th
 | ------------ | ------------- | ----- | ----- | ----- |
 | Left | ![Left join](/images/Ch3_sql_01.png) | `left_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.x=TRUE)` | `SELECT * FROM A LEFT JOIN B ON A.key = B.key` |
 | Inner | ![Inner join](/images/Ch3_sql_02.png) | `inner_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all=FALSE)` | `SELECT * FROM A INNER JOIN B ON A.key = B.key` |
-| Full (Outer) | ![Full join](/images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key` | 
+| Full (Outer) | ![Full join](/images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | *Not yet implemented* | 
 | Semi | ![Semi join](/images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
-| Anti | ![Anti join](/images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key WHERE A.key is NULL OR B.key iS NULL` | 
-| Right[^a] | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key`|
-| Right Anti[^a] | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM A RIGHT JOIN B ON A.key = B.key WHERE A.key IS NULL`
+| Anti | ![Anti join](/images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | *Not yet implemented* | 
+| Right[^a] | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | *Not yet implemented*|
+| Right Anti[^a] | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | *Not yet implemented* |
 
 [^a] Although `dplyr` doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
-W> R will match on columns with the same names, so while you can get away without specifying the `by` variables, you should always specify them—remember your downstream users!
+W> R will match on columns with the same names, so while you can usually get away without specifying the `by` variables with `merge` or `dplyr`, you should *always* specify them anyway—remember your downstream users!
 
 I> You can merge large files with `data.tables`, but at the time of this writing, the way you specify the joins is opaque—e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time—so for now we recommend that it only be employed for single-user/casual use and not for production code.
 
@@ -361,18 +361,28 @@ I> You can merge large files with `data.tables`, but at the time of this writing
 
 Concatenating two tables can be handled two ways: via `sqldf` or through R's native binding functions. 
 
-If you need to stack two tables with the same columns—`UNION` in SQL terms—and prefer the SQL approach (and/or already have `sqldf` loaded), just include it in your query, e.g.:
+It's often easier just to use the native R functions if you already have the two tables ready to concatenate: `rbind` for stacking and `cbind` for concatenating *sideways*. "Being ready" means that the columns are identically named, and that there are the same number of columns in each table. The `sqldf` approach is best when you're pulling specific columns from each table to stack.  
+
+We'll split the `customer_survey` data frame in half row-wise to illustrate unions:
 
 ```
-EXAMPLE SQL QUERY WITH UNION
+customers_first_half = customer_survey[1:5000,]
+customers_second_half = customer_survey[5001:10000,]
 ```
 
-It's often easier just to use the native R functions if you already have the two tables ready to concatenate: `rbind` for stacking and `cbind` for concatenating *sideways*. Being ready means that the columns are identically named, and that there are the same number of columns in each table. 
-
-The above SQL `UNION` above would be done with `rbind` as follows:
+If you need to stack two tables with the same columns and prefer the SQL approach (and/or already have `sqldf` loaded), just include it in your query, e.g.:
 
 ```
-rbind(A, B)
+customers_whole = sqldf(
+    "SELECT * FROM customers_first_half
+    UNION
+    SELECT * FROM customers_second_half")
+```
+
+The `UNION` above would be done with `rbind` as follows:
+
+```
+customers_whole = rbind(customers_first_half, customers_second_half)
 ```
 
 If you have some variables in one table that don't occur in the other table, you can assign them in the other table as a new variable of `NA` values, and then `rbind` them together; we saw an example of this in Chapter 1 when combining the actual and forecast values together into a single data frame for plotting:
@@ -394,28 +404,52 @@ use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 =
 use_ts_fc = rbind(use_df, use_fc)
 ```
 
+The `sqldf` version of the above would be considerably larger, as the `total_use_fc` is actually an R list object, so it would have to be converted to a data frame before you could `UNION` or `rbind`.
+
 Binding two tables together side-by-side is done with the `cbind` or `data.frame` functions (`cbind` is just a wrapper for `data.frame`). This approach is *row-blind*: it will line up the two tables *in the order that they occur*. It is up to you to ensure the observations (rows) match across the two data frames. The two data frames must also have the same numbers of observations (i.e., the same length). 
 
+Again, we'll split the `customer_survey` data column-wide in two for illustration:
+
 ```
-cbind(A,B)
-data.frame(A,B)
+customers_left_half = customer_survey[,1:7]
+customers_right_half = customer_survey[,8:14]
 ```
 
-An alternative to the `cbind` is a join with `sqldf`; either an inner or an outer join will work if you have an appropriate key in each table and they match in length. Then you don't need to ensure the order is correct, either. In addition, if you have rows in one table that don't appear in the other and want to keep them, a full outer join will do the job.
+We can put them back together again either way:
 
+```
+customers_back_together = cbind(customers_left_half, customers_right_half)
+customers_back_together = data.frame(customers_left_half, customers_right_half)
+```
+
+An alternative to the `cbind` is a join with `sqldf`; a natural or an inner join will work if you have an appropriate key in each table (i.e., `customer_id` in this example). Then you don't need to ensure the order is correct, either. 
+
+```
+# Keep the ID in the second table
+customers_right_half = customer_survey[,c(1,8:14)]
+
+# Use sqldf to make a natural join
+customers_back_together = sqldf("
+    SELECT *
+    FROM customers_left_half A
+    JOIN 
+    customers_right_half B
+    ON A.customer_id = B.customer_id
+")
+```    
 
 As in the last recipe, here's a visualization and function summary for unions and concatenated tables:  
 
 {width="90%"}
-| Type of Join | Visualization | *bind | sqldf |
-| ------------ | ------------- | ----- | ----- |
+| Type of Join | Visualization | r/cbind | sqldf |
+| ------------ | ------------- | ------- | ----- |
 | Union | ![union](/images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
-| Semi-union | ![semi union](/images/rbind_semi_union.png) | *see below* | *see below* |
+| Semi-union | ![semi union](/images/rbind_semi_union.png) | *see above* | `SELECT * FROM A UNION SELECT * FROM B` withe `CAST(NULL as *datatype*) AS name_of_column_to_match`[^a] |
 | Concatenate | ![concat](/images/cbind.png) | `cbind(A, B)` | *n/a* |
 | | | `data.frame(A, B)` | *n/a* |
-| | | *n/a* | `SELECT * FROM A FULL OUTER JOIN B ON A.key = B.key` |
+| | | *n/a* | `SELECT * FROM A JOIN B ON A.key = B.key` |
 
-
+[^a] You'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
 
 ## Filtering and Selecting a Dataframe: Subseting Rows and Columns
 
@@ -514,21 +548,21 @@ If you want to check on how one or more of the `dplyr` actions will perform in t
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
 ```
 
-![](/images/IMAGE.png)
+![image here](/images/IMAGE.png)
 
 ```
 head(arrange(customer_survey, region, desc(customer_age), 
     desc(customer_purchases)))
 ```
 
-![](/images/IMAGE.png)
+![image here](/images/IMAGE.png)
 
 ```
 head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
     purchase_proportion=customer_purchases/sum(customer_purchases)))
 ```
 
-![](/images/IMAGE.png)
+![image here](/images/IMAGE.png)
 
 
 ## Transforming a Dataframe Between Wide and Long
@@ -635,6 +669,8 @@ And so on... the possibilities are as many as your variable set...
 
 While `dplyr` provides you with all you need for summarizing data once your data structure is set, `reshape2` offers the option to summarize while reshaping. The summarization works based on which operation you choose as well as which side of the `~` you place the variables (as described above).  
 
+Get the mean for each `Test_type`, by `Phase`:
+
 ```
 dcast(surgery_outcomes_melted, Phase ~ Test_type, mean, na.rm=T)
 
@@ -643,6 +679,8 @@ dcast(surgery_outcomes_melted, Phase ~ Test_type, mean, na.rm=T)
 2   Pre 103.0909  98.90909
 ```
 
+Get the mean for each `Side`, by combination of `Test_type` and `Phase`:
+
 ```
 dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, mean, na.rm=T)
 
@@ -650,6 +688,8 @@ dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, mean, na.rm=T)
 1  Left    102.4444   97.71429       100.7778      97.42857
 2 Right    108.0000  112.50000       104.5000     101.50000
 ```
+
+Get the standard deviation for each combination of `Test_type`, `Side`, and `Phase`:
 
 ```
 dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
@@ -665,4 +705,4 @@ dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
 8 Nonverbal Right   Pre 10.47219
 ```
 
-We'll explore summarization with `dplyr` in the next chapter. 
+And so on. We'll explore summarization with `dplyr` in the next chapter; it tends to be easier to use than summaries obtained via `dcast` and sets you up for subsequent analyses a little better.  
