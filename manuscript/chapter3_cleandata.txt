@@ -347,14 +347,14 @@ Obviously, there's more to life than left joins. The following table lays out th
 | Full (Outer) | ![Full join](/images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | *Not yet implemented* | 
 | Semi | ![Semi join](/images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
 | Anti | ![Anti join](/images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | *Not yet implemented* | 
-| Right[^a] | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | *Not yet implemented*|
-| Right Anti[^a] | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | *Not yet implemented* |
+| Right* | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | *Not yet implemented*|
+| Right Anti* | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | *Not yet implemented* |
 
-[^a] Although `dplyr` doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
+\* Although `dplyr` doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
 W> R will match on columns with the same names, so while you can usually get away without specifying the `by` variables with `merge` or `dplyr`, you should *always* specify them anyway—remember your downstream users!
 
-I> You can merge large files with `data.tables`, but at the time of this writing, the way you specify the joins is opaque—e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time—so for now we recommend that it only be employed for single-user/casual use and not for production code.
+You can merge large files with `data.tables`, but at the time of this writing, the way you specify the joins is opaque—e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time—so for now we recommend that it be employed for single-user/casual use and not for production code.
 
 
 ### Unions and bindings
@@ -444,12 +444,13 @@ As in the last recipe, here's a visualization and function summary for unions an
 | Type of Join | Visualization | r/cbind | sqldf |
 | ------------ | ------------- | ------- | ----- |
 | Union | ![union](/images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
-| Semi-union | ![semi union](/images/rbind_semi_union.png) | *see above* | `SELECT * FROM A UNION SELECT * FROM B` withe `CAST(NULL as *datatype*) AS name_of_column_to_match`[^a] |
+| Semi-union | ![semi union](/images/rbind_semi_union.png) | *see above* | *see below*\* |
 | Concatenate | ![concat](/images/cbind.png) | `cbind(A, B)` | *n/a* |
 | | | `data.frame(A, B)` | *n/a* |
 | | | *n/a* | `SELECT * FROM A JOIN B ON A.key = B.key` |
 
-[^a] You'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
+\* Use `UNION` to bind the two tables, but you'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
+
 
 ## Filtering and Selecting a Dataframe: Subseting Rows and Columns
 
@@ -520,7 +521,7 @@ customer_survey = mutate(customer_survey, proportion2 = customer_purchases /
 ```
 
 
-A> ### Stringing it Together in `dplyr`
+A> #### Stringing it Together in `dplyr`
 A>  
 A> A potentially useful additional feature of `dplyr` is that you can string together a bunch of functions with the `%>%` ("then") operator, a feature that is growing in popularity across a variety of R packages.
 A>  
