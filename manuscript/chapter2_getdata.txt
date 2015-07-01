@@ -692,7 +692,7 @@ customer_purchases = round(rlnorm(10000)*100, 2)
   
 # Table B – city/state/zip and business density lookup table
 download.file("ftp://ftp.census.gov/econ2012/CBP_CSV/zbp12totals.zip", 
-  "temp.zip")
+  "temp.zip", method="curl")
 zipcodes = read.table(unz("temp.zip", "zbp12totals.txt"), header=T, quote="\"",
   sep=",", colClasses="character")
 zipcodes = zipcodes[,c(1,11:12,10)]
@@ -722,7 +722,7 @@ colnames(state_regions) = c("abb", "state", "region", "division")
 
 In Table A, we've created a customer demographic and sales dataset. The `sample` function creates a random vector of male and female genders, as well as unknown, proportional to the weights in the `prob` option. The age and purchase values were created using the random number generators based on the uniform and log-normal distributions, respectively. The age value vector was subsequently replaced with 25% NAs. Each customer's zip code was generated from a random selection of the zip codes in Table B. All vectors are then brought together into the `customers` data frame. 
 
-Table B, we've downloaded and unzipped some 2012 County Business Patterns data from the US Census to create a "locations" lookup table. (Metadata for this dataset is online at https://www.census.gov/econ/cbp/download/noise_layout/ZIP_Totals_Layout10.txt; in addition to the city/state/zip fields, we've also kept the `est` field, which is the number of business establishments in this zip code in the first quarter of 2012.)
+Table B, we've downloaded and unzipped some 2012 County Business Patterns data from the US Census to create a "locations" lookup table. (Metadata for this dataset is online [here](https://www.census.gov/econ/cbp/download/noise_layout/ZIP_Totals_Layout10.txt); in addition to the city/state/zip fields, we've also kept the `est` field, which is the number of business establishments in this zip code in the first quarter of 2012.)
 
 Table C is just a systematic selection designating a survey response from each customer. This could also be done randomly, but is done this way here simply for illustraion. 
 
@@ -745,8 +745,8 @@ If you want to save data in JSON format, use `jsonlite` with the `pretty` option
 
 ```
 require(jsonlite)
-myjson = toJSON(iris, pretty=TRUE)
-sink("myjson.json")
+iris_json = toJSON(iris, pretty=TRUE)
+sink("iris_json.json")
 myjson
 sink()
 ```
