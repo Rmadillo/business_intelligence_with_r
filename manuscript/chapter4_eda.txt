@@ -156,7 +156,19 @@ I> `VIM` also has a separate GUI for interactive/on-the-fly exploration called `
 
 `VIM` also performs imputation on missing values using a variety of methods. 
 
-
+hotdeck(x, ord
+_
+var
+=c("Besch","Umsatz"), imp
+_
+var
+=FALSE)
+Listing 2:
+k
+-nearest neighbor imputation.
+kNN(x)
+Listing 3: Application of robust iterative model-based imputation.
+irmi(x)
 
 
 ## Obtaining Summary Statistics
