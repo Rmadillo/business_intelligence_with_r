@@ -89,7 +89,77 @@ pairs(Titanic, highlighting=2)
 
 ![mosaic pairs](/images/Ch4_04.png)
 
-## Obtaining summary statistics
+## Dealing with Missing Data
+
+### Visualizing missing data
+
+The `VIM` package has some great tools for visualizing missing data patterns. As the bike share data doesn't have any missing values, we'll use a dataset derived from the [Tropical Atmosphere Ocean](http://www.pmel.noaa.gov/tao/) project for this recipe.
+
+```
+require(VIM)
+data(tao)
+summary(tao)
+```
+
+![tao summary](/images/tao_summary_screenshot.png)
+
+You can get an instant numeric and visual summary of missing values across the fields with the `aggr` function:
+
+```
+tao_aggr = aggr(tao)
+tao_aggr
+
+ Missings in variables:
+         Variable Count
+ Sea.Surface.Temp     3
+         Air.Temp    81
+         Humidity    93
+```
+
+![aggr image](/images/tao_aggr.png)
+
+You can compare missingness across fields with histograms, such as the distribution of missing humidity values by corresponding air temperature:
+
+```
+histMiss(tao[5:6])
+```
+
+![histMiss image](/images/histmiss1.png)
+
+You can flip the variables to see the opposite distribution:
+
+```
+histMiss(tao[c(6,5)])
+```
+
+![histMiss reversed image](/images/histmiss2.png)
+
+You can show the same data in a scatterplot for more details:
+
+```
+marginplot(tao[5:6])
+```
+
+![marginplot image](/images/marginplot.png)
+
+This can be expanded to pairwise visual comparisons with the `marginmatrix` function:
+
+```
+marginmatrix(tao[5:6])
+```
+
+![marginmatrix image](/images/marginmatrix.png)
+
+I> `VIM` also has a separate GUI for interactive/on-the-fly exploration called `VIMGUI`. Even if you prefer coding, it contains a vignette from which these examples are drawn, so it's worth installing to learn more about 
+
+### Imputation for missing values
+
+`VIM` also performs imputation on missing values using a variety of methods. 
+
+
+
+
+## Obtaining Summary Statistics
 
 Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the `psych` package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
 
