@@ -641,6 +641,8 @@ This function appends a set of indicator variables to the data that show TRUE/FA
 marginplot(tao_knn[c(5:6, 13:14)], delimiter="_imp")
 ```
 
+![marginplot imputed](/images/marginplot_imputed.png)
+
 Light and dark orange show results imputed for the variable on that axis; black points show observations for which both were imputed. Blue continues to show the distribution of the non-imputed values. 
 
 Viewing a matrix works here as well:
@@ -648,6 +650,8 @@ Viewing a matrix works here as well:
 ```
 marginmatrix(tao_knn[c(4:6, 12:14)], delimiter="_imp")
 ```
+
+![marginmatrix imputed](/images/marginmatrix_imputed.png)
 
 There are other methods in `VIM`, including a model-based approach:
 
@@ -663,8 +667,8 @@ By subsetting the results of different methods, you can plot their densities to 
 
 ```
 # Create a mean-imputed air temp variable
-tao$tao_airtemp_mean = ifelse(is.na(tao$Air.Temp), tao_airtemp_mean, 
-    tao$Air.Temp)
+tao$tao_airtemp_mean = ifelse(is.na(tao$Air.Temp), mean(tao$Air.Temp, 
+    na.rm=TRUE), tao$Air.Temp)
 
 # Make a data frame of each air temp result
 tao_compare_airtemp = data.frame(tao=tao[,5], tao_knn=tao_knn[,5], 
@@ -687,4 +691,4 @@ ggplot(tao_compare_melt, aes(Air.Temp, color=variable)) +
 
 I> #### More imputation in R: other packages
 I> 
-I> Since imputation is a complex subject, there are of course a lot of different R packages to do it; see the *Imputation* section of the CRAN Task View [Official Statistics & Survey Methodology](http://cran.r-project.org/web/views/OfficialStatistics.html) for a short overview of those packages and their approaches.
+I> Since imputation is a complex subject, there are of course a lot of different R packages to do it; explore the *Imputation* section of the CRAN Task View [Official Statistics & Survey Methodology](http://cran.r-project.org/web/views/OfficialStatistics.html) for a short overview of those packages and their methods.
