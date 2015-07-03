@@ -35,7 +35,7 @@ missing_data = customers[!complete.cases(customers),]
 missing_data
 ```
 
-Ironically, a few days before I started this chapter, I was trying to use a function that needed factors on a variable I just *knew* were factors, but R had considered them characters because as I had used the `stringsAsFactors=FALSE` option when I imported the data. After banging my head for a while, I pulled up `str` and the problem became clear immediately.
+Ironically, a few days before I started this chapter, I was trying to use a function that needed factors on a variable I just *knew* were factors, but R had considered them characters because as is my habit, I had used the `stringsAsFactors=FALSE` option when I imported the data. After banging my head for a while, I pulled up `str` and the problem became clear immediately.
 
 Always check! Even if you’re a seasoned professional!
 
@@ -82,7 +82,7 @@ sort(unique(customers$customer_age))
 [33] 67 68 69 70 71 72 74 76 78 80 81 83 84 85 86 87
 ```
 
-You can see if any rows are duplicated in the data frame with the `duplicated` function, but by itself just returns TRUE/FALSE. Use this structure to find any duplicated rows:
+You can see if any rows are duplicated in the data frame with the `duplicated` function, but by itself just returns TRUE/FALSE. Use this structure instead to find any duplicated rows:
 
 ```
 customers[duplicated(customers),]
@@ -113,7 +113,7 @@ customers = unique(customers)
 
 ### Sorting 
 
-The `dplyr` package is incredibly useful for data manipulation, as we'll see later in this chapter, but it's also useful for understanding your data. Even in Excel, lots of us want to sort on variables and see the results to start to get a sense of the data and its patterns. The `base` R installation includes `sort` and `order` functions, but they are clunky when you try to use this this way. `dplyr`'s `arrange` function makes it easy. 
+The `dplyr` package is incredibly useful for data manipulation, as we'll see later in this chapter, but it's also useful for understanding your data. We often want to sort on variables and see the results to start to get a sense of the data and its patterns. The `base` R installation includes `sort` and `order` functions, but they are clunky when you try to use this this way. `dplyr`'s `arrange` function makes it easy. 
 
 ```
 require(dplyr)
@@ -134,7 +134,7 @@ customers = arrange(customers, customer_age, desc(customer_purchases))
 
 ## Cleaning up
 
-### Cleaning up a web-scraped table
+### Cleaning up a web-scraped table: Regular expressions and more
 
 In many cases the data frame will require a little clean up after it's loaded. Clarifying messy or unclear column names, pattern replacement, converting between data types, and concatenating or extracting portions of variables' results are all common cleaning needs before analysis. 
 
@@ -187,7 +187,7 @@ Sometimes, you’ll find values or placeholders where no data should be; for exa
 my_data$my_variable[my_data$my_variable==9999] = NA 
 ```
 
-It’s also useful to remember to use `na.rm=TRUE` when including data with NA values in calls to many base installation functions (e.g., `mean`); they will throw an error otherwise. 
+It’s also useful to remember to use `na.rm=TRUE` when including data with NA values in calls to many base installation functions (e.g., `mean`), otherwise R will return `NA` or throw an error. 
 
 ```
 mean(customers$customer_age)
@@ -235,12 +235,12 @@ signif(mean(customers$customer_age, na.rm=TRUE), 3)
 [1] 53.4
 ```
 
-`ceiling`, `floor`, and `trunc` provide other ways to round numbers to an integer if you need to always round up, down, or remove the decimal portion, respectively.  
+`ceiling`, `floor`, and `trunc` provide other ways to round numbers to an integer if you need to round up, down, or remove the decimal portion, respectively.  
 
 
 ### Concatenation
 
-Mashing things together into the same field is done with the `paste` or `paste0` function; the only difference between the two is that `paste` requires a separator (defaults to a space) while `paste0` will concatenate without any separators between what you're pasting together. 
+Mashing things together into the same field is done with the `paste` or `paste0` function; the only difference between the two is that `paste` requires a separator (defaults to a space) while `paste0` will concatenate without any separators. 
 
 For example, if you want to attach the first of the month to a `yyyy-mm` field, these would be equivalent:
 
@@ -270,9 +270,11 @@ my_data$my_variable = as.numeric(paste(gsub(",", "", my_data$my_variable)))
 
 ## Merging dataframes
 
-We've already touched on merging tables inside a SQLite database to create a dataframe, but more often you usually need to merge two dataframes inside R.
+We've already touched on merging tables inside a SQLite database to create a dataframe in Chapter 2, but more often you usually need to merge two dataframes inside R.
 
-Perhaps the best package to do this in R is `dplyr`, and part of its greatness is that it works on dataframes in the same way as it does on databases. However, SQL jockies will prefer to use `sqldf`. I tend to use the former in R-heavy projects and the latter in projects where I need to work on lots of database tables or want to streamline the join results. Of course, `base` R has joining abilities as well via the `merge` function, but it tends to be less useful than `dplyr` or `sqldf`.    
+Perhaps the best package to do this in R is `dplyr`, and part of its greatness is that it works on dataframes in the same way as it does on databases. However, SQL jockies may still prefer to use `sqldf`. I tend to use the former in R-heavy projects and the latter in projects where I need to work from a database or want to streamline the join results. 
+
+Of course, `base` R has native joining abilities as well via the `merge` function, but it tends to be somewhat clunkier than `dplyr` or `sqldf`. 
 
 ### Joins
 
@@ -291,11 +293,11 @@ Our objective is to merge the four tables so that we have the customer data alon
 
 ```
 customer_locations = left_join(customers, zipcodes, by = 
-  c("customer_zip" = "zip")
+  c("customer_zip" = "zip"))
 customer_regions = left_join(customer_locations, state_regions, by= 
-  c("stabbr" = "abb")
+  c("stabbr" = "abb"))
 customer_survey = left_join(customer_regions, survey, by = 
-  c("customer_id" = "customer_id")
+  c("customer_id" = "customer_id"))
 ```
 
 The base package's `merge` function is the old standby, but is considerably slower than `dplyr`, and the type of join is implied by the all option, which reduces code clarity.
@@ -308,6 +310,8 @@ customer_regions = merge(customer_locations, state_regions, by.x = "stabbr",
 customer_survey = merge(customer_regions, survey, by.x="customer_id", 
   by.y="customer_id", all.x=TRUE)
 ```
+
+W> R will match on columns with the same names, so while you can usually get away without specifying the `by` variables with `merge` or `dplyr`, you should *always* specify them anyway—remember your downstream users!
 
 With both the `dplyr` `*_join` and the `base` `merge` functions, you get everything in both dataframes. You either have to select only the columns you want in a new dataframe before the merge, or remove the excess columns after it. Of course, using SQL you can choose just the columns you want, which is illustrated below.
 
@@ -347,21 +351,19 @@ Obviously, there's more to life than left joins. The following table lays out th
 | Full (Outer) | ![Full join](/images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | *Not yet implemented* | 
 | Semi | ![Semi join](/images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
 | Anti | ![Anti join](/images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | *Not yet implemented* | 
-| Right* | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | *Not yet implemented*|
-| Right Anti* | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | *Not yet implemented* |
+| Right* | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM B LEFT JOIN A ON B.key = A.key` |
+| Right Anti* | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM B LEFT JOIN A ON B.key = A.key WHERE A.key iS NULL` |
 
-\* Although `dplyr` doesn't have a right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
+\* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
-W> R will match on columns with the same names, so while you can usually get away without specifying the `by` variables with `merge` or `dplyr`, you should *always* specify them anyway—remember your downstream users!
-
-You can merge large files with `data.tables`, but at the time of this writing, the way you specify the joins is opaque—e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time—so for now we recommend that it be employed for single-user/casual use and not for production code.
+You can merge large files with `data.tables`, but at the time of this writing, the way you specify the joins is opaque—e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time—so for now it's probably best employed for single-user/casual use and not for production code.
 
 
 ### Unions and bindings
 
 Concatenating two tables can be handled two ways: via `sqldf` or through R's native binding functions. 
 
-It's often easier just to use the native R functions if you already have the two tables ready to concatenate: `rbind` for stacking and `cbind` for concatenating *sideways*. "Being ready" means that the columns are identically named, and that there are the same number of columns in each table. The `sqldf` approach is best when you're pulling specific columns from each table to stack.  
+It's often easier just to use the native R functions if you already have the two tables ready to concatenate: `rbind` for stacking and `cbind` for concatenating sideways. "Being ready" means that the columns are identically named, and that there are the same number of columns in each table. The `sqldf` approach is best when you're pulling specific columns from each table to stack.  
 
 We'll split the `customer_survey` data frame in half row-wise to illustrate unions:
 
@@ -391,8 +393,8 @@ If you have some variables in one table that don't occur in the other table, you
 # Create a data frame with the original data
 # and space for the forecast details
 use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh, 
-                    Forecast = NA, Upper_80 = NA, 
-                    Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
+    Forecast = NA, Upper_80 = NA, 
+    Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
 
 # Create a data frame for the forecast details
 # with a column for the original data
@@ -434,8 +436,7 @@ customers_back_together = sqldf("
     FROM customers_left_half A
     JOIN 
     customers_right_half B
-    ON A.customer_id = B.customer_id
-")
+    ON A.customer_id = B.customer_id")
 ```    
 
 As in the last recipe, here's a visualization and function summary for unions and concatenated tables:  
@@ -465,17 +466,23 @@ require(dplyr)
 Need to subset on a couple of conditions? Use `filter`, stringing together criteria using `&` for AND and `|` (pipe) for OR:
 
 ```
-# Subset the data to only those customers who agree or strongly agree with the survey question
+# Subset the data to only those customers who agree or strongly agree 
+# with the survey question
 customers_marketing = filter(customer_survey, strongly_agree == 1 | agree == 1)
 
-# Subset the data to customers who are Californians over age 64 who have spent at 
-# least $200 OR Oregonians of any age who have spent more than $500
+# Subset the data to customers who are Californians over age 64 who have spent 
+# at least $200 OR Oregonians of any age who have spent more than $500
 customers_CA_65_200_OR_500 = filter(customer_survey, state == "California" &
   customer_age >= 65 & customer_purchases >= 200 | state == "Oregon" &
   customer_purchases > 500)
 ```
 
-Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some "regular expression" type of access to make selection of columns from a large dataset more managable:
+You can use regular expressions in filtering with the `grepl` function:
+```
+customers_in_lake_cities = filter(customer_survey, grepl('lake', tolower(city)))
+```
+
+Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some built-in "regular expression" type of access to make selection of columns from a large dataset more managable:
 
 ```
 # Subset the data to only columns with names that start with "customer"
@@ -494,7 +501,7 @@ customers_excluded = select(customer_survey, -starts_with("customer"))
 
 Definitely explore the vignettes in the `dplyr` package (start with `vignette("introduction", package="dplyr"))`, as they provide a wide variety of examples and use cases—there's almost certainly going to be an example of what you need to do there.
 
-i> RStudio has a great `dplyr` cheat sheet you can download [here](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf).
+I> RStudio has a great `dplyr` cheat sheet you can download [here](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf).
 
 
 ## Creating a Derived Column
@@ -506,7 +513,6 @@ Both of these commands create a new column that combine city and the state names
 ```
 customer_survey$Location = paste(city, stabbr, sep=", ")
 # vs
-require(dplyr)
 customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", "))
 ```
 
@@ -519,26 +525,6 @@ customer_survey$proportion = customer_survey$customer_purchases /
 customer_survey = mutate(customer_survey, proportion2 = customer_purchases / 
   sum(customer_purchases))
 ```
-
-
-A> #### Stringing it Together in `dplyr`
-A>  
-A> A potentially useful additional feature of `dplyr` is that you can string together a bunch of functions with the `%>%` ("then") operator, a feature that is growing in popularity across a variety of R packages.
-A>  
-A> ~~~~~~~~  
-A> customer_500_dplyred = customer_survey %>%  
-A>     filter(customer_purchases >= 500) %>%   
-A>     group_by(state) %>%  
-A>     summarize(count_purchases = n(),  
-A>               mean_purchases = mean(customer_purchases, na.rm=T),  
-A>               sd_purchases = sd(customer_purchases, na.rm=T),  
-A>               sum_est = sum(est)) %>%  
-A>     mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
-A> ~~~~~~~~  
-A>   
-A> This is also a good example where `mutate` is more convenient than traditional assignment.  
-A> 
-A> However, not everyone is enamored with this new "piping" trend; when you need to provide verbose code or examples for beginners to understand the processing steps it [may not be the best coding choice](http://www.fromthebottomoftheheap.net/2015/06/03/my-aversion-to-pipes/). As with all "coding standards" advice, do as you think best for you and your context. 
 
 
 ## Peeking at the outcome with `dplyr`
@@ -706,4 +692,24 @@ dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
 8 Nonverbal Right   Pre 10.47219
 ```
 
-And so on. We'll explore summarization with `dplyr` in the next chapter; it tends to be easier to use than summaries obtained via `dcast` and sets you up for subsequent analyses a little better.  
+## Piping with `%>%`: Stringing it together in `dplyr`
+  
+A useful additional feature of `dplyr` is that you can string together a bunch of functions with the `%>%` ("then") operator, a feature that is growing in popularity across a variety of R packages. So, if you want to filter, group, do some summary stats, create a new column, etc., you can pipe them all together instead of nesting them in parentheses or over multiple lines. 
+
+```
+# For customers who've purchased more than $500, get count, mean, 
+# sd, and sum for each state, and calculate the coeffient of
+# variation, rounded to 2 decimal places
+customer_500_piped = customer_survey %>%  
+    filter(customer_purchases >= 500) %>%   
+    group_by(state) %>%  
+    summarize(count_purchases = n(),  
+       mean_purchases = mean(customer_purchases, na.rm=T),  
+       sd_purchases = sd(customer_purchases, na.rm=T),  
+       sum_est = sum(est)) %>%  
+    mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
+``
+
+This is also a good example where `mutate` is more convenient than traditional assignment.  
+ 
+However, not everyone is enamored with this new "piping" trend; when you need to provide verbose code or examples for beginners to understand the processing steps it [may not be the best coding choice](http://www.fromthebottomoftheheap.net/2015/06/03/my-aversion-to-pipes/). As with all "coding standards" advice, do as you think best for you and your context. 
