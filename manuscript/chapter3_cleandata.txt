@@ -181,9 +181,13 @@ The use of `fixed = TRUE` option above tells `gsub` to use exact matching; the d
 
 ### Missing data: Converting dummy NA values
 
-Sometimes, you’ll find values or placeholders where no data should be; for example, `-99` and `9999` are common among older data sets to represent missing values (represented by `NA` in R). To fix this, you can use `gsub`, but you could also do something like:
+Sometimes, you’ll find values or placeholders where no data should be; for example, `-99` and `9999` are common among older data sets to represent missing values (represented by `NA` in R). To fix this, you can use `gsub`, but you could use assignment to ensure the values don't go from numeric to character:
 
 ```
+# This will work 
+my_data$my_variable = as.numeric(gsub("9999", NA, my_data$my_variable))
+
+# But this is better
 my_data$my_variable[my_data$my_variable==9999] = NA 
 ```
 
