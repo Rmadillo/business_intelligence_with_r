@@ -712,7 +712,7 @@ customer_500_piped = customer_survey %>%
        sd_purchases = sd(customer_purchases, na.rm=T),  
        sum_est = sum(est)) %>%  
     mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
-``
+```
 
 This is also a good example where `mutate` is more convenient than traditional assignment.  
  
