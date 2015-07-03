@@ -7,7 +7,7 @@
 
 ## Effect sizes: Overview
 
-STUFF HERE ABOUT EFFECT SIZES
+Effect sizes provide the results that business users *really* want to know—not just whether two groups are different or the same, but how different or similar are they? The use of effect sizes should become standard alongside summary plots and statistics whenever contrasts or comparisons are being made. Remember: "the mean alone means little."
 
 ***Differences in tendency*** 
 
@@ -117,7 +117,7 @@ boot.ci(results, type="bca")
 ```
 
 
-## Effect sizes: Measuring differences between groups
+## Effect sizes: Measuring *differences* between groups
 
 Perhaps the most common question an analyst will get from a business decision maker is whether or not there is a difference between groupings. There are a lot of ways to answer that, of course, but the bread-and-butter answer should always be based on effect sizes.
 
@@ -141,6 +141,8 @@ casual_notworkingday = filter(bike_share_daily, workingday == "No" &
 casual_notworking_Spring =  filter(notworkingday, season == "Spring")
 casual_notworking_Fall =  filter(notworkingday, season == "Fall")
 ```
+
+### Basic differences
 
 For a difference between two proportions, we'll look at the effect of it being a working day on casual bike use in 2011 versus 2012:
 
@@ -189,6 +191,37 @@ casual_notworkingday_median$estimate; casual_notworkingday_median$conf.int
 684.0001
 399 997
 ```
+
+We also often want to know whether two groups differ in terms of their variances, i.e., is one group more variable than another? If both groups are normally distributed, `var.test` is appropriate to obtain the variance ratio:
+
+```
+var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$estimate
+
+ratio of variances
+          1.105087
+
+var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$conf.int
+
+0.6498105 1.8817627
+```
+
+More typically, our groups are not normally distributed, and when that's the case, the `var.test` will give misleading results because it is very sensitive to departures from normality. The `asymp.test` function in the `asympTest` package provides a suitable alternative:
+
+```
+asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
+  parameter = "dVar")$estimate
+
+difference of variances
+               58696.86
+
+asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
+  parameter = "dVar")$conf.int
+
+-197619.6  315013.4
+```
+
+
+### Standardized Differences
 
 While not always easily explained to business users, standardized effect sizes are often very useful for analysts. When comparing means or medians, Hedge's *g* can be used for most cases (as it is an improvement on Cohen's *d*, its more famous predecessor), while a robust version of Cohen's *d* can be acquired by setting the `effect.type` option to `"akp.robust.d"`.
 
@@ -251,37 +284,8 @@ delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
 
 ![delta gr ES plot](/images/0801OS_02_15.png)
 
-We also often want to know whether two groups differ in terms of their variances, i.e., is one group more variable than another? If both groups are normally distributed, `var.test` is appropriate to obtain the variance ratio:
 
-```
-var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$estimate
-
-ratio of variances
-          1.105087
-
-var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$conf.int
-
-0.6498105 1.8817627
-```
-
-More typically, our groups are not normally distributed, and when that's the case, the `var.test` will give misleading results because it is very sensitive to departures from normality. The `asymp.test` function in the `asympTest` package provides a suitable alternative:
-
-```
-asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
-  parameter = "dVar")$estimate
-
-difference of variances
-               58696.86
-
-asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
-  parameter = "dVar")$conf.int
-
--197619.6  315013.4
-```
-
-Effect sizes provide the results that business users really want to know—not just whether two groups are different, but how different are they? These should become standard results alongside summary plots and statistics whenever contrasts are being made.
-
-## What are the chances? Determining the probability of a difference
+### Determining the probability of a difference
 
 The rapid increase in computing power in recent years has put previously-intractable analytics tools at anyone's fingertips. Markov-chain Monte Carlo (MCMC) is one of the breakout stars of this revolution, which provides the mathematical basis for the resurgence of interest in Bayesian methods.
 
@@ -391,9 +395,11 @@ Finally, you can review the MCMC diagnostics for any of these functions by using
 diagnostics(casual_notworkingday_mean_bayes) # not shown
 ```
 
-## Effect sizes: Measuring relationships between groups
+## Effect sizes: Measuring *relationships* between groups
 
 The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary tool here, although a wide variety of alternative approaches exist.
+
+## Associations between numeric variables (correlation)
 
 Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho (&rho;), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this recipe.
 
@@ -455,28 +461,6 @@ ar_tm-count      0.39       0.39     0.43       0.47      0.47 0
 
 ```
 
-### Associations between categorical variables
-
-Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore “categorical correlation” with the `Aspirin` data from the `abd` package (`?Aspirin`). The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
-
-```
-require(epitools)
-require(psych)
-data(Aspirin, package="abd")
-oddsratio(table(Aspirin))$measure
-
-         odds ratio with 95% C.I.
-treatment  estimate     lower    upper
-  Aspirin 1.0000000        NA       NA
-  Placebo 0.9913098 0.9187395 1.069632
-
-Yule(table(Aspirin))
-
--0.004352794
-```
-
-For categorical data, association coefficients provide the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users. Cohen’s &kappa; is probably the best tool when you want to compare agreement instead of association (see recipe for &kappa; below).
-
 ### Bootstrapping BCa CIs for non-parametric correlation
 
 If you want to use the boot package to calculate BCa confidence intervals on the Spearman or Kendell correlation coefficients, here’s how to do it for each method:
@@ -494,6 +478,30 @@ boot.ci(rt_boot, type="bca")$bca[4:5]
 
 0.3931281 0.4665541
 ```
+
+### Determining the probability of a correlation
+
+We saw the Bayesian approach to difference-based effect size calculations earlier in this chapter; here's the approach for correlation:
+
+```
+require(BayesianFirstAid)
+bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
+
+
+    Bayesian First Aid Pearson's Correlation Coefficient Test
+
+data: bike_use_atemp$\textdollar$air_temp and bike_use_atemp$count (n = 731)
+Estimated correlation:
+  0.63
+95% credible interval:
+  0.59 0.68
+The correlation is more than 0 by a probability of >0.999
+and less than 0 by a probability of <0.001
+
+plot(atemp_bike_cor_bayes)
+```
+
+![Bayes cor](/images/0815OS_02_18.png)
 
 ### Partial correlations
 
@@ -546,6 +554,28 @@ polyserial(math_score, poly_math$enjoy)
 0.2664201
 ```
 
+### Associations between categorical variables (odds ratio and Yule's Q)
+
+Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore “categorical correlation” with the `Aspirin` data from the `abd` package (`?Aspirin`). The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
+
+```
+require(epitools)
+require(psych)
+data(Aspirin, package="abd")
+oddsratio(table(Aspirin))$measure
+
+         odds ratio with 95% C.I.
+treatment  estimate     lower    upper
+  Aspirin 1.0000000        NA       NA
+  Placebo 0.9913098 0.9187395 1.069632
+
+Yule(table(Aspirin))
+
+-0.004352794
+```
+
+For categorical data, association coefficients provide the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users. Cohen’s &kappa; is probably the best tool when you want to compare agreement instead of association (see recipe for &kappa; below).
+
 ### Cohen’s kappa for comparisons of agreement
 
 Ratings on ordinal scales require special treatment, since they aren’t true numbers, and comparisons of agreement makes it even more necessary to choose a statistically-appropriate tool. Cohen’s &kappa; (`cohen.kappa` in the `psych` package) provides a way to compare ordinal ratings, e.g., a doctor’s ratings for a set of patients potentially eligible for care management as compared with the same output from a predictive model:
@@ -594,26 +624,3 @@ x1f              no     unsure        yes
 
   ```
   
-### Bayesian correlation
-
-We saw the Bayesian approach to difference-based effect size calculations in the previous recipe; here's the approach for correlations:
-
-```
-require(BayesianFirstAid)
-bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
-
-
-    Bayesian First Aid Pearson's Correlation Coefficient Test
-
-data: bike_use_atemp$\textdollar$air_temp and bike_use_atemp$count (n = 731)
-Estimated correlation:
-  0.63
-95% credible interval:
-  0.59 0.68
-The correlation is more than 0 by a probability of >0.999
-and less than 0 by a probability of <0.001
-
-plot(atemp_bike_cor_bayes)
-```
-
-![Bayes cor](/images/0815OS_02_18.png)
