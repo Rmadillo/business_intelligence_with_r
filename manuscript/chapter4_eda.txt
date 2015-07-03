@@ -91,292 +91,6 @@ pairs(Titanic, highlighting=2)
 
 ![mosaic pairs](/images/Ch4_04.png)
 
-## Dealing with Missing Data
-
-### Visualizing missing data
-
-The `VIM` package has some great tools for visualizing missing data patterns. As the bike share data doesn't have any missing values, we'll use a dataset derived from the [Tropical Atmosphere Ocean](http://www.pmel.noaa.gov/tao/) project for this recipe.
-
-```
-require(VIM)
-data(tao)
-summary(tao)
-```
-
-![tao summary](/images/tao_summary_screenshot.png)
-
-You can get an instant numeric and visual summary of missing values across the fields with the `aggr` function:
-
-```
-tao_aggr = aggr(tao)
-tao_aggr
-
- Missings in variables:
-         Variable Count
- Sea.Surface.Temp     3
-         Air.Temp    81
-         Humidity    93
-```
-
-![aggr image](/images/tao_aggr.png)
-
-You can compare missingness across fields with histograms, such as the distribution of missing humidity values by corresponding air temperature:
-
-```
-histMiss(tao[5:6])
-```
-
-![histMiss image](/images/histmiss1.png)
-
-You can flip the variables to see the opposite distribution:
-
-```
-histMiss(tao[c(6,5)])
-```
-
-![histMiss reversed image](/images/histmiss2.png)
-
-You can show the same data in a scatterplot for more details:
-
-```
-marginplot(tao[5:6])
-```
-
-![marginplot image](/images/marginplot.png)
-
-This can be expanded to pairwise visual comparisons with the `marginmatrix` function:
-
-```
-marginmatrix(tao[5:6])
-```
-
-![marginmatrix image](/images/marginmatrix.png)
-
-I> `VIM` also has a separate GUI for interactive/on-the-fly exploration called `VIMGUI`. Even if you prefer coding, it contains a vignette from which these examples are drawn, so it's worth installing to learn more about 
-
-### Imputation for missing values
-
-`VIM` also performs imputation on missing values using a variety of methods. 
-
-hotdeck(x, ord
-_
-var
-=c("Besch","Umsatz"), imp
-_
-var
-=FALSE)
-Listing 2:
-k
--nearest neighbor imputation.
-kNN(x)
-Listing 3: Application of robust iterative model-based imputation.
-irmi(x)
-
-
-## Obtaining Summary Statistics
-
-Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the `psych` package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
-
-It’s important to remember that each type of data can reasonably use only certain kinds of summary statistics. The following table should help when, for example, a decision maker asks you to calculate the mean of an ordinal variable (such as a Likert scale)—just show them this table so you don’t have to go on record as the one who said it was a stupid idea:
-
-[BRING BACK MD TABLE]
-
-
-\* Ratio variables have a "true zero" while interval variables do not (e.g., temperature in °C).
-\** Discrete variables can have means/variances based on non-normal probability distributions (e.g., binomial for proportions, Poisson for counts or rates, etc.), but this should not be confused with an arithmetic mean or variance.
-
-Load the `psych` package and the daily bike share data if they're not already loaded from the previous recipe.
-
-```
-require(psych)
-bike_share_daily=read.table("bike_share_daily.csv", sep=",", header=T)
-```
-
-For numeric variables, the describe and describeBy functions do all the work for you, although you do need to specify which columns are quantitative—or which columns you want summary stats on—or it will return (non-sensically) all of them:
-
-```
-describe(bike_share_daily[10:16]) # not shown
-describeBy(bike_share_daily[10:16], bike_share_daily$holiday)
-
-group: No
-           vars   n    mean      sd median trimmed     mad min  max range skew kurtosis    se
-casual        1 710  841.77  680.53  711.5  739.69  584.14   2 3410  3408 1.27     1.34 25.54
-registered    2 710 3685.33 1553.70 3691.0 3672.14 1695.35  20 6946  6926 0.04    -0.71 58.31
----------------------------------------------------------------------------------------------
-group: Yes
-           vars  n    mean      sd median trimmed     mad min  max range skew kurtosis     se
-casual        1 21 1064.71  860.05    874  965.88  658.27 117 3065  2948 0.88    -0.41 187.68
-registered    2 21 2670.29 1492.86   2549 2604.47 1599.73 573 5172  4599 0.27    -1.26 325.77
-```
-
-The `table` and `prop.table` functions from the `base` package provide the simplest summary stats for categorical and ordinal variables:
-
-```
-table(bike_share_daily$holiday)
-No Yes
-710  21
-
-prop.table(table(bike_share_daily$holiday))
-
-        No        Yes
-0.97127223 0.02872777
-```
-
-There are a variety of approaches and options using these functions.
-
-For example, you can subset the quantitative stats based on factors or conditions:
-
-```
-describeBy(bike_share_daily[14:16], bike_share_daily$season == "Winter") # not shown
-describeBy(bike_share_daily[14:16], bike_share_daily$temp > 0.5) # not shown
-describeBy(bike_share_daily$casual, bike_share_daily$windspeed > 
-  mean(bike_share_daily$windspeed))
-
-group: FALSE
-  vars   n   mean     sd median trimmed    mad min  max range skew kurtosis    se
-1    1 409 914.61 673.18    773  827.61 598.97   9 3410  3401 1.11     0.96 33.29
----------------------------------------------------------------------------------
-group: TRUE
-  vars   n  mean     sd median trimmed   mad min  max range skew kurtosis    se
-1    1 322 763.8 695.26  613.5  642.12 579.7   2 3283  3281  1.5     1.94 38.75
-```
-
-You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums:
-
-```
-table(bike_share_daily[c(3,6:7)]) # not shown
-addmargins(table(bike_share_daily[c(3,6:7)])) # not shown
-prop.table(table(bike_share_daily[c(3,9)]))
-
-        weathersit
-season             1           2           3
-  Winter 0.151846785 0.090287278 0.005471956
-  Spring 0.154582763 0.093023256 0.004103967
-  Summer 0.186046512 0.065663475 0.005471956
-  Fall   0.140902873 0.088919289 0.013679891
-```
-
-Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can create any *n*-way table as a data frame using the `plyr` package's `count` function:
-
-```
-require(plyr)
-count(bike_share_daily[c(3,6:7)])
-
-    season holiday weekday freq
-1  Winter      No       0   27
-2  Winter      No       1   20
-3  Winter      No       2   24
-4  Winter      No       3   25
-…
-```
-
-## Inference on summary statistics
-
-### Confidence intervals
-
-When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are `base` installation functions for most of the ones we typically need:
-
-| Statistic | Data type | Distribution | Function |
-| --------- | --------- | ------------ | -------- |
-| Median | Any | None | `wilcox.test(x, conf.int=TRUE)$conf.int` |
-| Mean| Continuous | Normal, t, “normal enough” | `t.test(x)$conf.int` |
-| Proportion | Percentage | Binomial | `binom.test(x, n)$conf.int` |
-| Count | Count | Poisson | `poisson.test(x)$conf.int` |
-| Rate | Count/*n* | Poisson | `poisson.test(x, n)$conf.int` |
-
-Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the `CO2` dataset that comes with R for simplicity’s sake:
-
-```
-require(boot)
-sd_boot_function = function(x,i){sd(x[i])
-sd_boot = boot(CO2$conc, sd_boot_function, R=10000)
-sd(CO2$conc)
-boot.ci(sd_boot, type="bca")$bca[4:5]
-
-295.9241
-258.8950 333.7344
-```
-
-The BCa method is generally the appropriate calculation unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use `type="norm"`, i.e., use the normal approximation for very small samples that you expect are “normal enough,” realizing that due to sampling error you could be estimating intervals that are wildly incorrect.   
-
-We can also bootstrap confidence intervals for any summary statistic. For example, to get the bootstrapped 75th percentile, run the following:
-
-```
-q75_function = function(x,i){quantile(x[i], probs=0.75)
-q75_boot = boot(CO2$conc, q75_function, R=10000)
-quantile(CO2$conc,0.75)
-boot.ci(q75_boot, type="bca")$bca[4:5]
-
-675
-500 675
-```
-
-### Credible intervals
-
-STUFF ON BCIs here
-
-The single sample functions available to acquire simple CIs as of this writing include:
-
-| Statistic | Data type | Distribution | Function |
-| --------- | --------- | ------------ | -------- |
-| Mean | Continuous | Normal, t, “normal enough” | `bayes.t.test(x)`|
-| Proportion/Percent | Binomial | `bayes.binom.test(x, n)` |
-| Count | Count | Poisson | `bayes.poisson.test(x)` |
-| Rate | Count/Unit | Poisson | `bayes.poisson.test(x, T)` |
-
-
-
-
-### Tolerance intervals
-
-While confidence and credible limits tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% *confidence* interval) and how long you can expect 95% of those trips will take (using a 95% *tolerance* interval). While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. 
-
-Essentially, a good way to remember the difference is that as the sample size approaches the population size, the confidence interval will approach zero, while a tolerance interval will approach the population percentiles.
-
-The `tolerance` package contains functions for estimating tolerance intervals for distributions typically used in most engineering or industrial processes. As an example, assume you have data on commuting time for 40 randomly chosen workdays. The distribution is oddly-shaped, so we’ll use non-parametric tolerance intervals to estimate (at a 95% confidence level) the number of minutes that 75% of commutes will take:
-
-```
-require(tolerance)
-commute_time = c(68, 42, 40, 69, 46, 37, 68, 68, 69, 38, 51, 36, 50, 37, 41, 
-  68, 59, 65, 67, 42, 67, 62, 48, 52, 52, 44, 65, 65, 46, 67, 62, 66, 43, 58, 
-  45, 65, 60, 55, 48, 46)
-commute_time_npti = nptol.int(commute_time, alpha=0.05, P=0.75, side=2)
-commute_time_npti
-
-  alpha    P 2-sided.lower 2-sided.upper
-1  0.05 0.75            37            68
-```
-
-You can also obtain a graphical summary with the plottout function, which shows a control chart on the left and a histogram on the right:
-
-```
-plottol(commute_time_npti, commute_time, side="two", plot.type="both")
-```
-
-![tolerance interval plot](/images/0815OS_02_05.png)
-
-
-If you plotted both tolerance graphs (plot.type="both"), you'll need to return par to normal manually: 
-
-```
-par(mfrow=c(1,1))
-```
-
-The following table provides a short overview of the primary univariate tolerance interval functions; see `?tolerance` for more details. I recommend you set `alpha` (confidence level), `P` (the coverage proportion, i.e., tolerance interval), and `side` (whether to calculate upper, lower, or both bounds) manually for best results; if not chosen, `alpha` defaults to 0.05, `P` defaults to 0.99, and `side` defaults to 1 (you’ll probably want 2 in many cases). Other settings depend on the distribution used, and each distribution sometimes has several algorithms to choose from, so it’s worth exploring the documentation before diving in here.
-
-
-| Data type | Distribution | Function |
-| --------- | ------------ | -------- |
-| Percent | Binomial | `bintol.int(x, n, m, …)` |
-| Count or Rate | Poisson | `poistol.int(x, n, m, side, …)` |
-| Nonparametric | None | `nptol.int(x, …)` |
-| Continuous | Normal, t, “normal enough” | `normtol.int(x, side, …)`|
-| Continuous | Uniform | `uniftol.int(x, …)` |
-| Lifetime/survival | Exponential | `exptol.int(x, type.2, …)` |
-| Score | Laplace | `laptol.int(x, …)` |
-| Indicies | Gamma | `gamtol.int(x, …)` |
-| Reliability, extreme values | Weibull, Gumbel | `extol.int(x, dist, …)` |
-
 
 ## Plotting univariate distributions
 
@@ -639,3 +353,338 @@ Because the `reshape` package masks functions in `reshape2` and `dplyr`, you sho
 detach("package:likert", unload=TRUE)
 detach("package:reshape", unload=TRUE)
 ```
+
+
+## Obtaining Summary Statistics
+
+Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the `psych` package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
+
+It’s important to remember that each type of data can reasonably use only certain kinds of summary statistics. The following table should help when, for example, a decision maker asks you to calculate the mean of an ordinal variable (such as a Likert scale)—just show them this table so you don’t have to go on record as the one who said it was a stupid idea:
+
+[BRING BACK MD TABLE]
+
+
+\* Ratio variables have a "true zero" while interval variables do not (e.g., temperature in °C).
+\** Discrete variables can have means/variances based on non-normal probability distributions (e.g., binomial for proportions, Poisson for counts or rates, etc.), but this should not be confused with an arithmetic mean or variance.
+
+Load the `psych` package and the daily bike share data if they're not already loaded from the previous recipe.
+
+```
+require(psych)
+bike_share_daily=read.table("bike_share_daily.csv", sep=",", header=T)
+```
+
+For numeric variables, the describe and describeBy functions do all the work for you, although you do need to specify which columns are quantitative—or which columns you want summary stats on—or it will return (non-sensically) all of them:
+
+```
+describe(bike_share_daily[10:16]) # not shown
+describeBy(bike_share_daily[10:16], bike_share_daily$holiday)
+
+group: No
+           vars   n    mean      sd median trimmed     mad min  max range skew kurtosis    se
+casual        1 710  841.77  680.53  711.5  739.69  584.14   2 3410  3408 1.27     1.34 25.54
+registered    2 710 3685.33 1553.70 3691.0 3672.14 1695.35  20 6946  6926 0.04    -0.71 58.31
+---------------------------------------------------------------------------------------------
+group: Yes
+           vars  n    mean      sd median trimmed     mad min  max range skew kurtosis     se
+casual        1 21 1064.71  860.05    874  965.88  658.27 117 3065  2948 0.88    -0.41 187.68
+registered    2 21 2670.29 1492.86   2549 2604.47 1599.73 573 5172  4599 0.27    -1.26 325.77
+```
+
+The `table` and `prop.table` functions from the `base` package provide the simplest summary stats for categorical and ordinal variables:
+
+```
+table(bike_share_daily$holiday)
+No Yes
+710  21
+
+prop.table(table(bike_share_daily$holiday))
+
+        No        Yes
+0.97127223 0.02872777
+```
+
+There are a variety of approaches and options using these functions.
+
+For example, you can subset the quantitative stats based on factors or conditions:
+
+```
+describeBy(bike_share_daily[14:16], bike_share_daily$season == "Winter") # not shown
+describeBy(bike_share_daily[14:16], bike_share_daily$temp > 0.5) # not shown
+describeBy(bike_share_daily$casual, bike_share_daily$windspeed > 
+  mean(bike_share_daily$windspeed))
+
+group: FALSE
+  vars   n   mean     sd median trimmed    mad min  max range skew kurtosis    se
+1    1 409 914.61 673.18    773  827.61 598.97   9 3410  3401 1.11     0.96 33.29
+---------------------------------------------------------------------------------
+group: TRUE
+  vars   n  mean     sd median trimmed   mad min  max range skew kurtosis    se
+1    1 322 763.8 695.26  613.5  642.12 579.7   2 3283  3281  1.5     1.94 38.75
+```
+
+You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums:
+
+```
+table(bike_share_daily[c(3,6:7)]) # not shown
+addmargins(table(bike_share_daily[c(3,6:7)])) # not shown
+prop.table(table(bike_share_daily[c(3,9)]))
+
+        weathersit
+season             1           2           3
+  Winter 0.151846785 0.090287278 0.005471956
+  Spring 0.154582763 0.093023256 0.004103967
+  Summer 0.186046512 0.065663475 0.005471956
+  Fall   0.140902873 0.088919289 0.013679891
+```
+
+Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can create any *n*-way table as a data frame using the `plyr` package's `count` function:
+
+```
+require(plyr)
+count(bike_share_daily[c(3,6:7)])
+
+    season holiday weekday freq
+1  Winter      No       0   27
+2  Winter      No       1   20
+3  Winter      No       2   24
+4  Winter      No       3   25
+…
+```
+
+## Inference on summary statistics
+
+### Confidence intervals
+
+When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are `base` installation functions for most of the ones we typically need:
+
+| Statistic | Data type | Distribution | Function |
+| --------- | --------- | ------------ | -------- |
+| Median | Any | None | `wilcox.test(x, conf.int=TRUE)$conf.int` |
+| Mean| Continuous | Normal, t, “normal enough” | `t.test(x)$conf.int` |
+| Proportion | Percentage | Binomial | `binom.test(x, n)$conf.int` |
+| Count | Count | Poisson | `poisson.test(x)$conf.int` |
+| Rate | Count/*n* | Poisson | `poisson.test(x, n)$conf.int` |
+
+Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the `CO2` dataset that comes with R for simplicity’s sake:
+
+```
+require(boot)
+sd_boot_function = function(x,i){sd(x[i])
+sd_boot = boot(CO2$conc, sd_boot_function, R=10000)
+sd(CO2$conc)
+boot.ci(sd_boot, type="bca")$bca[4:5]
+
+295.9241
+258.8950 333.7344
+```
+
+The BCa method is generally the appropriate calculation unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use `type="norm"`, i.e., use the normal approximation for very small samples that you expect are “normal enough,” realizing that due to sampling error you could be estimating intervals that are wildly incorrect.   
+
+We can also bootstrap confidence intervals for any summary statistic. For example, to get the bootstrapped 75th percentile, run the following:
+
+```
+q75_function = function(x,i){quantile(x[i], probs=0.75)
+q75_boot = boot(CO2$conc, q75_function, R=10000)
+quantile(CO2$conc,0.75)
+boot.ci(q75_boot, type="bca")$bca[4:5]
+
+675
+500 675
+```
+
+### Credible intervals
+
+STUFF ON BCIs here
+
+The single sample functions available to acquire simple CIs as of this writing include:
+
+| Statistic | Data type | Distribution | Function |
+| --------- | --------- | ------------ | -------- |
+| Mean | Continuous | Normal, t, “normal enough” | `bayes.t.test(x)`|
+| Proportion/Percent | Binomial | `bayes.binom.test(x, n)` |
+| Count | Count | Poisson | `bayes.poisson.test(x)` |
+| Rate | Count/Unit | Poisson | `bayes.poisson.test(x, T)` |
+
+
+
+
+### Tolerance intervals
+
+While confidence and credible limits tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% *confidence* interval) and how long you can expect 95% of those trips will take (using a 95% *tolerance* interval). While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. 
+
+Essentially, a good way to remember the difference is that as the sample size approaches the population size, the confidence interval will approach zero, while a tolerance interval will approach the population percentiles.
+
+The `tolerance` package contains functions for estimating tolerance intervals for distributions typically used in most engineering or industrial processes. As an example, assume you have data on commuting time for 40 randomly chosen workdays. The distribution is oddly-shaped, so we’ll use non-parametric tolerance intervals to estimate (at a 95% confidence level) the number of minutes that 75% of commutes will take:
+
+```
+require(tolerance)
+commute_time = c(68, 42, 40, 69, 46, 37, 68, 68, 69, 38, 51, 36, 50, 37, 41, 
+  68, 59, 65, 67, 42, 67, 62, 48, 52, 52, 44, 65, 65, 46, 67, 62, 66, 43, 58, 
+  45, 65, 60, 55, 48, 46)
+commute_time_npti = nptol.int(commute_time, alpha=0.05, P=0.75, side=2)
+commute_time_npti
+
+  alpha    P 2-sided.lower 2-sided.upper
+1  0.05 0.75            37            68
+```
+
+You can also obtain a graphical summary with the plottout function, which shows a control chart on the left and a histogram on the right:
+
+```
+plottol(commute_time_npti, commute_time, side="two", plot.type="both")
+```
+
+![tolerance interval plot](/images/0815OS_02_05.png)
+
+
+If you plotted both tolerance graphs (plot.type="both"), you'll need to return par to normal manually: 
+
+```
+par(mfrow=c(1,1))
+```
+
+The following table provides a short overview of the primary univariate tolerance interval functions; see `?tolerance` for more details. I recommend you set `alpha` (confidence level), `P` (the coverage proportion, i.e., tolerance interval), and `side` (whether to calculate upper, lower, or both bounds) manually for best results; if not chosen, `alpha` defaults to 0.05, `P` defaults to 0.99, and `side` defaults to 1 (you’ll probably want 2 in many cases). Other settings depend on the distribution used, and each distribution sometimes has several algorithms to choose from, so it’s worth exploring the documentation before diving in here.
+
+
+| Data type | Distribution | Function |
+| --------- | ------------ | -------- |
+| Percent | Binomial | `bintol.int(x, n, m, …)` |
+| Count or Rate | Poisson | `poistol.int(x, n, m, side, …)` |
+| Nonparametric | None | `nptol.int(x, …)` |
+| Continuous | Normal, t, “normal enough” | `normtol.int(x, side, …)`|
+| Continuous | Uniform | `uniftol.int(x, …)` |
+| Lifetime/survival | Exponential | `exptol.int(x, type.2, …)` |
+| Score | Laplace | `laptol.int(x, …)` |
+| Indicies | Gamma | `gamtol.int(x, …)` |
+| Reliability, extreme values | Weibull, Gumbel | `extol.int(x, dist, …)` |
+
+
+## Dealing with Missing Data
+
+### Visualizing missing data
+
+The `VIM` package has some great tools for visualizing missing data patterns. As the bike share data doesn't have any missing values, we'll use a dataset derived from the [Tropical Atmosphere Ocean](http://www.pmel.noaa.gov/tao/) project for this recipe.
+
+```
+require(VIM)
+data(tao)
+summary(tao)
+```
+
+![tao summary](/images/tao_summary_screenshot.png)
+
+You can get an instant numeric and visual summary of missing values across the fields with the `aggr` function:
+
+```
+tao_aggr = aggr(tao)
+tao_aggr
+
+ Missings in variables:
+         Variable Count
+ Sea.Surface.Temp     3
+         Air.Temp    81
+         Humidity    93
+```
+
+![aggr image](/images/tao_aggr.png)
+
+You can compare missingness across fields with histograms, such as the distribution of missing humidity values by corresponding air temperature:
+
+```
+histMiss(tao[5:6])
+```
+
+![histMiss image](/images/histmiss1.png)
+
+You can flip the variables to see the opposite distribution:
+
+```
+histMiss(tao[c(6,5)])
+```
+
+![histMiss reversed image](/images/histmiss2.png)
+
+You can show the same data in a scatterplot for more details:
+
+```
+marginplot(tao[5:6])
+```
+
+![marginplot image](/images/marginplot.png)
+
+This can be expanded to pairwise visual comparisons with the `marginmatrix` function:
+
+```
+marginmatrix(tao[4:6])
+```
+
+![marginmatrix image](/images/marginmatrix.png)
+
+I> `VIM` also has a separate GUI for interactive/on-the-fly exploration called `VIMGUI`. Even if you prefer coding, it contains a [vignette](http://cran.r-project.org/web/packages/VIMGUI/vignettes/VIM-Imputation.pdf) from which these examples are drawn, so it's worth installing to learn more about how it works and the many options you can control in the imputation process. 
+
+### Imputation for missing values
+
+`VIM` also performs imputation on missing values using a variety of methods. Generally, replacing values with a constant is a bad idea, as it will bias the distribution (see below for an example). Using a method that accounts for more variables or adds some noise or randomness is often a better approach. But like all things in stats, the best approach will depend on the entire analytics context, from the variables' data types to the business question itself. There is no best way, so proceed with caution whenever you need to impute data. 
+
+The *k*-nearest neighbors approach can provide reasonable imputed values for many situations. Using the same data as above:
+
+```
+# Perform k Nearest Neighbors imputation
+# Result is new dataframe with imputed values
+tao_knn = kNN(tao)
+```
+
+This function appends a set of indicator variables to the data that show TRUE/FALSE for whether a particular observation was imputed. This becomes useful in the subsequent plotting of the results, e.g., for the `Air.Temp` and `Humidity` variables:
+
+```
+marginplot(tao_knn[c(5:6, 13:14)], delimiter="_imp")
+```
+
+Light and dark orange show results imputed for the variable on that axis; black points show observations for which both were imputed. Blue continues to show the distribution of the non-imputed values. 
+
+Viewing a matrix works here as well:
+
+```
+marginmatrix(tao_knn[c(4:6, 12:14)], delimiter="_imp")
+```
+
+There are other methods in `VIM`, including a model-based approach:
+
+```
+# Perform standard Iterative Robust Model-based Imputation
+tao_irmi = irmi(tao)
+
+# Perform robust Iterative Robust Model-based Imputation
+tao_irmi_robust = irmi(tao, robust=TRUE)
+```
+
+By subsetting the results of different methods, you can plot their densities to see how each approach might influence subsequent analysis. In addition to the original data and the three methods above, we'll add a mean imputation to show why a constant can be a bad choice for imputation.
+
+```
+# Create a mean-imputed air temp variable
+tao$tao_airtemp_mean = ifelse(is.na(tao$Air.Temp), tao_airtemp_mean, 
+    tao$Air.Temp)
+
+# Make a data frame of each air temp result
+tao_compare_airtemp = data.frame(tao=tao[,5], tao_knn=tao_knn[,5], 
+    tao_irmi=tao_irmi[,5], tao_irmi_robust=tao_irmi_robust[,5], mean=tao[,9])
+
+# Melt the various air temp results into a long data frame
+require(reshape2)
+tao_compare_melt = melt(tao_compare_airtemp, value.name="Air.Temp")
+
+# Plot density histograms of each option and 
+# add black dotted line to emphasize the original data
+ggplot(tao_compare_melt, aes(Air.Temp, color=variable)) +
+    geom_density(lwd=1.25) + 
+    geom_density(data=subset(tao_compare_melt, variable=="tao"), 
+        aes(Air.Temp), lty=3, lwd=1.5, color="black") +
+    theme_minimal()
+```
+
+![imputed results](/images/imputed_results.png)
+
+I> #### More imputation in R: other packages
+I> 
+I> Since imputation is a complex subject, there are of course a lot of different R packages to do it; see the *Imputation* section of the CRAN Task View [Official Statistics & Survey Methodology](http://cran.r-project.org/web/views/OfficialStatistics.html) for a short overview of those packages and their approaches.
