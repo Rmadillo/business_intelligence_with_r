@@ -221,7 +221,7 @@ asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
 ```
 
 
-### Standardized Differences
+### Standardized differences
 
 While not always easily explained to business users, standardized effect sizes are often very useful for analysts. When comparing means or medians, Hedge's *g* can be used for most cases (as it is an improvement on Cohen's *d*, its more famous predecessor), while a robust version of Cohen's *d* can be acquired by setting the `effect.type` option to `"akp.robust.d"`.
 
@@ -399,7 +399,7 @@ diagnostics(casual_notworkingday_mean_bayes) # not shown
 
 The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary tool here, although a wide variety of alternative approaches exist.
 
-## Associations between numeric variables (correlation)
+### Associations between numeric variables (correlation)
 
 Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho (&rho;), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this recipe.
 
