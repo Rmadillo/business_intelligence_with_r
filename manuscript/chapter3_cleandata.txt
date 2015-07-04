@@ -189,9 +189,11 @@ my_data$my_variable[my_data$my_variable==9999] = NA
 It’s also useful to remember to use `na.rm=TRUE` when including data with NA values in calls to many base installation functions (e.g., `mean`), otherwise R will return `NA` or throw an error. 
 
 ```
+# This won't work
 mean(customers$customer_age)
 [1] NA
 
+# This will
 mean(customers$customer_age, na.rm=TRUE)
 [1] 53.42279
 ```
@@ -299,7 +301,7 @@ customer_survey = left_join(customer_regions, survey, by =
   c("customer_id" = "customer_id"))
 ```
 
-The base package's `merge` function is the old standby, but is considerably slower than `dplyr`, and the type of join is implied by the all option, which reduces code clarity.
+The base package's `merge` function is the old standby, but is considerably slower than `dplyr`, and the type of join is implied by the `all` option, which reduces code clarity.
 
 ```
 customer_locations = merge(customers, zipcodes, by.x = "customer_zip", 
@@ -362,7 +364,7 @@ You can merge large files with `data.tables`, but at the time of this writing, t
 
 Concatenating two tables can be handled two ways: via `sqldf` or through R's native binding functions. 
 
-It's often easier just to use the native R functions if you already have the two tables ready to concatenate: `rbind` for stacking and `cbind` for concatenating sideways. "Being ready" means that the columns are identically named, and that there are the same number of columns in each table. The `sqldf` approach is best when you're pulling specific columns from each table to stack.  
+It's often easier just to use the native R functions if you already have the two tables ready to concatenate: `rbind` for stacking and `cbind` for concatenating sideways. "Being ready" means that the columns are identically named, and that there are the same number of columns in each table. The `sqldf` approach is best when you're pulling specific columns from each table to stack into a single data frame.  
 
 We'll split the `customer_survey` data frame in half row-wise to illustrate unions:
 
@@ -445,9 +447,8 @@ As in the last recipe, here's a visualization and function summary for unions an
 | ------------ | ------------- | ------- | ----- |
 | Union | ![union](/images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
 | Semi-union | ![semi union](/images/rbind_semi_union.png) | *see above* | *see below*\* |
-| Concatenate | ![concat](/images/cbind.png) | `cbind(A, B)` | *n/a* |
-| | | `data.frame(A, B)` | *n/a* |
-| | | *n/a* | `SELECT * FROM A JOIN B ON A.key = B.key` |
+| Concatenate | ![concat](/images/cbind.png) | `data.frame(A, B)` | `SELECT * FROM A JOIN B ON A.key = B.key` |
+| | | `cbind(A, B)`|  |
 
 \* Use `UNION` to bind the two tables, but you'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
 
@@ -462,7 +463,7 @@ We'll use the same fake data generated previously to illustrate filtering (subse
 require(dplyr)
 ```
 
-Need to subset on a couple of conditions? Use `filter`, stringing together criteria using `&` for AND and `|` (pipe) for OR:
+Need to subset on a couple of conditions? Use `filter`, using `&` for AND and `|` (pipe) for OR:
 
 ```
 # Subset the data to only those customers who agree or strongly agree 
