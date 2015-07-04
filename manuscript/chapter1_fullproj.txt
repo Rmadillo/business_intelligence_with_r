@@ -13,7 +13,7 @@ Essentially, the technical part of the typical BI workflow is
 
 This chapter shows how simple it can be do some advanced analytics in R, working through each of these six steps.
 
-## The Analytics Problem
+## The analytics problem
 
 The data we'll use in this chapter contains 2+ million records of minute-scale power consumption in a single household for about 47 months, collected by Electricité de France and archived at the UCI Machine Learning Repository. The data set's page can be accessed [here](https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption) for more details, but for convience, the attributes of this dataset are as follows:
 
@@ -77,7 +77,7 @@ require(dygraphs)
 ```
 
 
-## Acquire Data
+## Acquire data
 
 
 Download the data from a zipped flat file (semi-colon delimted .txt format) on the UCI Machine Learning Repository:
@@ -96,7 +96,7 @@ power = read.table("Data/household_power_consumption.txt", sep=";", header=T,
 ```
 
 
-## Wrangling Data
+## Wrangling data
 
 We'll look at the structure of the data to see what's been read in:
 
@@ -233,7 +233,7 @@ ggsave("Results/total_use_plot.png", width=6, height=4, dpi=600, units="in")
 We can see clear patterns in the data—higher in the winter and lower in the summer. 
 
 
-### Forecast Total Usage
+### Run forecasting model
 
 Now we want to forecast total use for the next six months. We'll create the model with the automated `forecast` function from the `forecast` package, then plot the results and view the model itself. 
 
@@ -275,7 +275,7 @@ dev.off()
 
 With the forecast summary and plot we have the essential pieces for addressing the problem. Now we need to create a "report" for decision-making; in this case, we'll again keep it simple and just produce an interactive browser app of the monthly trends and forecast results. 
 
-### Create an Interactive .html Plot
+### Create an interactive .html plot
 
 ```
 # Create a data frame with the original data
@@ -318,7 +318,7 @@ Opening the `energy_use_prediction_widget.html` from the Reports folder shows us
 ![energy widget](/images/energy_widget_screenshot.png)
 
 
-## Documenting the Project
+## Documenting the project
 
 I like to have a script window (`.R`) and an R Markdown (.`Rmd`) window open at the same time when working on projects; once I have the code the way I want it, I transfer that to the `.Rmd` file if I intend to include it in any data/reporting products. When I have steps or results and want to jot down my rationale for the methods I'm using, interpretations and ideas for future use, and so on, I do that in an `.Rmd` file as well. At the end, I aim for an `.Rmd` file that will allow another user to reproduce the entire analysis and have an understanding of why I chose certain methods or came to the conclusions I report. For longer analyses, this may require a "make" file type of setup (see Appendix 1). 
 
