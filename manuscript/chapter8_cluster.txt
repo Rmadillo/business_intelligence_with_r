@@ -21,7 +21,9 @@ OUTLIERS
 
 ASSOCIATION
  
-## Mapping multivariate relationships with non-metric multidimensional scaling (nMDS) and PCA
+## Mapping multivariate relationships
+
+### Non-metric multidimensional scaling (nMDS)
 
 Non-metric multidimensional scaling (nMDS) is a useful way to identify groups, outliers, and influential variables in multivariate space. In essence, nMDS collapses multiple dimensions into two or three so that relationships based on multivariate proximity can be visualized. nMDS models a similarity matrix in low dimensional space in much the same way as a map can be created from scattered GPS coordinates.
 
@@ -165,7 +167,7 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n",
 
 While technically any number of contours can be plotted, in practice more than two renders the plot essentially unreadable.
 
-## Principal Components Analysis (PCA)
+### Principal Components Analysis (PCA)
 
 PCA is often used as an exploratory technique in similar ways to nMDS, and in some cases where your data have similar scales and there are linear combinations between the variables, it can sometimes prove more powerful. If the assumptions can be justified, PCA has the added benefit of being able to provide dimension reduction through linear combinations of the original variables, in which case it can be used as input to other tools, such as regression.
 
@@ -225,7 +227,7 @@ ggplot(variances, aes(PCs, var_cumsum)) +
 
 ![pca variance](/images/0815OS_05_08.png)
 
-## nMDS for Categories: Correspondence Analysis
+### nMDS for Categories: Correspondence Analysis
 
 Correspondence analysis (CA) is a special case of nMDS, serving essentially the same purpose for categorical variables. It's very useful for visualizing relationships within contingency tables, particularly when mosaic plots are too noisy. There are several packages that can perform CA, but the aptly named `ca` package provides a good, simple way to do it. We'll use the `smoke` dataset built into `ca`, which is a fake dataset on smoking habits (none, light, medium, heavy) among senior managers (SM), junior managers (JM), senior employees (SE), junior employees (JE), and secretaries (SC).
 
@@ -333,6 +335,30 @@ draw.dendrogram3d(banks_hclust, banks_pos, labels=banks$\textdollar$Numero,
 
 ![neatmap nmds hclust](/images/0815OS_05_10.png)
 
+## How to partition the results of a hierarchical cluster analysis
+
+The `cutree` function will cut a hierarchical cluster dendrogram into a user-supplied number of groups, which can be useful when combined with the results of a `clusGap`-based PAM or kMeans analysis. That analysis, above, suggested that two clusters is the best (mathematical) solution, so we’ll continue to use k=2 here. Note that since it is cutting the tree based on the clustering method’s distance values, results from `cutree` may not match the clusters obtained with `pam` or `kmeans`.
+
+```
+bank_clusters = cutree(banks_hclust, k=2)
+table(bank_clusters)
+aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
+
+bank_clusters
+ 1  2
+62  4
+
+  cluster      R1      R2      R3     R4      R5      R6      R7      R8       R9
+1       1 0.39265 0.26210 0.40725 0.0203  0.0042  0.1002  0.0044 0.87650  0.00955
+2       2 0.36585 0.23295 0.38455 0.0152 -0.0380 -0.9390 -0.0397 1.30815 -0.01630
+
+plot(banks_hclust, hang=-1, labels=paste(banks$\textdollar$Banco, banks$\textdollar$Numero, sep="-"), cex=0.9)
+rect.hclust(banks_hclust, k=2)
+```
+
+![rect hclust](/images/0815OS_05_14.png)
+
+
 ## Identifying and describing group membership with kMeans and PAM
 
 kMeans and Partitioning Around Medoids (PAM) are two methods that will divide your observations into {k groups. kMeans works with quantitative data only, and can be susceptible to outliers, while PAM works with both quantitative as well as categorical data. As medoids are simply the “most representative” member of a cluster, outliers don’t really affect PAM. As a result, it is a more robust version of kMeans. If you have a large data set, look at the `clara` package, which performs PAM by iteratively sampling the data to speed up analysis time.
@@ -430,28 +456,6 @@ ggplot(banks_gap_df, aes(x=1:nrow(banks_gap_df))) +
 
 ![bootstrapped clusters](/images/0815OS_05_13.png)
 
-## How to partition the results of a hierarchical cluster analysis
-
-The `cutree` function will cut a hierarchical cluster dendrogram into a user-supplied number of groups, which can be useful when combined with the results of a `clusGap`-based PAM or kMeans analysis. That analysis, above, suggested that two clusters is the best (mathematical) solution, so we’ll continue to use k=2 here. Note that since it is cutting the tree based on the clustering method’s distance values, results from `cutree` may not match the clusters obtained with `pam` or `kmeans`.
-
-```
-bank_clusters = cutree(banks_hclust, k=2)
-table(bank_clusters)
-aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
-
-bank_clusters
- 1  2
-62  4
-
-  cluster      R1      R2      R3     R4      R5      R6      R7      R8       R9
-1       1 0.39265 0.26210 0.40725 0.0203  0.0042  0.1002  0.0044 0.87650  0.00955
-2       2 0.36585 0.23295 0.38455 0.0152 -0.0380 -0.9390 -0.0397 1.30815 -0.01630
-
-plot(banks_hclust, hang=-1, labels=paste(banks$\textdollar$Banco, banks$\textdollar$Numero, sep="-"), cex=0.9)
-rect.hclust(banks_hclust, k=2)
-```
-
-![rect hclust](/images/0815OS_05_14.png)
 
 ## Determining optimal numbers of groups with model-based clustering
 
@@ -493,7 +497,7 @@ Clustering table:
 ```
 
 
-How it works text
+
 
 
 
