@@ -14,7 +14,7 @@ MENTION BUBBLECHARTS
 
 Visualizing multidimensional data is difficult to do in two dimensions. Heatmaps can provide an extra dimension or two via color scale and/or intensity, while parallel coordinates lays out all of your variables as a series of 1-dimensional axes. These approaches shouldn’t substitute for a set of univariate displayes of the data (e.g., as a set of density plots presented in facets, as seen in the Plotting univariate data recipe in Chapter 4), but they’re a great additional tool you can use when exploring the dimensions of your data. Further, interactive versions of these two plots (later this chapter) can be great tools for decision makers, and exploring layout and views with static versions before creating interactive ones can save time later.
 
-## Heatmaps
+### Heatmaps
 
 In this recipe, we’ll return to the bike share data and use ggplot2 and to create a heatmap.
 
@@ -103,7 +103,7 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
 
 ![pcp boxplots](/images/0815OS_04_03.png)
 
-### Peeking at multivariate data with dplyr and a bubblechart
+### Peeking at multivariate data with `dplyr` and a bubblechart
 
 In Chapter 3, we used `dplyr` to string together commands with the `%>%` ("then") operator to do some grouping and summarization to create a new dataframe. The following code performs essentially the same operations as we saw in Chapter 3, but outputs it to a `ggplot2` bubblechart instead of a dataframe:
 
@@ -160,7 +160,7 @@ Probably the hardest part of making simple maps in R can just be getting set up.
 
 Since there are different ways to (simply) do mapping in R, I've placed the package loading within the steps below instead of here, so you can see which package is needed for which step.
 
-## Basic point maps
+### Basic point maps
 
 Creating a map with point-location data plotted on it is deceptively simple with the maps package. To plot this packages example data of ground level ozone over states and counties in southern New England:
 
@@ -229,7 +229,7 @@ As you can see from the first example, for a simple point map all you need is lo
 
 But both of these approaches assume that the map boundaries and scale you need are available in the package(s) you're using, of course. If you understand the geographic projection problem—how to fit a curved surface to a flat plot—you'll be able to navigate the creation of maps in other spatial packages in ways that ensure the points and the real world line up correctly. If not... you either have to learn a variety of sometimes-contradictory packages in R and their various approaches as well as how they work together, or (the better option) you can just use a tool better suited to spatial analyses.
 
-### Chloropleth mapping with the American Community Survey
+### Chloropleth mapping with the *American Community Survey*
 
 If you're fortunate enough to need to map American Community Survey (ACS) data, `choroplethr` connects directly to it via the `acs` package. You'll need to acquire a key for the ACS API (http://www.census.gov/data/developers/about/terms-of-service.html) before you begin, but that key will be emailed to you within a few minutes of requesting it. And then you can make one-line maps directly from the ACS tables:
 
