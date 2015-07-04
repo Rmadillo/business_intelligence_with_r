@@ -31,7 +31,7 @@ There are a wide variety of packages and functions to import data from files, bu
 |  | `sqldf("SQL QUERY", dbname="database", ...)` | sqldf |
 
 
-## Working with Files
+## Working with files
 
 ### Reading flat files from disk or the web
 
@@ -276,7 +276,7 @@ enron = stream_in(file("enron.json"))
 As above, each variable in the data frame is in `chr` format, so you'll have to convert to other data types where relevant (e.g., the `date` column). 
 
 
-## Working with Databases
+## Working with databases
 
 ### Connecting to a database
 
@@ -561,7 +561,7 @@ agency_row_count = sqldf("SELECT
 It's worth pointing out that if your data fits in memory, there usually isn't need for a database; merging and manipulation can occur inside R—recipes in the next chapter explore ways to do that.
 
 
-## Getting Data from the Web
+## Getting data from the web
 
 ### Working through a proxy
 
@@ -669,7 +669,7 @@ tx_county_pops = data.frame(tx_pops_acs@estimate)
 We'll see more use of the `acs` package in the *Maps* section of Chapter 7. 
 
 
-## Creating Fake Data to Test Code
+## Creating fake data to test code
 
 Creating fake data is useful when you want to test how code will work before doing it "for real" on larger, more complicated datasets. We'll create a few fake dataframes in this recipe as both an example as how to do it, as well as for use in other recipes in this book.  
 
@@ -731,7 +731,7 @@ Finally, Table D takes advantage of R's built-in data from the `datasets` packag
 I> `wakefield` is a new R package at the time of this writing that will generate random datasets for you. In addition to the random data frame generation, it also has a nice function to visualize the distribution of NAs in a data frame. Check out [its GitHub site](https://github.com/trinker/wakefield) for more info.
 
 
-## Writing Files to Disk
+## Writing files to disk
 
 There is usually no reason to save a dataframe for use outside R in any format other than a flat file: the only way to provide truly reproducible analytics is to ensure everything can be read by any program, language, or platform. 
 
@@ -750,4 +750,3 @@ sink("iris_json.json")
 myjson
 sink()
 ```
-
