@@ -74,7 +74,7 @@ pairs.panels(bike_share_daily[,sapply(bike_share_daily, is.numeric)],
 
 ![pairs.panels](/images/Ch4_03.png)
 
-## Mosaic plots—"Scatterplots" for categorical data
+## Mosaic plots: "Scatterplots" for categorical data
 
 Once you've loaded the `vcd` package, the `pairs` function can also create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object.
 
@@ -219,9 +219,9 @@ ggplot(bike_share_daily, aes(weathersit, fill=season)) +
 
 ![ggplot multi.bar](/images/0815OS_02_09.png)
 
-## What about pie charts?
-
-With apologies to Hunter S. Thompson, if you use pie charts for anything outside of GraphJam, you deserve whatever happens to you.
+A> #### What about pie charts?
+A> 
+A> With apologies to Hunter S. Thompson, if you use pie charts for anything outside of GraphJam, you deserve whatever happens to you.
 
 ## Plotting bivariate and comparative distributions
 
@@ -337,7 +337,7 @@ plot(mathiness)
 
 ![basic likert plot](/images/0815OS_02_13.png)
 
-There's a known bug in `likert` where you have to load the `reshape` package manually (not reshape2) to make the `grouping` option work.
+E> There's a known bug in `likert` where you have to load the `reshape` package manually (not reshape2) to make the `grouping` option work.
 
 ```
 require(reshape)
@@ -355,14 +355,13 @@ detach("package:reshape", unload=TRUE)
 ```
 
 
-## Obtaining Summary Statistics
+## Obtaining summary statistics
 
 Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the `psych` package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
 
 It’s important to remember that each type of data can reasonably use only certain kinds of summary statistics. The following table should help when, for example, a decision maker asks you to calculate the mean of an ordinal variable (such as a Likert scale)—just show them this table so you don’t have to go on record as the one who said it was a stupid idea:
 
 [BRING BACK MD TABLE]
-
 
 \* Ratio variables have a "true zero" while interval variables do not (e.g., temperature in °C).
 \** Discrete variables can have means/variances based on non-normal probability distributions (e.g., binomial for proportions, Poisson for counts or rates, etc.), but this should not be confused with an arithmetic mean or variance.
@@ -560,7 +559,7 @@ The following table provides a short overview of the primary univariate toleranc
 | Reliability, extreme values | Weibull, Gumbel | `extol.int(x, dist, …)` |
 
 
-## Dealing with Missing Data
+## Dealing with missing data
 
 ### Visualizing missing data
 
