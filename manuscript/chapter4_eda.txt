@@ -22,7 +22,7 @@ bike_share_daily = read.table(unz("Bike-Sharing-Dataset.zip", "day.csv"),
 levels(bike_share_daily$season) = c("Winter", "Spring", "Summer", "Fall")
 levels(bike_share_daily$workingday) = c("No", "Yes")
 levels(bike_share_daily$holiday) = c("No", "Yes")
-bike_share_daily$mnth = as.factor(as.numeric(bike_share_daily$mnth))
+
 levels(bike_share_daily$mnth) = c(month.abb)
 levels(bike_share_daily$yr) = c(2011, 2012)
 ```
@@ -422,11 +422,61 @@ group: TRUE
 1    1 322 763.8 695.26  613.5  642.12 579.7   2 3283  3281  1.5     1.94 38.75
 ```
 
-You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums:
+You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums. 
+
+A three-way table:
 
 ```
-table(bike_share_daily[c(3,6:7)]) # not shown
-addmargins(table(bike_share_daily[c(3,6:7)])) # not shown
+table(bike_share_daily[c(3,6:7)]) 
+, , weekday = 0
+
+        holiday
+season   No Yes
+  Winter 27   0
+  Spring 26   0
+  Summer 26   0
+  Fall   26   0
+
+, , weekday = 1
+
+        holiday
+season   No Yes
+  Winter 20   6
+  Spring 24   3
+  Summer 23   3
+  Fall   23   3
+…
+```
+
+A three-way table with marginals:
+
+```
+addmargins(table(bike_share_daily[c(3,6:7)]))
+, , weekday = 0
+
+        holiday
+season    No Yes Sum
+  Winter  27   0  27
+  Spring  26   0  26
+  Summer  26   0  26
+  Fall    26   0  26
+  Sum    105   0 105
+
+, , weekday = 1
+
+        holiday
+season    No Yes Sum
+  Winter  20   6  26
+  Spring  24   3  27
+  Summer  23   3  26
+  Fall    23   3  26
+  Sum     90  15 105
+…
+```
+
+A table of proportions:
+
+```
 prop.table(table(bike_share_daily[c(3,9)]))
 
         weathersit
@@ -437,19 +487,22 @@ season             1           2           3
   Fall   0.140902873 0.088919289 0.013679891
 ```
 
-Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can create any *n*-way table as a data frame using the `plyr` package's `count` function:
+Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can quickly create any *n*-way table as a data frame using `dplyr`:
 
 ```
-require(plyr)
-count(bike_share_daily[c(3,6:7)])
+require(dplyr)
+summarise(group_by(bike_share_daily, season, holiday, weekday), count=n())
+Source: local data frame [37 x 4]
+Groups: season, holiday
 
-    season holiday weekday freq
-1  Winter      No       0   27
-2  Winter      No       1   20
-3  Winter      No       2   24
-4  Winter      No       3   25
+   season holiday weekday count
+1  Winter      No       0    27
+2  Winter      No       1    20
+3  Winter      No       2    24
+4  Winter      No       3    25
 …
 ```
+
 
 ## Inference on summary statistics
 
