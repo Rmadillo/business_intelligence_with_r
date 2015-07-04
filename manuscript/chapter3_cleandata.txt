@@ -7,7 +7,7 @@
 - Reshaping: Transforming a dataframe from wide to long and back again
 
 
-## Understanding Your Data
+## Understanding your data
 
 ### Identifying data types and overall structure
 
@@ -46,7 +46,6 @@ Factors can be ordered or unordered; when created they usually are arranged alph
 
 ```
 levels(customers$customer_gender)
-
 [1] "F"       "M"       "Unknown"
 ```
 
@@ -55,7 +54,6 @@ If you do need to change the order for example, if you want them to display in p
 ```
 customers$customer_gender = ordered(customers$customer_gender, 
     c("Unknown", "F", "M"))
-
 [1] "Unknown" "F"       "M" 
 ```
 
@@ -76,7 +74,6 @@ You can use the `sort` function to see the unique values in order:
 
 ```
 sort(unique(customers$customer_age))
-
  [1] 18 19 21 22 23 24 30 31 32 33 34 35 36 39 40 41
 [17] 42 43 44 45 47 48 49 50 51 54 58 59 60 61 65 66
 [33] 67 68 69 70 71 72 74 76 78 80 81 83 84 85 86 87
@@ -86,7 +83,6 @@ You can see if any rows are duplicated in the data frame with the `duplicated` f
 
 ```
 customers[duplicated(customers),]
-
 [1] customer_id        customer_gender   
 [3] customer_age       customer_purchases
 [5] customer_zip      
@@ -97,7 +93,6 @@ There aren't any, so to illustrate what it shows when it finds a duplicate, we'l
 
 ```
 customers[10001,] = customers[2718,]
-
       customer_id customer_gender customer_age customer_purchases customer_zip
 10001        2718               M           47              75.43        73140
 ```
@@ -457,7 +452,7 @@ As in the last recipe, here's a visualization and function summary for unions an
 \* Use `UNION` to bind the two tables, but you'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
 
 
-## Filtering and Selecting a Dataframe: Subseting Rows and Columns
+## Subsetting: `filter`ing and `select`ing from a dataframe
 
 Even after joining, the dataset we have is rarely the dataset we need to complete a project. The `dplyr` package has a few really useful data manipulation functions that work on data frames just like they do on databases, and tend to be simpler, faster, and more intuitive than comparable `base` installation functions like `merge`, `order`, or `subset`.
 
@@ -508,7 +503,7 @@ Definitely explore the vignettes in the `dplyr` package (start with `vignette("i
 I> RStudio has a great `dplyr` cheat sheet you can download [here](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf).
 
 
-## Creating a Derived Column
+## Creating a derived column
 
 You can create a new column based on other columns using either `dplyr`'s `mutate` function or simply by assignment in `base` R. Both create a new column, but `mutate` can perform slower on large datasets and/or be more awkward to type than simply making a new column in the usual way with `$` and `=`. 
 
@@ -556,7 +551,7 @@ head(mutate(customer_survey, Location = paste(city, state, sep=", "),
 ![image here](/images/head3full.png)
 
 
-## Transforming a Dataframe Between Wide and Long
+## Transforming a dataframe between wide and long
 
 A lot of analysis and plotting functions require that data be organized in *long* format, where the variable of interest is in one column and the id/categorical portions of the data are repeated as necessary in other columns. Then again, other tools need the data in *wide* format, so being able to move between the two formats is essential. The `reshape2` package provides just that ability.  
 
@@ -615,7 +610,7 @@ The important part to remember in melting data is to ensure you've designated th
 I> The `tidyr` package is a new, simpler way to reshape data. At the time of this writing, it can accomplish any simple `melt`/`cast` (called `gather`/`spread`) task. However, more complicated data set transformations can fail in `tidyr`; the current consensus is to keep `reshape2` in the toolbox until `tidyr` is mature enough to accomplish the full suite of transformation needs. A useful cheat sheet on `tidyr` is co-packaged with `dplyr` by RStudio [here](http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf), and a more complete treatment is available [here](http://vita.had.co.nz/papers/tidy-data.html) or by checking out the vignette: `vignette("tidy-data")`.
 
 
-### Reshaping: Crossing Variables with ~ and +
+### Reshaping: Crossing variables with ~ and +
 
 There is tremendous variety in reshaping options using the formula structure in `dcast`. The tilde sign (`~`) separates the variables you want representing the rows (left of the ~) and those you want representing the columns (right of the ~). For example, we can cross phase and the test type in the columns:
 
