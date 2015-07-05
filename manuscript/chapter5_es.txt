@@ -1,13 +1,17 @@
 # Chapter 5: Effect Sizes
 
-- Effect sizes: what you *really* want to know
-- Summary of major effect size statistics
+- Overview
 - Effect sizes: Measuring differences between groups
 - Effect sizes: Measuring relationships between groups
 
-## Effect sizes: Overview
+## Overview
 
-Effect sizes provide the results that business users *really* want to know—not just whether two groups are different or the same, but how different or similar are they? The use of effect sizes should become standard alongside summary plots and statistics whenever contrasts or comparisons are being made. Remember: "the mean alone means little."
+The use of effect sizes has been gaining in popularity in research for the last decade or so, but unfortunately have made little headway into business. But effect sizes provide the results that business users *really* want to know—not just whether two groups are different or the same, but ***how*** different or similar are they? 
+
+The use of effect sizes should become standard alongside summary plots and statistics whenever contrasts or comparisons are being made. Remember: "a mean alone means nothing."
+
+The following tables summarize major effect size statistics by type of effect size (differences in tendency, differences in variation, and relationships), and some packages and functions I've found useful to calculate them. There are a variety of options inside R, of course, but the functions in this chapter should provide most of the essential values you'll need. 
+
 
 ***Differences in tendency*** 
 
@@ -50,8 +54,7 @@ Effect sizes provide the results that business users *really* want to know—not
 | ---- | --------- | ------- | -------- | 
 | | | | | |  
 | Variance ratio | | base | `var.test(...)$estimate`, `var(...).test$conf.int` | 
-| | | | | |  
-| Variance ratio (Bayesian) | | BayesianFirstAid | *not yet implemented* | 
+| | | BayesianFirstAid | *not yet implemented* | 
 | | | | | |  
 | Difference between variances | | asympTest | `asymp.test(...)$estimate`, `asymp(...).test$conf.int` with `parameter="dVar"` | 
 
@@ -62,11 +65,9 @@ Effect sizes provide the results that business users *really* want to know—not
 | Type | Statistic | Package | Function | 
 | ---- | --------- | ------- | -------- | 
 | | | | | |  
-| Correlation (traditional) | Pearson's *r* | base | `cor`, `cor.test(...)$conf.int` |
-| | | | | |  
-| Correlation (Bayesian) | *r* | BayesianFirstAid | `bayes.cor.test` | 
-| | | | | |  
-| Correlation (bootstrapped) | *r* | bootES | `bootES` with `effect.type="r"` |
+| Correlation | Pearson's *r* | base | `cor`, `cor.test(...)$conf.int` |
+| | | BayesianFirstAid | `bayes.cor.test` | 
+| | | bootES | `bootES` with `effect.type="r"` |
 | | | | | |  
 | | Spearman's &rho; | pysch | `cor.ci` with `method="spearman"` |
 | | | | | |  
@@ -82,39 +83,11 @@ Effect sizes provide the results that business users *really* want to know—not
 | | | | | |  
 | Polyserial correlation (numeric/ordinal) | | psych | `polyserial` | 
 | | | | | |  
-| Proportion of variance explained | *R^2^* | boot | *see below* |
-| | | | | |  
 | Odds ratio | OR | psych | `oddsratio` |
 | | | | | |  
 | Standardized odds ratio | Yule's Q | psych | `Yule` |
 | | | | | |  
 | Comparisons of agreement | Cohen's &kappa; | psych | `cohen.kappa` | 
-
-
-
-
-
-code for R^2^ bootstrapped CI from: http://www.statmethods.net/advstats/bootstrapping.html
-
-```
-library(boot)
-# function to obtain R-Squared from the data
-rsq <- function(formula, data, indices) {
-  d <- data[indices,] # allows boot to select sample
-  fit <- lm(formula, data=d)
-  return(summary(fit)$r.square)
-}
-# bootstrapping with 1000 replications
-results <- boot(data=mtcars, statistic=rsq,
-   R=1000, formula=mpg~wt+disp)
-
-# view results
-results
-plot(results)
-
-# get 95% confidence interval
-boot.ci(results, type="bca")
-```
 
 
 ## Effect sizes: Measuring *differences* between groups
@@ -502,6 +475,32 @@ plot(atemp_bike_cor_bayes)
 ```
 
 ![Bayes cor](/images/0815OS_02_18.png)
+
+
+A> #### *R^2^*: Proportion of variance explained 
+A> 
+A> The *R^2^* effect size is simply the correlation coeffient squared, of course, but oddly enough there does not seem to be a built-in function to directly obtain the CIs for it. We can use the `boot` package to create one, thanks to [a function by Rob Kabacoff](http://www.statmethods.net/advstats/bootstrapping.html):
+A> 
+A> ```
+A> library(boot)
+A> rsq <- function(formula, data, indices) {
+A>   d <- data[indices,] # allows boot to select sample
+A>   fit <- lm(formula, data=d)
+A>   return(summary(fit)$r.square)
+A>   }
+A> 
+A> # bootstrap R2 with 10k replications
+A> air_temp_R2 = boot(data=bike_use_atemp, statistic=rsq, R=10000, formula=count~air_temp)
+A> 
+A> # view bootstrapped R2 results
+A> air_temp_R2
+A> plot(air_temp_R2)
+A> 
+A> # get 95% confidence interval
+A> boot.ci(air_temp_R2, type="bca")
+A> ```
+
+
 
 ### Partial correlations
 
