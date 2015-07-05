@@ -621,12 +621,25 @@ The `VIM` package has some great tools for visualizing missing data patterns. As
 ```
 require(VIM)
 data(tao)
+
+# Rename the Sea.Surface.Temp column to make label fit on plot
+colnames(tao)[4] = "Sea.Temp"
+
+# Look at the data, esp. NAs
 summary(tao)
 ```
 
-![tao summary](/images/tao_summary_screenshot.png)
+![tao summary](/images/tao_summary.png)
 
-You can get an instant numeric and visual summary of missing values across the fields with the `aggr` function:
+The `matrixplot` function will display the entire dataset as a set of rectangles to represent each cell. Similar values in the data will have similar grayscale values, and NAs will show up clearly in red:
+
+```
+matrixplot(tao)
+```
+
+![matrixplot image](/images/tao_cells.png)
+
+To complement the detailed picture given by `matrixplot`, you can get a numeric and visual summary of missing values with the `aggr` function:
 
 ```
 tao_aggr = aggr(tao)
@@ -647,7 +660,7 @@ You can compare missingness across fields with histograms, such as the distribut
 histMiss(tao[5:6])
 ```
 
-![histMiss image](/images/histmiss1.png)
+![histMiss image](/images/tao_hist1.png)
 
 You can flip the variables to see the opposite distribution:
 
@@ -655,7 +668,7 @@ You can flip the variables to see the opposite distribution:
 histMiss(tao[c(6,5)])
 ```
 
-![histMiss reversed image](/images/histmiss2.png)
+![histMiss reversed image](/images/tao_hist2.png)
 
 You can show the same data in a scatterplot for more details:
 
@@ -663,7 +676,7 @@ You can show the same data in a scatterplot for more details:
 marginplot(tao[5:6])
 ```
 
-![marginplot image](/images/marginplot.png)
+![marginplot image](/images/tao_marginplot.png)
 
 This can be expanded to pairwise visual comparisons with the `marginmatrix` function:
 
@@ -671,9 +684,10 @@ This can be expanded to pairwise visual comparisons with the `marginmatrix` func
 marginmatrix(tao[4:6])
 ```
 
-![marginmatrix image](/images/marginmatrix.png)
+![marginmatrix image](/images/tao_marginmatrix.png)
 
 I> `VIM` also has a separate GUI for interactive/on-the-fly exploration called `VIMGUI`. Even if you prefer coding, it contains a [vignette](http://cran.r-project.org/web/packages/VIMGUI/vignettes/VIM-Imputation.pdf) from which these examples are drawn, so it's worth installing to learn more about how it works and the many options you can control in the imputation process. 
+
 
 ### Imputation for missing values
 
@@ -693,7 +707,7 @@ This function appends a set of indicator variables to the data that show TRUE/FA
 marginplot(tao_knn[c(5:6, 13:14)], delimiter="_imp")
 ```
 
-![marginplot imputed](/images/marginplot_imputed.png)
+![marginplot imputed](/images/tao_marginplot_imputed.png)
 
 Light and dark orange show results imputed for the variable on that axis; black points show observations for which both were imputed. Blue continues to show the distribution of the non-imputed values. 
 
