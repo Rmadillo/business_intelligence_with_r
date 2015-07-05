@@ -173,6 +173,14 @@ nursing_home_deficiencies$Date = as.Date(nursing_home_deficiencies$Date,
 
 The use of `fixed = TRUE` option above tells `gsub` to use exact matching; the default is `false`, which uses [POSIX 1003.2 extended regular expressions](http://www.cheatography.com/davechild/cheat-sheets/regular-expressions/). 
 
+A> #### Changing column names
+A> 
+A> The `colnames` function works in the above example to specify the names for all columns at once. If you just want to change a single column's name, the pattern is slightly different:
+A> 
+A> ```
+A> colnames(my_data)[column_number] = "new_column_name"
+A> ```
+
 
 ### Missing data: Converting dummy NA values
 
