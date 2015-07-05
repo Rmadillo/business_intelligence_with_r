@@ -440,7 +440,7 @@ ar_tm-count      0.39       0.39     0.43       0.47      0.47 0
 
 ### Bootstrapping BCa CIs for non-parametric correlation
 
-If you want to use the boot package to calculate BCa confidence intervals on the Spearman or Kendell correlation coefficients, here’s how to do it for each method:
+If you want to use the `boot` package to calculate BCa confidence intervals on the Spearman or Kendell correlation coefficients, here’s how to do it for each method:
 
 ```
 rs_function = function(x,i){cor(x[i,1], x[i,2], method="spearman")
@@ -507,7 +507,7 @@ plot(atemp_bike_cor_bayes)
 
 ### Partial correlations
 
-If you have variables you want to control for in a correlation, we can turn again to the psych package. For example, if we wanted to evaluate the correlation between air temperature and bike use while controlling for windspeed, we could do it by creating a correlation matrix with the corr.test function:
+If you have variables you want to control for in a correlation, we can turn again to the `psych` package. For example, if we wanted to evaluate the correlation between air temperature and bike use while controlling for windspeed, we could do it by creating a correlation matrix with the corr.test function:
 
 ```
 bike_use_atemp_wind = data.frame(bike_share_daily$temp, bike_share_daily$cnt, 
@@ -521,7 +521,7 @@ bk_shr_dly.t-bk_shr_dly.w -0.1807640 -0.1096882 -0.03747266
 bk_shr_dly.c-bk_shr_dly.w -0.2173056 -0.1471101 -0.07540089
 ```
 
-Once we have a matrix ***(see it with `atemp_wind_count$`)***, we can plug it into the `partial.r` function, specifying that the first two variables of the matrix are the correlation of interest and the third is the variable we wish to control for (the second and third inputs, respectively):
+Once we have a matrix, we can plug it into the `partial.r` function, specifying that the first two variables of the matrix are the correlation of interest and the third is the variable we wish to control for (the second and third inputs, respectively):
 
 ```
 partial.r(as.matrix(atemp_wind_count$r), c(1:2), 3)
