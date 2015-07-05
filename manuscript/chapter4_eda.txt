@@ -23,6 +23,8 @@ If you were to poll data scientists on the "Three Most Important Steps in Any An
 
 The recipes below are aimed at giving you a quick visual summary of the data, not to produce final plots—and so they're rough and use functions that can be difficult to modify. We'll see recipes for production plots later in this chapter and throughout the book, but we often just need to see the data before doing anything else.
 
+### Everything at once: `ggpairs`
+
 The `ggpairs` function in the `GGally` package has a relatively slow but visually wonderful way to plot your dataset, so load that library before continuing.
 
 ```
@@ -43,7 +45,7 @@ It’s helpful to use a non-parametric correlation method if you don’t know *a
 `GGally` is still in active development, so currently it's pretty difficult to customize the `ggpairs` plot, and it may rarely be useful to anyone other than you. Even then, it's a great way to get a sense of the data at a glance. 
 
 
-## Create histograms of all numeric variables in one plot
+### Create histograms of all numeric variables in one plot
 
 Sometimes you just want to see histograms, but coding and laying out a bunch of them in a grid is more work than it needs to be. The `psych` package's `multi.hist` function can do this in a single line. Note that if you specify variables that aren't numeric, it will throw an error.
 
@@ -55,7 +57,7 @@ multi.hist(bike_share_daily[,sapply(bike_share_daily, is.numeric)])
 ![multi.hist](/images/Ch4_02.png)
 
 
-## A better "pairs" plot
+### A better "pairs" plot
 
 The `psych` package also has a modification of the built-in `graphics` package's `pairs` function that's more useful out of the box. As mentioned above, until you have evidence that your paired variables are indeed linear in raw form, you should modify the default calculation option to `method="spearman"` for continuous data or `method="kendall"` for ordinal data or continuous data in which you have some known outliers:
 
@@ -66,7 +68,7 @@ pairs.panels(bike_share_daily[,sapply(bike_share_daily, is.numeric)],
 
 ![pairs.panels](/images/Ch4_03.png)
 
-## Mosaic plots: "Scatterplots" for categorical data
+### Mosaic plots: "Scatterplots" for categorical data
 
 Once you've loaded the `vcd` package, the `pairs` function can also create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object.
 
@@ -82,16 +84,32 @@ pairs(Titanic, highlighting=2)
 
 ## Plotting univariate distributions
 
-We saw the quick-and-dirty way to plot a bunch of distributions at once in an earlier recipe; this one focuses on a production-ready single-distribution plot using the `ggplot2` package.
-
-This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. 
-
-The documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, Sharon Machlis has a *great* introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html), and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/). 
+We saw the quick-and-dirty way to plot a bunch of distributions at once above; now we focus on production-ready plots using the `ggplot2` package.
 
 ```
 require(ggplot2)
 require(scales)
 ```
+
+This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. 
+
+I> #### Need a `ggplot` cheat sheet?
+I>
+I> The `ggplot2` documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, there's a great introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html), and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/).
+I>
+I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet from the above link into a local pipe-delimited text file, to format and display as works best for you.  
+I> 
+I> ~~~~~~~~  
+I> require(XML)  
+I> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/  
+I>    2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")   
+I> gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1,  
+I>    stringsAsFactors=F)   
+I> write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)   
+I> ~~~~~~~~  
+
+
+### Histograms and density plots
 
 For quantitative data, business users are used to seeing histograms; quants prefer density plots. Here's how to do both, separately...  
 
@@ -127,6 +145,8 @@ When asked, I’ve usually explained density plots as “more objectives histogr
 
 I> That pattern carries over to many `ggplot2` options—find details of the method by replacing the `x` with the stat or geom in `?stat_x` and `?geom_x` for calculation and plotting information, respectively.
 
+### Bar and dot plots
+
 When you have categorical data, bar or dot plots serve the same purpose:  
 
 ```
@@ -136,6 +156,7 @@ ggplot(bike_share_daily, aes(weathersit)) +
     scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", "Cloudy/Rainy", 
     "Stormy")) +
     theme_bw()
+    
 ggplot(bike_share_daily, aes(x=weathersit, y=..count.. )) +
     geom_point(stat = "bin", size = 3, pch=15, col="blue") +
     xlab("Weather Pattern") +
@@ -159,20 +180,7 @@ ggplot(bike_share_daily, aes(weathersit)) +
 
 ![horizontal bar](/images/0815OS_02_07b.png)
 
-I> #### `ggplot` cheat sheet
-I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet into a local pipe-delimited text file, to format and display as works best for you.  
-I> 
-I> ~~~~~~~~  
-I> require(XML)  
-I> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/  
-I>    2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")   
-I> gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1,  
-I>    stringsAsFactors=F)   
-I> write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)   
-I> ~~~~~~~~  
-
-
-## Plotting multiple univariate distributions with faceting
+### Plotting multiple univariate distributions with faceting
 
 We saw the quick-and-dirty way to plot multiple histograms with multi.hist a few recipes ago; here's how to use ggplot2 to create the same thing more elegantly:
 
@@ -211,6 +219,7 @@ ggplot(bike_share_daily, aes(weathersit, fill=season)) +
 A> #### What about pie charts?
 A> 
 A> With apologies to Hunter S. Thompson, if you use pie charts for anything outside of GraphJam, you deserve whatever happens to you.
+
 
 ## Plotting bivariate and comparative distributions
 
