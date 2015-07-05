@@ -1,6 +1,16 @@
 # Chapter 4: Know Thy Data
 
-Exploration and evaluation is the heart of analytics; this chapter covers a wide variety of ways to understand your data. We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in *Chapter 2*. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
+- Creating summary plots  
+- Plotting univariate distributions  
+- Plotting bivariate and comparative distributions  
+- Plotting survey data  
+- Obtaining summary statistics  
+- Inference on summary statistics  
+- Dealing with missing data  
+
+Exploration and evaluation is the heart of analytics; this chapter covers a wide variety of ways to understand your data. 
+
+We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in *Chapter 2*. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
 
 ```
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/
@@ -527,6 +537,7 @@ Groups: season, holiday
 
 When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are `base` installation functions for most of the ones we typically need:
 
+{width="90%"}
 | Statistic | Data type | Distribution | Function |
 | --------- | --------- | ------------ | -------- |
 | Median | Any | None | `wilcox.test(x, conf.int=TRUE)$conf.int` |
@@ -568,6 +579,7 @@ STUFF ON BCIs here
 
 The single sample functions available to acquire simple CIs as of this writing include:
 
+{width="90%"}
 | Statistic | Data type | Distribution | Function |
 | --------- | --------- | ------------ | -------- |
 | Mean | Continuous | Normal, t, “normal enough” | `bayes.t.test(x)`|
@@ -613,9 +625,9 @@ If you plotted both tolerance graphs (plot.type="both"), you'll need to return p
 par(mfrow=c(1,1))
 ```
 
-The following table provides a short overview of the primary univariate tolerance interval functions; see `?tolerance` for more details. I recommend you set `alpha` (confidence level), `P` (the coverage proportion, i.e., tolerance interval), and `side` (whether to calculate upper, lower, or both bounds) manually for best results; if not chosen, `alpha` defaults to 0.05, `P` defaults to 0.99, and `side` defaults to 1 (you’ll probably want 2 in many cases). Other settings depend on the distribution used, and each distribution sometimes has several algorithms to choose from, so it’s worth exploring the documentation before diving in here.
+The following table provides a short overview of the primary univariate tolerance interval functions; see `?tolerance` for more details. I recommend you set `alpha` (confidence level), `P` (the coverage proportion, i.e., tolerance interval), and `side` (whether to calculate upper, lower, or both bounds) manually for best results; if not chosen, `alpha` defaults to 0.05, `P` defaults to 0.99, and `side` defaults to 1 (you’ll probably want 2 in many cases). Other settings depend on the distribution used, and each distribution sometimes has several algorithms to choose from, so it’s worth exploring the documentation before diving in.
 
-
+{width="90%"}
 | Data type | Distribution | Function |
 | --------- | ------------ | -------- |
 | Percent | Binomial | `bintol.int(x, n, m, …)` |
