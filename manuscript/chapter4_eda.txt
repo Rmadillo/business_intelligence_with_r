@@ -7,29 +7,28 @@
 - Plotting univariate distributions
 - Plotting bivariate and comparative distributions
 
-It's often tempting to jump into analysis as soon as possible, but it is a cardinal sin to not evaluate your data with the basics first. This chapter covers the evaluations that must be done before anything else.
+This chapter covers the essential exploration and evaluation that must be done before anything else.
 
-In this chapter, we'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in the Loading data recipe of Chapter 2. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
+We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in *Chapter 2*. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
 
 ```
-download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip", 
-    "Bike-Sharing-Dataset.zip")
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/
+    00275/Bike-Sharing-Dataset.zip", "Bike-Sharing-Dataset.zip")
 bike_share_daily = read.table(unz("Bike-Sharing-Dataset.zip", "day.csv"),
-    sep=",", header=T,
     colClasses=c("character", "Date", "factor", "factor", "factor", "factor",
         "factor", "factor", "factor", "numeric", "numeric", "numeric", "numeric",
-        "integer", "integer", "integer"))
+        "integer", "integer", "integer"), sep=",", header=TRUE)
 levels(bike_share_daily$season) = c("Winter", "Spring", "Summer", "Fall")
 levels(bike_share_daily$workingday) = c("No", "Yes")
 levels(bike_share_daily$holiday) = c("No", "Yes")
-
+bike_share_daily$mnth = ordered(bike_share_daily$mnth, 1:12)
 levels(bike_share_daily$mnth) = c(month.abb)
 levels(bike_share_daily$yr) = c(2011, 2012)
 ```
 
 ## Creating summary plots
 
-If you were to poll data scientists on the "Three Most Important Steps in Any Analysis," ***Plot Thy Data*** should account for all three. Far too many business professionals rely on tables and simple summary statistics to make decisions, which are useful but can never provide the richness of information that graphs can. Further, decisions based on single statistic (usually the mean) are made much too often, usually with either good results reached by luck or accident, or—more often—you end up with (predictably) poor results. These days, I only rarely provide tables of summary stats to decision makers, often choosing instead to provide distributional or other EDA plots with corresponding ranges of variation (standard deviation, IQR, etc.) or uncertainty (confidence limits, credibility intervals, etc.) instead of “naked” single values like a mean or median.  
+If you were to poll data scientists on the "Three Most Important Steps in Any Analysis," ***Plot Thy Data*** should account for all three. Far too many business professionals rely on tables and simple summary statistics to make decisions, which are useful but can never provide the richness of information that graphs can. Further, decisions based on single statistic (usually the mean) are made much too often, usually with either good results reached by luck or accident, or—more often—you end up with (predictably) poor results. 
 
 The recipes below are aimed at giving you a quick visual summary of the data, not to produce final plots—and so they're rough and use functions that can be difficult to modify. We'll see recipes for production plots later in this chapter and throughout the book, but we often just need to see the data before doing anything else.
 
@@ -48,9 +47,10 @@ ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7),
 
 ![ggpairs](/images/Ch4_01.png)
 
-It’s helpful to use a non-parametric correlation method if you don’t know a priori whether the quantitative variables are linearly related in their raw forms. Unfortunately, `ggpairs` doesn’t yet provide this functionality, so know that for continuous pairs of variables that don’t show a linear point cloud, the correlation coefficient in this graph will be *larger than it should be*.
+It’s helpful to use a non-parametric correlation method if you don’t know *a priori* whether the quantitative variables are linearly related in their raw forms. Unfortunately, `ggpairs` doesn’t yet provide this functionality, so know that for continuous pairs of variables that don’t show a linear point cloud, the correlation coefficients printed in this graph will be larger than they actually are.
 
-`GGally` is still in active development, so currently it's pretty difficult to customize the `ggpairs` plot, and it may rarely be useful to anyone other than you. Even then, it's a great way to get a sense of the data at a glance. I use this function with almost any dataset I work with.
+`GGally` is still in active development, so currently it's pretty difficult to customize the `ggpairs` plot, and it may rarely be useful to anyone other than you. Even then, it's a great way to get a sense of the data at a glance. 
+
 
 ## Create histograms of all numeric variables in one plot
 
@@ -62,6 +62,7 @@ multi.hist(bike_share_daily[,sapply(bike_share_daily, is.numeric)])
 ```
 
 ![multi.hist](/images/Ch4_02.png)
+
 
 ## A better "pairs" plot
 
@@ -96,9 +97,9 @@ pairs(Titanic, highlighting=2)
 
 We saw the quick-and-dirty way to plot a bunch of distributions at once in an earlier recipe; this one focuses on a production-ready single-distribution plot using the `ggplot2` package.
 
-This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. The documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, Sharon Machlis has a *great* introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html) (see aside), and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/). 
+This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. 
 
-Load the bike share data we've been using, as well as the packages we'll use in this recipe (if they're not already loaded).
+The documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, Sharon Machlis has a *great* introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html), and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/). 
 
 ```
 require(ggplot2)
@@ -121,6 +122,8 @@ ggplot(bike_share_daily, aes(casual)) +
 
 ![density and histogram](/images/0815OS_02_06a.png)
 
+...as well as together:
+
 ```
 ggplot(bike_share_daily, aes(casual)) +
     ylab("density and count") +
@@ -131,13 +134,11 @@ ggplot(bike_share_daily, aes(casual)) +
     theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
 ```
 
-...as well as together:
-
 ![density and histogram](/images/0815OS_02_06b.png)
 
-When asked, I’ve usually explained density plots as “more objectives histograms,” which, while not quite true, is accurate enough for business users. If you do need to explain things, see `?density` for more details on the methods and useful additional references; `?stat_density` provides an overview of calculation methods used in `ggplot2`, while `?geom_density` provides information on graphical options. 
+When asked, I’ve usually explained density plots as “more objectives histograms,” which, while not quite true, is accurate enough for business users. See `?density` for more details on the methods and useful additional references; `?stat_density` provides an overview of calculation methods used in `ggplot2`, while `?geom_density` provides information on graphical options. 
 
-That pattern carries over to many `ggplot2` options—find details of the method by replacing the `x` with the stat or geom in `?stat_x` and `?geom_x` for calculation and plotting information, respectively.
+I> That pattern carries over to many `ggplot2` options—find details of the method by replacing the `x` with the stat or geom in `?stat_x` and `?geom_x` for calculation and plotting information, respectively.
 
 When you have categorical data, bar or dot plots serve the same purpose:  
 
@@ -253,8 +254,24 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
     legend.position="top")
 ```
 
-![double density plot](/images/0815OS_02_10.png)
+![double density plot](/images/bike_double_density.png)
 
+### Boxplots
+
+Boxplots can be useful for comparing more than a couple of distributions, and can do so using more than one factor:
+
+```
+ggplot(bike_share_daily, aes(mnth, casual, fill=workingday)) +
+    xlab("Month") +
+    ylab("Daily Casual Bike Use Count") +
+    geom_boxplot() +
+    theme_minimal() +
+    scale_fill_discrete(name="Work Day?") +
+    scale_color_discrete(name="Work Day?") +
+    theme(legend.position="bottom")
+```
+
+![boxplot](/images/bike_boxplot.png)
 
 ### Scatterplots and marginal distributions
 
@@ -305,7 +322,7 @@ A> | Clear | 111 | 113 | 136 | 103 |
 A> | Cloudy/Rainy | 66 | 68 | 48 | 65 |
 A> | Stormy | 4 | 3 | 4 | 10 |
 A> 
-A> Sure, a table is more compact, but the mosaic gives you the pattern at a glance. 
+A> Sure, a table can be more compact, but the mosaic gives you the pattern at a glance; each is an option depending on what you need to get across.
 
 
 ## Multiple bivariate comparisons with faceting
@@ -325,7 +342,8 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
     legend.position="top")
 ```
 
-***NEED PLOT***
+![faceted bikeshare densities](/images/bike_facet_densities.png)
+
 
 ## Plotting survey data
 
@@ -359,38 +377,29 @@ detach("package:reshape", unload=TRUE)
 
 ## Obtaining summary statistics
 
-Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in several packages, but I’ve found that the `psych` package probably has the simplest way to obtain them, particularly for groupings or when you want to condition on a particular value or threshold.
-
-It’s important to remember that each type of data can reasonably use only certain kinds of summary statistics. The following table should help when, for example, a decision maker asks you to calculate the mean of an ordinal variable (such as a Likert scale)—just show them this table so you don’t have to go on record as the one who said it was a stupid idea:
-
-[BRING BACK MD TABLE]
-
-\* Ratio variables have a "true zero" while interval variables do not (e.g., temperature in °C).
-\** Discrete variables can have means/variances based on non-normal probability distributions (e.g., binomial for proportions, Poisson for counts or rates, etc.), but this should not be confused with an arithmetic mean or variance.
-
-Load the `psych` package and the daily bike share data if they're not already loaded from the previous recipe.
+Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in the `base` installation and a wide variety of packages, but I’ve found that the `psych` package probably has the most useful way to obtain them simply, particularly for groupings or when you want to condition on a particular value or threshold.
 
 ```
 require(psych)
-bike_share_daily=read.table("bike_share_daily.csv", sep=",", header=T)
 ```
 
-For numeric variables, the describe and describeBy functions do all the work for you, although you do need to specify which columns are quantitative—or which columns you want summary stats on—or it will return (non-sensically) all of them:
+For numeric variables, the `describe` and `describeBy` functions do all the work for you, although you do need to specify which columns are quantitative—or which columns you want summary stats on—or it will return (non-sensically) all of them.
+
+Basic `describe`:
 
 ```
-describe(bike_share_daily[10:16]) # not shown
+describe(bike_share_daily[10:16])
+```
+
+![describe1](/images/bike_double_density.png)
+
+Using `describeBy`:
+
+```
 describeBy(bike_share_daily[10:16], bike_share_daily$holiday)
-
-group: No
-           vars   n    mean      sd median trimmed     mad min  max range skew kurtosis    se
-casual        1 710  841.77  680.53  711.5  739.69  584.14   2 3410  3408 1.27     1.34 25.54
-registered    2 710 3685.33 1553.70 3691.0 3672.14 1695.35  20 6946  6926 0.04    -0.71 58.31
----------------------------------------------------------------------------------------------
-group: Yes
-           vars  n    mean      sd median trimmed     mad min  max range skew kurtosis     se
-casual        1 21 1064.71  860.05    874  965.88  658.27 117 3065  2948 0.88    -0.41 187.68
-registered    2 21 2670.29 1492.86   2549 2604.47 1599.73 573 5172  4599 0.27    -1.26 325.77
 ```
+
+![describe2](/images/bike_double_density.png)
 
 The `table` and `prop.table` functions from the `base` package provide the simplest summary stats for categorical and ordinal variables:
 
