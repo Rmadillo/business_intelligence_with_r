@@ -22,6 +22,8 @@ require(ggplot2)
 require(quantreg)
 ```
 
+### Smoothed trends
+
 To see a smoothed average trend, use `method="loess"` in the `geom_smooth` function:
 
 ```
@@ -34,6 +36,8 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
 ```
 
 ![loess trend](/images/biwr_05_loess.png)
+
+### Quantile trends
 
 To show trends based on quantiles, use the `stat_quantile` option, and choose which quantiles you want to show, either specifically (as below) or sequentially (e.g., `quantiles = seq(0.05, 0.95, by=0.05)`:
 
@@ -51,6 +55,8 @@ ggplot(bike_share_daily, aes(x=temp, y=casual)) +
 
 ![quantile trend](/images/biwr_05_quant.png)
 
+### Simple linear trends
+
 Finally, to get a simple linear trend, use the `lm` method with `geom_smooth`:
 
 ```
@@ -66,7 +72,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
 
 If you’re exploring trends, it’s good habit to not start with an OLS/linear trend, as in real data exploration you usually don’t have any *a priori* knowledge about the functional relationship or trend. Only using this approach after you’ve tried the others helps prevent getting your thinking into a (linear) rut.
 
-## Segmented regression
+### Segmented linear trends
 
 Sometimes you do want to see a linear trend, but know (or suspect) that there are changes in the trend, as seen above in the air temperature-based plots. We’ll explore ways to evaluate change points later, but for now we’ll just quickly plot a segmented linear trend line. We'll allow the `segmented` package to choose the optimal breakpoint for us, after we specify approximately where we think it is with the `psi` option:
 
@@ -146,6 +152,7 @@ The basic thing to remember is that even when you don’t have a real day value 
 It’s useful to have a cheat-sheet of the major date and time formats; you can get a complete list with `?strptime` but the major ones are as follows:
 
 ***Major date formats***  
+
 | Date step | Symbol | Format | Alternate symbols |
 | --------- | ------ | ------ | ----------------- |
 | Format Date (ISO) | `%F` | Y-m-d | `%x`, `%D` | y/m/d, m/d/y |
@@ -158,6 +165,7 @@ It’s useful to have a cheat-sheet of the major date and time formats; you can 
 
 
 ***Major time formats***
+
 | Time step | Symbol | Format |
 | --------- | ------ | ------ |
 | Date and time | `%c` | a b e H:M:S Y |
@@ -238,11 +246,13 @@ ggplot(UK_births, aes(x=Date, y=Value)) +
 
 ## Detecting autocorrelation
 
-Autocorrelation 
+Autocorrelation can be present in non-temporal data as well as in time series; the `acf` function works the same for either type of data.
 
 ```
 acf(UK_births_ts)
 ```
+
+![](/images/autocorrelation.png)
 
 
 ## Plotting monthly patterns
@@ -288,10 +298,7 @@ plot(decompose(UK_births_ts), col="darkblue")
 
 ![decomp of uk births](/images/biwr_05_decomp1.png)
 
-
-ADD MULTIPLICATIVE INFO HERE?
-
-We’ll explore the `forecast` package later, but more details on `ts` objects and the decomposition of time series can be found in the help files (`?ts`, `?decompose`) and in Rob Hyndman’s excellent online text, [Forecasting: Principles and Practice](https://www.otexts.org/fpp).
+We’ll explore the `forecast` package in Part 2 of this book, but more details on `ts` objects and the decomposition of time series can be found in the help files (`?ts`, `?decompose`) and in Rob Hyndman’s excellent online text, [Forecasting: Principles and Practice](https://www.otexts.org/fpp).
 
 
 ## Decomposing when the variance changes
@@ -393,6 +400,7 @@ You can also extract the `$freq` and `$spec` values from the spectrum object int
 
 ## Fourier transforms, wavelets, and other decomposition
 
+STUFF HERE?
 
 ## Exploring relationships between time series: cross-correlation
 
