@@ -1,10 +1,12 @@
 # Chapter 3: Cleaning and Preparing Data
 
-- Understanding Your Data
-- Cleaning up
-- Merging dataframes
-- Filtering, selecting, and arranging a dataframe
-- Reshaping: Transforming a dataframe from wide to long and back again
+- Understanding your data  
+- Cleaning up  
+- Merging dataframes: Joins, unions, and bindings  
+- Subsetting: `filter`ing and `select`ing from a dataframe  
+- Creating a derived column  
+- Reshaping a dataframe between wide and long  
+- Piping with %>% : Stringing it together in `dplyr`  
 
 
 ## Understanding your data
@@ -560,7 +562,7 @@ head(mutate(customer_survey, Location = paste(city, state, sep=", "),
 ![image here](/images/head3full.png)
 
 
-## Transforming a dataframe between wide and long
+## Reshaping a dataframe between wide and long
 
 A lot of analysis and plotting functions require that data be organized in *long* format, where the variable of interest is in one column and the id/categorical portions of the data are repeated as necessary in other columns. Then again, other tools need the data in *wide* format, so being able to move between the two formats is essential. The `reshape2` package provides just that ability.  
 
