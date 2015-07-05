@@ -12,6 +12,7 @@ The use of effect sizes should become standard alongside summary plots and stati
 
 The following tables summarize major effect size statistics by type of effect size (differences in tendency, differences in variation, and relationships), and some packages and functions I've found useful to calculate them. There are a variety of options inside R, of course, but the functions in this chapter should provide most of the essential values you'll need. 
 
+--------
 
 ***Differences in tendency*** 
 
@@ -46,6 +47,7 @@ The following tables summarize major effect size statistics by type of effect si
 | Standardized group differences | Cliff's &Delta; | orrdom | `dmes.boot` with `theta.es="dc"` | 
 | | Vargha-Delaney's *A* | orrdom | `dmes.boot` with `theta.es="Ac"` | 
 
+--------
 
 ***Differences in variability*** 
 
@@ -58,6 +60,7 @@ The following tables summarize major effect size statistics by type of effect si
 | | | | | |  
 | Difference between variances | | asympTest | `asymp.test(...)$estimate`, `asymp(...).test$conf.int` with `parameter="dVar"` | 
 
+--------
 
 ***Relationships and Associations*** 
 
@@ -89,6 +92,7 @@ The following tables summarize major effect size statistics by type of effect si
 | | | | | |  
 | Comparisons of agreement | Cohen's &kappa; | psych | `cohen.kappa` | 
 
+--------
 
 ## Effect sizes: Measuring *differences* between groups
 
@@ -262,8 +266,6 @@ delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
 
 The rapid increase in computing power in recent years has put previously-intractable analytics tools at anyone's fingertips. Markov-chain Monte Carlo (MCMC) is one of the breakout stars of this revolution, which provides the mathematical basis for the resurgence of interest in Bayesian methods.
 
-Bayesian methods provide the answers to the questions we actually have, as opposed the questions classical statistics actually answer (see the Preface for more thoughts on this issue ***YES OR NO?***). This book probably would have been written primarily from that background had the R implementations of MCMC been more developed—but since they aren't, at this time we'll just explore some basic Bayesian approaches to effect size determination.
-
 You'll need to install JAGS to your system before starting (http://mcmc-jags.sourceforge.net/), and also install the R package `rjags` to allow R to converse with JAGS.
 
 `BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from Github:
@@ -378,11 +380,13 @@ Correlation is one of the oldest and most well-known statistical tools, and for 
 
 As before, every effect size measure should be accompanied by an appropriate confidence interval whenever possible, which is usually best done by bootstrap unless you can meet the method’s assumptions.
 
-Although correlation coefficients are easy to acquire with R’s base installation, confidence intervals are not, so we’ll use the `psych` package for the non-parametric correlation part of this recipe and `boot`/`boot.ci`/`bootES` for some confidence intervals. We’ll also use a piece of the bike share dataset to illustrate the methods.
+Although correlation coefficients are easy to acquire with R’s `base` installation, confidence intervals are not, so we’ll use the `psych` package for the non-parametric correlation part of this recipe and `boot`/`boot.ci`/`bootES` for some confidence intervals. We’ll also use a piece of the bike share dataset to illustrate the methods.
 
 ```
-require(bootES)
 require(psych)
+require(bootES)
+
+# Use count and air temp variables from bike share data
 bike_use_atemp = data.frame(bike_share_daily$atemp, bike_share_daily$cnt)
 colnames(bike_use_atemp) = c("air_temp", "count")
 ```
@@ -452,31 +456,6 @@ boot.ci(rt_boot, type="bca")$bca[4:5]
 0.3931281 0.4665541
 ```
 
-### Determining the probability of a correlation
-
-We saw the Bayesian approach to difference-based effect size calculations earlier in this chapter; here's the approach for correlation:
-
-```
-require(BayesianFirstAid)
-bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
-
-
-    Bayesian First Aid Pearson's Correlation Coefficient Test
-
-data: bike_use_atemp$\textdollar$air_temp and bike_use_atemp$count (n = 731)
-Estimated correlation:
-  0.63
-95% credible interval:
-  0.59 0.68
-The correlation is more than 0 by a probability of >0.999
-and less than 0 by a probability of <0.001
-
-plot(atemp_bike_cor_bayes)
-```
-
-![Bayes cor](/images/0815OS_02_18.png)
-
-
 A> #### *R^2^*: Proportion of variance explained 
 A> 
 A> The *R^2^* effect size is simply the correlation coeffient squared, of course, but oddly enough there does not seem to be a built-in function to directly obtain the CIs for it. We can use the `boot` package to create one, thanks to [a function by Rob Kabacoff](http://www.statmethods.net/advstats/bootstrapping.html):
@@ -500,6 +479,30 @@ A> # get 95% confidence interval
 A> boot.ci(air_temp_R2, type="bca")
 A> ```
 
+
+### Determining the probability of a correlation
+
+We saw the Bayesian approach to difference-based effect size calculations earlier in this chapter; here's the approach for correlation:
+
+```
+require(BayesianFirstAid)
+bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
+
+
+    Bayesian First Aid Pearson's Correlation Coefficient Test
+
+data: bike_use_atemp$\textdollar$air_temp and bike_use_atemp$count (n = 731)
+Estimated correlation:
+  0.63
+95% credible interval:
+  0.59 0.68
+The correlation is more than 0 by a probability of >0.999
+and less than 0 by a probability of <0.001
+
+plot(atemp_bike_cor_bayes)
+```
+
+![Bayes cor](/images/0815OS_02_18.png)
 
 
 ### Partial correlations
@@ -553,7 +556,9 @@ polyserial(math_score, poly_math$enjoy)
 0.2664201
 ```
 
-### Associations between categorical variables (odds ratio and Yule's Q)
+### Associations between categorical variables
+
+Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users: it provides the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Cohen’s &kappa; is probably the best tool when you want to compare agreement instead of association (see recipe for &kappa; below).
 
 Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore “categorical correlation” with the `Aspirin` data from the `abd` package (`?Aspirin`). The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
 
@@ -561,6 +566,8 @@ Since the bike share data doesn’t lend itself well to exploring the associatio
 require(epitools)
 require(psych)
 data(Aspirin, package="abd")
+
+# Obtain the odds ratio and CI
 oddsratio(table(Aspirin))$measure
 
          odds ratio with 95% C.I.
@@ -568,20 +575,26 @@ treatment  estimate     lower    upper
   Aspirin 1.0000000        NA       NA
   Placebo 0.9913098 0.9187395 1.069632
 
+# Obtain Yule's Q
 Yule(table(Aspirin))
 
 -0.004352794
 ```
 
-For categorical data, association coefficients provide the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users. Cohen’s &kappa; is probably the best tool when you want to compare agreement instead of association (see recipe for &kappa; below).
 
 ### Cohen’s kappa for comparisons of agreement
 
 Ratings on ordinal scales require special treatment, since they aren’t true numbers, and comparisons of agreement makes it even more necessary to choose a statistically-appropriate tool. Cohen’s &kappa; (`cohen.kappa` in the `psych` package) provides a way to compare ordinal ratings, e.g., a doctor’s ratings for a set of patients potentially eligible for care management as compared with the same output from a predictive model:
 
 ```
-doctor = c(1,2,3,4,1,2,3,4,1,2,3,4)
-model = c(1,3,1,3,1,4,4,4,4,2,3,1)
+# Doctor ratings
+doctor = c("yes", "no", "yes", "unsure", "yes", "no", "unsure", "no", "no", 
+  "yes", "no", "yes", "yes")
+# Model ratings
+model = c("yes", "yes", "unsure", "yes", "no", "no", "unsure", "no", "unsure", 
+  "no", "yes", "yes", "unsure")
+
+# Obtain Cohen's kappa
 cohen.kappa(x=cbind(doctor,model))
 
 Cohen Kappa and Weighted Kappa correlation coefficients and confidence boundaries
@@ -590,24 +603,6 @@ Cohen Kappa and Weighted Kappa correlation coefficients and confidence boundarie
 unweighted kappa -0.15     0.22  0.59
 weighted kappa   -0.45     0.15  0.75
  Number of subjects = 12
-```
-
-You can also use raw categories instead of dummy variables:
-
-```
-doctor = c("yes", "no", "yes", "unsure", "yes", "no", "unsure", "no", "no", 
-  "yes", "no", "yes", "yes")
-model = c("yes", "yes", "unsure", "yes", "no", "no", "unsure", "no", "unsure", 
-  "no", "yes", "yes", "unsure")
-doctor_vs_model = data.frame(doctor, model)
-cohen.kappa(doctor_vs_model)
-
-Cohen Kappa and Weighted Kappa correlation coefficients and confidence boundaries
-
-                 lower estimate upper
-unweighted kappa -0.34   0.0631  0.47
-weighted kappa   -0.57  -0.0078  0.56
- Number of subjects = 13
 ```
 
 The `$agree` output value shows the proportion of agreement for each category:
