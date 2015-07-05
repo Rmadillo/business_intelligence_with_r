@@ -309,7 +309,7 @@ mosaic(~ weathersit + season, data=bike_share_daily, shade=T,
 
 ![mosaic](/images/0815OS_02_11.png)
 
-A> #### What's a mosaic plot?
+A> #### Um. What's a mosaic plot?
 A> 
 A> If you're not already familiar with them, think of mosaic plots as contingency tables made with shapes—the larger the shape, the higher the cell count.
 A> 
@@ -324,7 +324,7 @@ A>
 A> Sure, a table can be more compact, but the mosaic gives you the pattern at a glance; each is an option depending on what you need to get across.
 
 
-## Multiple bivariate comparisons with faceting
+### Multiple bivariate comparisons with faceting
 
 As with univariate plots, we can facet on another variable for comparison’s sake; for example, if we take the bike share data shown above and facet by season:
 
