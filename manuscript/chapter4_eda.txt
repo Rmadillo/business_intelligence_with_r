@@ -173,6 +173,7 @@ ggplot(bike_share_daily, aes(weathersit)) +
 
 I> #### `ggplot` cheat sheet
 I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet into a local pipe-delimited text file, to format and display as works best for you.  
+I> 
 I> ~~~~~~~~  
 I> require(XML)  
 I> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/  
@@ -278,6 +279,7 @@ bike_air_temp_mh = ggMarginal(bike_air_temp, type="histogram")
 Sometimes density plots can be useful, or perhaps you want to keep it simple and show a boxplot. Just change the `type` option:
 
 ![marginal density](/images/scatter_marginal_density.png)  
+
 ![marginal boxplot](/images/scatter_marginal_boxplot.png)  
 
 
@@ -294,16 +296,16 @@ mosaic(~ weathersit + season, data=bike_share_daily, shade=T,
 
 ![mosaic](/images/0815OS_02_11.png)
 
-The first plot is simply a plot of the distributions of each group, i.e., a set of overplotted density histograms.
-If you have categorical data, you'll probably want to use mosaic plots to visualize differences between groups; if you're not already familiar with them, think of mosaics plots as contingency tables made with shapes—the larger the shape, the higher the cell count.
-
-For comparison, here's the table that the mosaic plot represents:  
-
-| Winter | Spring | Summer | Fall |
-|:------:|:------:|:------:|:----:|
-| 111 | 113 | 136 | 103 |
-| 66 | 68 | 48 | 65 |
-| 4 | 3 | 4 | 10 |
+A> If you're not already familiar with them, think of mosaic plots as contingency tables made with shapes—the larger the shape, the higher the cell count.
+A> 
+A> For comparison, here's the table that the mosaic plot represents:  
+A> | | Winter | Spring | Summer | Fall |
+A> |:-|------:|------:|------:|----:|
+A> | Clear | 111 | 113 | 136 | 103 |
+A> | Cloudy/Rainy | 66 | 68 | 48 | 65 |
+A> | Stormy | 4 | 3 | 4 | 10 |
+A> 
+A> Sure, a table is more compact, but the mosaic gives you the pattern at a glance. 
 
 
 ## Multiple bivariate comparisons with faceting
