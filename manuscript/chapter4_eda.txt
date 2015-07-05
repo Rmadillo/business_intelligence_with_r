@@ -8,9 +8,9 @@
 - Inference on summary statistics  
 - Dealing with missing data  
 
-Exploration and evaluation is the heart of analytics; this chapter covers a wide variety of ways to understand your data. 
+Exploration and evaluation is the heart of analytics; this chapter covers a wide variety of ways to understand, display, and summarize your data. 
 
-We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in *Chapter 2*. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
+We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in Chapter 2. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
 
 ```
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/
