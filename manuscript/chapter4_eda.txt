@@ -1,15 +1,6 @@
 # Chapter 4: Know Thy Data
 
-- Creating summary plots
-- Missing data  
-- Obtaining summary statistics
-- Inference on summary statistics
-- Plotting univariate distributions
-- Plotting bivariate and comparative distributions
-
-This chapter covers the essential exploration and evaluation that must be done before anything else.
-
-We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in *Chapter 2*. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
+This chapter covers the essential exploration and evaluation that must be done before anything else. We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in *Chapter 2*. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
 
 ```
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/
@@ -79,14 +70,10 @@ pairs.panels(bike_share_daily[,sapply(bike_share_daily, is.numeric)],
 
 Once you've loaded the `vcd` package, the `pairs` function can also create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object.
 
-```
-require(vcd)
-pairs(table(bike_share_daily[c(3, 9)])) # not shown
-```
-
 The dataset we've used so far in this recipe isn't a great one for mosaic plots since most of those variables are time-related, so a better view of the outcome of plotting categorical pairs can be seen with the built-in `Titanic` dataset (`?Titanic`), using the highlighting option to make the categories more clearly distinct at a glance:
 
 ```
+require(vcd)
 pairs(Titanic, highlighting=2)
 ```
 
@@ -313,9 +300,12 @@ mosaic(~ weathersit + season, data=bike_share_daily, shade=T,
 
 ![mosaic](/images/0815OS_02_11.png)
 
+A> #### What's a mosaic plot?
+A> 
 A> If you're not already familiar with them, think of mosaic plots as contingency tables made with shapes—the larger the shape, the higher the cell count.
 A> 
 A> For comparison, here's the table that the mosaic plot represents:  
+A> 
 A> | | Winter | Spring | Summer | Fall |
 A> |:-|------:|------:|------:|----:|
 A> | Clear | 111 | 113 | 136 | 103 |
@@ -391,7 +381,7 @@ Basic `describe`:
 describe(bike_share_daily[10:16])
 ```
 
-![describe1](/images/bike_double_density.png)
+![describe1](/images/describe1.png)
 
 Using `describeBy`:
 
@@ -399,7 +389,7 @@ Using `describeBy`:
 describeBy(bike_share_daily[10:16], bike_share_daily$holiday)
 ```
 
-![describe2](/images/bike_double_density.png)
+![describe2](/images/describe2.png)
 
 The `table` and `prop.table` functions from the `base` package provide the simplest summary stats for categorical and ordinal variables:
 
@@ -414,24 +404,31 @@ prop.table(table(bike_share_daily$holiday))
 0.97127223 0.02872777
 ```
 
-There are a variety of approaches and options using these functions.
+There are a variety of approaches and options using these functions. For example, you can subset the quantitative stats based on factors or conditions. 
 
-For example, you can subset the quantitative stats based on factors or conditions:
+Summary stats for bike use during the winter season:
 
 ```
-describeBy(bike_share_daily[14:16], bike_share_daily$season == "Winter") # not shown
-describeBy(bike_share_daily[14:16], bike_share_daily$temp > 0.5) # not shown
+describeBy(bike_share_daily[14:16], bike_share_daily$season == "Winter")
+```
+
+![describe1](/images/describe3.png)
+
+Summary stats for weather on days where there were less than/greater than 1000 casual uses:
+```
+describeBy(bike_share_daily[10:13], bike_share_daily$casual <= 1000)
+```
+
+![describe1](/images/describe4.png)
+
+Summary stats for bike use on days in which the windspeed was greater than/less than average:
+
+```
 describeBy(bike_share_daily$casual, bike_share_daily$windspeed > 
   mean(bike_share_daily$windspeed))
-
-group: FALSE
-  vars   n   mean     sd median trimmed    mad min  max range skew kurtosis    se
-1    1 409 914.61 673.18    773  827.61 598.97   9 3410  3401 1.11     0.96 33.29
----------------------------------------------------------------------------------
-group: TRUE
-  vars   n  mean     sd median trimmed   mad min  max range skew kurtosis    se
-1    1 322 763.8 695.26  613.5  642.12 579.7   2 3283  3281  1.5     1.94 38.75
 ```
+
+![describe1](/images/describe5.png)
 
 You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums. 
 
@@ -728,7 +725,7 @@ Viewing a matrix works here as well:
 marginmatrix(tao_knn[c(4:6, 12:14)], delimiter="_imp")
 ```
 
-![marginmatrix imputed](/images/marginmatrix_imputed.png)
+![marginmatrix imputed](/images/tao_marginmatrix_imputed.png)
 
 There are other methods in `VIM`, including a model-based approach:
 
@@ -764,7 +761,7 @@ ggplot(tao_compare_melt, aes(Air.Temp, color=variable)) +
     theme_minimal()
 ```
 
-![imputed results](/images/imputed_results.png)
+![imputed results](/images/tao_compare_melt.png)
 
 I> #### More imputation in R: other packages
 I> 
