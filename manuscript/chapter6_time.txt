@@ -283,6 +283,8 @@ seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)",
 
 If you need to explore a time series in more depth, you'll probably want to decompose it into seasonal, trend, and random/remainder components.
 
+### Additive decomposition
+
 We’ll continue with the UK monthly births data in its time series format, acquired from the EU’s EuroStat. Most functions we’ll use in this recipe are in the `base` installation’s `stats` package, but one is in the `forecast` package, so load that with the data:
 
 ```
@@ -301,7 +303,7 @@ plot(decompose(UK_births_ts), col="darkblue")
 We’ll explore the `forecast` package in Part 2 of this book, but more details on `ts` objects and the decomposition of time series can be found in the help files (`?ts`, `?decompose`) and in Rob Hyndman’s excellent online text, [Forecasting: Principles and Practice](https://www.otexts.org/fpp).
 
 
-## Decomposing when the variance changes
+### Decomposing when the variance changes
 
 Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. The `forecast` package also has a way to determine the best transformation (`lambda`) automatically with the `BoxCox.lambda` function:
 
