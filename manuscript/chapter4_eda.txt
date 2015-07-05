@@ -1,6 +1,6 @@
 # Chapter 4: Know Thy Data
 
-This chapter covers the essential exploration and evaluation that must be done before anything else. We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in *Chapter 2*. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
+Exploration and evaluation is the heart of analytics; this chapter covers a wide variety of ways to understand your data. We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in *Chapter 2*. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
 
 ```
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/
