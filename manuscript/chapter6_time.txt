@@ -414,6 +414,16 @@ You can take the inverse of the frequency peak’s value to get a sense for cycl
 
 ## Exploring relationships between time series: cross-correlation
 
+
+The sample cross-correlation function can be examined graphically as a
+function of lag h to search for leading or lagging relations in the data
+
+Goal: find the value  of the shift
+that maximizes  the correlation 
+coefficient
+
+http://www.colorado.edu/geography/class_homepages/geog_4023_s11/Lecture19_TS5.pdf
+
 https://onlinecourses.science.psu.edu/stat510/?q=book/export/html/74
 
 http://www.quantlego.com/howto/r-in-time-series-cross-correlation/
