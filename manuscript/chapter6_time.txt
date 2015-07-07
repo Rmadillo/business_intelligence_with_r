@@ -415,6 +415,25 @@ You can take the inverse of the frequency peak’s value to get a sense for cycl
 ## Exploring relationships between time series: cross-correlation
 
 
+
+
+if your data is hourly and you expect seasonality on the daily level, frequency equals 24.
+
+veil = read.table("http://homepage.stat.uiowa.edu/~kchan/TSA/Datasets/veilleux.dat", 
+                  header=T, sep=" ")
+
+veil_ts_1 = ts(veil[,1], freq=1)
+veil_ts_2 = ts(veil[,2], freq=1)
+
+ts.plot(veil_ts_1, veil_ts_2,lty=c(1,3),col=c("red","blue"))
+
+acf(ts.union(veil_ts_1, veil_ts_2))
+
+ccfvalues = ccf(veil_ts_1, veil_ts_2, 48)
+ccfvalues
+
+
+
 The sample cross-correlation function can be examined graphically as a
 function of lag h to search for leading or lagging relations in the data
 
