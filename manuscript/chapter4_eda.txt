@@ -530,6 +530,16 @@ Groups: season, holiday
 …
 ```
 
+A> #### Finding local maxima/minima
+A>
+A> The `which.max` (or `which.min`) function can show you the set of values for a chosen maximum (or minimum) observation: 
+A> 
+A> ```
+A> bike_share_daily[which.min(bike_share_daily[,14]),]
+A> ```
+A> 
+A> ![](/images/whichmax.png)
+
 
 ## Inference on summary statistics
 
