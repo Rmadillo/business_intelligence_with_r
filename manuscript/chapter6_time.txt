@@ -415,24 +415,7 @@ You can take the inverse of the frequency peak’s value to get a sense for cycl
 ## Exploring relationships between time series: cross-correlation
 
 
-
-
-if your data is hourly and you expect seasonality on the daily level, frequency equals 24.
-
-veil = read.table("http://homepage.stat.uiowa.edu/~kchan/TSA/Datasets/veilleux.dat", 
-                  header=T, sep=" ")
-
-veil_ts_1 = ts(veil[,1], freq=1)
-veil_ts_2 = ts(veil[,2], freq=1)
-
-ts.plot(veil_ts_1, veil_ts_2,lty=c(1,3),col=c("red","blue"))
-
-acf(ts.union(veil_ts_1, veil_ts_2))
-
-ccfvalues = ccf(veil_ts_1, veil_ts_2, 48)
-ccfvalues
-
-
+f your data is hourly and you expect seasonality on the daily level, frequency equals 24.
 
 The sample cross-correlation function can be examined graphically as a
 function of lag h to search for leading or lagging relations in the data
@@ -449,48 +432,53 @@ http://www.quantlego.com/howto/r-in-time-series-cross-correlation/
 
 http://stats.stackexchange.com/questions/109152/interpreting-ccf-correlation-in-r
 
+```
+# Load dplyr to subset the BLS data
+require(dplyr) 
 
+# Download CPI time series data from US BLS
 CPI_xport = read.table("http://download.bls.gov/pub/time.series/cu/cu.data.14.USTransportation", 
-                     header=T, sep="\t", strip.white=T)
+                       header=T, sep="\t", strip.white=T)
 
-fuel = filter(CPI_xport, series_id == "CUUR0000SETB" & year >= 2002 
-              & year <= 2008 & period != "M13")
-trucks = filter(CPI_xport, series_id == "CUUR0000SS45021" 
-                & year >= 2002 & year <= 2008 & period != "M13")
+# CPI for motor fuel, 2000-2014
+fuel = filter(CPI_xport, series_id == "CUUR0000SETB" & year >= 2000
+              & year <= 2014 & period != "M13")
+              
+# CPI for airline fare, 2000-2014              
+fare = filter(CPI_xport, series_id == "CUUR0000SETG01" 
+                & year >= 2000 & year <= 2014 & period != "M13")
 
-fuel_ts = ts(fuel$value, start=c(2002, 1), freq=12)
-trucks_ts = ts(trucks$value, start=c(2002, 1), freq=12)
+# Create time series
+fuel_ts = ts(fuel$value, start=c(2000, 1), freq=12)
+fare_ts = ts(fare$value, start=c(2000, 1), freq=12)
 
-ts.plot(fuel_ts, trucks_ts,lty=c(1,3),col=c("red","blue"))
+# CCF *requires* detrended data
+# Get detrended values of each time series
+fuel_detrend = na.omit(decompose(fuel_ts)$random)
+fare_detrend = na.omit(decompose(fare_ts)$random)
 
+# ACF plot shows pattern of each and both combinations
+acf(ts.union(fuel_detrend, fare_detrend))
+```
 
-acf(ts.union(fuel_ts, trucks_ts))
+![acf for ccf](/images/acf_ccf.png)
 
-ccfvalues =ccf(fuel_ts, trucks_ts, lag.max=12)
+You can combine these views into a single plot with the `ccf` function:
+
+```
+# Calculate CCF
+ccfvalues = ccf(fuel_detrend, fare_detrend, lag.max=48)
 ccfvalues
+```
 
-# must detrend first
-App.ts = fuel_ts
-Act.ts = trucks_ts
-app.ran<-decompose(App.ts)$random
-app.ran.ts<-window(app.ran, start=c(2002,7), end=c(2008,6))
-act.ran<-decompose(Act.ts)$random
-act.ran.ts<-window(act.ran, start=c(2002,7),end=c(2008,6))
-acf(ts.union(app.ran.ts,act.ran.ts))
+![ccf](/images/ccf_plot.png)
 
-ccfvalues = ccf(app.ran.ts,act.ran.ts, lag.max=48)
-ccfvalues
+Since it's hard to read values off a plot, a function can find the maximum correlation value:
 
-
-I have 2 time series and I am using ccf to find the cross 
-correlation between them. ccf(ts1, ts2) lists the cross-correlations 
-for all time lags. How can I find the lag which results in maximum
-correlation without manually looking at the data?
-
-
-Find_Abs_Max_CCF<- function(a,b)
-{
-    d <- ccf(a, b, plot = FALSE, lag.max = length(a)-5)
+```
+# Function to find CCF
+Max_CCF = function(a, b) {
+    d = ccf(a, b, plot = FALSE, lag.max = length(a)-5)
     cor = d$acf[,,1]
     abscor = abs(d$acf[,,1])
     lag = d$lag[,,1]
@@ -500,12 +488,10 @@ Find_Abs_Max_CCF<- function(a,b)
     return(absres_max)
 }
 
-Find_Abs_Max_CCF(app.ran.ts,act.ran.ts)
+# Determine maximum CCF value
+Max_CCF(fuel_detrend, fare_detrend)
+          cor         lag
+163 0.5126287 -0.08333333
+```
 
-bob = data.frame(ccfvalues$lag,ccfvalues$acf)
-
-
-
-
-ag <- aggregate(acf~lag, data=bob, max)
-merge(ag, bob)
+Since 0.08333333 = 1 month, we can see that there's a correlation of 0.51 between airline fares and motor fuel costs in the prior month. 
