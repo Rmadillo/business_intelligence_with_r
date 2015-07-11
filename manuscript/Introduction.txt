@@ -1,11 +1,43 @@
 # Introduction
 
-The growth of R has been phenomenal over the past several years, reaching out past academia and research labs into the daily activities of business and industry. More and more line-level analysts are supplementing their SQL or Excel skills with R, and more and more businesses are hiring analysts to bridge the increasing gap between business needs and on-hand analytical resources. 
+The growth of R has been phenomenal over the past several years, reaching out past academia and research labs into the daily activities of business and industry. More and more line-level analysts are supplementing their SQL or Excel skills with R, and more and more businesses are hiring analysts with R skills to bridge the increasing gap between business needs and on-hand analytical resources. 
 
 While there are already many books that explore the use of R in statistics and data science, nearly all of them are set as a series of case studies or are written predominantly for academic audiences as textbooks. There are also many R cookbooks, but they tend to cover the breadth of R's capabilities and options. This book aims to provide a cookbook of R recipes that are specifically of use in the daily workflow of data scientists and analysts in business and industry. 
 
-*Business Intelligence with R* is a practical, hands-on overview of all the major BI/analytic tasks that can be accomplished with R. It is not meant to be exhaustive--there is always more than one way to acomplish a given task in R, so we aim to provide the simplest and/or most robust approaches to meet daily workflow needs. As such, this book should serve as the go-to desk reference for the professional analyst who needs to get things done in R. From setting up a project under version control to creating an interactive dashboard of a data product such as a predictive model, this book will provide you the pieces to put it all together. 
+*Business Intelligence with R* is a practical, hands-on overview of many of the major BI/analytic tasks that can be accomplished with R. It is not meant to be exhaustive—there is always more than one way to accomplish a given task in R, so this book aims to provide the simplest and/or most robust approaches to meet daily workflow needs. It can serve as the go-to desk reference for the professional analyst who needs to get things done in R. From setting up a project under version control to creating an interactive dashboard of a data product, this book will provide you with the pieces to put it all together. 
 
+ 
+## Overview
+
+
+The book is divided into two parts: the first provides the essentials of using R for most BI tasks, from data acquisition and wrangling into pattern exploration and the production of data products. The second covers predictive modeling as well as more advanced pattern analytics and data mining tools. This mimics the structure of current business and industry analytic teams, where most BI analysts are using or starting to use the tools in the first part, while more advanced data scientists are focusing on the tools in the second part. That's not to say that there's no cross-over: data scientists who don't use the tools from Part 1 are going to make a lot of mistakes, while typical BI analysts will find a lot of helpful tools in Part 2 where their business question or context requires it.  
+
+### Part 1: Data Acquisition to Pattern Exploration
+
+Chapter 1 takes only about 50 lines of R code to cover the spectrum of an analytics workflow, from data acquisition to business forecasting to the creation of an interactive report. Because "learning R" is difficult, this example points out that "learning R to accomplish *x*" is really fairly simple for anyone comfortable with coding. And if all you've ever developed are formulas in Excel, you *have* coded—using R is certainly within any analyst's abilities, and you'll find that it simplifies your workflow tremendously. 
+
+Chapter 2 covers bringing data into R, from text files to databases. 
+
+Since the data we get is rarely in the form we need, Chapter 3 provides some tools and examples for cleaning and wrangling data.
+
+Chapter 4 is the heart of any analytic project, no matter how broad the scope of the business question or the complexity of subsequent analyses. If you aren't intimately familiar with your data from the start, your final products will be, at best, limited, and at worst, wrong. 
+
+Chapter 5 covers effect sizes; many non-analytic business customers have been trained to ask whether a difference or similarity is "statistically significant." While common to this day, that question provides a trivial answer to the wrong question. Using *p*-values today is much like continuing to use a rotary telephone. Sure, if properly wired, it still works fine. But if you've got a smart phone, why would you even want to use the old technology? "Modern statistics" focuses instead on questions of how much different, not whether there is a difference. Effect size statistics provide what our business customers really need to know: how much different (or similar) are these groups? 
+
+Chapter 6 covers the timeless business need to understand trends. It used to be that the analysis of time series and/or autocorrelated data was not at all simple. But R has tools that make this type analysis simple, considerably easier than what it would take to accomplish the same in Excel. 
+
+If the glut of dashboarding and graphing in data products is any indication, modern business runs on dataviz. That's a good thing—I've seen far too many examples of decision-makers using tables to make decisions that ended poorly because tables just can't capture the big picture. Chapter 7 explores data visualization tools not covered in earlier chapters, including multivariate visualization, maps, and interactivity. 
+
+Chapter 8 explores pattern discovery
+
+Finally, Chapter 9 provides some examples of how to use R to create data products for your customers, from static reporting to interactive dashboards. 
+
+Perhaps the largest advance in scientific research in recent years is the idea of "reproducible research." While ensuring accurate and detailed documentation is a key feature of business intelligence and has been for some time, many analysts and even entire companies do not give this the attention it deserves; as a result, analysts are constantly reinventing the wheel by having to pore through thousands of lines of code to try to reproduce another analyst's work. We provide a short Appendix on reproducible analysis best practices and ideas to make the transfer of data products between analysts considerably less onerous. 
+
+
+### Part 2: Predictive Modeling and Data Mining
+
+Part 2 is in the early stages of development, but will cover all of the major data mining and predictive analytic tools, from regression and ensemble models to text mining and network analysis. We expect it to be complete in early 2016. 
 
 ## Conventions
 
@@ -13,19 +45,23 @@ This book contains one large and one small break from conventional R usage. Firs
 
 The one place your choice of assignment operator is important is if you want to make an assignment in the middle of a function call. This is not something you should ever actually want. ADD MORE EXPLANATION?
 
-Second, we tend to use ```pothole_case``` for variable, dataframe, and database names, and ```lowerCamelCase``` for function names MAYBE KINDA SORTA. The R community hasn't developed much consensus around this (CITE PAPER HERE) and so once again we fall back on habits learned elsewhere (cough cough Python cough). The important part is that variable names should be nouns, function names should be verbs, and all names should be clear and descriptive; the most common variable name in CRAN may be 'x' but that does not mean you should follow suit.
+Second, we tend to use `pothole_case` for variable, dataframe, and database names, and `ALL_CAPS` for variables where you need to supply your own values. The R community hasn't developed much consensus around naming formats, and so once again we fall back on habits learned elsewhere (cough cough Python cough) or to avoid problems in other languages (`dot.case` causes problems with several other languages but can also cause trouble within R in certain highly used packages (e.g., `knitr`). But again, you should use whatever you want in your own work. The important part is that variable names should be nouns, function names should be verbs, and all names should be clear and descriptive; the most common variable name in CRAN may be 'x' but that does not mean you should follow suit.
 
 
 ## What you need 
 
-This book uses R, RStudio, and Git software. We used R 3.1 and RStudio 0.98 to create this book. If you are on a Windows system, you'll need to ensure either Perl and/or Java are installed to use the Excel import functions (if you are using Mac or Unix/Linux, Perl was probably installed with the OS). Make sure that the architecture for Perl/Java you have or install matches that of your R install, i.e., if you are using 64-bit R make sure your Java is also x64. You will also need Java for some of the packages in Chapter 8 (Text Mining).
+This is not the best book for a never-used-R-and-need-to-myself analyst. Perhaps you've had an intro course or workshop already—you don't need to be an expert to get value from this book but you will probably struggle without a more detailed overview of how to use R. In past teaching, I've used Rob Kabakoff's wonderful *[R in Action](http://www.manning.com/kabacoff2/)* to introduce college students to R, and it works well as a self-teaching text. There are also a wide variety of websites, videos, and online training programs that can give you the initial understanding of R that will make this book useful. 
+
+You don't need to be an R programmer, however; this book is aimed at people who use R to accomplish day-to-day analytic ends for business purposes, *not* for those who want to improve their code efficiency, create custom algorithms, or develop new packages.
+
+You should already be comfortable with "everyday" R use for analysis (e.g., knowing how to make base plots, use `lm`, etc.) and R's data construct types, such as knowing the differences between a list, a dataframe, and a matrix. You should also know that any result from the functions shown in this book can be placed in an object to be called or modified later, e.g., you should know that `bob = prop.table(table(bike_share_daily[c(3,9)]))` saves the table of proportions in a two-way table as the object `bob`. This is important because many functions we show (especially with `ggplot2`) are presented as stand-alone functions that create the output immediately. Obviously, you'll need to assign those functions to R objects if you want to keep them in memory for subsequent use. 
+
+You should also be at least familiar with the ideas behind many of the tools used in anaytics and data science; for the most part, this book does not explain the intricacies of how the methods work or what the results of the examples mean. There are many fine resources out there covering theory and tools, but are necessarily limited in methodological scope as a result. In addition, most data science cookbooks currently available use a case-study approach, focusing on a few major tasks in order to explain the methods and results in greater depth. Again, this book is aimed at providing comprehensive cookbook for common data science tasks, and given how many tools there are, there just isn't the space here to provide both recipes and theory.
+
+This book uses R, RStudio, and Git software. We used R 3.2 and RStudio 0.99 to create this book. If you are on a Windows system, you'll need to ensure either Perl and/or Java are installed to use some of the Excel import functions (if you are using Mac or Unix/Linux, Perl was probably installed with the OS). Make sure that the architecture for Perl/Java you have or install matches that of your R install, i.e., if you are using 64-bit R make sure your Java is also x64. 
 
 {icon=download}
 G> The code and datasets are available from the book's Github site at **URL**.
-
-You should already be comfortable with "everyday" R use for analysis (e.g., knowing how to make base plots, use lm, etc.) and R's data construct types, such as knowing the differences between a list, a dataframe, and a matrix. You should also know that any result from the functions shown in this book can be placed in an object to be called or modified later, e.g., you should know that ```bob = prop.table(table(bike_share_daily[c(3,9)]))``` saves the table of proportions in a two-way table as the object ```bob```. You don't need to be an R programmer, however; this book is aimed at people who use R to accomplish day-to-day analytic ends, not for those who want to improve their code efficiency, create custom algorithms, or develop new packages.
-
-You should also be at least familiar with the ideas behind many of the tools used in anaytics and data science; for the most part, this book does not explain the intricacies of how the methods work or what the results of the examples mean. There are many fine resources out there covering theory and tools, but are necessarily limited in methodological scope as a result. In addition, most data science cookbooks currently available use a case-study approach, focusing on a few major tasks in order to explain the methods and results in greater depth. Again, this book is aimed at providing comprehensive cookbook for common data science tasks, and given how many tools there are, there just isn't the space here to provide both recipes and theory.
 
 ## Acknowledgements
 
@@ -39,4 +75,8 @@ Feedback is always welcome; send us an email to EMAIL.
 
 
 
-We hope that this book serves well in its intended purpose as a desktop reference for busy professionals--giving you fingertip access to a variety of BI analytic methods done as simply as possible.
+We hope that this book serves well in its intended purpose as a desktop reference for busy professionals—giving you fingertip access to a variety of BI analytic methods done as simply as possible.
+
+
+
+
