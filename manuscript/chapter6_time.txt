@@ -254,6 +254,8 @@ acf(UK_births_ts)
 
 ![](/images/autocorrelation.png)
 
+What's often underappreciated is that autocorrelated data, temporal or not, will make standard confidence intervals *too small*. In other words, if you want to plot a trend and use the default confidence intervals, you'll underestimate the actual uncertainty associated with a trend line or data points across time. 
+
 
 ## Plotting monthly patterns
 
