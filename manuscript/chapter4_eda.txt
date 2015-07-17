@@ -292,14 +292,14 @@ beanplot(casual ~ mnth, data = bike_share_daily, side="first", overallline="medi
     xlab = "Month", ylab = "Daily Casual Bike Use Count")
 ```
 
-If you prefer a more traditional look, with the density curves pointing up, you can use `horizontal=TRUE` and change `side` to `"second"`:
+If you prefer a more traditional look, with the density curves pointing up, you can use `horizontal=TRUE`, change `side` to `"second"`, and flip your axis titles:
 
 ![beanplot](/images/beanplot1.png)  
 
 ```
 beanplot(casual ~ mnth, data = bike_share_daily, side="second", overallline="median",
     what=c(1,1,1,0), col=c("gray70", "transparent", "transparent", "blue"),
-    xlab = "Month", ylab = "Daily Casual Bike Use Count", horizontal=TRUE)
+    ylab = "Month", xlab = "Daily Casual Bike Use Count", horizontal=TRUE)
 ```
 
 ![bean density](/images/beanplot2.png)  
