@@ -235,13 +235,14 @@ A> With apologies to Hunter S. Thompson, if you use pie charts for anything outs
 
 Most of the time, we want to understand how one thing compares to something else. There’s no better way to do this by plotting each group’s distribution against the other’s.
 
-We continue using the bike share data, along with `ggplot2`. Make sure to load the `vcd` package as well:  
+We continue using the bike share data, along with `ggplot2`, `vcd`, and `beanplot`. 
 
 ```
 require(ggplot2)
 require(ggExtra)
 require(scales)
 require(vcd)
+require(beanplot)
 ```
 
 ### Double density plots
@@ -278,6 +279,33 @@ ggplot(bike_share_daily, aes(mnth, casual, fill=workingday)) +
 ```
 
 ![boxplot](/images/bike_boxplot.png)
+
+### Beanplots
+
+Violin plots have been considered a more useful alternative to boxplots, as you can see the shape of the distribution, not just its major quantiles. Unfortunately, violin plots can sometimes look like a series of genetalia, which pretty much precludes its use in business settings. 
+
+Fortunately, bean plots allow you to create "half" violin plots, or more accurately, comparitive density histograms. The `side` option allows you to only plot the density on one side of a line; using `side="first"` has the height of each curve going to the left side of the plot. By playing with the `what` options, you can determine what pieces of the bean plot are shown. One of those piece is a reference line, which defaults to the mean; `overallline="median") allows you to use that statistic instead. 
+
+```
+beanplot(casual ~ mnth, data = bike_share_daily, side="first", overallline="median",
+    what=c(1,1,1,0), col=c("gray70", "transparent", "transparent", "blue"),
+    xlab = "Month", ylab = "Daily Casual Bike Use Count")
+```
+
+If you prefer a more traditional look, with the density curves pointing up, you can use `horizontal=TRUE` and change `side` to `"second"`:
+
+![beanplot](/images/beanplot1.png)  
+
+```
+beanplot(casual ~ mnth, data = bike_share_daily, side="second", overallline="median",
+    what=c(1,1,1,0), col=c("gray70", "transparent", "transparent", "blue"),
+    xlab = "Month", ylab = "Daily Casual Bike Use Count", horizontal=TRUE)
+```
+
+![bean density](/images/beanplot2.png)  
+
+Like the boxplot example above, you can also add a comparison for groups within a category, and each group's density is plotted base-to-base. So while you don't have the exact symmetry of violin plots, the result can provide much the same visual impression, so it's probably best to stick with the use of one side of the "bean."
+
 
 ### Scatterplots and marginal distributions
 
