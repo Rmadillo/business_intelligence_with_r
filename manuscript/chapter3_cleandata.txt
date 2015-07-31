@@ -105,7 +105,7 @@ Before moving on, make sure you remove the duplicated row:
 customers = unique(customers)
 ```
 
-![unique customers](/images/R_unique_screenshot.png)
+![unique customers](images/R_unique_screenshot.png)
 
 
 ### Sorting 
@@ -357,13 +357,13 @@ Obviously, there's more to life than left joins. The following table lays out th
 {width="90%"}
 | Type of Join | Visualization | dplyr | merge | sqldf |
 | ------------ | ------------- | ----- | ----- | ----- |
-| Left | ![Left join](/images/Ch3_sql_01.png) | `left_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.x=TRUE)` | `SELECT * FROM A LEFT JOIN B ON A.key = B.key` |
-| Inner | ![Inner join](/images/Ch3_sql_02.png) | `inner_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all=FALSE)` | `SELECT * FROM A INNER JOIN B ON A.key = B.key` |
-| Full (Outer) | ![Full join](/images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | *Not yet implemented* | 
-| Semi | ![Semi join](/images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
-| Anti | ![Anti join](/images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | *Not yet implemented* | 
-| Right* | ![Right join](/images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM B LEFT JOIN A ON B.key = A.key` |
-| Right Anti* | ![Right anti join](/images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM B LEFT JOIN A ON B.key = A.key WHERE A.key iS NULL` |
+| Left | ![Left join](images/Ch3_sql_01.png) | `left_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.x=TRUE)` | `SELECT * FROM A LEFT JOIN B ON A.key = B.key` |
+| Inner | ![Inner join](images/Ch3_sql_02.png) | `inner_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all=FALSE)` | `SELECT * FROM A INNER JOIN B ON A.key = B.key` |
+| Full (Outer) | ![Full join](images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | *Not yet implemented* | 
+| Semi | ![Semi join](images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
+| Anti | ![Anti join](images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | *Not yet implemented* | 
+| Right* | ![Right join](images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM B LEFT JOIN A ON B.key = A.key` |
+| Right Anti* | ![Right anti join](images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM B LEFT JOIN A ON B.key = A.key WHERE A.key iS NULL` |
 
 \* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
@@ -455,9 +455,9 @@ As in the last recipe, here's a visualization and function summary for unions an
 {width="90%"}
 | Type of Join | Visualization | r/cbind | sqldf |
 | ------------ | ------------- | ------- | ----- |
-| Union | ![union](/images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
-| Semi-union | ![semi union](/images/rbind_semi_union.png) | *see above* | *see below*\* |
-| Concatenate | ![concat](/images/cbind.png) | `data.frame(A, B)` | `SELECT * FROM A JOIN B ON A.key = B.key` |
+| Union | ![union](images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
+| Semi-union | ![semi union](images/rbind_semi_union.png) | *see above* | *see below*\* |
+| Concatenate | ![concat](images/cbind.png) | `data.frame(A, B)` | `SELECT * FROM A JOIN B ON A.key = B.key` |
 | | | `cbind(A, B)`|  |
 
 \* Use `UNION` to bind the two tables, but you'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
@@ -545,21 +545,21 @@ If you want to check on how one or more of the `dplyr` actions will perform in t
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
 ```
 
-![image here](/images/head1full.png)
+![image here](images/head1full.png)
 
 ```
 head(arrange(customer_survey, region, desc(customer_age), 
     desc(customer_purchases)))
 ```
 
-![image here](/images/head2full.png)
+![image here](images/head2full.png)
 
 ```
 head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
     purchase_proportion=customer_purchases/sum(customer_purchases)))
 ```
 
-![image here](/images/head3full.png)
+![image here](images/head3full.png)
 
 
 ## Reshaping a dataframe between wide and long
