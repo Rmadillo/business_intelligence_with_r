@@ -60,6 +60,7 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | | | BayesianFirstAid | *not yet implemented* | 
 | | | | | |  
 | Difference between variances | | asympTest | `asymp.test(...)$estimate`, `asymp(...).test$conf.int` with `parameter="dVar"` | 
+| | | | | | 
 
 --------
 
@@ -112,7 +113,7 @@ We'll continue to use the bike share data, but we'll reshape and filter some of 
 require(bootES)
 require(orddom)
 require(asympTest)
-require(bayesian_first_aid)
+require(BayesianFirstAid)
 require(reshape2)
 require(dplyr)
 
@@ -124,8 +125,8 @@ casual_workingday_use$sum = casual_workingday_use$Yes + casual_workingday_use$No
 # Filter the data into subsets
 casual_notworkingday = filter(bike_share_daily, workingday == "No" & 
   season == "Spring" | workingday == "No" & season == "Fall")
-casual_notworking_Spring =  filter(notworkingday, season == "Spring")
-casual_notworking_Fall =  filter(notworkingday, season == "Fall")
+casual_notworking_Spring = filter(casual_notworkingday, season == "Spring")
+casual_notworking_Fall = filter(casual_notworkingday, season == "Fall")
 ```
 
 ### Basic differences
@@ -284,6 +285,7 @@ You'll need to install JAGS to your system before starting (http://mcmc-jags.sou
 ```
 require(devtools)
 devtools::install_github("rasmusab/bayesian_first_aid")
+require(BayesianFirstAid)
 ```
 
 Using the earlier example above for the differences in proportions, we get the same sort of results (i.e., the effect size and CIs), as well as a plot of the posterior distributions:
@@ -380,9 +382,48 @@ Finally, you can review the MCMC diagnostics for any of these functions by using
 
 ```
 diagnostics(casual_notworkingday_mean_bayes)
+
+Iterations = 601:10600
+Thinning interval = 1 
+Number of chains = 3 
+Sample size per chain = 10000 
+
+  Diagnostic measures
+               mean      sd mcmc_se n_eff  Rhat
+mu_x       1891.532 109.652   0.815 18162 1.000
+sigma_x     786.383  81.211   0.681 14276 1.000
+mu_y       1237.637 103.310   0.781 17532 1.000
+sigma_y     747.915  76.431   0.618 15346 1.001
+mu_diff     653.895 150.729   1.113 18408 1.001
+sigma_diff   38.468 110.067   0.868 16083 1.000
+nu           46.731  32.070   0.389  6879 1.002
+eff_size      0.855   0.208   0.002 16886 1.001
+x_pred     1884.072 827.166   4.776 29999 1.000
+y_pred     1240.818 784.492   4.552 29712 1.000
+
+mcmc_se: the estimated standard error of the MCMC approximation of the mean.
+n_eff: a crude measure of effective MCMC sample size.
+Rhat: the potential scale reduction factor (at convergence, Rhat=1).
+
+  Model parameters and generated quantities
+mu_x: the mean of group Spring 
+sigma_x: the scale of group Spring , a consistent
+  estimate of SD when nu is large.
+mu_y: the mean of group Fall 
+sigma_y: the scale of group Fall 
+mu_diff: the difference in means (mu_x - mu_y)
+sigma_diff: the difference in scale (sigma_x - sigma_y)
+nu: the degrees-of-freedom for the t distribution
+  fitted to casual by season 
+eff_size: the effect size calculated as 
+  (mu_x - mu_y) / sqrt((sigma_x^2 + sigma_y^2) / 2)
+x_pred: predicted distribution for a new datapoint
+  generated as group Spring 
+y_pred: predicted distribution for a new datapoint
+  generated as group Fall 
 ```
 
-![need to create image](images/bayes_diff_diagnostics.png)
+![bayes diagnostics](images/bayes_diff_diagnostics.png)
 
 
 ## Effect sizes: Measuring *relationships* between groups
