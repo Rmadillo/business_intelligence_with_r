@@ -8,7 +8,7 @@ First, if you don't already have Git or Subversion installed, you'll need to ins
 
 Outside of R, create a separate directory for every project, and within that directory, set up folders that allow you to contain code, data, and output in logical groupings. At a minimum, it's best to have separate folders for data, analysis, and products. For example, a project for which you expect to produce a static report, a presentation, and an interactive app might be set up as follows:
 
-![](/images/Apx1_01.png)
+![](images/Apx1_01.png)
 
 The particular folder names and organization are not important. What's important is having a system that is general enough to use for any project and straightforward enough to share with others with minimal explanation.
 
