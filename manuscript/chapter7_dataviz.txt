@@ -53,7 +53,7 @@ ggplot(bike_share_sd, aes(weekday, mnth)) +
     theme(plot.title = element_text(vjust = 1))
 ```
 
-![heatmap](/images/0815OS_04_01.png)
+![heatmap](images/0815OS_04_01.png)
 
 ### Creating calendar heatmaps
 
@@ -71,7 +71,7 @@ calendarHeat(bike_share_daily$dteday, bike_share_daily$casual,
   varname="Casual Daily Bike Use", color="new_color_ramp")
 ```
 
-![calendar heatmap](/images/0815OS_04_05.png)
+![calendar heatmap](images/0815OS_04_05.png)
 
 ### Parallel coordinates plots
 
@@ -92,7 +92,7 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
   scale="globalminmax", alphaLines=0.5)
 ```
 
-![pcp plain](/images/0815OS_04_02.png)
+![pcp plain](images/0815OS_04_02.png)
 
 A neat feature of ggparcoord is the ability to put boxplots on the background of the plot:
 
@@ -101,7 +101,7 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
   scale="globalminmax", boxplot=TRUE, alphaLines=0.3)
 ```
 
-![pcp boxplots](/images/0815OS_04_03.png)
+![pcp boxplots](images/0815OS_04_03.png)
 
 ### Peeking at multivariate data with `dplyr` and a bubblechart
 
@@ -122,7 +122,7 @@ customer_survey %>%
     theme_bw()
 ```
 
-![bubble](/images/0815OS_04_04.png)
+![bubble](images/0815OS_04_04.png)
 
 
 ## Plotting a table
@@ -148,7 +148,7 @@ ggplot(bike_share_mean_wide, aes(Year, Jan)) +
     axis.text = element_blank(), axis.title = element_blank())
 ```
 
-![ggtable](/images/0815OS_04_06.png)
+![ggtable](images/0815OS_04_06.png)
 
 ## Making maps in R
 
@@ -173,7 +173,7 @@ map("state", xlim=c(min(ozone$x-0.5),max(ozone$x+0.5)), ylim=range(ozone$y),
 box(col="gray50")
 text(ozone$x, ozone$y, ozone$median, cex=0.5)
 ```
-![ozone map](/images/0815OS_04_07.png)
+![ozone map](images/0815OS_04_07.png)
 
 We say "deceptive" because as long as you don't need anything fancy or if the boundaries you intend to map haven't changed in a while, you're fine—just use a map base and a dataframe with x (longitude), y (latitude), and data values. But what if the boundaries have changed? Let's look at Europe from the world map within the map package:
 
@@ -182,7 +182,7 @@ map('world', xlim=c(-12,45), ylim=c(35,60), col="gray90", fill=T)
 box()
 ```
 
-![old europe](/images/0815OS_04_08.png)
+![old europe](images/0815OS_04_08.png)
 
 A little outdated, to say the least. A look at the database option inside the ?map help file tells us why—it's from an old CIA database that predates the collapse of the USSR (the mapdata package, which contains more maps for the maps package, has the same problem). To get newer boundaries, you'll need to download and convert a spatial data file from an online source—something we'll see an example of below.
 
@@ -197,7 +197,7 @@ data(df_pop_county)
 county_choropleth(df_pop_county)
 ```
 
-![chloropleth county](/images/0815OS_04_09.png)
+![chloropleth county](images/0815OS_04_09.png)
 
 You can subset this to states or regions with the zoom option, and display a continuous scale instead of breaks with the buckets=1 option:
 
@@ -208,7 +208,7 @@ county_choropleth(df_pop_county,
         zoom=c("arizona", "colorado", "new mexico", "utah"))
 ```
 
-![chloropleth zoom county](/images/0815OS_04_10.png)
+![chloropleth zoom county](images/0815OS_04_10.png)
 
 Want to map by zipcodes instead of counties?
 
@@ -221,7 +221,7 @@ zip_map(df_pop_zip,
         zoom=c("arizona", "colorado", "new mexico", "utah"))
 ```
 
-![chloropleth zoom zips](/images/0815OS_04_11.png)
+![chloropleth zoom zips](images/0815OS_04_11.png)
 
 The world map data that `choroplethr` and `choroplethrMaps` includes is up to date. But if you want to subset on Europe? Unfortunately, you'll have to do that manually, either by extracting the countries you need by name or ISO code, since x and y lim options don't work in this package (see `?choroplethr_wdi` or `?df_pop_country` for more details on names/ISO codes), or by acquiring map boundaries by different means. We'll explore the latter option below, as it takes considerably less effort.  
 
@@ -241,7 +241,7 @@ require(choroplethrMaps)
 choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
 ```
 
-![chloropleth acs](/images/0815OS_04_15.png)
+![chloropleth acs](images/0815OS_04_15.png)
 
 If you don't know which tables you need, the US Census provides more information here: http://factfinder2.census.gov/faces/affhelp/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS
 
@@ -261,7 +261,7 @@ box(col="gray30")
  # © EuroGeographics for the administrative boundaries
 ```
 
-![euro map](/images/0815OS_04_12.png)
+![euro map](images/0815OS_04_12.png)
 
 We plotted ground level ozone from the maps example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to download the data (http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this chapter's data files. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
 
@@ -300,7 +300,7 @@ text(eu_o3$longitude, eu_o3$latitude, round(eu_o3$statistic_value,0), cex=0.5,
   col="gray20")
 ```
 
-![euro messy map](/images/0815OS_04_13.png)
+![euro messy map](images/0815OS_04_13.png)
 
 Too much data! Turning the values into a color scale takes a little more effort, but allows us to see the data:
 
@@ -319,7 +319,7 @@ legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8,
   border="gray60")
 ```
 
-![euro point map](/images/0815OS_04_14.png)
+![euro point map](images/0815OS_04_14.png)
 
 Again, it's important to remember that mapping in R is relatively easy *if* the map boundaries and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
 
