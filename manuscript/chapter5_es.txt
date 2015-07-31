@@ -270,7 +270,7 @@ delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
   x.name="Fall", y.name="Spring")
 ```
 
-![delta gr ES plot](/images/0801OS_02_15.png)
+![delta gr ES plot](images/0801OS_02_15.png)
 
 
 ### Determining the probability of a difference
@@ -309,7 +309,7 @@ of <0.001 and larger for Group 2 by a probability of >0.999 .
 plot(workday_diff_bayes)
 ```
 
-![Bayes prop ES](/images/0815OS_02_16.png)
+![Bayes prop ES](images/0815OS_02_16.png)
 
 To look at the difference between means of two groups, we can use the `bayes.t.test` function:
 
@@ -335,7 +335,7 @@ and less than 0 by a probability of <0.001
 plot(casual_notworkingday_mean_bayes)
 ```
 
-![Bayes mean ES](/images/0815OS_02_17.png)
+![Bayes mean ES](images/0815OS_02_17.png)
 
 The package allows the use of `summary` for its output; with it we can see the CIs for each statistic as well as the standardized effect size (`eff_size`, *d*) on this contrast:
 
@@ -382,7 +382,7 @@ Finally, you can review the MCMC diagnostics for any of these functions by using
 diagnostics(casual_notworkingday_mean_bayes)
 ```
 
-![need to create image](/images/bayes_diff_diagnostics.png)
+![need to create image](images/bayes_diff_diagnostics.png)
 
 
 ## Effect sizes: Measuring *relationships* between groups
@@ -520,7 +520,7 @@ and less than 0 by a probability of <0.001
 plot(atemp_bike_cor_bayes)
 ```
 
-![Bayes cor](/images/0815OS_02_18.png)
+![Bayes cor](images/0815OS_02_18.png)
 
 
 ### Partial correlations
