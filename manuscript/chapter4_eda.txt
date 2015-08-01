@@ -287,9 +287,10 @@ Violin plots have been considered a more useful alternative to boxplots, as you 
 Fortunately, bean plots allow you to create "half" violin plots, or more accurately, comparitive density histograms. The `side` option allows you to only plot the density on one side of a line; using `side="first"` has the height of each curve going to the left side of the plot. By playing with the `what` options, you can determine what pieces of the bean plot are shown. One of those piece is a reference line, which defaults to the mean; `overallline="median") allows you to use that statistic instead. 
 
 ```
-beanplot(casual ~ mnth, data = bike_share_daily, side="first", overallline="median",
-    what=c(1,1,1,0), col=c("gray70", "transparent", "transparent", "blue"),
-    xlab = "Month", ylab = "Daily Casual Bike Use Count")
+beanplot(casual ~ mnth, data = bike_share_daily, side="first", 
+    overallline="median", what=c(1,1,1,0), col=c("gray70", 
+    "transparent", "transparent", "blue"), xlab = "Month", 
+    ylab = "Daily Casual Bike Use Count")
 ```
 
 If you prefer a more traditional look, with the density curves pointing up, you can use `horizontal=TRUE`, change `side` to `"second"`, and flip your axis titles:
@@ -297,9 +298,10 @@ If you prefer a more traditional look, with the density curves pointing up, you 
 ![beanplot](images/beanplot1.png)  
 
 ```
-beanplot(casual ~ mnth, data = bike_share_daily, side="second", overallline="median",
-    what=c(1,1,1,0), col=c("gray70", "transparent", "transparent", "blue"),
-    ylab = "Month", xlab = "Daily Casual Bike Use Count", horizontal=TRUE)
+beanplot(casual ~ mnth, data = bike_share_daily, side="second", 
+    overallline="median", what=c(1,1,1,0), col=c("gray70", 
+    "transparent", "transparent", "blue"), ylab = "Month", 
+    xlab = "Daily Casual Bike Use Count", horizontal=TRUE)
 ```
 
 ![bean density](images/beanplot2.png)  

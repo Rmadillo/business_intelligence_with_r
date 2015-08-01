@@ -399,7 +399,7 @@ infection_control = qcc(infections, sizes=patient_days/1000, type="u",
   u-chart for Jan 2012 - Jan 2014")
 ```
 
-![qcc u-chart](images/NEED_NEW_PLOT.png)
+![qcc u-chart](images/qcc.png)
 
 You can remove the components of the resulting R object for use or plotting elsewhere (e.g., with `ggplot2`).
 
