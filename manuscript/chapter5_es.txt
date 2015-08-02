@@ -46,6 +46,8 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | Standardized group differences | Cliff's &Delta; | orrdom | `dmes.boot` with `theta.es="dc"` | 
 | | | | | |  
 | | Vargha-Delaney's *A* | orrdom | `dmes.boot` with `theta.es="Ac"` | 
+| | | | | |  
+
 
 --------
 
