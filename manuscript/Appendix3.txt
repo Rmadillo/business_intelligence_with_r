@@ -1,0 +1,60 @@
+# Appendix 3: An R Markdown Quick Reference
+
+**Text**
+
+| Plain text |`Plain text` | 
+| *italicized text* | `*italicized text*` |
+| **bold text** | `**bold text**` |
+| superscript ^2^ | `^2^` |
+| subscript ~2~ | `~2~` |
+| en dash -- | `--` |
+| emdash --- | `---` |
+| equation $E = mc^{2}$ | `$E = mc^{2}$` |
+| inline code | `\`r somecodehere\`` |
+| block code | `\`\`\`{r}  
+| | `somecodehere` |
+| | `\`\`\`` |
+
+
+**Links and Images**
+
+| weblink/url | `[display text](completeURL)` |
+| image | `![caption](path/to/image.png)` | 
+
+
+**Lists**
+
+| * bullet point 1 | `* bullet point 1` |
+| * bullet point 2 | `* bullet point 2` |
+|   + sub-bullet | `  + sub-bullet` |
+| |
+| 1. number point 1 | `1. number point 1` |
+| 2. number point 2 | `2. number point 2` |
+|   + sub-number | `  + sub-number` |
+
+ 
+**Formatting**
+
+| # Header 1 | `# Header 1` |
+| ## Header 2 | `## Header 2` |
+| ### Header 3 | `### Header 3` |
+| #### Header 4 | `#### Header 4` |
+| ##### Header 5 | `##### Header 5` |
+| ###### Header 6 | `####### Header 6` |
+| horizontal rule | `***` |
+| > block quote | `> block quote` |
+
+**Tables** 
+
+```
+| Header | Header |
+| ------ | ------ |
+| Cell   | Cell   |
+| Cell   | Cell   |
+```
+
+| Header | Header |
+| ------ | ------ |
+| Cell   | Cell   |
+| Cell   | Cell   |
+
