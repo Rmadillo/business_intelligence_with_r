@@ -8,7 +8,7 @@ In this chapter, you will learn BLAH AND BLAH AND BLAH.
 
 The string functions in R will get the job done, but when compared to other modern programming languages and natural language processing packages they are neither particularly elegant nor exceptionally powerful. The real value of using R comes into play when you export data about your texts into a quantitative form that can be handled using the analytical methods most easily found in R.
 
-In this chapter we will make heavy use of the `stringr` package, which provides more consistent, readable naming conventions and a bit of extra functionality on top of the base R string functions. For a more comprehensive introduction to working with strings in both base R and `stringr`, we recommend [Handling_and_Processing_Strings_in_R](http://gastonsanchez.com/Handling_and_Processing_Strings_in_R.pdf), a free ebook by Gaston Sanchez.
+In this chapter we will make heavy use of the `stringr` package, which provides more consistent, readable naming conventions and a bit of extra functionality on top of the base R string functions. For a more comprehensive introduction to working with strings in both base R and `stringr`, we recommend *[Handling and Processing Strings in R](http://gastonsanchez.com/Handling_and_Processing_Strings_in_R.pdf)*, a free ebook by Gaston Sanchez.
 
 
 ### Handling Backslashes and Other Special Characters
