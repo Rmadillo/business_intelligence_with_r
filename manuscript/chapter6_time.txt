@@ -413,7 +413,7 @@ infection_control_qcc = data.frame(Month = month_name, infection_control$limits,
 
 We’ll explore intervention analysis in more detail in Part 2 of this book, but this is a useful place to demonstrate a simple way to identify changes in the statistical structure of a time series using the `strucchange` package.
 
-We’ll look at annual United States CO~2~ emissions between February 2001 and September 2014 (data from the US Energy Information Administration’s WEPS+ model). Load the `strucchange` package, the data, and convert the data to a time series object:
+We’ll look at annual United States CO_2 emissions between February 2001 and September 2014 (data from the US Energy Information Administration’s WEPS+ model). Load the `strucchange` package, the data, and convert the data to a time series object:
 
 ```
 require(strucchange)
