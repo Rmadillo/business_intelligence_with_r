@@ -1,8 +1,10 @@
 # Chapter 5: Effect Sizes
 
-- Overview
+- Overview 
 - Effect sizes: Measuring differences between groups
 - Effect sizes: Measuring relationships between groups
+
+***NEED TO ADD PLOTS OF ESSs***
 
 ## Overview
 
@@ -54,15 +56,16 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 ***Differences in variability*** 
 
 {width="wide"}
-| Type | Statistic | Package | Function | 
-| ---- | --------- | ------- | -------- | 
-| | | | | |  
-| Variance ratio | | base | `var.test(...)$estimate`, `var(...).test$conf.int` | 
-| | | | | |  
-| | | BayesianFirstAid | *not yet implemented* | 
-| | | | | |  
-| Difference between variances | | asympTest | `asymp.test(...)$estimate`, `asymp(...).test$conf.int` with `parameter="dVar"` | 
-| | | | | | 
+| Type | Package | Function | 
+| ---- | ------- | -------- | 
+| | | | |   
+| Variance ratio | base | `var.test(...)$estimate`, `var(...).test$conf.int` | 
+| | | | |  
+| | BayesianFirstAid | *not yet implemented* | 
+| | | | |
+| Difference between variances | asympTest | `asymp.test(...)$estimate`, `asymp(...).test$conf.int` with `parameter="dVar"` | 
+| | | | |
+| | | | |
 
 --------
 
