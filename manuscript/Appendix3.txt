@@ -2,7 +2,8 @@
 
 **Text**
 
-| Plain text |`Plain text` | 
+{float="left"}
+| plain text | `plain text` | 
 | *italicized text* | `*italicized text*` |
 | **bold text** | `**bold text**` |
 | ***bold italic text*** | `***bold italic text***` |
@@ -12,86 +13,69 @@
 | em dash --- | `---` |
 | equation {$$}E = mc^2{/$$} | `$E = mc^{2}$` |
 
+`> block quote`  
 
-**Code**
-
-inline code
-
-    `r somecodehere`
-    
-block code 
-
-    ```{r}
-    somecodehere
-    ```
-
+> block quote  
 
 **Links and Images**
 
 | weblink/url | `[display text](completeURL)` |
 | image | `![caption](path/to/image.png)` | 
 
+**Code**  
 
-**Lists**
+inline code  
 
-`* bullet point 1`  
-`* bullet point 2`  
-`    + sub-bullet`  
+    `r some_code_here`
+    
+block code  
+
+    ```{r}
+    some
+    code
+    here
+    ```
+
+**Lists**  
+
+    `* bullet point 1`  
+    `* bullet point 2`  
+    `    + sub-bullet`  
     
 * bullet point 1 
 * bullet point 2 
     + sub-bullet
 
-`1. number point 1`   
-`2. number point 2`  
-`    + sub-number`  
+    `1. number point 1`   
+    `2. number point 2`  
+    `    + sub-number`  
 
 1. number point 1
 2. number point 2
     + sub-number 
 
-
-
-**Tables** 
+**Tables**   
 
 ```
-| Header | Header |
-| ------ | ------ |
-| Cell   | Cell   |
-| Cell   | Cell   |
+| Header | Header | Header |
+| ------ | ------ | ------ |
+| Cell   | Cell   | Cell   |
+| Cell   | Cell   | Cell   |
 ```
-{width="20%", float="left"}
-| Header | Header |
-| ------ | ------ |
-| Cell   | Cell   |
-| Cell   | Cell   |
 
+| Header | Header | Header |
+| ------ | ------ | ------ |
+| Cell   | Cell   | Cell   |
+| Cell   | Cell   | Cell   |
 
-**Other Formatting**
+**Section Formatting**  
 
-# Header 1
-`# Header 1`  
-
-## Header 2
-`## Header 2`  
-
-### Header 3
-`### Header 3`  
-
-#### Header 4
-`#### Header 4`  
-
-##### Header 5
-`##### Header 5`  
-
-###### Header 6
-`###### Header 6`  
-
-
-`> block quote`
-
-> block quote
-
+| Top level header | `# Header 1`  |
+| Second level header | `## Header 2`  |
+| Third level header | `### Header 3`  |
+| Fourth level header | `#### Header 4`  |
+| Fifth level header | `##### Header 5`  |
+| Sixth level header | `###### Header 6`  |
 
 horizontal rule: `***`  
 
