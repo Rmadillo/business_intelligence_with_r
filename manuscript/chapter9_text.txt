@@ -30,7 +30,8 @@ Error: '\d' is an unrecognized escape in character string starting "'C:\d"
 my_other_string = "dos\run"
 
 # Printing the string from the command line won't necessarily reveal the problem,
-# but try opening test.txt in a text editor and see if the result is what you expect.
+# but try opening test.txt in a text editor and see if the result is what you 
+# expect.
 my_other_string
 [1] "dos\run"
 write(my_other_string, 'test.txt')
@@ -230,7 +231,7 @@ meta(cookbooks[[2]], "sparkle princess message") = "I like ponies!"
 
 Each document in a corpus can have its own unique set of meta tags. Assigning a meta tag to one document will not affect the rest of the corpus.
 
-The documents in the cookbooks directory come from *[Project Gutenberg](http://www.gutenberg.org/), which includes a header and footer on each file. In most (but not all) of the documents the header contains useful metadata such as the book's title, author, etc.
+The documents in the cookbooks directory come from *[Project Gutenberg](http://www.gutenberg.org/)*, which includes a header and footer on each file. In most (but not all) of the documents the header contains useful metadata such as the book's title, author, etc.
 
 
 ## Creating Term and Document Matrices
@@ -267,21 +268,21 @@ tdm = TermDocumentMatrix(cb, control=tdm_controls)
 tdm = removeSparseTerms(tdm, 0.95)
 
 findFreqTerms(tdm, 7000)
- [1] "add"        "bake"       "beat"       "boil"       "bread"      "brown"     
- [7] "butter"     "cake"       "can"        "chop"       "cold"       "cook"      
-[13] "cover"      "cream"      "cup"        "cut"        "dish"       "dri"       
-[19] "egg"        "fat"        "fine"       "fire"       "fish"       "flour"     
-[25] "food"       "four"       "fri"        "fruit"      "good"       "half"      
-[31] "hot"        "hour"       "juic"       "larg"       "lemon"      "let"       
-[37] "littl"      "made"       "make"       "may"        "meat"       "milk"      
-[43] "minut"      "mix"        "must"       "one"        "onion"      "ounc"      
-[49] "oven"       "pan"        "pepper"     "piec"       "pint"       "place"     
-[55] "potato"     "pound"      "pour"       "project"    "put"        "quart"     
-[61] "remov"      "salt"       "sauc"       "season"     "serv"       "set"       
-[67] "slice"      "small"      "soup"       "stir"       "sugar"      "tablespoon"
-[73] "take"       "teaspoon"   "thick"      "three"      "till"       "time"      
-[79] "togeth"     "two"        "use"        "water"      "well"       "white"     
-[85] "will"       "work"  
+ [1] "add"      "bake"       "beat"     "boil"      "bread"    "brown"
+ [7] "butter"   "cake"       "can"      "chop"      "cold"     "cook"
+[13] "cover"    "cream"      "cup"      "cut"       "dish"     "dri"
+[19] "egg"      "fat"        "fine"     "fire"      "fish"     "flour"
+[25] "food"     "four"       "fri"      "fruit"     "good"     "half"
+[31] "hot"      "hour"       "juic"     "larg"      "lemon"    "let"
+[37] "littl"    "made"       "make"     "may"       "meat"     "milk"
+[43] "minut"    "mix"        "must"     "one"       "onion"    "ounc"
+[49] "oven"     "pan"        "pepper"   "piec"      "pint"     "place"
+[55] "potato"   "pound"      "pour"     "project"   "put"      "quart"
+[61] "remov"    "salt"       "sauc"     "season"    "serv"     "set"
+[67] "slice"    "small"      "soup"     "stir"      "sugar"    "tablespoon"
+[73] "take"     "teaspoon"   "thick"    "three"     "till"     "time"
+[79] "togeth"   "two"        "use"      "water"     "well"     "white"
+[85] "will"     "work"  
 
 findAssocs(tdm, "cinnamon", 0.75)
        cinnamon
