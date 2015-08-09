@@ -5,6 +5,7 @@
 | Plain text |`Plain text` | 
 | *italicized text* | `*italicized text*` |
 | **bold text** | `**bold text**` |
+| ***bold italic text*** | `***bold italic text***` |
 | superscript ^2^ | `^2^` |
 | subscript {$$}_2{/$$} | `~2~` |
 | en dash -- | `--` |
@@ -15,9 +16,11 @@
 **Code**
 
 inline code
+
     `r somecodehere`
     
 block code 
+
     ```{r}
     somecodehere
     ```
@@ -31,17 +34,17 @@ block code
 
 **Lists**
 
-`* bullet point 1`
-`* bullet point 2`
-`    + sub-bullet`
+`* bullet point 1`  
+`* bullet point 2`  
+`    + sub-bullet`  
     
 * bullet point 1 
 * bullet point 2 
     + sub-bullet
 
-`1. number point 1` 
-`2. number point 2`
-`    + sub-number`
+`1. number point 1`   
+`2. number point 2`  
+`    + sub-number`  
 
 1. number point 1
 2. number point 2
@@ -57,7 +60,7 @@ block code
 | Cell   | Cell   |
 | Cell   | Cell   |
 ```
-{width="20%"}
+{width="20%", float="left"}
 | Header | Header |
 | ------ | ------ |
 | Cell   | Cell   |
@@ -66,27 +69,30 @@ block code
 
 **Other Formatting**
 
-`# Header 1`  
 # Header 1
+`# Header 1`  
 
-`## Header 2`  
 ## Header 2
+`## Header 2`  
 
-`### Header 3`  
 ### Header 3
+`### Header 3`  
 
-`#### Header 4`  
 #### Header 4
+`#### Header 4`  
 
-`##### Header 5`  
 ##### Header 5
+`##### Header 5`  
 
-`###### Header 6`  
 ###### Header 6
+`###### Header 6`  
 
-horizontal rule: `***`  
-***
 
 `> block quote`
 
 > block quote
+
+
+horizontal rule: `***`  
+
+***
