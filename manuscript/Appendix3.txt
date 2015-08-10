@@ -77,6 +77,28 @@ block code
 | Fifth level header | `##### Header 5`  |
 | Sixth level header | `###### Header 6`  |
 
-horizontal rule: `***`  
+Create a horizontal rule: `***`  or `<hr>`
 
 ***
+
+***`knitr` Chunk Options***  
+*[Details here](http://yihui.name/knitr/options/)*  
+
+{width="90%"}
+| Option | Default Value | Action | Recommended Use |
+| ------ | ------ | ------ | ------- |
+| `cache` | `FALSE` | Cache results for future renders | Change to `T` for slow code and/or testing. |
+| `collapse` | `FALSE` | Show all output from code chunk together | If you want to show code, modify as needed. |
+| `comment` | `"##"`   | Comment character for results | Change to "" (i.e., nothing) to make output results look cleaner. |
+| `echo` | `TRUE` | Show code in output | Leave as is for training, change to `F` for production. |
+| `error` | `FALSE` | Show error messages in output | Leave as is. |
+| `eval` | `TRUE` | Run the code | Leave as is, except when including placeholder code for future development. |
+| `fig.height` | `7` | Output plot height in inches | Modify as needed. |
+| `fig.width` | `7` | Output plot width in inches | Modify as needed. Note: use `6.5` for output for US Letter paper with 1" margins.|
+| `message` | `TRUE` | Show messages from code run in output | Leave as is for training, change to `F` for production. |
+| `results` | `"markup"` | Use `"asis"` for html or table output, leave as is for other results. |
+| `split` | `FALSE` | Whether to split output into separate files. | Modify as needed. |
+| `tidy` | `FALSE` | Show tidied-up code in output | Leave as is for production, change to `F` for training. |
+| `warning` | `TRUE` | Show warning messages in output. |  Leave as is for training or development, change to `F` for production. |
+
+
