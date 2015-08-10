@@ -81,24 +81,32 @@ Create a horizontal rule: `***`  or `<hr>`
 
 ***
 
-***`knitr` Chunk Options***  
-*[Details here](http://yihui.name/knitr/options/)*  
+***Useful `knitr` Chunk Options***  
+Use `?opts_chunk` or see the [knitr options page](http://yihui.name/knitr/options/) for more options and details.  
 
 {width="90%"}
 | Option | Default Value | Action | Recommended Use |
 | ------ | ------ | ------ | ------- |
+| `background` | `"#F7F7F7"` | Background color for code portions output | Leave as is. |
 | `cache` | `FALSE` | Cache results for future renders | Change to `T` for slow code and/or testing. |
 | `collapse` | `FALSE` | Show all output from code chunk together | If you want to show code, modify as needed. |
 | `comment` | `"##"`   | Comment character for results | Change to "" (i.e., nothing) to make output results look cleaner. |
+| `dpi` | `72` | Plot output resolution (dots per inch) | Leave as is for html output; modify as needed for print output. |
 | `echo` | `TRUE` | Show code in output | Leave as is for training, change to `F` for production. |
 | `error` | `FALSE` | Show error messages in output | Leave as is. |
 | `eval` | `TRUE` | Run the code | Leave as is, except when including placeholder code for future development. |
 | `fig.height` | `7` | Output plot height in inches | Modify as needed. |
-| `fig.width` | `7` | Output plot width in inches | Modify as needed. Note: use `6.5` for output for US Letter paper with 1" margins.|
+| `fig.width` | `7` | Output plot width in inches | Modify as needed. Note: use `6.5` for output for US Letter paper with 1" margins. |
 | `message` | `TRUE` | Show messages from code run in output | Leave as is for training, change to `F` for production. |
+| `out.extra` | NULL | Extra options for figures | Use as necessary. Example: rotate 90° `out.extra='angle=90'`. |
+| `out.width` | NULL | Plot width in final output file | Can use, e.g.,  `0.8\\linewidth`, `6.5in`, or `16.5cm` (LaTeX/pdf) or `656px` (html). |
+| `out.height` | NULL | Plot height in final output file | Can use, e.g.,  `0.8\\linewidth`, `6.5in`, or `16.5cm` (LaTeX/pdf) or `656px` (html).
 | `results` | `"markup"` | Use `"asis"` for html or table output, leave as is for other results. |
-| `split` | `FALSE` | Whether to split output into separate files. | Modify as needed. |
+| `split` | `FALSE` | Whether to split output into separate files. | Modify if needed. |
 | `tidy` | `FALSE` | Show tidied-up code in output | Leave as is for production, change to `F` for training. |
 | `warning` | `TRUE` | Show warning messages in output. |  Leave as is for training or development, change to `F` for production. |
+
+
+
 
 
