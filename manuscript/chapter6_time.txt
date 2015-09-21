@@ -446,22 +446,9 @@ text(2008.8, 555, "Jan 2009", cex=0.75, col="darkgreen", pos=4, font=3)
 
 ## Exploring relationships between time series: cross-correlation
 
-**EXPLAIN CCF**
+Cross-correlation is extremely useful for helping identify leading and lagging indicators. The `ccf` function makes this easy. 
 
-The sample cross-correlation function can be examined graphically as a
-function of lag h to search for leading or lagging relations in the data
-
-Goal: find the value  of the shift
-that maximizes  the correlation 
-coefficient
-
-http://www.colorado.edu/geography/class_homepages/geog_4023_s11/Lecture19_TS5.pdf
-
-https://onlinecourses.science.psu.edu/stat510/?q=book/export/html/74
-
-http://www.quantlego.com/howto/r-in-time-series-cross-correlation/
-
-http://stats.stackexchange.com/questions/109152/interpreting-ccf-correlation-in-r
+We'll use data from the US Bureau of Labor Statistics to demonstrate cross-correlation. 
 
 ```
 # Load dplyr to subset the BLS data
@@ -478,7 +465,11 @@ fuel = filter(CPI_xport, series_id == "CUUR0000SETB" &
 # CPI for airline fare, 2000-2014              
 fare = filter(CPI_xport, series_id == "CUUR0000SETG01" &
     year >= 2000 & year <= 2014 & period != "M13")
+```
 
+Since ccf assumes that the time series detrended, we'll do that first. 
+
+```
 # Create time series
 fuel_ts = ts(fuel$value, start=c(2000, 1), freq=12)
 fare_ts = ts(fare$value, start=c(2000, 1), freq=12)
@@ -487,8 +478,11 @@ fare_ts = ts(fare$value, start=c(2000, 1), freq=12)
 # Get detrended values of each time series
 fuel_detrend = na.omit(decompose(fuel_ts)$random)
 fare_detrend = na.omit(decompose(fare_ts)$random)
+```
 
-# ACF plot shows pattern of each and both combinations for 18 months
+An ACF plot shows pattern of each and both combinations for 18 months
+
+```
 acf(ts.union(fuel_detrend, fare_detrend))
 ```
 
