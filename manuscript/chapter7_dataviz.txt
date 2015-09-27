@@ -2,8 +2,8 @@
 
 In this chapter, we will cover:
 
-- Plotting multivariate data
-- Making maps in R
+- Plotting multivariate data ***ADD ESSs PLOTS***
+- Making maps in R ***ADD ANDY'S ANIMATION EXAMPLE?***
 - Interactive data visualizations
 
 ## Plotting multivariate distributions
