@@ -433,7 +433,8 @@ y_pred: predicted distribution for a new datapoint
 
 ## Effect sizes: Measuring *relationships* between groups
 
-The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary tool here, although a wide variety of other approaches exist.
+The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary (standardized) tool here, although a wide variety of other approaches exist; of particular use is the use of regression coeffients to answer the answer the question: to what extent are two groups related?
+
 
 ### Associations between numeric variables (correlation)
 
@@ -515,32 +516,6 @@ rt_boot = boot(bike_use_atemp, rt_function, R=10000)
 boot.ci(rt_boot, type="bca")$bca[4:5]
 
 0.3931281 0.4665541
-```
-
-### *R^2^*: Proportion of variance explained 
- 
-The *R^2^* effect size is simply the correlation coeffient squared, of course, but oddly enough there does not seem to be a built-in function to readily obtain the CIs for it. We can use the `boot` package to create one, thanks to [a function by Rob Kabacoff](http://www.statmethods.net/advstats/bootstrapping.html):
- 
-```
-library(boot)
-rsq = function(formula, data, indices) {
-  d = data[indices,] # allows boot to select sample
-  fit = lm(formula, data=d)
-  return(summary(fit)$r.square)
-  }
- 
-# bootstrap R2 with 10k replications
-air_temp_R2 = boot(data=bike_use_atemp, statistic=rsq, R=10000,
-  formula=count~air_temp)
-
-# view bootstrapped R2 results
-air_temp_R2
-
-# get 95% confidence interval
-boot.ci(air_temp_R2, type="bca")
-
-# plot results
-plot(air_temp_R2)
 ```
 
 
@@ -682,3 +657,39 @@ x1f              no     unsure        yes
 
   ```
   
+
+### Regression coefficient
+
+Although technically the use of regression implies causality, there are times when you just wish to know the impact of one variable on its relationship with another. When the "predictor" is categorical, the regression coefficient is simply the difference in means, seen at the start of this chapter (`lm(casual~season, data=casual_notworkingday)`). When both variables are numeric, the coefficient is the change in the y-variable for each unit of the x-variable, so regardless of which variable you choose to the be descriptor, you can see the effect size.  
+
+#temp_effect = lm(count~air_temp, data=casual_notworkingday)$coef
+#
+#abs(casual_notworkingday_mean$estimate[1] - 
+#  casual_notworkingday_mean$estimate[2]); casual_notworkingday_mean$conf.int
+  
+  
+### *R^2^*: Proportion of variance explained 
+ 
+The *R^2^* effect size is simply the correlation coeffient squared, of course, but oddly enough there does not seem to be a built-in function to readily obtain the CIs for it. We can use the `boot` package to create one, thanks to [a function by Rob Kabacoff](http://www.statmethods.net/advstats/bootstrapping.html):
+ 
+```
+library(boot)
+rsq = function(formula, data, indices) {
+  d = data[indices,] # allows boot to select sample
+  fit = lm(formula, data=d)
+  return(summary(fit)$r.square)
+  }
+ 
+# bootstrap R2 with 10k replications
+#air_temp_R2 = boot(data=bike_use_atemp, statistic=rsq, R=10000,
+#  formula=count~air_temp)
+
+# view bootstrapped R2 results
+#air_temp_R2
+
+# get 95% confidence interval
+#boot.ci(air_temp_R2, type="bca")
+
+# plot results
+#plot(air_temp_R2)
+```
