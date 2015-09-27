@@ -4,7 +4,6 @@
 - Effect sizes: Measuring differences between groups
 - Effect sizes: Measuring relationships between groups
 
-***NEED TO ADD PLOTS OF ESSs***
 
 ## Overview
 
@@ -100,6 +99,9 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | Standardized odds ratio | Yule's Q | psych | `Yule` |
 | | | | | |  
 | Comparisons of agreement | Cohen's &kappa; | psych | `cohen.kappa` | 
+| | | | | |  
+| Regression coefficient | &beta; | base | `lm`, `confint` |
+| | | | | |  
 
 --------
 
