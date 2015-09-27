@@ -10,7 +10,7 @@ While there are already many books that explore the use of R in statistics and d
 ## Overview
 
 
-The book is divided into two parts: the first provides the essentials of using R for most BI tasks, from data acquisition and wrangling into pattern exploration and the production of data products. The second covers predictive modeling as well as more advanced pattern analytics and data mining tools. This mimics the structure of current business and industry analytic teams, where most BI analysts are using or starting to use the tools in the first part, while more advanced data scientists are focusing on the tools in the second part. That's not to say that there's no cross-over: data scientists who don't use the tools from Part 1 are going to make a lot of mistakes, while typical BI analysts will find a lot of helpful tools in Part 2 where their business question or context requires it.  
+This book is the first of a two-part series: the first provides the essentials of using R for most BI tasks, from data acquisition and wrangling into pattern exploration and the production of data products. The second book will cover predictive modeling as well as more advanced pattern analytics and data mining tools, and will also show Python and R side-by-side to provide analysts with options for both. This two-part appropach mimics the structure of many current business and industry analytic teams, where most BI analysts are using or starting to use the tools in the first part, while more advanced data scientists are focusing on the tools in the second part. That's not to say that there's no cross-over: data scientists who don't ever use the tools from this book are going to make a lot of mistakes, while typical BI analysts will find a lot of helpful tools in the next book where their business question or context requires it.  
 
 ### Part 1: Data Acquisition to Pattern Exploration
 
@@ -37,7 +37,7 @@ Perhaps the largest advance in scientific research in recent years is the idea o
 
 ### Part 2: Predictive Modeling and Data Mining
 
-Part 2 is in the early stages of development, but will cover all of the major data mining and predictive analytic tools, from regression and ensemble models to text mining and network analysis. We expect it to be complete in early/mid 2016. 
+Part 2 is in the early stages of development, but will cover all of the major data mining and predictive analytic tools, from regression and ensemble models to text mining and network analysis, using Python and R to show how to solve common business intelligence tasks with both tools. We expect it to be complete in 2016. 
 
 ## Conventions
 
@@ -50,13 +50,13 @@ Second, we tend to use `pothole_case` for variable, dataframe, and database name
 
 ## What you need 
 
-This is not the best book for a never-used-R-and-need-to-myself analyst. Perhaps you've had an intro course or workshop already—you don't need to be an expert to get value from this book but you will probably struggle without a more detailed overview of how to use R. In past teaching, I've used Rob Kabakoff's wonderful *[R in Action](http://www.manning.com/kabacoff2/)* to introduce college students to R, and it works well as a self-teaching text. There are also a wide variety of websites, videos, and online training programs that can give you the initial understanding of R that will make this book useful. 
+This is not the best book for a never-used-R-and-need-to-myself analyst. Perhaps you've had an intro course or workshop already—you don't need to be an expert to get value from this book but you will probably struggle without a more detailed overview of how to use R. We can recommend Rob Kabakoff's wonderful *[R in Action](http://www.manning.com/kabacoff2/)* to introduce new users to R, and it works well as a self-teaching text. There are also a wide variety of websites, videos, and online training programs that can give you the initial understanding of R that will make this book useful. 
 
 You don't need to be an R programmer, however; this book is aimed at people who use R to accomplish day-to-day analytic ends for business purposes, *not* for those who want to improve their code efficiency, create custom algorithms, or develop new packages.
 
 You should already be comfortable with "everyday" R use for analysis (e.g., knowing how to make base plots, use `lm`, etc.) and R's data construct types, such as knowing the differences between a list, a dataframe, and a matrix. You should also know that any result from the functions shown in this book can be placed in an object to be called or modified later, e.g., you should know that `bob = prop.table(table(bike_share_daily[c(3,9)]))` saves the table of proportions in a two-way table as the object `bob`. This is important because many functions we show (especially with `ggplot2`) are presented as stand-alone functions that create the output immediately. Obviously, you'll need to assign those functions to R objects if you want to keep them in memory for subsequent use. 
 
-You should also be at least familiar with the ideas behind many of the tools used in anaytics and data science; for the most part, this book does not explain the intricacies of how the methods work or what the results of the examples mean. There are many fine resources out there covering theory and tools, but are necessarily limited in methodological scope as a result. In addition, most data science cookbooks currently available use a case-study approach, focusing on a few major tasks in order to explain the methods and results in greater depth. Again, this book is aimed at providing comprehensive cookbook for common data science tasks, and given how many tools there are, there just isn't the space here to provide recipes, interpretation, and theory.
+You should also be at least familiar with the ideas behind many of the tools used in anaytics and data science; for the most part, this book does not explain the intricacies of how the methods work or what the results of the examples mean. There are many fine resources out there covering theory and tools, but are necessarily limited in methodological scope as a result. In addition, most data science cookbooks currently available use a case-study approach, focusing on a few major tasks in order to explain the methods and results in greater depth. Again, this book is aimed at providing comprehensive cookbook for common business initelligence and data science tasks, and given how many tools there are, there just isn't the space here to provide recipes, interpretation, and theory.
 
 This book uses R, RStudio, and Git software. We used R 3.2 and RStudio 0.99 to create this book. If you are on a Windows system, you'll need to ensure either Perl and/or Java are installed to use some of the Excel import functions (if you are using Mac or Unix/Linux, Perl was probably installed with the OS). Make sure that the architecture for Perl/Java you have or install matches that of your R install, i.e., if you are using 64-bit R make sure your Java is also x64. 
 
@@ -75,7 +75,7 @@ Feedback is always welcome; send us an email to EMAIL.
 
 
 
-We hope that this book serves well in its intended purpose as a desktop reference for busy professionals—giving you fingertip access to a variety of BI analytic methods done as simply as possible.
+We hope that this book serves well in its intended purpose as a desktop reference for busy professionals---giving you fingertip access to a variety of BI analytic methods done as simply as possible.
 
 
 
