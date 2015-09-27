@@ -23,7 +23,7 @@ require(ggplot2)
 require(dplyr)
 ```
 
-We’ll first use `dplyr` to group the casual bike use values by month and weekday, then use summarise to calculate mean and sd values for each month/weekday combination (although since we only have 2 years, this is statistically inappropriate. Still, it illustrates the technique). Once we have that, we’ll be able to use `ggplot`’s `geom_tile` option to create heatmaps:
+We’ll first use `dplyr` to group the casual bike use values by month and weekday, then use `summarise` to calculate mean and sd values for each month/weekday combination (although since we only have 2 years, this is statistically inappropriate. Still, it illustrates the technique). Once we have that, we’ll be able to use `ggplot`’s `geom_tile` option to create heatmaps:
 
 ```
 bike_share_grp = group_by(bike_share_daily, weekday, mnth)
