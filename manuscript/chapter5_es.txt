@@ -669,14 +669,12 @@ We'll use the `tao` dataset seen in the previous chapter to explore the effect o
 ```
 data(tao, package="VIM")
 
+# run the linear model
 effect_air_on_sea = lm(Sea.Surface.Temp ~ Air.Temp, data=tao)
+
+# review model coefficients
 effect_air_on_sea
-confint(effect_air_on_sea)
-```
 
-We can see that for every 1 degree increase in air temperature, we get an increase of about 1.18 degrees in sea surface temperature (95% CI [1.16, 1.19]):   
-
-```
 Call:
 lm(formula = Sea.Surface.Temp ~ Air.Temp, data = tao)
 
@@ -684,11 +682,14 @@ Coefficients:
 (Intercept)     Air.Temp  
      -3.867        1.176  
 
-
+# get 95% confidence interval
+confint(effect_air_on_sea)
                 2.5 %    97.5 %
 (Intercept) -4.320256 -3.412817
 Air.Temp     1.157677  1.193817
 ```
+
+We can see that for every 1 degree increase in air temperature, we get an increase of about 1.18 degrees in sea surface temperature (95% CI [1.16, 1.19]):   
 
 
 ### *R^2^*: Proportion of variance explained 
