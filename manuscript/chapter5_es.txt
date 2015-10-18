@@ -710,11 +710,33 @@ air_temp_R2 = boot(data=tao, statistic=rsq, R=10000,
 # view bootstrapped R2 results
 air_temp_R2
 
+ORDINARY NONPARAMETRIC BOOTSTRAP
+
+Call:
+boot(data = tao, statistic = rsq, R = 10000, formula = Sea.Surface.Temp ~ 
+    Air.Temp)
+
+
+Bootstrap Statistics :
+     original       bias    std. error
+t1* 0.9615353 4.891461e-05 0.003223984
+
 # get 95% confidence interval
 boot.ci(air_temp_R2, type="bca")
+
+BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 10000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = air_temp_R2, type = "bca")
+
+Intervals : 
+Level       BCa          
+95%   ( 0.9541,  0.9669 )  
+Calculations and Intervals on Original Scale
 
 # plot results
 plot(air_temp_R2)
 ```
 
-![R2 bootstrapped CI](images/)
+![R2 bootstrapped CI](images/r2bootstrapped.png)
