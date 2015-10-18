@@ -212,7 +212,7 @@ str(power_monthly)
 
 ## Analytics
 
-### Explore data
+### Explore the data
 
 Plotting your data is the single most important part of analytics, so this book spends a lot of space on graphical representation. Here, as we're focused on power use over time, we'll plot the monthy summary we've calculated above. 
 
@@ -233,7 +233,7 @@ ggsave("Results/total_use_plot.png", width=6, height=4, dpi=600, units="in")
 We can see clear patterns in the data—higher in the winter and lower in the summer. 
 
 
-### Run forecasting model
+### Run a forecasting model
 
 Now we want to forecast total use for the next six months. We'll create the model with the automated `forecast` function from the `forecast` package, then plot the results and view the model itself. 
 
