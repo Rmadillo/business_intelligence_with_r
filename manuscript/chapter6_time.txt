@@ -210,16 +210,33 @@ While having dates in the dataset can allow easy plotting via `ggplot2`, there a
 We’ll use a dataset of 10 years of monthly births in the UK (2003-2012), acquired from the EU’s EuroStat.
 
 ```
-UK_births = read.table("UK_births.csv", header=T, sep=",", stringsAsFactors=F)
+library(eurostat)
+demo_fmonth = get_eurostat('demo_fmonth')
 ```
 
-First, we need to convert the data into a `ts` (time series) object:
+R can be a little particular about date values, and if your data aren’t in a format it recognizes, it can choke. Case in point is using `ggplot2` to plot this data, which contains a year field and a month field but not a day field—which makes sense, seeing as how the data are monthly values. But you’ll have to tie yourself in knots to make those two work together as time elements in a ggplot, so it’s actually easier if you just gave each month a fake day (i.e., the 1st), mush ‘em together as a character via the `paste` function, and then specify that you want the final result to be in `Date` format.
 
 ```
-UK_births_ts = ts(UK_births$Value, start = c(2003, 1), frequency = 12)
+demo_fmonth$date = as.Date(paste(substr(demo_fmonth$time, 1, 4), 
+    substr(demo_fmonth$month, 2, 3), "01", sep="-"))
 ```
 
-The `frequency` option is related to how many time steps make up a "whole" unit in your data; for example, if your data is hourly and you expect seasonality on the daily level, frequency equals 24. Obviously, the above setting tells R that the data are monthly and we expect annual seasonality. 
+Now we can use `dplyr` to filter and arrange the data...
+
+```    
+library(dplyr)
+UK_births = filter(demo_fmonth, geo == "UK" & month != 'TOTAL' & 
+    month != 'UNK' & date >= '2003-01-01' & date <= '2012-12-01')
+UK_births = arrange(UK_births, date)
+```
+
+...and then we can convert the data into a `ts` (time series) object:
+
+```
+UK_births_ts = ts(UK_births$values, start=c(2003, 1), frequency=12)
+```
+
+The `frequency` option is related to how many time steps make up a "whole" unit in your data; for example, if your data is hourly and you expect seasonality on the daily level, frequency equals 24. Obviously, the above setting tells R that the data are monthly and we expect annual "seasonality." 
 
 Once we have a `ts` object, we can plot it; if all you need to do is look at it, you can simply use `plot(my_ts_object)`. But if you want to use the plot for more than just your own edification, you’ll need to add some decoration manually:
 
@@ -230,16 +247,10 @@ plot(UK_births_ts, xlab="Date", ylab="Count", main="Monthly Births in the UK
 
 ![time series](images/biwr_05_ukbirths1.png)
 
-### No day value but you want to plot it in ggplot?
-
-R can be a little particular about date values, and if your data aren’t in a format it recognizes, it can choke. Case in point is using `ggplot2` to plot the UK births date, which contains a year field and a month field but not a day field—which makes sense, seeing as how the data are monthly values. But you’ll have to tie yourself in knots to make those two work together as time elements in a ggplot… so it’s actually easier if you just gave each month a fake day (i.e., the 1st), mush ‘em together as a character via the `paste` function, and then specify that you want the final result to be in `Date` format.
+And we can use `ggplot2` to make it prettier:
 
 ```
 require(ggplot2)
-
-UK_births$Date = as.Date(paste("1", UK_births$MONTH, UK_births$TIME, sep=" "), 
-  format="%d %B %Y")
-
 ggplot(UK_births, aes(x=Date, y=Value)) +
     geom_line(col="darkblue") +
     ylab("Count") +
@@ -257,7 +268,7 @@ Autocorrelation can be present in non-temporal data as well as in time series; t
 acf(UK_births_ts)
 ```
 
-![](images/autocorrelation.png)
+![autocorrelation](images/autocorrelation.png)
 
 What's often underappreciated is that autocorrelated data, temporal or not, will make standard confidence intervals *too small*. In other words, if you want to plot a trend and use the default confidence intervals, you'll underestimate the actual uncertainty associated with a trend line or data points across time. 
 
@@ -294,12 +305,7 @@ If you need to explore a time series in more depth, you'll probably want to deco
 
 ### Additive decomposition
 
-We’ll continue with the UK monthly births data in its time series format. Most functions we’ll use in this recipe are in the `base` installation’s `stats` package, but one is in the `forecast` package, so load that with the data:
-
-```
-require(forecast)
-UK_births = read.table("UK_births.csv", header=T, sep=",", stringsAsFactors=F)
-```
+We’ll continue with the UK monthly births data in its time series format. Most functions we’ll use in this recipe are in the `base` installation’s `stats` package, but one is in the `forecast` package, so make sure it's loaded with the data.
 
 The `decompose` function uses a moving average for simplicity:
 
@@ -372,7 +378,7 @@ sun_spec_df[which.max(sun_spec_df[,2]),]
 27          0.09      55820.99
 ```
 
-You can take the inverse of the frequency peak’s value to get a sense for cycle timings. This data is annual, and since the the highest spectral peak is at a frequency of 0.09, it suggests that there is a ~11 year cycle (1/0.09=11).
+When frequency is 1, you can take the inverse of the frequency peak’s value to get a sense for cycle timings. This data is annual, and since the the highest spectral peak is at a frequency of 0.09, it suggests that there is a ~11 year cycle (1/0.09=11).
 
 
 ## Evaluating quality with control charts
@@ -413,18 +419,20 @@ infection_control_qcc = data.frame(Month = month_name, infection_control$limits,
 
 We’ll explore intervention analysis in more detail in Part 2 of this book, but this is a useful place to demonstrate a simple way to identify changes in the statistical structure of a time series using the `strucchange` package.
 
-We’ll look at annual United States CO_2 emissions between February 2001 and September 2014 (data from the US Energy Information Administration’s WEPS+ model). Load the `strucchange` package, the data, and convert the data to a time series object:
+We’ll look at total monthly United States CO_2 emissions between February 2001 and June 2015 ([data from the US Energy Information Administration](http://www.eia.gov/beta/MER/index.cfm?tbl=T12.01#/?f=M&start=200101&end=201506&charted=0-1-13)). Load the `strucchange` package, download and filter the data, and convert the data to a time series object:
 
 ```
 require(strucchange)
-us_co2 = read.table("US_CO2_2001_2014.csv", header=T, sep=",")
-us_co2_ts = ts(us_co2[,2], freq=12, start=c(2001,2))
+US_co2 = read.table("http://www.eia.gov/totalenergy/data/browser/csv.cfm?tbl=T12.01", sep=",", header=T)
+US_co2 = filter(US_co2, Column_Order == 14 & YYYYMM >= 200102 & substr(YYYYMM, 5, 7) != 13)
+US_co2_ts = ts(US_co2[,3], freq=12, start=c(2001,2))
 ```
 
-`strucchange` will pick the optimal number of breakpoints as determined by BIC, which can be subsequently plotted over the time series. As there does not seem to be an indication of general rises or declines in mean tendency, we can use `~ 1` in the formula in place of a dependent variable to assess whether there is a step change (or changes) in the time series:
+`strucchange` will pick the optimal number of breakpoints as determined by BIC, which can be subsequently plotted over the time series. As there does not seem to be a clear indication of general rises or declines in mean tendency, we can use `~ 1` in the formula in place of a dependent variable to assess whether there is a step change (or changes) in the time series:
 
 ```
-breakpoints(us_co2_ts ~ 1)
+# Obtain breakpoints estimate
+breakpoints(US_co2_ts ~ 1)
 
      Optimal 2-segment partition:
 Call:
@@ -434,9 +442,14 @@ Breakpoints at observation number:
 Corresponding to breakdates:
 2009(1)
 
-plot(us_co2_ts, main=expression(paste("Breakpoint in Monthly US"
+# Plot the time series
+plot(US_co2_ts, main=expression(paste("Breakpoint in Monthly US"
   ~CO[2]~Emissions)), ylab="Million Metric Tons", col="darkblue", lwd=1.5)
-lines(breakpoints(us_co2_ts ~ 1), col="darkgreen")
+# Plot the line at the optimal breakpoint
+lines(breakpoints(US_co2_ts ~ 1), col="darkgreen")
+# Plot a 90% confidence interval
+lines(confint(breakpoints(US_co2_ts ~ 1), level=0.90), col="darkgreen")
+# Add breakpoint location text
 text(2008.8, 555, "Jan 2009", cex=0.75, col="darkgreen", pos=4, font=3)
 ```
 
