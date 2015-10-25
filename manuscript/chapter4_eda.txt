@@ -4,7 +4,7 @@
 - Plotting univariate distributions  
 - Plotting bivariate and comparative distributions  
 - Plotting survey data  
-- Obtaining summary statistics  
+- Obtaining summary and conditional statistics  
 - Inference on summary statistics  
 - Dealing with missing data  
 
@@ -414,7 +414,7 @@ detach("package:reshape", unload=TRUE)
 ```
 
 
-## Obtaining summary statistics
+## Obtaining summary and conditional statistics
 
 Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in the `base` installation and a wide variety of packages, but I’ve found that the `psych` package probably has the most useful way to obtain them simply, particularly for groupings or when you want to condition on a particular value or threshold.
 
