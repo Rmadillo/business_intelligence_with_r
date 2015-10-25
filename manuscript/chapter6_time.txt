@@ -112,7 +112,15 @@ The `psi` option is pretty robust to starting values when you have a large sampl
 ### Count data -- Poisson regression
 
 
+Residuals
+
 ### Binary data -- logistic regression
+
+
+I> The traditional approach of plotting residuals is fairly pointless for 
+I> logistic regression; since the response is binary you'll only see a 
+I> couple of lines on the residual plot. Use the other options above for that.
+
 
 
 ## Regression for non-linear data (GAMs)
