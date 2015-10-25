@@ -1,13 +1,18 @@
 # Chapter 6: Trends and Time
 
 - Describing trends in non-temporal data
+- Regression for continuous, count, and binary data (GLMs)
+- Regression for non-linear data (GAMs)
+- Working with temporal data
+- Calculate a mean or correlation in circular time (clock time)
+- Plotting time-series data
 - Detecting autocorrelation
-- Dealing with temporal data
-- Plotting time series data
+- Plotting monthly patterns
 - Decomposing time series into components
-- Looking for cycles in the noise
+- Finding cycles in the noise: Using spectral analysis to identify periodicity
 - Evaluating quality with control charts
 - Identifying possible breakpoints in a time series
+- Exploring relationships between time series: cross-correlation
 - Basic forecasting
 
 Dealing with temporal data presents its own set of unique challenges. R lessens that burden considerably—as long as your data are in the right form.
@@ -97,6 +102,21 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
 ![segmented trend](images/biwr_05_segment.png)
 
 The `psi` option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a `psi` of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same. However, with fewer data points, and/or a lot of variance, the choice of `psi` could change the results, so try a few different values. 
+
+
+## Regression for continuous, count, and binary data (GLMs)
+
+### Continuous data -- traditional regression
+
+
+### Count data -- Poisson regression
+
+
+### Binary data -- logistic regression
+
+
+## Regression for non-linear data (GAMs)
+
 
 
 ## Working with temporal data
@@ -322,7 +342,7 @@ plot(decompose(UK_births_ts), col="darkblue")
 
 Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. 
 
-There are two ways to do this: by using `type = "multiplicative"` in the `decompse` function as above, or by using the `BoxCox.lambda` function in the `forecast` package to determine an optimal transformation :
+There are two ways to do this: by using `type = "multiplicative"` in the `decompse` function as above, or by using the `BoxCox.lambda` function in the `forecast` package to determine an optimal transformation:
 
 Look at the data to see the change in variance over time:
 ```
