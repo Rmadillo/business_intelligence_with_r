@@ -2,13 +2,12 @@
 
 | |  
 
-### About the Authors
+### About the Author
 
 stuff about us
 
 | |  
   
-| |  
 
 ### About the Cover
 
@@ -23,6 +22,11 @@ stuff about cover image
 R session info here (from final run through)
   
 | |  
+
+### Version Info
+
+Version 1.0, November 2015
+
 
 {icon=download}
 G> The code is available from the book's GitHub site at **URL**.
