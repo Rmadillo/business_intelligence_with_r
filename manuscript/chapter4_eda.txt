@@ -479,6 +479,13 @@ describeBy(bike_share_daily$casual, bike_share_daily$windspeed >
 
 ![describe1](images/describe5.png)
 
+
+I> Although `describeBy` gives you more versatility, you can use `sum` for a
+I> quick-and-dirty conditional count, e.g., 
+I> `sum(bike_share_daily$cnt > , na.rm=T` or
+I> `sum(bike_share_daily$workingday == 'Yes')`. 
+
+
 You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums. 
 
 A three-way table:
@@ -544,6 +551,7 @@ season             1           2           3
   Fall   0.140902873 0.088919289 0.013679891
 ```
 
+
 Sometimes you may want the counts to be in a data frame, either for use in plotting or because tables with more than 2 or 3 dimensions can be difficult to understand at a glance. You can quickly create any *n*-way table as a data frame using `dplyr`:
 
 ```
@@ -560,6 +568,7 @@ Groups: season, holiday
 …
 ```
 
+
 A> #### Finding local maxima/minima
 A>
 A> The `which.max` (or `which.min`) function can show you the set of values for a chosen maximum (or minimum) observation: 
@@ -569,6 +578,7 @@ A> bike_share_daily[which.min(bike_share_daily[,14]),]
 A> ```
 A> 
 A> ![](images/whichmax.png)
+
 
 
 ## Inference on summary statistics
