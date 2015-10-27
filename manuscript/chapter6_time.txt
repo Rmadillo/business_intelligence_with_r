@@ -106,20 +106,25 @@ The `psi` option is pretty robust to starting values when you have a large sampl
 
 ## Regression for continuous, count, and binary data (GLMs)
 
-### Continuous data -- traditional regression
+{width="90%"}
+| Response type | Response error distribution | Predictor type | Model type | Code |
+| ------------- | --------------------------- | -------------- | ---------- | ---- |
+| Continuous | Normal | Continuous | Regression | `lm(y ~ x1 + x2 ... + xn)` |
+| Continuous | Normal | Categorical | ANOVA | `lm(y ~ x1 + x2 ... + xn)` |
+| Continuous | Normal | Mixed | ANCOVA | `lm(y ~ x1 + x2 ... + xn)` |
+| Binary | Binomial | Mixed | Logistic regression | `glm(y ~ x1 + x2 ... + xn, family=binomial(link=logit))` |
+| Count | Poisson | Mixed | Mixed | Poisson regression | `glm(y ~ x1 + x2 ... + xn, family=poisson(link=log))` |
+|  | Overdispersed Poisson |  Mixed | Negative binomial regression | `glm.nb(y ~ x1 + x2 ... + xn)` | 
+| Rate | Poisson | Mixed |  Mixed | Poisson regression | `glm(y ~ x1 + x2 ... + xn, offset=log(t), family=poisson(link=log))` |
+|  | Overdispersed Poisson |  Mixed | Negative binomial regression | `glm.nb(y ~ x1 + x2 ... + xn, offset=log(t))` | 
+| Counts with lots of 0s | Overdispersed Poisson |  Mixed | Zero-inflated Poisson regression | `require (pscl)` |
+| | | | `zeroinfl(y ~ x1 + x2 ... + xn, dist="poisson")` | 
+| Counts where 0 is not possible and mean < 5 | Overdispersed Poisson |  Mixed | Zero-truncated Poisson regression | `require (gamlss.tr)` |
+| | | | `gamlss(y ~ x1 + x2 ... + xn, family=PO)` | 
 
 
-### Count data -- Poisson regression
 
-
-Residuals
-
-### Binary data -- logistic regression
-
-
-I> The traditional approach of plotting residuals is fairly pointless for 
-I> logistic regression; since the response is binary you'll only see a 
-I> couple of lines on the residual plot. Use the other options above for that.
+### Assessing model fit
 
 
 
