@@ -1,6 +1,3 @@
 about.txt
 Introduction.txt
-chapter1_fullproj.txt
-chapter2_getdata.txt
-chapter3_cleandata.txt
-chapter4_eda.txt
+chapter6_time.txt
