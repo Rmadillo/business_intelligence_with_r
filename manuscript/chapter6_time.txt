@@ -107,12 +107,14 @@ The `psi` option is pretty robust to starting values when you have a large sampl
 ## Regression for continuous, count, and binary data (GLMs)
 
 {width="90%"}
-| Response type | Response error distribution | Predictor type | Model type | Code |
+| Response type | Response error distribution | Predictor type | Model type | Code\* |
 | ------------- | --------------------------- | -------------- | ---------- | ---- |
 | Continuous | Normal | Continuous | Regression | `lm(y ~ x1 + x2 ... + xn)` |
 | Continuous | Normal | Categorical | ANOVA | `lm(y ~ x1 + x2 ... + xn)` |
 | Continuous | Normal | Mixed | ANCOVA | `lm(y ~ x1 + x2 ... + xn)` |
-| Binary | Binomial | Mixed | Logistic regression | `glm(y ~ x1 + x2 ... + xn, family=binomial(link=logit))` |
+| Binary | Logistic | Mixed | Logistic regression | `glm(y ~ x1 + x2 ... + xn, family=binomial(link=logit))` |
+| Ordinal | Logistic | Mixed | Proportional odds logistic regression | `polr(y ~ x1 + x2 ... + xn, Hess=TRUE)` |
+| Nominal | Logistic | Mixed | Multinomial regression | `multinom(y ~ x1 + x2 ... + xn)` |
 | Count | Poisson | Mixed | Mixed | Poisson regression | `glm(y ~ x1 + x2 ... + xn, family=poisson(link=log))` |
 |  | Overdispersed Poisson |  Mixed | Negative binomial regression | `glm.nb(y ~ x1 + x2 ... + xn)` | 
 | Rate | Poisson | Mixed |  Mixed | Poisson regression | `glm(y ~ x1 + x2 ... + xn, offset=log(t), family=poisson(link=log))` |
@@ -122,7 +124,7 @@ The `psi` option is pretty robust to starting values when you have a large sampl
 | Counts where 0 is not possible and mean < 5 | Overdispersed Poisson |  Mixed | Zero-truncated Poisson regression | `require (gamlss.tr)` |
 | | | | `gamlss(y ~ x1 + x2 ... + xn, family=PO)` | 
 
-
+\* change `+` to `\*` to create interactions  
 
 ### Assessing model fit
 
