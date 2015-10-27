@@ -104,7 +104,11 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
 The `psi` option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a `psi` of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same. However, with fewer data points, and/or a lot of variance, the choice of `psi` could change the results, so try a few different values. 
 
 
-## Regression for continuous, count, and binary data (GLMs)
+## The many flavors of regression
+
+There are many ways to model trends in data, but the majority of cases can be addressed with a few types. The following are generalized linear models or close relatives; regression for non-linear responses (GAM) follows in the next section. 
+
+The coefficients, of course, are effect sizes. 
 
 {width="wide"}
 | Response type | Response error distribution | Predictor type | Model type | Code\* |
