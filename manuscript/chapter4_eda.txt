@@ -623,26 +623,10 @@ boot.ci(q75_boot, type="bca")$bca[4:5]
 500 675
 ```
 
-### Credible intervals
-
-STUFF ON BCIs here
-
-The single sample functions available to acquire simple CIs as of this writing include:
-
-{width="90%"}
-| Statistic | Data type | Distribution | Function |
-| --------- | --------- | ------------ | -------- |
-| Mean | Continuous | Normal, t, “normal enough” | `bayes.t.test(x)`|
-| Proportion/Percent | Binomial | `bayes.binom.test(x, n)` |
-| Count | Count | Poisson | `bayes.poisson.test(x)` |
-| Rate | Count/Unit | Poisson | `bayes.poisson.test(x, T)` |
-
-
-
 
 ### Tolerance intervals
 
-While confidence and credible limits tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% *confidence* interval) and how long you can expect 95% of those trips will take (using a 95% *tolerance* interval). While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. 
+While confidence or Bayesian credible intervals tend to be more often used in data science, tolerance intervals are more useful in engineering or industrial contexts: there’s a profound conceptual and practical difference between, for example, a good estimate of average commuting time to work (using a 95% *confidence* interval) and how long you can expect 95% of those trips will take (using a 95% *tolerance* interval). While the former type of value tends to be used more by statisticians and data miners, engineers and industrial analysts—and sometimes business users—find the latter more useful. 
 
 Essentially, a good way to remember the difference is that as the sample size approaches the population size, the confidence interval will approach zero, while a tolerance interval will approach the population percentiles.
 
