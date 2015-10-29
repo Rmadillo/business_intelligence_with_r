@@ -596,17 +596,17 @@ When we don’t have a full population to assess, we often need to determine how
 | Count | Count | Poisson | `poisson.test(x)$conf.int` |
 | Rate | Count/*n* | Poisson | `poisson.test(x, n)$conf.int` |
 
-Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the `CO2` dataset that comes with R for simplicity’s sake:
+Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the `PlantGrowth` dataset that comes with R for simplicity’s sake:
 
 ```
 require(boot)
-sd_boot_function = function(x,i){sd(x[i])
-sd_boot = boot(CO2$conc, sd_boot_function, R=10000)
-sd(CO2$conc)
+sd_boot_function = function(x,i){sd(x[i])}
+sd_boot = boot(PlantGrowth$weight, sd_boot_function, R=10000)
+sd(PlantGrowth$weight)
 boot.ci(sd_boot, type="bca")$bca[4:5]
 
-295.9241
-258.8950 333.7344
+0.7011918
+0.5741555 0.8772850
 ```
 
 The BCa method is generally the appropriate calculation unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use `type="norm"`, i.e., use the normal approximation for very small samples that you expect are “normal enough,” realizing that due to sampling error you could be estimating intervals that are wildly incorrect.   
@@ -614,14 +614,53 @@ The BCa method is generally the appropriate calculation unless you have strong r
 We can also bootstrap confidence intervals for any summary statistic. For example, to get the bootstrapped 75th percentile, run the following:
 
 ```
-q75_function = function(x,i){quantile(x[i], probs=0.75)
-q75_boot = boot(CO2$conc, q75_function, R=10000)
-quantile(CO2$conc,0.75)
+q75_function = function(x,i){quantile(x[i], probs=0.75)}
+q75_boot = boot(PlantGrowth$weight, q75_function, R=10000)
+quantile(PlantGrowth$weight,0.75)
 boot.ci(q75_boot, type="bca")$bca[4:5]
 
-675
-500 675
+5.53 
+5.24 5.99
 ```
+
+You can get quick (gg)plots of means/medians and confidence intervals, standard deviations (defaults to 2), or quantiles with the `stat_summary` and one of the following options:  
+
+| Statistic | Interval Type | Function |
+| --------- | ------------- | -------- |
+| Mean | Bootstrapped CI | `mean_cl_boot(x, conf.int=0.95, ...)` |
+| Mean | Normal CI | `mean_cl_mean_sdl(x, conf.int=0.95, ...)` |
+| Mean | Standard deviation | `mean_sdl(x, mult=2, ...)` |
+| Median | Quantile | median_hilow(x, conf.int=0.95, ...)
+
+
+The following code demonstrates all three options:
+
+```
+require(ggplot2)
+require(gridExtra)
+
+p1 = ggplot(PlantGrowth, aes(group, weight)) +
+    ggtitle("Bootstrapped") +
+    stat_summary(fun.data = mean_cl_boot, conf.int = 0.95) 
+
+p2 = ggplot(PlantGrowth, aes(group, weight)) +
+    ggtitle("Normal") +
+    stat_summary(fun.data = mean_cl_normal, conf.int = 0.95) 
+
+p3 = ggplot(PlantGrowth, aes(group, weight)) +
+    ggtitle("2 SDs") +
+    stat_summary(fun.data = mean_sdl, mult=2) 
+
+p4 = ggplot(PlantGrowth, aes(group, weight)) +
+    ggtitle("Median+IQR") +
+    stat_summary(fun.data = median_hilow, conf.int = 0.5) 
+
+grid.arrange(p1, p2, p3, p4, nrow=2)
+```
+
+![conf interval plots](images/plotcis.png)
+
+
 
 
 ### Tolerance intervals
