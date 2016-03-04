@@ -1,1 +1,32 @@
 # Chapter 9: Reporting and Dashboarding
+
+- Technical Memos
+- Reports
+- Dashboards
+- Slide Decks and Shiny Apps
+- Reproducible Analytics
+
+## Technical Memos
+
+Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
+
+## Reports
+
+Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. The vast majority of analytics in modern BI tend to be report-oriented. 
+
+
+## Dashboards
+
+There are a lot of dashboards in BI that don't deserve the name. Just because you have graphs and interactivity doesn't mean you have a real dashboard; much like driving a car, if you're getting information about how fast you were going 10 minutes ago, it's not of much use. Dashboards are about real-time analytics.  
+
+Forecasting fits into this group as well, much as a GPS or driving app provides you information about where you're going. 
+
+
+## Slide Decks and Shiny Apps
+
+At some point, every analyst needs to report their results in a meeting or briefing. Traditional static slide decks are fine, but one of the powerful features of R is the ability to create slide decks or apps with interactive features, allowing the analyst to help decision makers explore the results and their implications interactively, in real time. 
+
+
+## Reproducible Analytics
+
+In research and academia, there is increasing emphasis on reproducible research, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is starting to adopt the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. 
