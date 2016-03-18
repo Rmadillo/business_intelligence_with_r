@@ -19,16 +19,20 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | Type | Statistic | Package | Function | 
 | ---- | --------- | ------- | -------- | 
 | | | | | |  
-| Mean difference | \|D\| | base | `t.test(...)$estimate` | 
+| Difference in means | \|D\| | base | `t.test(...)$estimate` | 
 | | | | `t.test(...)$conf.int` |  
 | | | | | |  
 | | \|D\| | bootES | `bootES` with `effect.type="unstandardized"` |  
 | | | | | |  
 | | \|D\| | BayesianFirstAid | `bayes.t.test` |   
 | | | | | |  
-| Median difference |  | base | `wilcox.test(...)$estimate`, `wilcox.test(...)$conf.int` |   
+| Difference in medians |  | simpleboot | `two.boot(..., median)$t0` |   
+| | | | | `boot.ci` of `two.boot` object |  
 | | | | | |  
 | |  | BayesianFirstAid | *not yet implemented* | 
+| | | | | |  
+| Difference in quantiles |  | simpleboot | `two.boot(..., quantile, probs=0.75)$t0` | 
+| | | | | `boot.ci` of `two.boot` object |  
 | | | | | |  
 | Standardized mean difference | Cohen's *d* | bootES | `bootES` with `effect.type="cohens.d"` | 
 | | | | | |  
@@ -117,6 +121,7 @@ We'll continue to use the bike share data, but we'll reshape and filter some of 
 
 ```
 # Load libraries
+require(simpleboot)
 require(bootES)
 require(orddom)
 require(asympTest)
@@ -151,7 +156,7 @@ round(workday_diff$conf.int, 2)
 -0.02 -0.01
 ```
 
-When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average (or median) casual bike use between Spring and Fall non-working days, we can use `t.test` (or `wilcox.test`):
+When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average (or median) casual bike use between Spring and Fall non-working days, we can use `t.test` (or `two.test`):
 
 ```
 casual_notworkingday_mean = t.test(casual~season, data=casual_notworkingday)
@@ -175,12 +180,55 @@ Stat         CI (Low)     CI (High)    bias        SE
 636.603      332.203      908.222      3.116       149.380     
 ```
 
-To look at a difference of medians (with a CI), use `wilcox.test`:
+To look at a difference between medians (with a CI), use `two.test` from the `simpleboot` package. Unfortunately, `simpleboot` doesn't use formula notation so we'll have to reuse some intermediate data frames created above:
 
 ```
-casual_notworkingday_median = wilcox.test(casual~season, 
+diff_medians = two.boot(casual_notworking_Spring$casual, casual_notworking_Fall$casual, median, R=2000)
+diff_medians_ci = boot.ci(diff_medians, conf=0.95, type='bca')
+diff_medians$t0; diff_medians_ci
+
+834
+
+BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 2000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = diff_medians, conf = 0.95, type = "bca")
+
+Intervals : 
+Level       BCa          
+95%   ( 480.0, 1277.8 )  
+Calculations and Intervals on Original Scale
+```
+
+`simpleboot` allows you to compare any two univariate statistics. For example, you could compare the 75% percentile of the two groups:
+
+```
+diff_75 = two.boot(casual_notworking_Spring$casual, casual_notworking_Fall$casual, quantile, probs=0.75, R=2000)
+diff_75_ci = boot.ci(diff_medians, conf=0.95, type='bca')
+diff_75$t0; diff_75_ci
+
+   75% 
+731.25 
+
+BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 2000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = diff_medians, conf = 0.95, type = "bca")
+
+Intervals : 
+Level       BCa          
+95%   ( 480.0, 1277.8 )  
+Calculations and Intervals on Original Scale
+```
+
+Sometimes you may want the median difference instead of the difference between medians. Use `wilcox.test` for that:
+
+```
+median_diff = wilcox.test(casual~season, 
   data=casual_notworkingday, conf.int=TRUE)
-casual_notworkingday_median$estimate; casual_notworkingday_median$conf.int
+median_diff$estimate; median_diff$conf.int
 
 684.0001
 399 997
