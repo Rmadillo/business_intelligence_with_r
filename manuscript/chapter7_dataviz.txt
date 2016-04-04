@@ -159,16 +159,87 @@ Most interactive graphs in R are built behind the scenes with javascript (often 
 
 We'll start with some basic interactive visualizations by recalling some of the graphs built in earlier chapters, showing the commands that render approximately the same graphs. We'll also add a few new visualizations that demonstrate cases where static plots don't work and interactivity is essential. Of course, the packages shown below have many more options and possibilities, and you should explore their websites and use cases for more information. 
 
-### 
+### Basic interactive plots
 
-Taucharts
+We'll use the `taucharts` package to recreate several of the daily bike share data plots in Chapter 4. There, `ggplot` did the counting/aggregation work, but here we'll need to use `dplyr` to summarize it first. 
 
-Bokeh?
+```
+# devtools::install_github("hrbrmstr/taucharts")
+require(taucharts)
+require(dplyr)
+
+bike_share_daily$weather = as.factor(ifelse
+    (bike_share_daily$weathersit == 1, "Clear", 
+    ifelse(bike_share_daily$weathersit == 2, "Cloudy/Rainy",
+    "Stormy")))
+                           
+bike_share_count = bike_share_daily %>% 
+  group_by(weather) %>%
+  summarize(count=n())
+  
+bike_share_count_season = bike_share_daily %>% 
+  group_by(weather, season) %>%
+  summarize(count=n())
+```
+
+Now we can start making plots:
+
+```
+tauchart(bike_share_count) %>% 
+  tau_bar("weather", "count") %>% 
+  tau_tooltip()
+```
+
+![tau barchart]()
+
+```
+tauchart(bike_share_count) %>% 
+  tau_point("weather", "count") %>% 
+  tau_tooltip()
+```
+
+![tau dotplot]()
+
+```
+tauchart(bike_share_daily_count) %>% 
+  tau_bar("count", "weather", horizontal=T) %>% 
+  tau_tooltip()
+```
+
+![tau horizontal barchart]()
+
+Bivariate and faceted plots are similarly simple:
+
+```
+tauchart(bike_share_count_season) %>% 
+  tau_bar("count", "season", "weather", horizontal=T) %>% 
+  tau_legend() %>%
+  tau_tooltip()
+```
+
+![tau horizontal faceted barchart]()
+
+```
+tauchart(bike_share_daily) %>%
+  tau_point("atemp", "casual") %>%
+  tau_tooltip()
+```
+
+![tau scatterplot]()
+
+```
+tauchart(bike_share_daily) %>% 
+  tau_point(c('weather', 'atemp'), c('season', 'casual')) %>%
+  tau_tooltip()
+```
+
+![tau faceted scatterplot]()
+
 
 
 ### Motionchart: a moving bubblechart
 
-In 1996, Hans Rosling made data viz history with his [famous TED talk](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen) that used a motionchart to challenge the assumptions of global development. 
+In 1996, Hans Rosling made dataviz history with his [famous TED talk](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen) that used a motionchart to challenge the assumptions of global development. 
 
 We'll use the `googleVis` package to create a mimic of his famous chart. 
 
