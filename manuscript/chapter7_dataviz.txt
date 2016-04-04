@@ -157,7 +157,7 @@ For the most part, tooltips and chart interaction is overkill except in the case
 
 Most interactive graphs in R are built behind the scenes with javascript (often d3) using R syntax. Detailed customization is often somewhat difficult, but most packages' defaults are sensible enough that such customization isn't needed. `htmlwidgets` is the primary means by which people integrate interactive data viz with R; we'll use a few of the packages built around that in this section. 
 
-We'll explore some basic interactive visualizations by recalling some of the graphs built in earlier chapters, showing the commands that render approximately the same graphs. We'll also add a few new visualizations that demonstrate cases where interactivity is essential. Of course, the packages we'll use here have many more uses, and you should explore their websites and use cases for more information. 
+We'll start with some basic interactive visualizations by recalling some of the graphs built in earlier chapters, showing the commands that render approximately the same graphs. We'll also add a few new visualizations that demonstrate cases where static plots don't work and interactivity is essential. Of course, the packages shown below have many more options and possibilities, and you should explore their websites and use cases for more information. 
 
 ### 
 
@@ -168,8 +168,28 @@ Bokeh?
 
 ### Motionchart: a moving bubblechart
 
-Googlevis?
-gapminder?
+In 1996, Hans Rosling made data viz history with his [famous TED talk](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen) that used a motionchart to challenge the assumptions of global development. 
+
+We'll use the `googleVis` package to create a mimic of his famous chart. 
+
+```
+# load the googleVis package
+
+library(googleVis)
+
+# load the data (an excerpt of data from gapminder.org)
+
+rosling_data = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/rosling_data.csv")
+  
+# create the motion plot using larger plot size than default
+plot(gvisMotionChart(rosling_data, 
+     idvar = "Country", 
+     timevar = "Year", 
+     sizevar = "Population", 
+     options=list(width = 700, height = 600)))
+```
+
+![motionchart]()
 
 
 ### Interactive tables with `DT`
