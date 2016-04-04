@@ -12,7 +12,7 @@ We’ve already explored summary plots of a set of variables earlier in this cha
 
 MENTION BUBBLECHARTS
 
-Visualizing multidimensional data is difficult to do in two dimensions. Heatmaps can provide an extra dimension or two via color scale and/or intensity, while parallel coordinates lays out all of your variables as a series of 1-dimensional axes. These approaches shouldn’t substitute for a set of univariate displayes of the data (e.g., as a set of density plots presented in facets, as seen in the Plotting univariate data recipe in Chapter 4), but they’re a great additional tool you can use when exploring the dimensions of your data. Further, interactive versions of these two plots (later this chapter) can be great tools for decision makers, and exploring layout and views with static versions before creating interactive ones can save time later.
+Visualizing multidimensional data is difficult to do in two dimensions. Heatmaps can provide an extra dimension or two via color scale and/or intensity, while parallel coordinates lays out all of your variables as a series of 1-dimensional axes. These approaches shouldn’t substitute for a set of univariate displayes of the data (e.g., as a set of density plots presented in facets, as seen in the *Plotting univariate data* recipe in Chapter 4), but they’re a great additional tool you can use when exploring the dimensions of your data. Further, interactive versions of these two plots (later this chapter) can be great tools for decision makers, and exploring layout and views with static versions before creating interactive ones can save time later.
 
 ### Heatmaps
 
@@ -23,7 +23,7 @@ require(ggplot2)
 require(dplyr)
 ```
 
-We’ll first use `dplyr` to group the casual bike use values by month and weekday, then use `summarise` to calculate mean and sd values for each month/weekday combination (although since we only have 2 years, this is statistically inappropriate. Still, it illustrates the technique). Once we have that, we’ll be able to use `ggplot`’s `geom_tile` option to create heatmaps:
+We’ll first use `dplyr`'s `group_by` function to group the casual bike use values by month and weekday, then use `summarise` to calculate mean and sd values for each month/weekday combination (although since we only have 2 years, this is statistically inappropriate. Still, it illustrates the technique). Once we have that, we’ll be able to use `ggplot`’s `geom_tile` option to create heatmaps:
 
 ```
 bike_share_grp = group_by(bike_share_daily, weekday, mnth)
@@ -59,9 +59,9 @@ ggplot(bike_share_sd, aes(weekday, mnth)) +
 
 We covered temporal data in the previous chapter, but since a calendar heatmap is essentially just a heatmap at heart, we’ll cover it here.
 
-There are a variety of functions and scripts floating around the web that create calendar heatmaps, so those interested in custom plots might consider a search to explore those in depth. But if you just need a simple, to-the-point function to create a calendar heat map, Paul Bleicher’s calendarHeat R script posted on the Revolution R blog is probably all you need.
+There are a variety of functions and scripts floating around the web that create calendar heatmaps, so those interested in custom plots might consider a search to explore those in depth. But if you just need a simple, to-the-point function to create a calendar heat map, Paul Bleicher’s `calendarHeat` R script posted on the Revolution R blog is probably all you need.
 
-There are three color schemes built into Paul’s script: red to blue (shown above, color=r2b), white to blue (color=w2b), and the color-blind unfriendly red to green (color=r2g), which is unfortunately the default. Opening the script via fix(calendarHeat) and scrolling down to lines 38-41 shows those schemes, which can be readily modified, extended, or added to using your own color ramp preferences. You can also put a different ramp into an object and call it from within the function. For example:
+There are three color schemes built into Paul’s script: red to blue (shown above, `color=r2b`), white to blue (`color=w2b`), and the color-blind unfriendly red to green (`color=r2g`), which is unfortunately the default. Opening the script via `fix(calendarHeat)` and scrolling down to lines 38-41 shows those schemes, which can be readily modified, extended, or added to using your own color ramp preferences. You can also put a different ramp into an object and call it from within the function. For example:
 
 ```
 require(RColorBrewer)
@@ -150,6 +150,33 @@ ggplot(bike_share_mean_wide, aes(Year, Jan)) +
 
 ![ggtable](images/0815OS_04_06.png)
 
+
+## Interactive dataviz
+
+For the most part, tooltips and chart interaction is overkill except in the case of multi-group scatterplots. A well-crafted static graph can convey the important messages to decision makers without suggesting the need for time-wasting interaction. However, in some cases interactivity is essential, by saving time, enhancing interpretability, or even if it's just because the boss asked for it. (What the boss wants, the boss gets!) 
+
+Most interactive graphs in R are built behind the scenes with javascript (often d3) using R syntax. Detailed customization is often somewhat difficult, but most packages' defaults are sensible enough that such customization isn't needed. `htmlwidgets` is the primary means by which people integrate interactive data viz with R; we'll use a few of the packages built around that in this section. 
+
+We'll explore some basic interactive visualizations by recalling some of the graphs built in earlier chapters, showing the commands that render approximately the same graphs. We'll also add a few new visualizations that demonstrate cases where interactivity is essential. Of course, the packages we'll use here have many more uses, and you should explore their websites and use cases for more information. 
+
+### 
+
+Taucharts
+
+Bokeh?
+
+
+### Motionchart: a moving bubblechart
+
+Googlevis?
+gapminder?
+
+
+### Interactive tables with `DT`
+
+
+
+
 ## Making maps in R
 
 If you need to do real map work, you shouldn't use R, it's just not very good at it. That being said, sometimes all you need is a quick view of a spatial distribution, or perhaps you just need a simple map and you're already in R.
@@ -158,7 +185,7 @@ There are several packages that do or support map work, many of which show promi
 
 Probably the hardest part of making simple maps in R can just be getting set up. There are a variety of mapping and map-support packages, as a tour of the CRAN spatial task view shows (http://cran.r-project.org/web/views/Spatial.html). Many of them access different APIs as well, some of which require keys. Later in this recipe we'll explore a few more detailed examples, but for now we'll just stick with mapping simple point and area attributes within an R work session.
 
-Since there are different ways to (simply) do mapping in R, I've placed the package loading within the steps below instead of here, so you can see which package is needed for which step.
+Since there are different ways to (simply) do mapping in R, I've placed the package loading within the steps below instead of at the top of this chapter, so you can see which package is needed for which step.
 
 ### Basic point maps
 
@@ -325,5 +352,5 @@ Again, it's important to remember that mapping in R is relatively easy *if* the 
 
 Our recommendation: don't use R for mapping unless you have to. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's spatial.ly blog (http://spatial.ly/).
 
-## Interactive dataviz
+
 
