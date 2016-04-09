@@ -190,7 +190,7 @@ tauchart(bike_share_count) %>%
   tau_tooltip()
 ```
 
-![tau barchart]()
+![tau barchart](images/tau_bar.png)
 
 ```
 tauchart(bike_share_count) %>% 
@@ -198,7 +198,7 @@ tauchart(bike_share_count) %>%
   tau_tooltip()
 ```
 
-![tau dotplot]()
+![tau dotplot](images/tau_dot.png)
 
 ```
 tauchart(bike_share_daily_count) %>% 
@@ -206,7 +206,7 @@ tauchart(bike_share_daily_count) %>%
   tau_tooltip()
 ```
 
-![tau horizontal barchart]()
+![tau horizontal barchart](images/tau_bar_horiz.png)
 
 Bivariate and faceted plots are similarly simple:
 
@@ -217,7 +217,7 @@ tauchart(bike_share_count_season) %>%
   tau_tooltip()
 ```
 
-![tau horizontal faceted barchart]()
+![tau horizontal faceted barchart](images/tau_bar_facets.png)
 
 ```
 tauchart(bike_share_daily) %>%
@@ -225,7 +225,7 @@ tauchart(bike_share_daily) %>%
   tau_tooltip()
 ```
 
-![tau scatterplot]()
+![tau scatterplot](images/tau_scatter.png)
 
 ```
 tauchart(bike_share_daily) %>% 
@@ -233,7 +233,7 @@ tauchart(bike_share_daily) %>%
   tau_tooltip()
 ```
 
-![tau faceted scatterplot]()
+![tau faceted scatterplot](images/tau_scatter_facets.png)
 
 
 
