@@ -265,7 +265,15 @@ plot(gvisMotionChart(rosling_data,
 
 ### Interactive tables with `DT`
 
+Interactive tables, courtesy of the `DT` package, are made with a single line of code:
 
+```
+require(DT)
+
+datatable(rosling_data, filter = "top")
+```
+
+![DT](images/DT.png)
 
 
 ## Making maps in R
