@@ -235,6 +235,20 @@ tauchart(bike_share_daily) %>%
 
 ![tau faceted scatterplot](images/tau_scatter_facets.png)
 
+### Scatterplot matrix
+
+The `pairsD3`package can create interactive scatterplots matrices, with the ability to brush across plots. If you use the `group` option, note that the default color scheme is not color-blind friendly, so change them to something more clearly separable by all viewers.
+
+```
+require(pairsD3)
+
+pairsD3(bike_share_daily[,11:14], group = bike_share_daily[,3], 
+        opacity = 0.7, tooltip = paste("Season: ", bike_share_daily$season, 
+        "<br/> Casual use count: ", bike_share_daily$casual),
+        col = c("#0571b0", "#92c5de", "#ca0020", "#f4a582"))
+```
+
+![pairsd3](images/pairs.png)
 
 
 ### Motionchart: a moving bubblechart
