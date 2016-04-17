@@ -294,9 +294,9 @@ datatable(rosling_data, filter = "top")
 
 If you need to do real map work, you shouldn't use R, it's just not very good at it. That being said, sometimes all you need is a quick view of a spatial distribution, or perhaps you just need a simple map and you're already in R.
 
-There are several packages that do or support map work, many of which show promise for future use, such as ggmap, a mapping package built to fit over ggplot2 and its coherent graphics approach. But most are still too clunky or buggy when compared against other open source options like QGIS, Leaflet, and others. In addition, Python is the lingua franca language among professional GISers, not R. As a result, this book only touches on mapping: here, to show how to create some quick "one-line"(ish) maps, and later in this book—since maps can be incredibly useful to decision making—we'll cover a brief use of other tools so that reports or dashboards can include maps.
+There are several packages that do or support map work, many of which show promise for future use, such as ggmap, a mapping package built to fit over ggplot2 and its coherent graphics approach. But most are still too clunky or buggy when compared against other open source options like QGIS, Leaflet, and others. In addition, Python is the lingua franca language among professional GISers, not R. As a result, this book only touches on mapping.
 
-Probably the hardest part of making simple maps in R can just be getting set up. There are a variety of mapping and map-support packages, as a tour of the CRAN spatial task view shows (http://cran.r-project.org/web/views/Spatial.html). Many of them access different APIs as well, some of which require keys. Later in this recipe we'll explore a few more detailed examples, but for now we'll just stick with mapping simple point and area attributes within an R work session.
+Probably the hardest part of making simple maps in R can just be getting set up. There are a variety of mapping and map-support packages, as a tour of the [CRAN spatial task view](http://cran.r-project.org/web/views/Spatial.html) shows. Many of them access different APIs as well, some of which require keys. Later in this recipe we'll explore a few more detailed examples, but for now we'll just stick with mapping simple point and area attributes within an R work session.
 
 Since there are different ways to (simply) do mapping in R, I've placed the package loading within the steps below instead of at the top of this chapter, so you can see which package is needed for which step.
 
@@ -371,7 +371,7 @@ But both of these approaches assume that the map boundaries and scale you need a
 
 ### Chloropleth mapping with the *American Community Survey*
 
-If you're fortunate enough to need to map American Community Survey (ACS) data, `choroplethr` connects directly to it via the `acs` package. You'll need to acquire a key for the ACS API (http://www.census.gov/data/developers/about/terms-of-service.html) before you begin, but that key will be emailed to you within a few minutes of requesting it. And then you can make one-line maps directly from the ACS tables:
+If you're fortunate enough to need to map American Community Survey (ACS) data, `choroplethr` connects directly to it via the `acs` package. You'll need to acquire a key for the [ACS API](http://www.census.gov/data/developers/about/terms-of-service.html) before you begin, but that key will be emailed to you within a few minutes of requesting it. And then you can make one-line maps directly from the ACS tables:
 
 ```
 require(acs)
@@ -383,7 +383,7 @@ choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
 
 ![chloropleth acs](images/0815OS_04_15.png)
 
-If you don't know which tables you need, the US Census provides more information here: http://factfinder2.census.gov/faces/affhelp/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS
+If you don't know which tables you need, the US Census provides more information [here](http://factfinder2.census.gov/faces/affhel/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS).
 
 ### Example: Ozone pollution in the EU
 
@@ -403,7 +403,7 @@ box(col="gray30")
 
 ![euro map](images/0815OS_04_12.png)
 
-We plotted ground level ozone from the maps example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to download the data (http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this chapter's data files. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
+We plotted ground level ozone from the maps example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this chapter's data files. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
 
 ```
 o3stations = read.table("Data/AirBase_v8_stations.csv", sep=",", header=T, 
@@ -463,7 +463,7 @@ legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8,
 
 Again, it's important to remember that mapping in R is relatively easy *if* the map boundaries and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
 
-Our recommendation: don't use R for mapping unless you have to. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's spatial.ly blog (http://spatial.ly/).
+Our recommendation: don't use R for mapping unless you have to. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's [spatial.ly blog](http://spatial.ly/).
 
 
 
