@@ -590,7 +590,7 @@ When we don’t have a full population to assess, we often need to determine how
 {width="90%"}
 | Statistic | Data type | Distribution | Function |
 | --------- | --------- | ------------ | -------- |
-| Median | Any | None | `wilcox.test(x, conf.int=TRUE)$conf.int` |
+| Median | Any | Any | `asbio::ci.median(bike_share_daily$cnt)` |
 | Mean| Continuous | Normal, t, “normal enough” | `t.test(x)$conf.int` |
 | Proportion | Percentage | Binomial | `binom.test(x, n)$conf.int` |
 | Count | Count | Poisson | `poisson.test(x)$conf.int` |
