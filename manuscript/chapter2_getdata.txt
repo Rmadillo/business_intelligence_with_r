@@ -744,9 +744,10 @@ write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
 If you want to save data in JSON format, use `jsonlite` with the `pretty` option set to true to have it formatted cleanly. Then `sink` it into a file in the working directory.
 
 ```
-require(jsonlite)
-iris_json = toJSON(iris, pretty=TRUE)
+iris_json = jsonlite::toJSON(iris, pretty=TRUE)
 sink("iris_json.json")
-myjson
+iris_json
 sink()
 ```
+
+Note you can save memory by calling a function from a package using the `::` connector, which will run that function without having to load its home package. This can also be useful if you don't want to mask functions in already-loaded packages that have the same name. 
