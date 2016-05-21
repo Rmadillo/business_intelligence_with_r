@@ -95,6 +95,7 @@ There aren't any, so to illustrate what it shows when it finds a duplicate, we'l
 
 ```
 customers[10001,] = customers[2718,]
+customers[duplicated(customers),]
       customer_id customer_gender customer_age customer_purchases customer_zip
 10001        2718               M           47              75.43        73140
 ```
