@@ -384,6 +384,41 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
 ![faceted bikeshare densities](images/bike_facet_densities.png)
 
 
+## Pareto charts
+
+Pareto charts are a mainstay of BI work, though the effort to create them can often outweigh the time a decision-maker spends with the result. The `qcc` library makes their creation simple. 
+
+The bike share data doesn't lend itself to pareto chart use, so we'll use data from unplanned hospital readmissions in Hong Kong (Table 2 in [Wong et al. 2011](http://bmchealthservres.biomedcentral.com/articles/10.1186/1472-6963-11-149)).
+
+```
+library(qcc)
+
+Readmits = c(148, 685, 16, 679, 192, 8, 1601, 37, 269, 48)
+Dx = c('Septicemia', 'Cancer', 'Diabetes', 'Heart disease', 
+       'Stroke', 'Aortic aneurysm', 'Pneumonia', 
+       'Chronic liver disease', 'Nephritis/nephrosis',
+       'Injury/poisoning') 
+
+pareto.chart(xtabs(Readmits ~ Dx), main='Pareto Chart 
+    for Unplanned Readmissions')
+
+Pareto chart analysis for xtabs(Readmits ~ Dx)
+                        Frequency Cum.Freq. Percentage Cum.Percent.
+  Pneumonia                  1601      1601 43.4699973     43.47000
+  Cancer                      685      2286 18.5989682     62.06897
+  Heart disease               679      2965 18.4360576     80.50502
+  Nephritis/nephrosis         269      3234  7.3038284     87.80885
+  Stroke                      192      3426  5.2131415     93.02199
+  Septicemia                  148      3574  4.0184632     97.04046
+  Injury/poisoning             48      3622  1.3032854     98.34374
+  Chronic liver disease        37      3659  1.0046158     99.34836
+  Diabetes                     16      3675  0.4344285     99.78279
+  Aortic aneurysm               8      3683  0.2172142    100.00000
+```
+
+![pareto_chart](images/pareto_chart.png)
+
+
 ## Plotting survey data
 
 There are a variety of ways you can plot survey data, but the `likert` package makes things really simple. We can use the `mass` dataset (Math Anxiety Scale Survey) built into `likert` to demonstrate:
@@ -396,22 +431,12 @@ plot(mathiness)
 
 ![basic likert plot](images/0815OS_02_13.png)
 
-E> There's a known bug in `likert` where you have to load the `reshape` package manually (not reshape2) to make the `grouping` option work.
-
 ```
-require(reshape)
 gender_math = likert(items=mass[,c(4,6,15), drop=FALSE], grouping=mass$Gender)
 plot(gender_math, include.histogram=TRUE)
 ```
 
 ![grouped likert plot](images/0815OS_02_14.png)
-
-Because the `reshape` package masks functions in `reshape2` and `dplyr`, you should detach `likert` and `reshape` when you're done plotting.
-
-```
-detach("package:likert", unload=TRUE)
-detach("package:reshape", unload=TRUE)
-```
 
 
 ## Obtaining summary and conditional statistics
@@ -630,7 +655,7 @@ You can get quick (gg)plots of means/medians and confidence intervals, standard 
 | Mean | Bootstrapped CI | `mean_cl_boot(x, conf.int=0.95, ...)` |
 | Mean | Normal CI | `mean_cl_mean_sdl(x, conf.int=0.95, ...)` |
 | Mean | Standard deviation | `mean_sdl(x, mult=2, ...)` |
-| Median | Quantile | median_hilow(x, conf.int=0.95, ...)
+| Median | Quantile | `median_hilow(x, conf.int=0.95, ...)` |
 
 
 The following code demonstrates all three options:
