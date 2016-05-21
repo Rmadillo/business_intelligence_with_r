@@ -662,7 +662,8 @@ api.key.install(key="y0uR K3y H3rE")
 The ACS is *vast*. Since this is simply a recipe for example's sake, we'll assume you know the table and geographies you want data on... say, population by county in Texas. `acs` keeps the data frame part of the object in the `estimate` slot:
 
 ```
-tx_pops_acs = acs.fetch(geography=geo.make(state="TX", county="Harris"), table.number="B01003")
+tx_pops_acs = acs.fetch(geography=geo.make(state="TX", county="Harris"), 
+    table.number="B01003")
 tx_county_pops = data.frame(tx_pops_acs@estimate)
 ```
 
