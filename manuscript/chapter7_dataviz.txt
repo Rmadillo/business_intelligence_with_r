@@ -465,7 +465,7 @@ legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8,
 
 The `ggmap` package makes it relatively easy to map point-location data, as well as to covert those points into "heatmaps" (actually, a density map). 
 
-We can use a Socrata connection to download data from the Seattle Police Department for this recipe. 
+We can use a Socrata connection to download data from the [Seattle Police Department](https://data.seattle.gov) for this recipe. 
 
 ```
 require(dplyr) 
