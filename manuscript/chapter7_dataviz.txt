@@ -2,7 +2,7 @@
 
 In this chapter, we will cover:
 
-- Plotting multivariate data ***ADD ESSs PLOTS***
+- Plotting multivariate data
 - Interactive data visualizations
 - Making maps in R
 
@@ -385,7 +385,7 @@ choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
 
 If you don't know which tables you need, the US Census provides more information [here](http://factfinder2.census.gov/faces/affhel/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS).
 
-### Example: Ozone pollution in the EU
+### Using Shapefiles
 
 It says a lot about mapping in R that what we'll explore here is one of the simplest ways to get updated spatial boundaries into R. Using a boundary shapefile from EuroGeographics, and having looked at the metadata first to determine its projection, we can create a map of modern European boundaries using the `maptools` package's shapefile translation functions:
 
@@ -403,7 +403,7 @@ box(col="gray30")
 
 ![euro map](images/0815OS_04_12.png)
 
-We plotted ground level ozone from the maps example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this chapter's data files. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
+We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this chapter's data files. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
 
 ```
 o3stations = read.table("Data/AirBase_v8_stations.csv", sep=",", header=T, 
@@ -461,9 +461,75 @@ legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8,
 
 ![euro point map](images/0815OS_04_14.png)
 
-Again, it's important to remember that mapping in R is relatively easy *if* the map boundaries and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
+### Using `ggmap` for point data and heatmaps
 
-Our recommendation: don't use R for mapping unless you have to. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's [spatial.ly blog](http://spatial.ly/).
+The `ggmap` package makes it relatively easy to map point-location data, as well as to covert those points into "heatmaps" (actually, a density map). 
+
+We can use a Socrata connection to download data from the Seattle Police Department for this recipe. 
+
+```
+require(dplyr) 
+
+# SPD Police Reports
+seattle_crime = read.csv("https://data.seattle.gov/api/views/7ais-f98f/rows.csv", 
+                         header=T, strip.white = T)
+
+# Filter to 2 years with full data
+seattle_crime = filter(seattle_crime, Year >= 2014 & Year < 2016)
+
+# Filter to bike thefts only
+bike_theft = filter(seattle_crime, Summarized.Offense.Description == "BIKE THEFT")
+```
+
+You can set up the base map using the `get_map` function and include the data you want to overplot:
+
+```
+## Set up base map
+seattle_map = ggmap(get_map('Seattle, Washington',
+                      zoom=11,
+                      source='google',
+                      maptype='terrain'), 
+               base_layer = ggplot(aes(x = Longitude, y = Latitude), 
+                      data = bike_theft))
+```
+
+Once the base map is set up, you can plot it a variety of ways, including as individual points...
+
+```
+# Point map of bike theft
+seattle_map +  
+  geom_point(alpha=0.5, size=0.5) +
+  scale_alpha(guide = FALSE) +
+  ggtitle('Seattle Bike Thefts (2014-2015)') +
+  xlab('') +
+  ylab('') +
+  theme(axis.ticks=element_blank(), axis.text=element_blank(),
+        legend.position='none')
+```
+
+![point map](images/point_map.jpg)
+
+...or as faceted heatmaps:
+
+```
+# Density map of bike theft by year
+seattle_map +  
+  stat_density2d(aes(fill=..level..), 
+                 alpha=0.5,
+                 bins = 10,
+                 geom = 'polygon') +
+  scale_alpha(guide = FALSE) +
+  ggtitle('Seattle Bike Thefts (2014-2015)') +
+  xlab('') +
+  ylab('') +
+  facet_wrap(~Year) +
+  theme(axis.ticks=element_blank(), axis.text=element_blank(),
+        legend.position='none')
+```
+
+![heat map](images/heat_map_facet.jpg)
 
 
+It's important to remember that mapping in R is relatively easy *if* the maps, boundaries, and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
 
+My recommendation: don't use R for mapping unless you have to. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's [spatial.ly blog](http://spatial.ly/).
