@@ -471,14 +471,14 @@ We can use a Socrata connection to download data from the Seattle Police Departm
 require(dplyr) 
 
 # SPD Police Reports
-seattle_crime = read.csv("https://data.seattle.gov/api/views/7ais-f98f/rows.csv", 
+spd = read.csv("https://data.seattle.gov/api/views/7ais-f98f/rows.csv", 
                          header=T, strip.white = T)
 
 # Filter to 2 years with full data
-seattle_crime = filter(seattle_crime, Year >= 2014 & Year < 2016)
+spd = filter(spd, Year >= 2014 & Year < 2016)
 
 # Filter to bike thefts only
-bike_theft = filter(seattle_crime, Summarized.Offense.Description == "BIKE THEFT")
+bike_theft = filter(spd, Summarized.Offense.Description == "BIKE THEFT")
 ```
 
 You can set up the base map using the `get_map` function and include the data you want to overplot:
