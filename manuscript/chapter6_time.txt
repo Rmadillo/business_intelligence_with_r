@@ -387,7 +387,7 @@ plot(decompose(BoxCox(AirPassengers, AirPassengers_lambda)))
 
 ## Finding cycles in the noise: Using spectral analysis to identify periodicity
 
-Spectral analysis provides a simple way to evaluate whether there are any cyclical patterns in your time series. The `base` installation's `spectrum` function creates a periodogram, where the highest peak(s) in the plot represent(s) possible cycling times. It de-trends by default, so whether you're using data with a trend or not doesn't matter.
+Spectral analysis provides a simple way to evaluate whether there are any cyclical patterns in your time series. The `TSA` package's `periodogram` function creates a periodogram, where the highest peak(s) in the plot represent(s) possible cycling times. To do spectral analysis, you need to ensure the data are detrended first. 
 
 We’ll use the built-in annual sunspot dataset in this recipe.
 
@@ -395,29 +395,25 @@ We’ll use the built-in annual sunspot dataset in this recipe.
 data(sunspot.year)
 ```
 
-To find the cycle times, look for a clear peak (or peaks) in the plot; below, the second plot is zoomed in to see the detail. The blue line shows the confidence interval for peak locations.
+To find the cycle times, look for a clear peak (or peaks) in the plot. 
 
 ```
-sun_spec = spectrum(sunspot.year)
-plot(sun_spec)
+sunny = TSA::periodogram(diff(sunspot.year))
 ```
 
-![sunspots spectral](images/biwr_05_spectral.png)
+![sunspots spectral](images/sunny_periodogram.png)
 
 You can also extract the `$freq` and `$spec` values from the spectrum object into a data frame as x and y, respectively, to get the exact frequency where the spectrum is maximized (or if you want to create a pretty plot with `ggplot2`).
 
 ```
-# Make a data frame
-sun_spec_df = data.frame(sun_spec$freq, sun_spec$spec)
+sunny_df = data.frame(freq = sunny$freq, spec = sunny$spec)
+sunny_df[which.max(sunny_df[,2]),]
 
-# Determine value of "freq" at maximum "spec" 
-sun_spec_df[which.max(sun_spec_df[,2]),]
-
-   sun_spec.freq sun_spec.spec
-27          0.09      55820.99
+         freq     spec
+26 0.09027778 40400.47
 ```
 
-When frequency is 1, you can take the inverse of the frequency peak’s value to get a sense for cycle timings. This data is annual, and since the the highest spectral peak is at a frequency of 0.09, it suggests that there is a ~11 year cycle (1/0.09=11).
+Frequency is the reciprocal of the time period. This data is annual, and since the the highest spectral peak is at a frequency of 0.09, it suggests that there is a ~11 year cycle (1/0.09=11).
 
 
 ## Evaluating quality with control charts
