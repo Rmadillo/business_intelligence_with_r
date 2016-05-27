@@ -564,7 +564,7 @@ bike_theft_interactive = leaflet() %>%
         colors=c("red","blue"), labels=c("December 2014", "January 2015"))
 ```
 
-![leaflet map](images/bike_theft_interactive.jpg)
+![leaflet map](images/bike_theft_interactive.png)
 
 
 ### Why map with R?
