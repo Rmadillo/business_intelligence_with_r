@@ -529,6 +529,45 @@ seattle_map +
 
 ![heat map](images/heat_map_facet.jpg)
 
+### Interactive maps with `leaflet`
+
+The `leaflet` package makes basic interactive maps a breeze. We'll use a subset of the bike theft data to avoid cluttering the map. We'll also add a few options to show some customization possibilities; walking through the [`leaflet` documentation](https://rstudio.github.io/leaflet/) provides examples of a wide variety of map object and customization options. 
+
+```
+require(leaflet)
+
+bike_theft_dec = filter(bike_theft, Year==2014 & Month==12)
+bike_theft_jan = filter(bike_theft, Year==2015 & Month==1)
+
+bike_theft_interactive = leaflet() %>% 
+  addTiles() %>% 
+  setView(-122.3397, 47.6144, zoom = 13) %>%
+  addCircleMarkers(data = bike_theft_dec, 
+        lat = ~ Latitude, 
+        lng = ~ Longitude, 
+        popup = bike_theft$Hundred.Block.Location, 
+        group="December 2014", 
+        fillOpacity = 0.25, 
+        color="red", 
+        radius=4) %>%
+  addCircleMarkers(data = bike_theft_jan, 
+        lat = ~ Latitude, 
+        lng = ~ Longitude, 
+        popup = bike_theft$Hundred.Block.Location, 
+        group="January 2015", 
+        fillOpacity = 0.25, 
+        color="blue", 
+        radius=4) %>%
+  addLayersControl(overlayGroups = c("December 2014", "January 2015"), 
+        options = layersControlOptions(collapsed = FALSE)) %>%
+  addLegend("bottomright",  title = "Legend", 
+        colors=c("red","blue"), labels=c("December 2014", "January 2015"))
+```
+
+![leaflet map](images/bike_theft_interactive.jpg)
+
+
+### Why map with R?
 
 It's important to remember that mapping in R is relatively easy *if* the maps, boundaries, and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
 
