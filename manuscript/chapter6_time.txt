@@ -10,6 +10,7 @@
 - Plotting monthly patterns
 - Decomposing time series into components
 - Finding cycles in the noise: Using spectral analysis to identify periodicity
+- Plotting survival curves
 - Evaluating quality with control charts
 - Identifying possible breakpoints in a time series
 - Exploring relationships between time series: cross-correlation
@@ -415,6 +416,26 @@ sunny_df[which.max(sunny_df[,2]),]
 
 Frequency is the reciprocal of the time period. This data is annual, and since the the highest spectral peak is at a frequency of 0.09, it suggests that there is a ~11 year cycle (1/0.09=11).
 
+## Plotting survival curves
+
+The `survminer` package makes a beautiful all-in-one survival plot and risk table. We'll use the `tongue` cancer data from the `KMsurv` package to demonstrate. 
+
+```
+require(survival)
+require(survminer)
+
+# Get data and add names of cancer type
+data(tongue, package = "KMsurv")
+tongue$tumor = ifelse(tongue$type==1, "Aneuploid",  "Diploid")
+
+# Create survival model
+tongue_survival = survfit(Surv(time = time, event = delta) ~ tumor, data = tongue)
+
+# Plot the curves and table
+ggsurvplot(tongue_survival, risk.table = TRUE, conf.int = TRUE)
+```
+
+![survival](images/survival.png)
 
 ## Evaluating quality with control charts
 
