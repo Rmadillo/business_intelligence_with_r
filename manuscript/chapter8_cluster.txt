@@ -8,7 +8,6 @@
 - Exploring outliers
 - Finding associations in shopping carts
 - Finding associations with collaborative filtering
-- (SOME VERB HERE) Non-negative Matrix factorization
 
 
 Humans like to put things in boxes. What things are most like each other? is one of the most common questions you face in the analysis of multivariate data. Technically, we can think of these tasks as dimension reduction--how can we take a mass of data and reduce it to something that provides insight? Techniques to take many variables and cluster observations or detect outliers have been around for decades, though it’s been only recently where desktop computing power was sufficient for more advanced similarity-analysis tool development. 
