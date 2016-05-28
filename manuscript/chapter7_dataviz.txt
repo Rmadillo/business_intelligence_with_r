@@ -80,8 +80,10 @@ To demonstrate parallel coordinate plots, we’ll use a dataset on a set of fina
 ```
 require(GGally)
 require(gdata)
-quiebra_ download = read.xls("http://ciberconta.unizar.es/leccion/multivar
-  /QUIEBRA.XLS", sheet=1, header=TRUE, stringsAsFactors=FALSE)
+
+qb_url = "http://ciberconta.unizar.es/leccion/multivar/QUIEBRA.XLS"
+quiebra_download = read.xls(qb_url, sheet=1, header=TRUE, 
+    stringsAsFactors=FALSE)
 quiebra = quiebra_download[,2:12]
 ```
 
