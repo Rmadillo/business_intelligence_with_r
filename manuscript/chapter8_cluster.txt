@@ -6,6 +6,7 @@
 - Determining optimal numbers of groups with model-based clustering
 - Identifying group membership with non-linear clusters
 - Exploring outliers
+- Anomaly detection
 - Finding associations in shopping carts
 - Finding associations with collaborative filtering
 
@@ -557,6 +558,10 @@ ggplotly(p_lof)
 ```
 
 ![](images/lof.png)
+
+
+## Anomaly detection
+
 
 
 ## Finding associations in shopping carts
