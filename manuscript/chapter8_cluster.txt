@@ -541,6 +541,23 @@ uni.plot(bike_share_daily[,10:13], pch=as.numeric(bike_share_daily$weathersit))
 
 ![](images/mvout_bike.png)
 
+A more recent outlier algorithm is the local outlier factor (lof), with an implementation in the `DMwR` package. You need to specify `k`, the number of neighbors to use when calculating the lof value. 
+
+```
+require(DMwR)
+
+quiebra$lof = lofactor(quiebra[,2:10], k=4)
+
+p_lof = ggplot(quiebra, aes(lof, text = paste("Bank:", Numero, 
+ "<br> Solvency: ", Output))) +
+ xlab("Local Outlier Factor") + 
+ geom_histogram() 
+
+ggplotly(p_lof)
+```
+
+![](images/lof.png)
+
 
 ## Finding associations in shopping carts
 
