@@ -561,9 +561,74 @@ ggplotly(p_lof)
 
 ## Finding associations in shopping carts
 
+We haven't worked with a data set that's really amenable to association rules, so why not explore shopping cart analysis with a groceries dataset?
+
+```
+require(arules)
+require(arulesViz)
+
+basket_trans = read.transactions("http://dmg.org/pmml/pmml_examples/baskets1ntrans.csv", format = "single", sep = ",", cols = c("cardid", "Product"), rm.duplicates=TRUE)
+
+summary(basket_trans)
+
+transactions as itemMatrix in sparse format with
+ 939 rows (elements/itemsets/transactions) and
+ 11 columns (items) and a density of 0.2708878 
+
+most frequent items:
+ cannedveg frozenmeal   fruitveg       beer       fish    (Other) 
+       303        302        299        293        292       1309 
+
+element (itemset/transaction) length distribution:
+sizes
+  1   2   3   4   5   6   7   8 
+174 227 218 176  81  38  21   4 
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   1.00    2.00    3.00    2.98    4.00    8.00 
+
+includes extended item information - examples:
+      labels
+1       beer
+2 cannedmeat
+3  cannedveg
+
+includes extended transaction information - examples:
+  transactionID
+1        100047
+2        100255
+3        100256
+```
+
+
+
+```
+itemFrequencyPlot(basket_trans, topN=11, type="absolute") #arules
+```
+
+
+basket_rules = apriori(basket_trans)
+
+
+```
+basket_rules_custom = apriori(basket_trans, parameter = list(support = 0.01, confidence = 0.01, target="rules"))
+
+plot(basket_rules_custom, interactive = T)
+
+inspect(head(sort(basket_rules_custom, by="lift"), 10))
+
+beer_rules = apriori(data=basket_trans, parameter=list(supp=0.01, conf = 0.01, minlen=2), appearance = list(default="rhs",lhs="beer"), control = list(verbose=F))
+beer_rules = sort(beer_rules, decreasing=TRUE,by="confidence")
+inspect(beer_rules[1:5])
+
+plot(beer_rules,method="graph",interactive=TRUE)
+
+write(basket_rules_custom, file = "basket_rules_custom.csv", sep = ",", row.names=FALSE)
+```
+
 
 
 ## Finding associations with collaborative filtering
 
-
+The `apriori` association rules algorithm is a goodie but an oldie. Collaborative filtering is a more recent approach to the same problem. 
 
