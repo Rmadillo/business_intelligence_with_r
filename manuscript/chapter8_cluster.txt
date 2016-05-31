@@ -8,7 +8,6 @@
 - Exploring outliers
 - Anomaly detection
 - Finding associations in shopping carts
-- Finding associations with collaborative filtering
 
 
 Humans like to put things in boxes. What things are most like each other? is one of the most common questions you face in the analysis of multivariate data. Technically, we can think of these tasks as dimension reduction--how can we take a mass of data and reduce it to something that provides insight? Techniques to take many variables and cluster observations or detect outliers have been around for decades, though it’s been only recently where desktop computing power was sufficient for more advanced similarity-analysis tool development. 
@@ -17,9 +16,10 @@ Non-metric multidimensional scaling (nMDS) is one such tool. It’s similar to P
 
 Cluster analysis has advanced as well, with the development of techniques for clustering non-linear groupings by density via DBSCAN and similar tools, and being able to make inferential claims on cluster membership with model-based clustering. Still, the old standbys of kMeans, PAM, and hierarchical clustering all remain excellent first-order descriptive tools for multivariate data. 
 
-OUTLIERS
+If anyone has ever asked you for an "automatic outlier detection" data product, you probably realized that they probably don't understand analytics. What counts as an outlier is completely dependent on context. That said, sometimes you need to explore what might count as an outlier across enough variables that visualization becomes difficult, if not impossible. Other times, you might want to get a head-start on investigating a potential outlier or trend before it wrecks things. Multivariate outlier exploration and anomaly detection are two useful exploratory tools for these purposes. 
 
-ASSOCIATION
+Finding things that are (really) similar or (really) different has been the common theme to the tools in this chapter. Sometimes, you just want to be purely empirical about it, and let the data itself give you information to explore based simply on common co-occurrences. Association analysis--more commonly called "shopping cart analysis"--is a great way to do this. 
+
  
 ## Mapping multivariate relationships
 
@@ -568,12 +568,18 @@ ggplotly(p_lof)
 
 We haven't worked with a data set that's really amenable to association rules, so why not explore shopping cart analysis with a groceries dataset?
 
+The `arules` package has a special function that allows you to read a data set directly in to R as a transaction object, for example, where you have the transaction identifier in one column and a particular item from that transaction in a second column. 
+
 ```
 require(arules)
 require(arulesViz)
 
 basket_trans = read.transactions("http://dmg.org/pmml/pmml_examples/baskets1ntrans.csv", format = "single", sep = ",", cols = c("cardid", "Product"), rm.duplicates=TRUE)
+```
 
+As usual, `summary` provides details of the resulting object:
+
+```
 summary(basket_trans)
 
 transactions as itemMatrix in sparse format with
@@ -605,35 +611,117 @@ includes extended transaction information - examples:
 3        100256
 ```
 
-
+We can see that there are only 11 distinct items in this data set (must be a very small store!) from 939 distinct transactions, so we can plot all items by frequency using the `itemFrequencyPlot` function. Larger item sets can use the `topN` value to cut off the plot to show just the 15 or 20 or so most common items.
 
 ```
 itemFrequencyPlot(basket_trans, topN=11, type="absolute") #arules
 ```
 
+![basket case](images/basket_freq.png)
 
-basket_rules = apriori(basket_trans)
-
+The `apriori` function takes a transaction object and creates a rule set using default confidence and support levels of 0.8 and 0.1, respectively, and no more than 10 items on any one side of a rule. Accepting the defaults makes the call as simple as `basket_rules = apriori(basket_trans)`, but you will likely want to modify those to expand the rule set. To do so requires setting the `parameter` function with the details in a list. The `minlen` is set at 1, which means that items purchased by themselves will show up--if you want to exclude single-item purchases, set `minlen=2` here. Note that since there are a variety of possible target types (see `?ASparameter-classes`), you need to specify that you are looking for rules. 
 
 ```
 basket_rules_custom = apriori(basket_trans, parameter = list(support = 0.01, confidence = 0.01, target="rules"))
 
-plot(basket_rules_custom, interactive = T)
+Apriori
 
-inspect(head(sort(basket_rules_custom, by="lift"), 10))
+Parameter specification:
+ confidence minval smax arem  aval originalSupport support minlen maxlen target
+       0.01    0.1    1 none FALSE            TRUE    0.01      1     10  rules
+   ext
+ FALSE
 
-beer_rules = apriori(data=basket_trans, parameter=list(supp=0.01, conf = 0.01, minlen=2), appearance = list(default="rhs",lhs="beer"), control = list(verbose=F))
-beer_rules = sort(beer_rules, decreasing=TRUE,by="confidence")
-inspect(beer_rules[1:5])
+Algorithmic control:
+ filter tree heap memopt load sort verbose
+    0.1 TRUE TRUE  FALSE TRUE    2    TRUE
 
-plot(beer_rules,method="graph",interactive=TRUE)
+Absolute minimum support count: 9 
 
-write(basket_rules_custom, file = "basket_rules_custom.csv", sep = ",", row.names=FALSE)
+set item appearances ...[0 item(s)] done [0.00s].
+set transactions ...[11 item(s), 939 transaction(s)] done [0.00s].
+sorting and recoding items ... [11 item(s)] done [0.00s].
+creating transaction tree ... done [0.00s].
+checking subsets of size 1 2 3 4 5 done [0.00s].
+writing ... [845 rule(s)] done [0.00s].
+creating S4 object  ... done [0.00s].
 ```
 
+If you had run the `apriori` function with the defaults, you would have seen it created only 3 rules. By opening up the support and confidence levels, we now have 845 rules, which provides us with a much richer exploration space. 
 
+I> *Confidence* is the probability that a transaction including the items on one
+I> side of the rule also contains the items on the other side. 
+I> *Support* is the proportion of transactions that contain that item or item set. 
+I> Higher support = relevant to large proportion of transactions.  
 
-## Finding associations with collaborative filtering
+Now we can look at the rules. A key concept for rule usefulness is *lift*. A lift value at or close to 1 suggests that the items or either side of the rule are independent, so are usually of little further interest. Lift values above 1 suggest that the presence of the items on one side of the rule set increase the chances of seeing items on the other side. Where items are all purchased or occur at once (e.g., as in a supermarket), the direction of the rule set is irrelevant. Where items are purchased or occur in a series (e.g., as in a web store, where orders for specific items are placed in order), the rule set is ordered from the first purchased (the `{rhs}`, right hand side), to those placed in the cart later (the `{lhs}`, left hand side). 
 
-The `apriori` association rules algorithm is a goodie but an oldie. Collaborative filtering is a more recent approach to the same problem. 
+We'll look first at the rule sets that generate the greatest lift with the `inspect` function:
 
+```
+inspect(head(sort(basket_rules_custom, by="lift"), 10))
+
+    lhs                                       rhs          support    confidence lift    
+838 {cannedveg,frozenmeal,fruitveg,wine}   => {beer}       0.01171459 1.0000000  3.204778
+802 {beer,cannedmeat,cannedveg,freshmeat}  => {frozenmeal} 0.01171459 1.0000000  3.109272
+807 {beer,cannedveg,fish,freshmeat}        => {frozenmeal} 0.01064963 1.0000000  3.109272
+817 {beer,cannedmeat,cannedveg,fish}       => {frozenmeal} 0.01277955 1.0000000  3.109272
+801 {beer,cannedmeat,freshmeat,frozenmeal} => {cannedveg}  0.01171459 1.0000000  3.099010
+806 {beer,fish,freshmeat,frozenmeal}       => {cannedveg}  0.01064963 1.0000000  3.099010
+816 {beer,cannedmeat,fish,frozenmeal}      => {cannedveg}  0.01277955 1.0000000  3.099010
+821 {beer,cannedmeat,frozenmeal,fruitveg}  => {cannedveg}  0.01064963 1.0000000  3.099010
+609 {beer,freshmeat,frozenmeal}            => {cannedveg}  0.03088392 0.9666667  2.995710
+833 {cannedveg,fish,frozenmeal,wine}       => {beer}       0.01490948 0.9333333  2.991126
+```
+
+We can also plot the rule set using a variety of garph types; accepting the default gives you a scatterplot of confidence, support, and lift, and setting `interactive` to `TRUE` allows you to explore particular subsets based on the combination of those three values. For example, we can select the rules with relatively high values of all three within the graph, and see those rules in the console once we've clicked 'inspect`: 
+
+```
+plot(basket_rules_custom, interactive = T)
+
+Interactive mode.
+Select a region with two clicks!
+
+Number of rules selected: 3 
+    lhs                       rhs          support   confidence lift     order
+555 {beer,cannedveg}       => {frozenmeal} 0.1554846 0.8742515  2.718285 3    
+556 {cannedveg,frozenmeal} => {beer}       0.1554846 0.8439306  2.704610 3    
+554 {beer,frozenmeal}      => {cannedveg}  0.1554846 0.8588235  2.661503 3  
+```
+
+![](images/basket_rules.png)
+
+If you wanted to find items that were purchased with, say, beer, you can create a rule set specifically for that item:
+
+```
+beer_rules = apriori(data=basket_trans, parameter=list(supp=0.01, conf = 0.01, minlen=2), 
+  appearance = list(default="rhs", lhs="beer"))
+
+inspect(head(sort(beer_rules, by="lift"), 10))inspect(head(sort(beer_rules, by="lift"), 10))
+
+   lhs       rhs             support    confidence lift     
+9  {beer} => {frozenmeal}    0.18104366 0.5802048  1.8040142
+10 {beer} => {cannedveg}     0.17784878 0.5699659  1.7663299
+8  {beer} => {fruitveg}      0.09478168 0.3037543  0.9539306
+4  {beer} => {cannedmeat}    0.06389776 0.2047782  0.9425818
+7  {beer} => {fish}          0.09052183 0.2901024  0.9328978
+6  {beer} => {wine}          0.08200213 0.2627986  0.8628249
+2  {beer} => {freshmeat}     0.05005325 0.1604096  0.8276075
+1  {beer} => {dairy}         0.04792332 0.1535836  0.8147741
+3  {beer} => {softdrink}     0.04792332 0.1535836  0.7837773
+5  {beer} => {confectionery} 0.06815761 0.2184300  0.7431370
+```
+
+You can also create graph diagrams of a rule set, and move the nodes around to show the rule meanings. In this case, only two rules give positive lift, while the other eight show inverse associations. We can adjust the initial graph layout to show this relationship:
+
+```
+plot(beer_rules, method="graph", interactive=T)
+```
+
+![basket graph](images/basket_graph.png)
+
+To expore the rules in greater depth, you can write them to a text file to view outside of R using the `write` function. 
+
+```
+write(basket_rules_custom, file = "basket_rules_custom.csv", sep = ",", row.names=FALSE)
+```
