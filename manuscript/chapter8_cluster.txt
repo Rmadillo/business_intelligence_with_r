@@ -464,7 +464,7 @@ ggplot(banks_gap_df, aes(x=1:nrow(banks_gap_df))) +
 
 Sometimes you actually need to be able to justify your cluster analysis results with more than verbal arguments and intuition. Model-based clustering lets you do formal inference on cluster grouping results using finite mixture density models.  
 
-The mclust package provides a simple interface to model-based clustering, and we'll move away from the Spanish banking data and use the famous Wisconsin Breast Tissue database for the remainder of this chapter's clustering tasks. 
+The `mclust` package provides a simple interface to model-based clustering, and we'll move away from the Spanish banking data and use the famous Wisconsin Breast Tissue database for this recipe. 
 
 ```
 require(mclust)
@@ -474,12 +474,15 @@ breast_cancer = read.table("http://archive.ics.uci.edu/ml
   "Clump_Thickness", "Uniformity_Cell_Size", "Uniformity_Cell_Shape", 
   "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei", 
   "Bland_Chromatin", "Normal_Nucleoli", "Mitoses", "Class"))
-breast_cancer$\textdollar$Diagnosis = ifelse(breast_cancer$\textdollar$Class==2,
-  "benign", ifelse(breast_cancer$\textdollar$Class==4, "malignant", "unk"))
+  
+breast_cancer$Diagnosis = ifelse(breast_cancer$Class==2,
+  "benign", ifelse(breast_cancer$Class==4, 
+  "malignant", "unk"))
+
 bc_wisc =  breast_cancer[,2:10]
 ```
 
-Running mclust is easy. Interpreting the results takes more work. 
+Running `mclust` is easy. Interpreting the results takes more work. 
 
 ```
 bc_wisc_mc = Mclust(bc_wisc)
@@ -498,6 +501,7 @@ Clustering table:
   1   2   3   4   5   6   7   8
 104  49 115 184  83  50  77  37
 ```
+
 
 
 ## Exploring outliers
