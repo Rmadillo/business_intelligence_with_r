@@ -44,6 +44,22 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
 
 ![loess trend](images/biwr_05_loess.png)
 
+`ggplot2` automatically smooths via a GAM if you have > 1,000 points. If you have fewer, and want to see the trend a GAM can plot, you'll need to change the the `geom_smooth` method *and* include the option, written just like it is here: `formula = y ~ s(x)`. Don't replace the `y` and `x` with the variable names; you'll get an error. Other GAM options can be included in the `geom_smooth` call inside the formula (e.g., `formula = y ~ s(x), k=10`). 
+
+```
+require(mgcv)
+
+ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
+    xlab("Daily Mean Normalized Air Temperature") +
+    ylab("Number of Total Bike Uses") +
+    geom_point(col="gray50") +
+    geom_smooth(method="gam", formula=y~s(x)) +
+    theme_bw()
+```
+
+![loess trend](images/biwr_05_gam.png)
+
+
 ### Quantile trends
 
 To show trends based on quantiles, use the `stat_quantile` option, and choose which quantiles you want to show, either specifically (as below) or sequentially (e.g., `quantiles = seq(0.05, 0.95, by=0.05)`:
@@ -107,7 +123,7 @@ The `psi` option is pretty robust to starting values when you have a large sampl
 
 ## The many flavors of regression
 
-There are many ways to model trends in data, but the majority of cases can be addressed with a few types. Still, there are more flavors of regression than a tornado in a Ben & Jerry's warehouse. The following are generalized linear models or close relatives; regression for non-linear responses (GAM) follows in the next section. 
+There are many ways to model trends in data, but the majority of cases can be addressed with a few types. Still, there are more flavors of regression than a Ben & Jerry's warehouse after a tornado.  
 
 The coefficients, of course, are effect sizes. 
 
@@ -126,12 +142,9 @@ The coefficients, of course, are effect sizes.
 |  | Overdispersed Poisson | Mixed | Negative binomial regression | `glm.nb(y ~ x1 + x2 ... + xn, offset=log(t))` | 
 | Counts with lots of 0s | Overdispersed Poisson | Mixed | Zero-inflated Poisson regression | `require (pscl);  zeroinfl(y ~ x1 + x2 ... + xn, dist="poisson")` | 
 | Counts where 0 is not possible and mean < 5 | Overdispersed Poisson | Mixed | Zero-truncated Poisson regression | `require (gamlss.tr); gamlss(y ~ x1 + x2 ... + xn, family=PO)` | 
+| n/a | Same as `glm` | Smoothed | GAM | `library(mgcv); gam(y ~ x1 + x2 ... + xn, family=...) | 
 
 \* change `+` to `*` to create interactions  
-
-
-## Regression for non-linear data (GAMs)
-
 
 
 ## Working with temporal data
@@ -434,7 +447,7 @@ ggsurvplot(tongue_survival, risk.table = TRUE, conf.int = TRUE)
 
 ## Evaluating quality with control charts
 
-Industrial and businesses with quality control processes or activities often use control charts (aka “Shewhart charts”) to evaluate whether a process is moving “out of control” over time and thus requires intervention. The `qcc` package provides a way to plot all major control chart types simply and quickly.
+Industrial and businesses with quality control processes or activities often use control charts (aka “Shewhart charts”) to evaluate whether a **stable** process is moving “out of control” over time and thus requires intervention. The `qcc` package provides a way to plot all major control chart types simply and quickly.
 
 As an example, we’ll create some fake data on hospital-acquired-infections (HAI) for a 25-month period to illustrate the creation of a u-chart, a control chart that plots changes in a rate over time:
 
@@ -464,6 +477,10 @@ You can remove the components of the resulting R object for use or plotting else
 infection_control_qcc = data.frame(Month = month_name, infection_control$limits, 
     Rate = (infections / patient_days)*1000)
 ```
+
+T> Many people use control charts incorrectly on trending and/or
+T> autocorrelated data. When you need something like a control
+T> chart on this type of data, use a GAM instead.
 
 
 ## Identifying possible breakpoints in a time series
