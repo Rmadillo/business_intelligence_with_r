@@ -107,7 +107,7 @@ The `psi` option is pretty robust to starting values when you have a large sampl
 
 ## The many flavors of regression
 
-There are many ways to model trends in data, but the majority of cases can be addressed with a few types. The following are generalized linear models or close relatives; regression for non-linear responses (GAM) follows in the next section. 
+There are many ways to model trends in data, but the majority of cases can be addressed with a few types. Still, there are more flavors of regression than a tornado in a Ben & Jerry's warehouse. The following are generalized linear models or close relatives; regression for non-linear responses (GAM) follows in the next section. 
 
 The coefficients, of course, are effect sizes. 
 
@@ -128,11 +128,6 @@ The coefficients, of course, are effect sizes.
 | Counts where 0 is not possible and mean < 5 | Overdispersed Poisson | Mixed | Zero-truncated Poisson regression | `require (gamlss.tr); gamlss(y ~ x1 + x2 ... + xn, family=PO)` | 
 
 \* change `+` to `*` to create interactions  
-
-
-
-### Assessing model fit
-
 
 
 ## Regression for non-linear data (GAMs)
