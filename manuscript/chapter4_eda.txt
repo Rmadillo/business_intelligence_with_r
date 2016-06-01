@@ -103,11 +103,13 @@ require(scales)
 
 This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. 
 
-I> #### Need a `ggplot` cheat sheet?
+I> #### Need a `ggplot2` cheat sheet?
 I>
-I> The `ggplot2` documentation is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses, there's a great introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html), and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/).
+I> RStudio has a great A3/11x17 sized overview of all the [primary ggplot functions and options](http://www.rstudio.com/wp-content/uploads/2015/12/ggplot2-cheatsheet-2.0.pdf) on their [cheatsheet page](https://www.rstudio.com/resources/cheatsheets/).  
 I>
-I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet from the above link into a local pipe-delimited text file, to format and display as works best for you.  
+I> The [`ggplot2` documentation](http://docs.ggplot2.org/current/) is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses *with examples*, there's a great introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html), and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/).
+I>
+I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet from the above link into a local pipe-delimited text file, to format and display as works best for you:  
 I> 
 I> ~~~~~~~~  
 I> require(XML)  
@@ -163,32 +165,22 @@ When you have categorical data, bar or dot plots serve the same purpose:
 ggplot(bike_share_daily, aes(weathersit)) +
     geom_bar(col="blue", fill="blue", alpha=0.3) +
     xlab("Weather Pattern") +
-    scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", "Cloudy/Rainy", 
-    "Stormy")) +
+    scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear",
+        "Cloudy/Rainy", "Stormy")) +
     theme_bw()
-    
-ggplot(bike_share_daily, aes(x=weathersit, y=..count.. )) +
-    geom_point(stat = "bin", size = 3, pch=15, col="blue") +
+
+ggplot(bike_share_daily, aes(x=weathersit, y=..count..)) +
+    geom_bar(stat="count", width=0.01) +
+    geom_point(stat = "count", size=4, pch=21, fill="darkblue") +
     xlab("Weather Pattern") +
-    scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", "Cloudy/Rainy", 
-    "Stormy")) +
-    theme_bw()
-```
-
-![bar and dot](images/0815OS_02_07a.png)
-
-You can also use `coord_flip()` to move from a normal bar chart to a horizontal one:
-```
-ggplot(bike_share_daily, aes(weathersit)) +
-    geom_bar(col="blue", fill="blue", alpha=0.3) +
-    xlab("") +
-    scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", "Cloudy/Rainy", 
-    "Stormy")) +
+    scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", 
+        "Cloudy/Rainy", "Stormy")) +
     coord_flip() +
     theme_bw()
 ```
 
-![horizontal bar](images/0815OS_02_07b.png)
+![bar and dot](images/bar_and_dot.png)
+
 
 ### Plotting multiple univariate distributions with faceting
 
