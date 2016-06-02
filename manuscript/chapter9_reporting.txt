@@ -157,9 +157,10 @@ ui = shinyUI(fluidPage(
       plotOutput(outputId = "dist_plot"),
       
       # Output of simulation cdf plot click
+      
       HTML(
-        "<br><b>Click on the CDF line for a given Value value to obtain
-        the probability estimate.</b><br>"
+        "<br><b>Click on the CDF line for a given Value value, 
+        then click <i>Submit</i> to obtain the probability estimate.</b><br>"
       ),
       
       br(),
@@ -293,6 +294,8 @@ shinyApp(ui = ui, server = server)
 
 #######################################################
 ```
+
+![risk app](images/risk_app.png)
 
 ## Reproducible Analytics
 
