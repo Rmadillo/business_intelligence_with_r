@@ -1,18 +1,21 @@
 # Chapter 9: Reporting and Dashboarding
 
-- Technical Memos
-- Reports
+- Reports and Technical Memos
 - Dashboards
-- Slide Decks and Shiny Apps
+- Slide Decks 
+- Shiny Apps
 - Reproducible Analytics
 
-## Technical Memos
-
-Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
 
 ## Reports
 
-Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. The vast majority of analytics in modern BI tend to be report-oriented. 
+Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. The vast majority of analytics in modern BI tend to be report-oriented. Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
+
+We saw an example of a data product that could be considered either in Chapter 1, in the exploration and forecasting of the Hauteville House's power consumption. 
+
+Basically, just open a new R Markdown document, choose Document, and hit OK. A default template will open in the Source window, from which you can modify as needed. Code occurs in "chunks", sections in which you place the code you want R to execute. Free text is converted into html via [R Markdown](http://rmarkdown.rstudio.com), a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. See Appendix 3 for a cheatsheet of R Markdown symbols and usage.  
+
+Web (html) reports are ready to create out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office. 
 
 
 ## Dashboards
@@ -25,6 +28,28 @@ Forecasting fits into this group as well, much as a GPS or driving app provides 
 ## Slide Decks and Shiny Apps
 
 At some point, every analyst needs to report their results in a meeting or briefing. Traditional static slide decks are fine, but one of the powerful features of R is the ability to create slide decks or apps with interactive features, allowing the analyst to help decision makers explore the results and their implications interactively, in real time. 
+
+
+`ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the grey text. To change this, get the latest ioslides style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
+
+| Line | Style block | Original setting | Change to: |
+| ---- | ----------- | ---------------- | ---------- |
+| 245 | `slides > slide` | `color: #797979;` | `color: black;` |
+| 454 | `h2` | `color: #515151;` | `color: black;` |
+| 463 | `h3` | `color: #797979;` | `color: black;` |
+| 1339 | `.title-slide hgroup h1` | `color: #515151;` | `color: black;` |
+| 1344 | `.title-slide hgroup h2` | `color: darkgrey;` | `color: black;` |
+| 1339 | `.title-slide hgroup p` | `color: #797979;` | `color: black;` |
+
+I save this new stylesheet as `default_black.css`. Then, in the YAML header of your `.Rmd` file, change ```output: ioslides_presentation`` to (spacing matters!):
+
+```
+output:
+  ioslides_presentation:
+    css: default_black.css
+```
+
+As long as you have both the `.css` and `.Rmd` files in the same place, it will make the conversion for you. Obviously, any style element can be changed in the same way, so even if you don't know css, you can probably web search what you want to change to find out what that particular element is named in html, and go from there.  
 
 
 ## Shiny Apps
