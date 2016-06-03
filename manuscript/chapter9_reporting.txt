@@ -10,9 +10,9 @@ It's fine to create reports in word processing or slide show software, but it ca
 
 Basically, to get started, just open a new R Markdown document, choose Document (keeping the html output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that blow away decision makers used to PDFs and slide decks. 
 
-Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html via [R Markdown](http://rmarkdown.rstudio.com), a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. See *Appendix 3* for a cheatsheet of R Markdown symbols and usage.
+Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html via [R Markdown](http://rmarkdown.rstudio.com), a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. See *Appendix 3* for a cheatsheet of R Markdown symbols and usage. You can also use regular html as well, such as `<br>` for line breaks, and so on. 
 
-In research and academia, there is increasing emphasis on reproducible research, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is starting to adopt the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. "The code *is* the documentation" is longer a viable excuse (or career choice!), so using R Markdown to create your data products from the start can save a **lot** of time later. 
+In research and academia, there is rapidly increasing emphasis on reproducible research, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is starting to adopt the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. "The code *is* the documentation" is longer a viable excuse (or career choice!), so using R Markdown to create your data products from the start can save a **lot** of time later. 
 
 
 ## Reports and technical memos
@@ -36,6 +36,74 @@ Web (html) reports are ready to create out-of-the-box. To create PDF or Word doc
 There are a lot of dashboards in BI that don't deserve the name. Just because you have graphs and interactivity doesn't mean you have a real dashboard; much like driving a car, if you're getting information about how fast you were going 10 minutes ago, it's not of much use. Dashboards are really about real-time analytics or for analytics that help decision makers plan their day's activities after a no more than a quick viewing. "Dashboards" meant for "what has happened"-type needs or for more methodical exploration are more accurately termed "reports."   
 
 Forecasting fits into this group as well, much as a GPS or driving app provides you information about where you're going. 
+
+### Simple dashboarding with R Markdown
+
+Since `.Rmd` files can be exported as html, you can create simple dashboards easily in an R Markdown script. The resulting stand-alone file can be placed into a website directly or via an `<iframe>`; at my company, we can't upload javascript-based files into our Intranet, but we can upload them to Sharepoint and then call that file from its Sharepoint URL into an `<iframe>` on our Intranet. 
+
+Using data from the [University of Queensland Vital Signs Dataset](http://dx.doi.org/102.100.100/6914), and the `htmlwidgets`-based package `sparkline`, we can create a simple example dashboard in an `.Rmd` file that shows vital signs for a surgery case (imagine it streaming, rather than static data!). 
+
+Because the `sparkline` package was never fully completed, you need to add a small `<style>` hack to the css to get the tooltips to work properly. That hack is included at the top of the R Markdown file, just after the YAML header. 
+
+To explore this dashboard, open a new R Markdown file and replace the template text with the text below, then press the "Knit HTML" button. 
+
+~~~~~~~~
+---
+output: html_document
+---
+
+<style>
+.jqstooltip {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+</style>
+
+### Vital Signs Dashboard
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# devtools::install_github('htmlwidgets/sparkline')
+# see documentation at https://github.com/htmlwidgets/sparkline
+require(sparkline)
+require(lubridate)
+
+# 10 minute section of vital signs data from University of Queensland
+vs = read.csv("https://outbox.eait.uq.edu.au/uqdliu3/uqvitalsignsdataset/_uqvitalsignsdata/case20/fulldata/uq_vsd_case20_fulldata_10.csv", header=T)
+
+# convert _ to . in case time and make into date time class 
+# Date just defaults to current day since there's no date field in data
+vs$Case_Time = gsub("_", ".", as.character(vs$Time), fixed = TRUE)
+vs$Case_Time_ct = as.POSIXct(vs$Case_Time, format = "%H:%M:%OS")
+
+# Use start time from data set, create object for latest time
+vs$Date_Time_ct = vs$Case_Time_ct + hours(11) + minutes (28)
+curr_time = substr(as.character(vs$Date_Time_ct[length(vs$Date_Time_ct)]), 12, 21)
+```
+
+#### Patient MRN: **123456789**   
+<br>  
+Case Start Time: `r vs$Date_Time_ct[1]`  
+<br>  
+   
+| *Vital* | *Trend up to current time:* `r curr_time`  | *Distribution* | 
+| ------- | ------- | ------- |
+| Heart Rate | `r sparkline(vs$HR, width=250, height=60)` | `r sparkline(vs$HR, width=100, height=60, type="box")` | 
+| Pulse | `r sparkline(vs$Pulse, width=250, height=60)` | `r sparkline(vs$Pulse, width=100, height=40, type="box")` | 
+| Minute Volume | `r sparkline(vs$Minute.Volume, width=250, height=60, normalRangeMin=5, normalRangeMax=8, drawNormalOnTop=T, normalRangeColor="lightgreen")` | `r sparkline(vs$Minute.Volume, width=100, height=40, type="box")` | 
+| Tidal Volume | `r sparkline(vs$Tidal.Volume, width=250, height=60, normalRangeMin=280, normalRangeMax=400, drawNormalOnTop=T, normalRangeColor="lightgreen", fillColor="transparent")` | `r sparkline(vs$Tidal.Volume, width=100, height=60, type="box")` | 
+
+<small>*Green bands show normal ranges.*</small>  
+~~~~~~~~
+
+![vitals](images/vitals.png)
+
+Note that the green bands are *not* the proper normal ranges for those vital signs. Anyway, why would you even consider taking medical advice from a coding book? 
+
+### `flexdashboard`
+
 
 
 ## Slide decks
@@ -79,273 +147,20 @@ A new `.R` file will appear in your working directory with the raw R code.
 ![purled](images/Hauteville_purl.png)
 
 
+### YAML headers in `.Rmd` files
+
+The YAML header provides you with a way to customize the output of R Markdown files. 
+
+
 ## Shiny apps
 
 Shiny is an incredible tool--being able to update parameters and inputs on the fly is a tremendous improvement for decision makers in exploring "what if?" scenarios alongside the analyst or even flying solo. Basically, if you can do it in R, you can do it in Shiny. RStudio's [Shiny page](http://shiny.rstudio.com/) is a wealth of [knowledge](http://shiny.rstudio.com/tutorial/), [demos](https://www.rstudio.com/products/shiny/shiny-user-showcase/), and [examples](http://shiny.rstudio.com/gallery/) you can pull from to create your own app. 
 
 A great use of Shiny is for risk assessment, where the decision maker can see the effects of assumptions on the probability of a value or range of values occuring in real time. (This can be dangerous as well, if they change their assumptions to obtain the outcome they want to see!) 
 
-Below is the code and a screenshot of an app that uses the basic risk assessment tool of the [betaPERT distribution](https://www.riskamp.com/beta-pert) to create a probability model of expert opinion, where the subject matter expert provides the value of minimum and maximum possible values as well as the most likely value. An uncertainty parameter *gamma* provides the user with the ability to modify the kurtosis of the distribution; a value of 4 is the [standard betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm), while lower values show increased uncertainty and larger values show increased certainty in the estimate of the most likely value (termed the [modified betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm). 
+Below is a screenshot of an app that uses the basic risk assessment tool of the [betaPERT distribution](https://www.riskamp.com/beta-pert) to create a probability model of expert opinion, where the subject matter expert provides the value of minimum and maximum possible values as well as the most likely value. An uncertainty parameter *gamma* provides the user with the ability to modify the kurtosis of the distribution; a value of 4 is the [standard betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm), while lower values show increased uncertainty and larger values show increased certainty in the estimate of the most likely value (termed the [modified betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm). 
 
-```
-#############################################################
-# Risk Explorer Shiny App
-# Dwight Barry, PhD | Enterprise Analytics
-# November 2015 - Version 0.9 - Proof of concept
-# May 2016 - Version 1.2 - expert opinion only
-# Changes from 1.0: added data input and mix/max adjustment
-# Changes from 1.1: substituted function for mc2d rpert,
-#                   removed min values from inputs
-#############################################################
-
-
-##### Global #####
-
-# Load Packages
-library(shiny)
-library(ggplot2)
-library(htmlTable)
-library(mc2d)
-
-
-#######################################################
-
-##### User Interface #####
-
-ui = shinyUI(fluidPage(
-  # Title
-  titlePanel("Expert Opinion Risk Explorer"),
-  
-  sidebarLayout(
-    # Sidebar Panel
-    
-    sidebarPanel(
-      # Allow user to input betaPERT parameters
-      
-      # Enter lowest possible value
-      numericInput(
-        "low",
-        label = "Enter Lowest Possible Value:",
-        value = 0,
-        step = 0.1
-      ),
-      
-      # Enter most likely value (mode/maximum density)
-      numericInput(
-        "mode",
-        label = "Enter Most Likely Value (Mode):",
-        value = 10,
-        step = 0.1
-      ),
-      
-      # Enter highest possible value
-      numericInput(
-        "high",
-        label = "Enter Highest Possible Value:",
-        value = 25,
-        step = 0.1
-      ),
-      
-      # Produce empirical histogram/density plot
-      numericInput(
-        "bins",
-        label = "Bin Width (0 for density only):",
-        min = 0,
-        value = 0.1,
-        step = 0.1
-      ),
-      
-      # User inputs for min/max percent adjustment
-      numericInput(
-        "minperc",
-        label = "Minimum adjustment (percent below minimum):",
-        min = 0,
-        max = 1,
-        value = 0
-      ),
-      
-      numericInput(
-        "maxperc",
-        label = "Maximum adjustment (percent above maximum):",
-        min = 0,
-        max = 1,
-        value = 0
-      ),
-      
-      # Show betaPERT values
-      htmlOutput("maxdens"),
-      
-      br(),
-      
-      # User inputs for simulation
-      numericInput(
-        "reps",
-        label = "Simulation Replications:",
-        min = 1,
-        value = 10000
-      ),
-      
-      sliderInput(
-        "gamma",
-        label = HTML(
-          "BetaPERT Distribution Uncertainty Parameter (&gamma;): <br>
-          <small><i>4 is default PERT
-          distribution</i></small>"
-        ),
-        min = 1,
-        max = 10,
-        value = 4,
-        step = 1
-        ),
-      
-      submitButton("Submit")
-      
-      ),
-    
-    # Main panel
-    mainPanel(
-      
-      # Simulation histogram/density plot
-      plotOutput(outputId = "dist_plot"),
-      
-      # Output of simulation cdf plot click
-      
-      HTML(
-        "<br><b>Click on the CDF line for a given Value value, 
-        then click <i>Submit</i> to obtain the probability estimate.</b><br>"
-      ),
-      
-      br(),
-      
-      # Simulation cdf plot
-      plotOutput(outputId = "cdf_plot", click = "plot_click"),
-      
-      # Click output results
-      htmlOutput("info")
-      
-      )
-    
-  )
-  
-))
-
-
-#######################################################
-
-##### Server #####
-
-server = shinyServer(function(input, output) {
-  
-  # Simulation distribution plot
-  output$dist_plot = renderPlot({
-    Value = c(input$low, input$high, input$mode)
-    df = data.frame(Value)
-    
-    sim_df = data.frame(Value = rpert(
-      input$reps,
-      (min(df$Value) - min(df$Value) * input$minperc),
-      input$mode,
-      (max(df$Value) + max(df$Value) * input$maxperc),
-      input$gamma))
-    
-    ggplot(sim_df, aes(Value)) +
-      ggtitle("Simulation Distribution") +
-      ylab("Density / Count") +
-      geom_histogram(
-        aes(y = ..density..),
-        binwidth = input$bins,
-        col = "blue",
-        fill = "blue",
-        alpha = 0.2,
-        na.rm = T) +
-      xlim((min(df$Value) - min(df$Value) * input$minperc),
-           (max(df$Value) + max(df$Value) * input$maxperc)) +
-      geom_density(
-        col = "blue",
-        fill = "blue",
-        alpha = 0.2,
-        na.rm = T) +
-      theme(
-        axis.ticks.y = element_blank(),
-        axis.text.y = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank())
-  })
-  
-  # Simulation CDF plot
-  output$cdf_plot = renderPlot({
-    Value = c(input$low, input$high, input$mode)
-    df = data.frame(Value)
-    
-    sim_df = data.frame(Value = rpert(
-      input$reps,
-      (min(df$Value) - min(df$Value) * input$minperc),
-      input$mode,
-      (max(df$Value) + max(df$Value) * input$maxperc),
-      input$gamma
-    ))
-    
-    ggplot(sim_df, aes(Value)) +
-      ggtitle("Simulation CDF") +
-      ylab("Probability") +
-      xlim((min(df$Value) - min(df$Value) * input$minperc),
-           (max(df$Value) + max(df$Value) * input$maxperc)) +
-      stat_ecdf(lwd = 2, na.rm = T) +
-      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
-    
-  })
-  
-  # Plot-click result for simulation
-  output$info = renderText({
-    paste0(
-      "<i>The probability of obtaining a Value less than
-      or equal to ",
-      txtRound(input$plot_click$x, 1),
-      " is about <b>",
-      txtRound(input$plot_click$y, 2),
-      "</b>.</i>"
-    )
-    
-  })
-  
-  # Details on betaPERT parameters
-  output$maxdens = renderText({
-    Value = c(input$low, input$high, input$mode)
-    df = data.frame(Value)
-    
-    sim_df = data.frame(Value = rpert(
-      input$reps,
-      (min(df$Value) - min(df$Value) * input$minperc),
-      input$mode,
-      (max(df$Value) + max(df$Value) * input$maxperc),
-      input$gamma
-    ))
-    
-    
-    paste0(
-      "<b>BetaPERT Inputs:</b><br><i>Simulation mode: ",
-      txtRound(input$mode, 1),
-      ".<br>Simulation minimum: ",
-      txtRound((min(df$Value) - min(df$Value) * input$minperc), 1),
-      "<br>Simulation maximum: ",
-      txtRound(max(df$Value) + max(df$Value) * input$maxperc, 1),
-      "</i>."
-    )
-    
-  })
-  
-})
-
-
-#######################################################
-
-##### App #####
-
-# Return the Shiny app
-shinyApp(ui = ui, server = server)
-
-#######################################################
-```
+The code that created this app is contained in *Appendix 3*.
 
 ![risk app](images/risk_app.png)
 
