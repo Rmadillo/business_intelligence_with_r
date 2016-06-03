@@ -1,20 +1,21 @@
 # Chapter 9: Reporting and Dashboarding
 
-- Reports and Technical Memos
+- Reports and technical memos
 - Dashboards
-- Slide Decks 
-- `purl`ing your `.Rmd` files
-- Shiny Apps
-- Reproducible Analytics
+- Slide decks 
+- `purl`ing: scraping the raw code from your `.Rmd` files
+- Shiny apps
 
-It's fine to create reports in word processing or slide show programs, but it can be easier to create data products entirely inside R. There are a number of benefits to doing this: you have the code embedded in your data product, so that final product automatically updates when you change the code or its outputs the next time you 'knit' it; you can share documents that others can use for both the product and the code, which is great for reproducibility as well as documentation; and you can include interactive content, something impossible to do in static documents. 
+It's fine to create reports in word processing or slide show software, but it can be smarter to create data products entirely inside R. There are a number of benefits to doing this: you have the code embedded in your data product, so that final product automatically updates when you change the code or its outputs the next time you 'knit' it; you can share documents that others can use for both the product and the code, which is great for reproducibility as well as documentation; and you can include interactive content, something impossible to do in static documents. 
 
 Basically, to get started, just open a new R Markdown document, choose Document (keeping the html output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that blow away decision makers used to PDFs and slide decks. 
 
 Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html via [R Markdown](http://rmarkdown.rstudio.com), a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. See *Appendix 3* for a cheatsheet of R Markdown symbols and usage.
 
+In research and academia, there is increasing emphasis on reproducible research, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is starting to adopt the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. "The code *is* the documentation" is longer a viable excuse (or career choice!), so using R Markdown to create your data products from the start can save a **lot** of time later. 
 
-## Reports
+
+## Reports and technical memos
 
 Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. The vast majority of analytics in modern BI tend to be report-oriented. Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
 
@@ -22,11 +23,12 @@ We saw an example of a data product that could be considered either a report or 
 
 Web (html) reports are ready to create out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office:
 
+{width="narrow"}
 | OS | PDF | Word |
 | -- | --- | ---- |
-| Windows | MiKTex | MS Word |
-| Mac OS X | MacTeX | MS Word for Mac |
-| Linux | Tex Live 2013+ | Libre/Open Office | 
+| Windows | [MiKTex](http://miktex.org/) | MS Word |
+| Mac OS X | [MacTeX](https://tug.org/mactex/) | MS Word for Mac |
+| Linux | [Tex Live](https://www.tug.org/texlive/) | [Libre Office](https://www.libreoffice.org/download/libreoffice-fresh/) or [Open Office](https://www.openoffice.org/) | 
 
 
 ## Dashboards
@@ -36,7 +38,7 @@ There are a lot of dashboards in BI that don't deserve the name. Just because yo
 Forecasting fits into this group as well, much as a GPS or driving app provides you information about where you're going. 
 
 
-## Slide Decks
+## Slide decks
 
 At some point, every analyst needs to report their results in a meeting or briefing. Traditional static slide decks are fine, but one of the powerful features of R is the ability to create slide decks or apps with interactive features, allowing the analyst to help decision makers explore the results and their implications interactively, in real time. Even if you don't create interactive content, having a slide deck that includes the code that generated the results is really useful for documentation, code review, or--most often--the inevitable revision when a decision maker asks another "what if you tried...?" question. 
 
@@ -62,7 +64,7 @@ output:
 As long as you have both the `.css` and `.Rmd` files in the same place, it will make the conversion for you. Obviously, any style element can be changed in the same way, so even if you don't know css, you can probably web search what you want to change to find out what that particular element is named in html, and go from there.  
 
 
-## `purl`ing your `.Rmd` files
+## `purl`ing: scraping the raw code from your `.Rmd` files
 
 The `purl` function in `knitr` allows you to "scrape" your R Markdown files for the R code. So if you've created a data product in R Markdown and you want just the code from it copied into a separate file, do this (using the *Chapter 1* final data product as an example):
 
@@ -70,12 +72,14 @@ The `purl` function in `knitr` allows you to "scrape" your R Markdown files for 
 purl("Hauteville_House_Power_Forecast_20101127.Rmd", documentation = 0)
 ```
 
+The `documentation = 0` option removes the `knitr` code chunk options from your output, so you just get the raw R code. Use `documentation = 2` to keep those options in the resulting file, which will appear as commented lines (`#`).
+
 A new `.R` file will appear in your working directory with the raw R code. 
 
 ![purled](images/Hauteville_purl.png)
 
 
-## Shiny Apps
+## Shiny apps
 
 Shiny is an incredible tool--being able to update parameters and inputs on the fly is a tremendous improvement for decision makers in exploring "what if?" scenarios alongside the analyst or even flying solo. Basically, if you can do it in R, you can do it in Shiny. RStudio's [Shiny page](http://shiny.rstudio.com/) is a wealth of [knowledge](http://shiny.rstudio.com/tutorial/), [demos](https://www.rstudio.com/products/shiny/shiny-user-showcase/), and [examples](http://shiny.rstudio.com/gallery/) you can pull from to create your own app. 
 
@@ -345,6 +349,3 @@ shinyApp(ui = ui, server = server)
 
 ![risk app](images/risk_app.png)
 
-## Reproducible Analytics
-
-In research and academia, there is increasing emphasis on reproducible research, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is starting to adopt the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. 
