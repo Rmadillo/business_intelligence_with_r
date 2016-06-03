@@ -3,8 +3,15 @@
 - Reports and Technical Memos
 - Dashboards
 - Slide Decks 
+- `purl`ing your `.Rmd` files
 - Shiny Apps
 - Reproducible Analytics
+
+It's fine to create reports in word processing or slide show programs, but it can be easier to create data products entirely inside R. There are a number of benefits to doing this: you have the code embedded in your data product, so that final product automatically updates when you change the code or its outputs the next time you 'knit' it; you can share documents that others can use for both the product and the code, which is great for reproducibility as well as documentation; and you can include interactive content, something impossible to do in static documents. 
+
+Basically, to get started, just open a new R Markdown document, choose Document (keeping the html output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that blow away decision makers used to PDFs and slide decks. 
+
+Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html via [R Markdown](http://rmarkdown.rstudio.com), a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. See *Appendix 3* for a cheatsheet of R Markdown symbols and usage.
 
 
 ## Reports
@@ -13,22 +20,25 @@ Reports are typically look-back affairs, and can range from a simple dataset or 
 
 We saw an example of a data product that could be considered either in Chapter 1, in the exploration and forecasting of the Hauteville House's power consumption. 
 
-Basically, just open a new R Markdown document, choose Document, and hit OK. A default template will open in the Source window, from which you can modify as needed. Code occurs in "chunks", sections in which you place the code you want R to execute. Free text is converted into html via [R Markdown](http://rmarkdown.rstudio.com), a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. See Appendix 3 for a cheatsheet of R Markdown symbols and usage.  
+Web (html) reports are ready to create out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office:
 
-Web (html) reports are ready to create out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office. 
+| OS | PDF | Word |
+| -- | --- | ---- |
+| Windows | MiKTex | MS Word |
+| Mac OS X | MacTeX | MS Word for Mac |
+| Linux | Tex Live 2013+ | Libre/Open Office | 
 
 
 ## Dashboards
 
-There are a lot of dashboards in BI that don't deserve the name. Just because you have graphs and interactivity doesn't mean you have a real dashboard; much like driving a car, if you're getting information about how fast you were going 10 minutes ago, it's not of much use. Dashboards are about real-time analytics.  
+There are a lot of dashboards in BI that don't deserve the name. Just because you have graphs and interactivity doesn't mean you have a real dashboard; much like driving a car, if you're getting information about how fast you were going 10 minutes ago, it's not of much use. Dashboards are really about real-time analytics or for analytics that help decision makers plan their day's activities after a no more than a quick viewing. "Dashboards" meant for "what has happened"-type needs or for more methodical exploration are more accurately termed "reports."   
 
 Forecasting fits into this group as well, much as a GPS or driving app provides you information about where you're going. 
 
 
-## Slide Decks and Shiny Apps
+## Slide Decks
 
-At some point, every analyst needs to report their results in a meeting or briefing. Traditional static slide decks are fine, but one of the powerful features of R is the ability to create slide decks or apps with interactive features, allowing the analyst to help decision makers explore the results and their implications interactively, in real time. 
-
+At some point, every analyst needs to report their results in a meeting or briefing. Traditional static slide decks are fine, but one of the powerful features of R is the ability to create slide decks or apps with interactive features, allowing the analyst to help decision makers explore the results and their implications interactively, in real time. Even if you don't create interactive content, having a slide deck that includes the code that generated the results is really useful for documentation, code review, or--most often--the inevitable revision when a decision maker asks another "what if you tried...?" question. 
 
 `ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the grey text. To change this, get the latest ioslides style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
 
@@ -50,6 +60,17 @@ output:
 ```
 
 As long as you have both the `.css` and `.Rmd` files in the same place, it will make the conversion for you. Obviously, any style element can be changed in the same way, so even if you don't know css, you can probably web search what you want to change to find out what that particular element is named in html, and go from there.  
+
+
+## `purl`ing your `.Rmd` files
+
+The `purl` function in `knitr` allows you to "scrape" your R Markdown files for the R code. So if you've created a data product in R Markdown and you want just the code from it copied into a separate file, do this (using the *Chapter 1* final data product as an example):
+
+```
+purl("Hauteville_House_Power_Forecast_20101127.Rmd", documentation = 0)
+```
+
+A new `.R` file will appear in your working directory with the raw R code. 
 
 
 ## Shiny Apps
