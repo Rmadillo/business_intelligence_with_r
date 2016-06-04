@@ -3,8 +3,9 @@
 - Reports and technical memos
 - Dashboards
 - Slide decks 
-- `purl`ing: scraping the raw code from your `.Rmd` files
+- `purl`-ing: scraping the raw code from your `.Rmd` files
 - Shiny apps
+- Tweaking the YAML headers
 
 It's fine to create reports in word processing or slide show software, but it can be smarter to create data products entirely inside R. There are a number of benefits to doing this: you have the code embedded in your data product, so that final product automatically updates when you change the code or its outputs the next time you 'knit' it; you can share documents that others can use for both the product and the code, which is great for reproducibility as well as documentation; and you can include interactive content, something impossible to do in static documents. 
 
@@ -12,7 +13,9 @@ Basically, to get started, just open a new R Markdown document, choose Document 
 
 Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html via [R Markdown](http://rmarkdown.rstudio.com), a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. See *Appendix 3* for a cheatsheet of R Markdown symbols and usage. You can also use regular html as well, such as `<br>` for line breaks, and so on. 
 
-In research and academia, there is rapidly increasing emphasis on reproducible research, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is starting to adopt the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. "The code *is* the documentation" is longer a viable excuse (or career choice!), so using R Markdown to create your data products from the start can save a **lot** of time later. 
+The single biggest "oops" in using R Markdown--that you will immediately remedy the first time it happens, but you will also inevitably forget to do this--is ensuring you have put *two spaces* at the end of each line where you want a line break after text. I've used R Markdown for years, but even creating one of the examples below, I forgot to do this on a few lines and got a jumbled mess as a result. So, yeah, it's gonna happen. 
+
+Ultimately, there is rapidly increasing emphasis on reproducible research in research and academia, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is adopting the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. "The code *is* the documentation" is longer a viable excuse (or career choice!), so using R Markdown to create your data products from the start can save a **lot** of time later. Having it become an enterprise best practice/standard process is even better. 
 
 
 ## Reports and technical memos
@@ -20,6 +23,8 @@ In research and academia, there is rapidly increasing emphasis on reproducible r
 Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. The vast majority of analytics in modern BI tend to be report-oriented. Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
 
 We saw an example of a data product that could be considered either a report or a memo in Chapter 1, in the exploration and forecasting of the Hauteville House's power consumption (full code in *Appendix 2*). 
+
+![reprise Chapter 1 report result](images/biwr_ch1_knitr_ex.png)
 
 Web (html) reports are ready to create out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office:
 
@@ -100,7 +105,8 @@ Case Start Time: `r vs$Date_Time_ct[1]`
 
 ![vitals](images/vitals.png)
 
-Note that the green bands are *not* the proper normal ranges for those vital signs. Anyway, why would you even consider taking medical advice from a coding book? 
+Note that the green bands are *not* the proper normal ranges for those vital signs, they're just there as an example. (Anyway, why would you take medical advice from a coding book?) 
+
 
 ### `flexdashboard`
 
@@ -132,7 +138,7 @@ output:
 As long as you have both the `.css` and `.Rmd` files in the same place, it will make the conversion for you. Obviously, any style element can be changed in the same way, so even if you don't know css, you can probably web search what you want to change to find out what that particular element is named in html, and go from there.  
 
 
-## `purl`ing: scraping the raw code from your `.Rmd` files
+## `purl`-ing: scraping the raw code from your `.Rmd` files
 
 The `purl` function in `knitr` allows you to "scrape" your R Markdown files for the R code. So if you've created a data product in R Markdown and you want just the code from it copied into a separate file, do this (using the *Chapter 1* final data product as an example):
 
@@ -147,11 +153,6 @@ A new `.R` file will appear in your working directory with the raw R code.
 ![purled](images/Hauteville_purl.png)
 
 
-### YAML headers in `.Rmd` files
-
-The YAML header provides you with a way to customize the output of R Markdown files. 
-
-
 ## Shiny apps
 
 Shiny is an incredible tool--being able to update parameters and inputs on the fly is a tremendous improvement for decision makers in exploring "what if?" scenarios alongside the analyst or even flying solo. Basically, if you can do it in R, you can do it in Shiny. RStudio's [Shiny page](http://shiny.rstudio.com/) is a wealth of [knowledge](http://shiny.rstudio.com/tutorial/), [demos](https://www.rstudio.com/products/shiny/shiny-user-showcase/), and [examples](http://shiny.rstudio.com/gallery/) you can pull from to create your own app. 
@@ -163,4 +164,11 @@ Below is a screenshot of an app that uses the basic risk assessment tool of the 
 The code that created this app is contained in *Appendix 3*.
 
 ![risk app](images/risk_app.png)
+
+
+## Tweaking the YAML headers
+
+The YAML header provides you with a way to customize the output of R Markdown files. The defaults are generally great for most needs, but occasionally you want to make some modifications, and I've found that the web doesn't have a lot of information readily available on this specific to R Markdown. So here are a few tips and tricks I've learned. 
+
+
 
