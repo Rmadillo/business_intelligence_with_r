@@ -396,37 +396,11 @@ box(col="gray30")
 
 ![euro map](images/0815OS_04_12.png)
 
-We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this book's github repo. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
+We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this book's github repo (subset to ozone pollution data and linked to each station's geographic coordinates; code to do so yourself is [here](https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/eu_o3.R)). We'll plot the annual daily median values with the modern EU boundaries obtained above:
 
 ```
-o3stations = read.table("code/AirBase_v8_stations.csv", sep=",", header=T, 
-  stringsAsFactors=F, quote="")
-o3data = read.table("code/AirBase_v8_statistics.csv", sep="\t", header=T, 
-  stringsAsFactors=F, quote="")
-require(sqldf)
-eu_o3 = sqldf("SELECT
-              a.station_european_code
-              , a.component_caption
-              , a.statistics_year
-              , a.statistics_average_group
-              , a.statistic_shortname
-              , a.statistic_value
-              , b.station_european_code
-              , b.country_iso_code
-              , b.country_name
-              , b.station_city
-              , b.station_longitude_deg as longitude
-              , b.station_latitude_deg as latitude
-              , b.station_altitude as altitude
-              FROM o3data a
-              INNER JOIN o3stations b
-              ON a.station_european_code = b.station_european_code
-              WHERE a.component_caption = 'O3'
-              AND a.statistics_year = 2012
-              AND a.statistics_average_group = 'day'
-              AND a.statistic_shortname = 'P50'
-              ")
-
+eu_o3 = read.table("https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/eu_o3.csv", sep=",", header=T)
+    
 plot(worldmap2014, xlim=c(2,12), ylim=c(35, 70), col="gray60")
 box(col="gray30")
 text(eu_o3$longitude, eu_o3$latitude, round(eu_o3$statistic_value,0), cex=0.5, 
