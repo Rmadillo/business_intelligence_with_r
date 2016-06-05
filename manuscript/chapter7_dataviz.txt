@@ -10,7 +10,7 @@ In this chapter, we will cover:
 
 We’ve already explored summary plots of a set of variables earlier in this chapter, but sometimes you want to consider a set of variables all at once in a consistent way. Heatmaps and parallel coordinate plots (PCPs) are two common ways to do this (and we’ll explore a few others, such as cluster dendrograms, in later chapters); heatmaps do a good job of showing three dimensions clearly, while PCPs can work for a large number of variables, as long as there aren’t too many observations in the data.
 
-Visualizing multidimensional data is difficult to do in two dimensions. Heatmaps can provide an extra dimension or two via color scale and/or intensity, while parallel coordinates lays out all of your variables as a series of 1-dimensional axes. Bubbleplots provide you the ability to use color and point size to include additional dimensions. These approaches shouldn’t substitute for a set of univariate displayes of the data (e.g., as a set of density plots presented in facets, as seen in the *Plotting univariate data* recipe in Chapter 4), but they’re a great additional tool you can use when exploring the dimensions of your data. Further, interactive versions of these two plots (later this chapter) can be great tools for decision makers, and exploring layout and views with static versions before creating interactive ones can save time later.
+Visualizing multidimensional data is difficult to do in two dimensions. Heatmaps can provide an extra dimension or two via color scale and/or intensity, while parallel coordinates lays out all of your variables as a series of 1-dimensional axes. Bubbleplots provide you the ability to use color and point size to include additional dimensions. These approaches shouldn’t substitute for a set of univariate displayes of the data (e.g., as a set of density plots presented in facets, as seen in the *Plotting univariate data* recipe in *Chapter 4*), but they’re a great additional tool you can use when exploring the dimensions of your data. Further, interactive versions of these plots (later this chapter) can be great tools for decision makers, and exploring layout and views with static versions before creating interactive ones can save time later.
 
 ### Heatmaps
 
@@ -21,7 +21,7 @@ require(ggplot2)
 require(dplyr)
 ```
 
-We’ll first use `dplyr`'s `group_by` function to group the casual bike use values by month and weekday, then use `summarise` to calculate mean and sd values for each month/weekday combination (although since we only have 2 years, this is statistically inappropriate. Still, it illustrates the technique). Once we have that, we’ll be able to use `ggplot`’s `geom_tile` option to create heatmaps:
+We’ll first use `dplyr`'s `group_by` function to group the casual bike use values by month and weekday, then use `summarise` to calculate mean and sd values for each month/weekday combination. Once we have that, we’ll be able to use `ggplot`’s `geom_tile` option to create heatmaps:
 
 ```
 bike_share_grp = group_by(bike_share_daily, weekday, mnth)
@@ -59,21 +59,21 @@ We covered temporal data in the previous chapter, but since a calendar heatmap i
 
 There are a variety of functions and scripts floating around the web that create calendar heatmaps, so those interested in custom plots might consider a search to explore those in depth. But if you just need a simple, to-the-point function to create a calendar heat map, Paul Bleicher’s `calendarHeat` R script posted on the Revolution R blog is probably all you need.
 
-There are three color schemes built into Paul’s script: red to blue (shown above, `color=r2b`), white to blue (`color=w2b`), and the color-blind unfriendly red to green (`color=r2g`), which is unfortunately the default. Opening the script via `fix(calendarHeat)` and scrolling down to lines 38-41 shows those schemes, which can be readily modified, extended, or added to using your own color ramp preferences. You can also put a different ramp into an object and call it from within the function. For example:
+There are three color schemes built into Paul’s script: red to blue (`color=r2b`), white to blue (`color=w2b`), and the color-blind unfriendly red to green (`color=r2g`), which is unfortunately the default. Opening the script via `fix(calendarHeat)` and scrolling down to lines 38-41 shows those schemes, which can be readily modified, extended, or added to using your own color ramp preferences. You can also put a different ramp into an object and call it from within the function. For example:
 
 ```
 require(RColorBrewer)
 source("http://blog.revolutionanalytics.com/downloads/calendarHeat.R")
-new_color_ramp = brewer.pal(9, "Greens")
+green_color_ramp = brewer.pal(9, "Greens")
 calendarHeat(bike_share_daily$dteday, bike_share_daily$casual, 
-  varname="Casual Daily Bike Use", color="new_color_ramp")
+  varname="Casual Daily Bike Use", color="green_color_ramp")
 ```
 
 ![calendar heatmap](images/0815OS_04_05.png)
 
 ### Parallel coordinates plots
 
-To demonstrate parallel coordinate plots, we’ll use a dataset on a set of financial ratios for some banks associated with the Spanish banking crisis of the late 1970s and early 1980s. We’ll see this dataset again, so it’s also useful to see the data in this form here for comparison with a dimension reduction technique we’ll explore in the next chapter.
+To demonstrate parallel coordinate plots, we’ll use a dataset on a set of financial ratios for some banks associated with the Spanish banking crisis of the late 1970s and early 1980s. We’ll see this dataset again, so it’s also useful to see the data in this form here for comparison with dimension reduction techniques we’ll explore in the next chapter.
 
 ```
 require(GGally)
@@ -85,7 +85,7 @@ quiebra_download = read.xls(qb_url, sheet=1, header=TRUE,
 quiebra = quiebra_download[,2:12]
 ```
 
-GGally has a parallel coordinates plot function that’s simple to use, albeit difficult to customize. Still, it gets the job done; here are each of the nine dimensions (variables) plotted, colored by whether the bank remained solvent (light blue) or not (dark blue).
+`GGally` has a parallel coordinates plot function that’s simple to use, albeit difficult to customize. Still, it gets the job done; here are each of the nine dimensions (variables) plotted, colored by whether the bank remained solvent (light blue) or not (dark blue).
 
 ```
 ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, 
@@ -94,7 +94,7 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
 
 ![pcp plain](images/0815OS_04_02.png)
 
-A neat feature of ggparcoord is the ability to put boxplots on the background of the plot:
+A neat feature of `ggparcoord` is the ability to put boxplots on the background of the plot:
 
 ```
 ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, 
@@ -105,7 +105,7 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
 
 ### Peeking at multivariate data with `dplyr` and a bubblechart
 
-In Chapter 3, we used `dplyr` to string together commands with the `%>%` ("then") operator to do some grouping and summarization to create a new dataframe. The following code performs essentially the same operations as we saw in Chapter 3, but outputs it to a `ggplot2` bubblechart instead of a dataframe:
+In Chapter 3, we used `dplyr` to string together commands with the `%>%` ("then") operator to do some grouping and summarization to create a new dataframe. The following code performs essentially the same operations as we saw in Chapter 3, but outputs a `ggplot2` bubblechart instead of a dataframe:
 
 ```
 customer_survey = read.table("Data/customer_survey.csv", sep=",", header=T)
@@ -144,8 +144,8 @@ ggplot(bike_share_mean_wide, aes(Year, Jan)) +
     ggtitle("Mean Daily Casual Bike Share Use, by Month (2011-2012)") +
     theme_minimal() +
     theme(panel.border = element_blank(), panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(), axis.ticks = element_blank(), 
-    axis.text = element_blank(), axis.title = element_blank())
+        panel.grid.minor = element_blank(), axis.ticks = element_blank(), 
+        axis.text = element_blank(), axis.title = element_blank())
 ```
 
 ![ggtable](images/0815OS_04_06.png)
@@ -155,7 +155,7 @@ ggplot(bike_share_mean_wide, aes(Year, Jan)) +
 
 For the most part, tooltips and chart interaction is overkill except in the case of multi-group scatterplots. A well-crafted static graph can convey the important messages to decision makers without suggesting the need for time-wasting interaction. However, in some cases interactivity is essential, by saving time, enhancing interpretability, or even if it's just because the boss asked for it. (What the boss wants, the boss gets!) 
 
-Most interactive graphs in R are built behind the scenes with javascript (often d3) using R syntax. Detailed customization is often somewhat difficult, but most packages' defaults are sensible enough that such customization isn't needed. `htmlwidgets` is the primary means by which people integrate interactive data viz with R; we'll use a few of the packages built around that in this section. 
+Most interactive graphs in R are built behind the scenes with [javascript](http://shiny.rstudio.com/tutorial/js-lesson1/) (often d3) using R syntax. Detailed customization is often somewhat difficult, but most packages' defaults are sensible enough that such customization isn't needed. `htmlwidgets` is the primary means by which people integrate interactive data viz with R; we'll use a few of the packages built around that in this section. 
 
 We'll start with some basic interactive visualizations by recalling some of the graphs built in earlier chapters, showing the commands that render approximately the same graphs. We'll also add a few new visualizations that demonstrate cases where static plots don't work and interactivity is essential. Of course, the packages shown below have many more options and possibilities, and you should explore their websites and use cases for more information. 
 
@@ -200,13 +200,6 @@ tauchart(bike_share_count) %>%
 
 ![tau dotplot](images/tau_dot.png)
 
-```
-tauchart(bike_share_daily_count) %>% 
-  tau_bar("count", "weather", horizontal=T) %>% 
-  tau_tooltip()
-```
-
-![tau horizontal barchart](images/tau_bar_horiz.png)
 
 Bivariate and faceted plots are similarly simple:
 
@@ -294,11 +287,11 @@ datatable(rosling_data, filter = "top")
 
 If you need to do real map work, you shouldn't use R, it's just not very good at it. That being said, sometimes all you need is a quick view of a spatial distribution, or perhaps you just need a simple map and you're already in R.
 
-There are several packages that do or support map work, many of which show promise for future use, such as ggmap, a mapping package built to fit over ggplot2 and its coherent graphics approach. But most are still too clunky or buggy when compared against other open source options like QGIS, Leaflet, and others. In addition, Python is the lingua franca language among professional GISers, not R. As a result, this book only touches on mapping.
+There are several packages that do or support map work, many of which show promise for future use, such as ggmap, a mapping package built to fit over ggplot2 and its coherent graphics approach. But most are still too clunky or buggy when compared against other open source options like QGIS, Leaflet, and others. In addition, Python is the lingua franca language among professional GISers, not R. 
 
 Probably the hardest part of making simple maps in R can just be getting set up. There are a variety of mapping and map-support packages, as a tour of the [CRAN spatial task view](http://cran.r-project.org/web/views/Spatial.html) shows. Many of them access different APIs as well, some of which require keys. Later in this recipe we'll explore a few more detailed examples, but for now we'll just stick with mapping simple point and area attributes within an R work session.
 
-Since there are different ways to (simply) do mapping in R, I've placed the package loading within the steps below instead of at the top of this chapter, so you can see which package is needed for which step.
+Since there are different ways to do mapping in R, I've placed the package loading within the steps below instead of at the top of this section, which helps show which package is needed for each step.
 
 ### Basic point maps
 
@@ -315,7 +308,7 @@ text(ozone$x, ozone$y, ozone$median, cex=0.5)
 ```
 ![ozone map](images/0815OS_04_07.png)
 
-We say "deceptive" because as long as you don't need anything fancy or if the boundaries you intend to map haven't changed in a while, you're fine—just use a map base and a dataframe with x (longitude), y (latitude), and data values. But what if the boundaries have changed? Let's look at Europe from the world map within the map package:
+It's "deceptively simple" because as long as you don't need anything fancy or if the boundaries you intend to map haven't changed in a while, you're fine—just use a map base and a dataframe with x (longitude), y (latitude), and data values. But what if the boundaries have changed? Let's look at Europe from the world map within the map package:
 
 ```
 map('world', xlim=c(-12,45), ylim=c(35,60), col="gray90", fill=T)
@@ -363,11 +356,11 @@ zip_map(df_pop_zip,
 
 ![chloropleth zoom zips](images/0815OS_04_11.png)
 
-The world map data that `choroplethr` and `choroplethrMaps` includes is up to date. But if you want to subset on Europe? Unfortunately, you'll have to do that manually, either by extracting the countries you need by name or ISO code, since x and y lim options don't work in this package (see `?choroplethr_wdi` or `?df_pop_country` for more details on names/ISO codes), or by acquiring map boundaries by different means. We'll explore the latter option below, as it takes considerably less effort.  
+The world map data that `choroplethr` and `choroplethrMaps` includes is up to date. But if you want to subset on Europe? Unfortunately, you'll have to do that manually, either by extracting the countries you need by name or ISO code, since `x`- and `y`-`lim` options don't work in this package (see `?choroplethr_wdi` or `?df_pop_country` for more details on names/ISO codes), or by acquiring map boundaries by different means. We'll explore the latter option below, as it takes considerably less effort.  
 
 As you can see from the first example, for a simple point map all you need is longitude (x), latitude (y), and data values. For choropleths (the second example), all you need are a geographical id and data values.
 
-But both of these approaches assume that the map boundaries and scale you need are available in the package(s) you're using, of course. If you understand the geographic projection problem—how to fit a curved surface to a flat plot—you'll be able to navigate the creation of maps in other spatial packages in ways that ensure the points and the real world line up correctly. If not... you either have to learn a variety of sometimes-contradictory packages in R and their various approaches as well as how they work together, or (the better option) you can just use a tool better suited to spatial analyses.
+But both of these approaches assume that the map boundaries and scale you need are available in the package(s) you're using, of course. If you understand the geographic projection problem—how to fit a curved surface to a flat plot—you'll be able to navigate the creation of maps in other spatial packages in ways that ensure the points and the real world line up correctly. If not... you either have to learn a variety of sometimes-contradictory packages in R and their various approaches as well as how they work together, or (probably the better option) you can just use a tool better suited to spatial analyses.
 
 ### Chloropleth mapping with the *American Community Survey*
 
@@ -387,7 +380,7 @@ If you don't know which tables you need, the US Census provides more information
 
 ### Using Shapefiles
 
-It says a lot about mapping in R that what we'll explore here is one of the simplest ways to get updated spatial boundaries into R. Using a boundary shapefile from EuroGeographics, and having looked at the metadata first to determine its projection, we can create a map of modern European boundaries using the `maptools` package's shapefile translation functions:
+It says a lot about mapping in R that what we'll explore next is one of the simpler ways to get updated spatial boundaries into R. Using a boundary shapefile from EuroGeographics, and having looked at the metadata first to determine its projection, we can create a map of modern European boundaries using the `maptools` package's shapefile translation functions:
 
 ```
 download.file("http://epp.eurostat.ec.europa.eu/cache/GISCO
@@ -403,12 +396,12 @@ box(col="gray30")
 
 ![euro map](images/0815OS_04_12.png)
 
-We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this chapter's data files. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
+We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this book's github repo. Here's a set of steps to read in the air pollution data, subset it to the ozone values, link it to each station's geographic coordinates, and plot the annual daily median values with the modern EU boundaries:
 
 ```
-o3stations = read.table("Data/AirBase_v8_stations.csv", sep=",", header=T, 
+o3stations = read.table("code/AirBase_v8_stations.csv", sep=",", header=T, 
   stringsAsFactors=F, quote="")
-o3data = read.table("Data/AirBase_v8_statistics.csv", sep="\t", header=T, 
+o3data = read.table("code/AirBase_v8_statistics.csv", sep="\t", header=T, 
   stringsAsFactors=F, quote="")
 require(sqldf)
 eu_o3 = sqldf("SELECT
@@ -481,7 +474,7 @@ spd = filter(spd, Year >= 2014 & Year < 2016)
 bike_theft = filter(spd, Summarized.Offense.Description == "BIKE THEFT")
 ```
 
-You can set up the base map using the `get_map` function and include the data you want to overplot:
+You can set up the base map using the `get_map` function and include the data you want to overplot as the base layer:
 
 ```
 ## Set up base map
@@ -571,4 +564,4 @@ bike_theft_interactive = leaflet() %>%
 
 It's important to remember that mapping in R is relatively easy *if* the maps, boundaries, and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
 
-My recommendation: don't use R for mapping unless you have to. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's [spatial.ly blog](http://spatial.ly/).
+My recommendation: don't use R for mapping unless you have to or your need is solved simply by existing functionality. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's [spatial.ly blog](http://spatial.ly/).
