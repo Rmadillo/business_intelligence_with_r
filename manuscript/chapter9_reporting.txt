@@ -38,9 +38,9 @@ Web (html) reports are ready to create out-of-the-box. To create PDF or Word doc
 
 ## Dashboards
 
-There are a lot of dashboards in BI that don't deserve the name. Just because you have graphs and interactivity doesn't mean you have a real dashboard; much like driving a car, if you're getting information about how fast you were going 10 minutes ago, it's not of much use. Dashboards are really about real-time analytics or for analytics that help decision makers plan their day's activities after a no more than a quick viewing. "Dashboards" meant for "what has happened"-type needs or for more methodical exploration are more accurately termed "reports."   
+There are a lot of dashboards in BI that don't really deserve the name. Just because you have graphs and interactivity doesn't mean you have a real dashboard; much like driving a car, if you're getting information about how fast you were going 10 minutes ago, it's not of much use. Dashboards are usually about real-time analytics or for analytics that help decision makers plan their day's activities after a no more than a quick viewing. Forecasting fits into this group as well, much as a GPS or driving app provides you information about where you're going. "Dashboards" meant for "what has happened"-type needs or for more methodical exploration are more accurately termed "reports."   
 
-Forecasting fits into this group as well, much as a GPS or driving app provides you information about where you're going. 
+Still, several commercial products have allowed BI analysts to create interactive, dataviz-based reports. By habit, if nothing else, these have come to be known generally as dashboards anyway. So call them what you want, just make sure you're clear on what type of tool you really need when asked to create a "dashboard."  
 
 ### Simple dashboarding with R Markdown
 
