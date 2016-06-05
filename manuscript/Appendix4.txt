@@ -1,4 +1,4 @@
-# Appendix 3: An R Markdown Quick Reference
+# Appendix 4: R Markdown Quick Reference
 
 **Text**
 
