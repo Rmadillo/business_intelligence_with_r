@@ -29,4 +29,4 @@ Version 1.0, June 2016
 
 
 {icon=download}
-G> The code is available from the book's GitHub site at [https://github.com/Rmadillo/business_intelligence_with_r/](https://github.com/Rmadillo/business_intelligence_with_r/code).
+G> The code is available from the book's GitHub site at [https://github.com/Rmadillo/business_intelligence_with_r/code](https://github.com/Rmadillo/business_intelligence_with_r/code).
