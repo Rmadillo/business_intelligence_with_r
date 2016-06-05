@@ -4,7 +4,7 @@
 
 ### About the Author
 
-stuff about us
+Dwight Barry is a data scientist at Seattle Children's Hospital, in Seattle, Washington, USA. 
 
 | |  
   
@@ -25,8 +25,8 @@ R session info here (from final run through)
 
 ### Version Info
 
-Version 1.0, November 2015
+Version 1.0, June 2016
 
 
 {icon=download}
-G> The code is available from the book's GitHub site at **URL**.
+G> The code is available from the book's GitHub site at [https://github.com/Rmadillo/business_intelligence_with_r/](https://github.com/Rmadillo/business_intelligence_with_r/code).
