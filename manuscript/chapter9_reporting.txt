@@ -11,11 +11,13 @@ It's fine to create reports in word processing or slide show software, but it ca
 
 Basically, to get started, just open a new R Markdown document, choose Document (keeping the html output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that blow away decision makers used to PDFs and slide decks. 
 
-Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html via [R Markdown](http://rmarkdown.rstudio.com), a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. See *Appendix 3* for a cheatsheet of R Markdown symbols and usage. You can also use regular html as well, such as `<br>` for line breaks, and so on. 
+Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html or other output types via R Markdown, a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. You can also use regular html as well, such as `<br>` for line breaks, and so on. See *Appendix 3* for a cheatsheet of R Markdown symbols and usage, and RStudio's [R Markdown page](http://rmarkdown.rstudio.com/) for detailed information and appropaches. 
 
 The single biggest "oops" in using R Markdown--that you will immediately remedy the first time it happens, but you will also inevitably forget to do this--is ensuring you have put *two spaces* at the end of each line where you want a line break after text. I've used R Markdown for years, but even creating one of the examples below, I forgot to do this on a few lines and got a jumbled mess as a result. So, yeah, it's gonna happen. 
 
 Ultimately, there is rapidly increasing emphasis on reproducible research in research and academia, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is adopting the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. "The code *is* the documentation" is longer a viable excuse (or career choice!), so using R Markdown to create your data products from the start can save a **lot** of time later. Having it become an enterprise best practice/standard process is even better. 
+
+The examples in this chapter are just simple examples; there are many, many possibilities with all of these output options, and exploring the tutorials, galleries, and example pages are well worth the effort to find ready-to-go and ready-to-customize templates and apps you can use and modify for your own ends. 
 
 
 ## Reports and technical memos
@@ -170,5 +172,43 @@ The code that created this app is contained in *Appendix 3*.
 
 The YAML header provides you with a way to customize the output of R Markdown files. The defaults are generally great for most needs, but occasionally you want to make some modifications, and I've found that the web doesn't have a lot of information readily available on this specific to R Markdown. So here are a few tips and tricks I've learned. 
 
+The header can include R code and html. For example, if you have an ioslides file and want to have the date automatically show up when run, use single quotes + back ticks (<code>'`</code>) to hold the R Markdown text:
 
+---
+title: This title doesn't have a short title 
+subtitle: Dude, where's my banana?
+author: Dr. Nefario, Gru, and Kevin
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: ioslides_presentation
+---
 
+![ioslides_r](images/ioslides_r.png)
+
+You can use html to customize the text. For example:
+
+---
+title: This title <br>doesn't have<br> a short title 
+subtitle: Dude, <em>where's</em> <del>my</del> <b>&beta;anana</b>?
+author: Dr. Nefario, Gru, and Kevin
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: ioslides_presentation
+---
+
+![ioslides_r](images/io_slides_html.png)
+
+Some characters need to be escaped in YAML for it to work--for example, to use a colon (`:`) you need to escape the whole string with double quotes (or use single quotes and double them up for apostrophes):
+
+---
+title: "This title <br>doesn't have<br> a short title: <br>Dude, <em>where's</em> <del>my</del> <b>&beta;anana</b>?"
+author: Dr. Nefario, Gru, and Kevin
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output: ioslides_presentation
+---
+
+![ioslides_r](images/ioslides_colon.png)
+
+The gear button at the top of the Source window can be used to modify the YAML via a GUI for many of the major options for each type of R Markdown document. For example, if you wanted a PDF output of your slide deck, the gear dialog would show this:
+
+![gear](images/rmarkdown_gear.png)
+
+If you poke around the [R Markdown site](http://rmarkdown.rstudio.com/) and/or [Stack Overflow](http://stackoverflow.com/search?q=R+YAML+header), you can probably find answers to most R/YAML-associated questions you may have.  
