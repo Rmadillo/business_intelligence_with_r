@@ -170,9 +170,9 @@ The code that created this app is contained in *Appendix 3*.
 
 ## Tweaking the YAML headers
 
-The YAML header provides you with a way to customize the output of R Markdown files. The defaults are generally great for most needs, but occasionally you want to make some modifications, and I've found that the web doesn't have a lot of information readily available on this specific to R Markdown. So here are a few tips and tricks I've learned. 
+The YAML header provides you with a way to customize the output of R Markdown files. The defaults are generally great for most needs, but occasionally you want to make some modifications, and I've found that the web doesn't have a lot of information readily available on this specific to R Markdown. There is some information [here](http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html#extension-yaml_metadata_block), and a few tips and tricks I use often are below. 
 
-The header can include R code and html. For example, if you have an ioslides file and want to have the date automatically show up when run, use single quotes + back ticks (<code>'`</code>) to hold the R Markdown text:
+The header can include R code and html. For example, if you have an ioslides file and want to have the date automatically show up when run, use single quotes + back ticks (<code>'`</code>) to contain the R Markdown text:
 
 ---
 title: This title doesn't have a short title 
