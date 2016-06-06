@@ -3,7 +3,7 @@
 # Dwight Barry
 # Chapter 2 Code
 #
-# 
+# https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_Chapter_2_Code.R
 #
 #####################################################################
 
