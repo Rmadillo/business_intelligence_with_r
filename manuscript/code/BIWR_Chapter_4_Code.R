@@ -3,7 +3,7 @@
 # Dwight Barry
 # Chapter 4 Code: Know Thy Data (EDA)
 #
-# 
+# https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_Chapter_4_Code.R
 #
 ######################################################################
 
