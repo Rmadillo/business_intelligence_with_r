@@ -11,7 +11,7 @@ It's fine to create reports in word processing or slide show software, but it ca
 
 Basically, to get started, just open a new R Markdown document, choose Document (keeping the html output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that blow away decision makers used to PDFs and slide decks. 
 
-Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html or other output types via R Markdown, a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. You can also use regular html as well, such as `<br>` for line breaks, and so on. See *Appendix 3* for a cheatsheet of R Markdown symbols and usage, and RStudio's [R Markdown page](http://rmarkdown.rstudio.com/) for detailed information and appropaches. 
+Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html or other output types via R Markdown, a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. You can also use regular html as well, such as `<br>` for line breaks, and so on. See Appendix 3 for a cheatsheet of R Markdown symbols and usage, and RStudio's [R Markdown page](http://rmarkdown.rstudio.com/) for detailed information and appropaches. 
 
 The single biggest "oops" in using R Markdown--that you will immediately remedy the first time it happens, but you will also inevitably forget to do this--is ensuring you have put *two spaces* at the end of each line where you want a line break after text. I've used R Markdown for years, but even creating one of the examples below, I forgot to do this on a few lines and got a jumbled mess as a result. So, yeah, it's gonna happen. 
 
@@ -24,7 +24,7 @@ The examples in this chapter are just simple examples; there are many, many poss
 
 Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. The vast majority of analytics in modern BI tend to be report-oriented. Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
 
-We saw an example of a data product that could be considered either a report or a memo in Chapter 1, in the exploration and forecasting of the Hauteville House's power consumption (full code in *Appendix 2*). 
+We saw an example of a data product that could be considered either a report or a memo in Chapter 1, in the exploration and forecasting of the Hauteville House's power consumption (full code in Appendix 2). 
 
 ![reprise Chapter 1 report result](images/biwr_ch1_knitr_ex.png)
 
@@ -112,11 +112,16 @@ Note that the green bands are *not* the proper normal ranges for those vital sig
 
 ### `flexdashboard`
 
+***FLEXDASHBOARD EXAMPLE***
 
 
 ## Slide decks
 
 At some point, every analyst needs to report their results in a meeting or briefing. Traditional static slide decks are fine, but one of the powerful features of R is the ability to create slide decks or apps with interactive features, allowing the analyst to help decision makers explore the results and their implications interactively, in real time. Even if you don't create interactive content, having a slide deck that includes the code that generated the results is really useful for documentation, code review, or--most often--the inevitable revision when a decision maker asks another "what if you tried...?" question. 
+
+RStudio has two slide deck styles built in, `ioslides` and `Slidy`. Which is better is probably a matter of taste, though I tend to like the aesthetics of `ioslides.`
+
+![](images/default_css_slide.png)
 
 `ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the grey text. To change this, get the latest ioslides style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
 
@@ -137,12 +142,14 @@ output:
     css: default_black.css
 ```
 
+![](images/black_css_slide.png)
+
 As long as you have both the `.css` and `.Rmd` files in the same place, it will make the conversion for you. Obviously, any style element can be changed in the same way, so even if you don't know css, you can probably web search what you want to change to find out what that particular element is named in html, and go from there.  
 
 
 ## `purl`-ing: scraping the raw code from your `.Rmd` files
 
-The `purl` function in `knitr` allows you to "scrape" your R Markdown files for the R code. So if you've created a data product in R Markdown and you want just the code from it copied into a separate file, do this (using the *Chapter 1* final data product as an example):
+The `purl` function in `knitr` allows you to "scrape" your R Markdown files for the R code. So if you've created a data product in R Markdown and you want just the code from it copied into a separate file, do this (using the Chapter 1 final data product as an example):
 
 ```
 purl("Hauteville_House_Power_Forecast_20101127.Rmd", documentation = 0)
@@ -163,7 +170,7 @@ A great use of Shiny is for risk assessment, where the decision maker can see th
 
 Below is a screenshot of an app that uses the basic risk assessment tool of the [betaPERT distribution](https://www.riskamp.com/beta-pert) to create a probability model of expert opinion, where the subject matter expert provides the value of minimum and maximum possible values as well as the most likely value. An uncertainty parameter *gamma* provides the user with the ability to modify the kurtosis of the distribution; a value of 4 is the [standard betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm), while lower values show increased uncertainty and larger values show increased certainty in the estimate of the most likely value (termed the [modified betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm). 
 
-The code that created this app is contained in *Appendix 3*.
+The code that created this app is contained in Appendix 3.
 
 ![risk app](images/risk_app.png)
 
@@ -174,6 +181,7 @@ The YAML header provides you with a way to customize the output of R Markdown fi
 
 The header can include R code and html. For example, if you have an ioslides file and want to have the date automatically show up when run, use single quotes + back ticks (<code>'`</code>) to contain the R Markdown text:
 
+~~~~~~~~
 ---
 title: This title doesn't have a short title 
 subtitle: Dude, where's my banana?
@@ -181,11 +189,13 @@ author: Dr. Nefario, Gru, and Kevin
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: ioslides_presentation
 ---
+~~~~~~~~
 
 ![ioslides_r](images/ioslides_r.png)
 
 You can use html to customize the text. For example:
 
+~~~~~~~~
 ---
 title: This title <br>doesn't have<br> a short title 
 subtitle: Dude, <em>where's</em> <del>my</del> <b>&beta;anana</b>?
@@ -193,17 +203,20 @@ author: Dr. Nefario, Gru, and Kevin
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: ioslides_presentation
 ---
+~~~~~~~~
 
-![ioslides_r](images/io_slides_html.png)
+![ioslides_r](images/ioslides_html.png)
 
 Some characters need to be escaped in YAML for it to work--for example, to use a colon (`:`) you need to escape the whole string with double quotes (or use single quotes and double them up for apostrophes):
 
+~~~~~~~~
 ---
 title: "This title <br>doesn't have<br> a short title: <br>Dude, <em>where's</em> <del>my</del> <b>&beta;anana</b>?"
 author: Dr. Nefario, Gru, and Kevin
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: ioslides_presentation
 ---
+~~~~~~~~
 
 ![ioslides_r](images/ioslides_colon.png)
 
