@@ -794,11 +794,12 @@ plot(air_temp_R2)
 W> *R^2^* by itself can be misleading; you can get a high value from pure noise, as this example illustrates:
 W> 
 W> ```
+W> set.seed(123)
 W> y = rnorm(10)
 W> x = sapply(rep(10,8), rnorm)
 W> noise = lm(y ~ x)
 W> summary(noise)$r.squared
 W>
-W> 0.9614141
+W> 0.9736913
 W> ```
 W> 
