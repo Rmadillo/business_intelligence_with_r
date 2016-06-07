@@ -378,7 +378,7 @@ choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
 
 If you don't know which tables you need, the US Census provides more information [here](http://factfinder2.census.gov/faces/affhel/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS).
 
-### Using Shapefiles
+### Using shapefiles and raw data
 
 It says a lot about mapping in R that what we'll explore next is one of the simpler ways to get updated spatial boundaries into R. Using a boundary shapefile from EuroGeographics, and having looked at the metadata first to determine its projection, we can create a map of modern European boundaries using the `maptools` package's shapefile translation functions:
 
