@@ -1,8 +1,8 @@
 # Chapter 6: Trends and Time
 
 - Describing trends in non-temporal data
-- Regression for continuous, count, and binary data (GLMs)
-- Regression for non-linear data (GAMs)
+- The many flavors of regression
+- Plotting regression results
 - Working with temporal data
 - Calculate a mean or correlation in circular time (clock time)
 - Plotting time-series data
@@ -145,6 +145,23 @@ The coefficients, of course, are effect sizes.
 | n/a | Same as `glm` | Smoothed | GAM | `library(mgcv); gam(y ~ x1 + x2 ... + xn, family=...) | 
 
 \* change `+` to `*` to create interactions  
+
+
+## Plotting regression results
+
+The `dotwhisker` package has a simple function over ggplot to graph regression results. `dwplot` shows the coefficients and their confidence intervals (95% by default):
+
+```
+require(dwplot)
+
+# Create a model object
+bad_model = lm(cnt ~ atemp * hum * windspeed, data=bike_share_daily)
+
+# Plot coefficients and CIs
+dwplot(bad_model)
+```
+
+![dw plot](images/dw_plot.png)
 
 
 ## Working with temporal data
