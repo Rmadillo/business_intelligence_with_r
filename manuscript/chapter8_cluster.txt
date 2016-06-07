@@ -26,7 +26,7 @@ Finding things that are (really) similar or (really) different has been the comm
 
 Non-metric multidimensional scaling (nMDS) is a useful way to identify groups, outliers, and influential variables in multivariate space. In essence, nMDS collapses multiple dimensions into two or three so that relationships based on multivariate proximity can be visualized. nMDS models a similarity matrix in low dimensional space in much the same way as a map can be created from scattered GPS coordinates.
 
-The data in this example we first saw in *Chapter 7*: nine financial ratios for 66 Spanish banks, 29 of which failed during the Spanish banking crisis (Serrano-Cinca 2001). 
+The data in this example we first saw in Chapter 7: nine financial ratios for 66 Spanish banks, 29 of which failed during the Spanish banking crisis (Serrano-Cinca 2001). 
 
 The nMDS analysis is largely automated in `vegan` using the `metaMDS` function (see `?metaMDS` for all the details). This function defaults to expecting count data; for continuous data, setting the distance metric to euclidean is more appropriate. There are dozens of distance metrics (see `?vegdist` for the options available in `vegan`), but only two are really needed for most applications: Bray-Curtis for count data (the default) and Euclidean for continuous data. `metaMDS` automatically performs transformations when given count data. Manual transformations are sometimes needed if the variables are continuous and have considerably different scales (e.g., scale to mean 0/sd 1, see `?scale`).
 
@@ -94,7 +94,7 @@ nMDS does not use the absolute values of the variables, but rather their rank or
 Diagnostics for nMDS results are also simple. A Shepard plot (also called a stress plot) shows the relationship between the similarity matrix and how well the nMDS algorithm represented that matrix in the plot. The greater the scatter around the (non-linear) regression line, the higher the stress, which would imply that the matrix similarities are not as well represented in the plot.
 
 ```
-banks.stress = round(banks_mds$\textdollar$stress, digits=2)
+banks.stress = round(banks_mds$stress, digits=2)
 banks.stress
 
 0.03
