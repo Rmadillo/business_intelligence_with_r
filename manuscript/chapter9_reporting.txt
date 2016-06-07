@@ -191,7 +191,7 @@ output: ioslides_presentation
 ---
 ~~~~~~~~
 
-![ioslides_r](images/ioslides_r.png)
+![ioslides_r](images/ioslide_r.png)
 
 You can use html to customize the text. For example:
 
@@ -205,7 +205,7 @@ output: ioslides_presentation
 ---
 ~~~~~~~~
 
-![ioslides_html](images/ioslides_html.png)
+![ioslides_html](images/ioslide_html.png)
 
 Some characters need to be escaped in YAML for it to work--for example, to use a colon (`:`) you need to escape the whole string with double quotes (or use single quotes and double them up for apostrophes):
 
@@ -218,7 +218,7 @@ output: ioslides_presentation
 ---
 ~~~~~~~~
 
-![ioslides_colon](images/ioslides_colon.png)
+![ioslides_colon](images/ioslide_colon.png)
 
 The gear button at the top of the Source window can be used to modify the YAML via a GUI for many of the major options for each type of R Markdown document. For example, if you wanted a PDF output of your slide deck, the gear dialog would show this:
 
