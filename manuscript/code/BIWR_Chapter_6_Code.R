@@ -92,6 +92,17 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
 # gam() 
 
 
+## Plotting regression results
+
+require(dwplot)
+
+# Create a model object
+bad_model = lm(cnt ~ atemp * hum * windspeed, data=bike_share_daily)
+
+# Plot coefficients and CIs
+dwplot(bad_model)
+
+
 ## Working with temporal data
 
 # http://cran.r-project.org/web/views/TimeSeries.html).
