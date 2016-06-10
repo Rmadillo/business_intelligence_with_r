@@ -2,10 +2,10 @@
 
 - Mapping multivariate relationships with non-metric multidimensional scaling (nMDS), Principal Components Analysis (PCA), and Correspondence Analysis (CA)
 - Grouping observations with hierarchical clustering 
+- How to partition the results of a hierarchical cluster analysis
 - Identifying and describing group membership with kMeans and PAM
 - Determining optimal numbers of groups with model-based clustering
-- Identifying group membership with non-linear clusters
-- How to partition the results of a hierarchical cluster analysis
+- Identifying group membership with irregular clusters
 - Exploring outliers
 - Finding associations in shopping carts
 
@@ -364,6 +364,35 @@ draw.dendrogram3d(banks_hclust, banks_pos, labels=banks$Numero,
 ![neatmap nmds hclust](images/0815OS_05_10.png)
 
 
+## How to partition the results of a hierarchical cluster analysis
+
+The `cutree` function will cut a hierarchical cluster dendrogram into a user-supplied number of groups, which can be useful when combined with the results of a `clusGap`-based PAM or kMeans analysis (see the recipes later in this chapter). Since we know there are two natural clusters--bankrupt and solvent--we’ll use *k*=2 here. Note that since it is cutting the tree based on the clustering method’s distance values, results from `cutree` may not match the clusters obtained with `pam` or `kmeans`.
+
+Using our original `hclust` object:
+
+```
+bank_clusters = cutree(banks_hclust, k=2)
+
+table(bank_clusters)
+
+aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
+
+bank_clusters
+ 1  2
+62  4
+
+  cluster      R1      R2      R3     R4      R5      R6      R7      R8       R9
+1       1 0.39265 0.26210 0.40725 0.0203  0.0042  0.1002  0.0044 0.87650  0.00955
+2       2 0.36585 0.23295 0.38455 0.0152 -0.0380 -0.9390 -0.0397 1.30815 -0.01630
+
+plot(banks_hclust, hang=-1, labels=paste(banks$Banco, banks$Numero, sep="-"), cex=0.9)
+
+rect.hclust(banks_hclust, k=2)
+```
+
+![rect hclust](images/0815OS_05_14.png)
+
+
 ## Identifying and describing group membership with kMeans and PAM
 
 kMeans and Partitioning Around Medoids (PAM) are two methods that will divide your observations into *k* groups. kMeans works with quantitative data only, and can be susceptible to outliers, while PAM works with both quantitative as well as categorical data. As medoids are simply the “most representative” member of a cluster, outliers don’t really affect PAM. As a result, it is a more robust version of kMeans. If you have a large data set, look at the `clara` package, which performs PAM by iteratively sampling the data to speed up analysis time.
@@ -625,39 +654,72 @@ plot(HT)
 
 
 
-## Identifying group membership with non-linear (IRREGULAR) clusters
+## Identifying group membership with irregular clusters
 
-***DBSCAN HERE***
-
-
-
-## How to partition the results of a hierarchical cluster analysis
-
-The `cutree` function will cut a hierarchical cluster dendrogram into a user-supplied number of groups, which can be useful when combined with the results of a `clusGap`-based PAM or kMeans analysis. That analysis suggested that two clusters is the best (mathematical) solution, so we’ll continue to use *k*=2 here. Note that since it is cutting the tree based on the clustering method’s distance values, results from `cutree` may not match the clusters obtained with `pam` or `kmeans`.
-
-Using our original `hclust` object:
 
 ```
-bank_clusters = cutree(banks_hclust, k=2)
+data("multishapes", package="factoextra")
 
-table(bank_clusters)
-
-aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
-
-bank_clusters
- 1  2
-62  4
-
-  cluster      R1      R2      R3     R4      R5      R6      R7      R8       R9
-1       1 0.39265 0.26210 0.40725 0.0203  0.0042  0.1002  0.0044 0.87650  0.00955
-2       2 0.36585 0.23295 0.38455 0.0152 -0.0380 -0.9390 -0.0397 1.30815 -0.01630
-
-plot(banks_hclust, hang=-1, labels=paste(banks$Banco, banks$Numero, sep="-"), cex=0.9)
-
-rect.hclust(banks_hclust, k=2)
+ggplot(multishapes, aes(x, y)) +
+  geom_point(aes(shape=as.factor(shape), 
+                 color=as.factor(shape))) +
+  scale_shape_discrete(name="Known\nGrouping", labels = 
+                      levels(as.factor(multishapes$shape))) +
+  scale_color_discrete(name="Known\nGrouping", labels = 
+                         levels(as.factor(multishapes$shape))) +
+  theme_bw()
+dev.off()
 ```
 
-![rect hclust](images/0815OS_05_14.png)
+![](images/dbscan_data.png)
+
+
+```
+kNNdistplot(multishapes[,1:2], k=5)
+abline(h=0.12)
+```
+
+![](images/dbscan_knn.png)
+
+
+
+```
+multishapes_dbscan = dbscan(multishapes[,1:2], eps = 0.12, minPts = 3)
+
+DBSCAN clustering for 1100 objects.
+Parameters: eps = 0.12, minPts = 3
+The clustering contains 5 cluster(s) and 48 noise points.
+
+  0   1   2   3   4   5 
+ 48 396 406 102  96  52 
+
+Available fields: cluster, eps, minPts
+```
+
+```
+multishapes$dbscan = multishapes_dbscan$cluster
+
+table(multishapes$shape, multishapes$dbscan)
+
+      0   1   2   3   4   5
+  1  10 389   1   0   0   0
+  2   0   0 400   0   0   0
+  3   3   0   0  97   0   0
+  4   5   0   0   0  95   0
+  5  30   7   5   5   1   2
+  6   0   0   0   0   0  50
+```
+
+
+```
+ggplot(multishapes, aes(x, y)) +
+  geom_point(aes(color=as.factor(dbscan), 
+                 shape=as.factor(shape))) +
+  labs(color="DBSCAN\nGrouping", shape="Known\nGrouping") +
+  theme_bw()
+```
+
+![](image/dbscan_results.png)
 
 
 ## Exploring outliers
