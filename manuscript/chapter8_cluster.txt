@@ -469,7 +469,7 @@ ggplot(banks_gap_df, aes(x=1:nrow(banks_gap_df))) +
 
 ## Determining optimal numbers of groups with model-based clustering
 
-Sometimes you actually need to be able to justify your cluster analysis results with more than verbal arguments and intuition. Model-based clustering lets you do formal inference on cluster grouping results using finite mixture density models.  
+Sometimes you actually need to be able to justify your cluster analysis results with more than verbal arguments and intuition. Model-based clustering lets you do formal inference on cluster grouping results using finite mixture density models. Even better, it can pick up clusters that traditional kmeans or hierarchical clustering fail at, because of the flexibility of its clustering shapes. 
 
 The `mclust` package provides a simple interface to model-based clustering. For the sake of example, we'll use the `diabetes` dataset that comes with the `mclust` package. 
 
@@ -495,7 +495,7 @@ Clustering table:
 82 33 30 
 ```
 
-Running the main function, `Mclust`, is easy. Interpreting the results takes more work. There are currently 20 possible model types, summarized below (for more details, run `?mclustModelNames`).
+Running the main function, `Mclust`, is easy. Interpreting the results takes more work. There are currently 20 possible model types, which allow for a huge amount of flexibility in cluster shapes, something essential for oddly-distributed data (which is exactly why we have used the `diabetes` dataset here). These are summarized below (for more details, run `?mclustModelNames`).
 
 | Model Name | Model Type | 
 | ---------- | ---------- |
