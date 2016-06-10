@@ -471,22 +471,165 @@ ggplot(banks_gap_df, aes(x=1:nrow(banks_gap_df))) +
 
 Sometimes you actually need to be able to justify your cluster analysis results with more than verbal arguments and intuition. Model-based clustering lets you do formal inference on cluster grouping results using finite mixture density models.  
 
-The `mclust` package provides a simple interface to model-based clustering. Running `mclust` is easy. Interpreting the results takes more work. 
+The `mclust` package provides a simple interface to model-based clustering. For the sake of example, we'll use the `diabetes` dataset that comes with the `mclust` package. 
 
 ```
 require(mclust)
+data("diabetes")
 
-banks_mclust = Mclust(banks[,3:11])
+diabetes_mclust = Mclust(diabetes[,2:4])
 
-summary(banks_mclust)
+summary(diabetes_mclust)
 
+----------------------------------------------------
+Gaussian finite mixture model fitted by EM algorithm 
+----------------------------------------------------
+
+Mclust VVV (ellipsoidal, varying volume, shape, and orientation) model with 3 components:
+
+ log.likelihood   n df       BIC       ICL
+      -2307.883 145 29 -4760.091 -4776.086
+
+Clustering table:
+ 1  2  3 
+82 33 30 
 ```
 
-***BANKS MCLUST HERE***
+Running the main function, `Mclust`, is easy. Interpreting the results takes more work. There are currently 20 possible model types, summarized below (for more details, run `?mclustModelNames`).
+
+| Model Name | Model Type | 
+| ---------- | ---------- |
+| <b>Univariate</b> | | 
+| "E"	|	equal variance (one-dimensional) | 
+| "V"	|	variable variance (one-dimensional) |
+| | | 
+| <b>Multivariate</b>| |
+| "EII"	|	spherical, equal volume |
+| "VII"	|	spherical, unequal volume |
+| "EEI"	|	diagonal, equal volume and shape |
+| "VEI"	|	diagonal, varying volume, equal shape |
+| "EVI"	|	diagonal, equal volume, varying shape |
+| "VVI"	|	diagonal, varying volume and shape |
+| "EEE"	|	ellipsoidal, equal volume, shape, and orientation |
+| "EVE"	|	ellipsoidal, equal volume and orientation |
+| "VEE"	|	ellipsoidal, equal shape and orientation |
+| "VVE"	|	ellipsoidal, equal orientation |
+| "EEV"	|	ellipsoidal, equal volume and equal shape |
+| "VEV"	|	ellipsoidal, equal shape |
+| "EVV"	|	ellipsoidal, equal volume |
+| "VVV"	|	ellipsoidal, varying volume, shape, and orientation |
+| | | 
+| <b>Single Component</b>	|  	|
+| "X"	|	univariate normal |
+| "XII"	|	spherical multivariate normal |
+| "XXI"	|	diagonal multivariate normal |
+| "XXX"	|	ellipsoidal multivariate normal |
+
+
+By looking at the BIC table as well as plotting the modeling results, we can see why the algorithm close the **VVV** model type:
+
+```
+diabetes_mclust$BIC
+
+Bayesian Information Criterion (BIC):
+        EII       VII       EEI       VEI       EVI       VVI       EEE
+1 -5863.923 -5863.923 -5530.129 -5530.129 -5530.129 -5530.129 -5136.446
+2 -5449.518 -5327.719 -5169.399 -5019.350 -5015.884 -4988.322 -5010.994
+3 -5412.588 -5206.399 -4998.446 -4899.759 -5000.661 -4827.818 -4976.853
+4 -5236.008 -5208.512 -4937.627 -4835.856 -4865.767 -4813.002 -4865.864
+5 -5181.608 -5202.555 -4915.486 -4841.773 -4838.587 -4833.589 -4882.812
+6 -5162.164 -5135.069 -4885.752        NA -4848.623 -4810.558 -4835.226
+7 -5128.736 -5129.460 -4857.097        NA -4849.023        NA -4805.518
+8 -5135.787 -5135.053 -4858.904        NA -4873.450        NA -4820.155
+9 -5150.374 -5112.616 -4878.786        NA -4865.166        NA -4840.039
+        EVE       VEE       VVE       EEV       VEV       EVV       VVV
+1 -5136.446 -5136.446 -5136.446 -5136.446 -5136.446 -5136.446 -5136.446
+2 -4875.633 -4920.301 -4877.086 -4918.500 -4834.727 -4823.779 -4825.027
+3 -4858.851 -4851.667 -4775.537 -4917.567 -4809.225 -4817.884 -4760.091
+4 -4793.261 -4840.034 -4794.892 -4887.406 -4823.882 -4828.796 -4802.420
+5        NA        NA        NA -4908.030 -4842.077        NA        NA
+6        NA        NA        NA -4844.584 -4826.457        NA        NA
+7        NA        NA        NA -4910.155 -4852.182        NA        NA
+8        NA        NA        NA -4858.974 -4870.633        NA        NA
+9        NA        NA        NA -4930.535 -4887.206        NA        NA
+
+Top 3 models based on the BIC criterion:
+    VVV,3     VVE,3     EVE,4 
+-4760.091 -4775.537 -4793.261 
+
+# Model comparison plot
+plot(diabetes_mclust, what="BIC")
+```
+
+![BIC](images/diabetes_BIC.png)
+
+We can see that the **VVV** model is definitely the best among the top three. 
+
+Now we can plot the clusters over a pairs plot of the variables:
+
+```
+# Cluster results 
+plot(diabetes_mclust, what="classification")
+```
+
+![class](images/diabetes_class.png)
+
+
+We can explore the bivariate density of the original data through this package as well, with some simple code:
+
+```
+# Bivariate density (basic contour plot)
+plot(diabetes_mclust, what="density")
+
+# Bivariate density (perspective plot)
+plot(dens, what = "density", type = "persp", 
+     border = adjustcolor(grey(0.1), alpha.f = 0.25))
+```
+
+![dens](images/diabetes_density.png)
+
+![persp](images/diabetes_persp.png)
+
+Understanding the uncertainty associated with specific observations and their cluster assignment is a useful diagnostic tool as well. 
+
+```
+# Cluster uncertainty plot
+plot(diabetes_mclust, what="uncertainty")
+```
+
+![uncert1](images/diabetes_uncert.png)
+
+This graph shows us *where* the uncertainty occurs, but it doesn't tell us which observation are the most uncertain. Much as we have done in previous recipes, we can plot the uncertainty values in an interactive setting for exploration. We'll use the `googleVis` package here:
+
+```
+# Add classification and uncertainty to data set
+diabetes$mclust_cluster = diabetes_mclust$classification
+diabetes$mclust_uncertainty = diabetes_mclust$uncertainty
+
+# Plot the uncertainty as a histogram and table
+require(googleVis)
+
+diabetes_histogram = gvisHistogram(data.frame(diabetes$mclust_uncertainty), 
+                     options=list(width=800, height=300, legend="none",
+                     title="Distribution of Mclust Uncertainty Values"))
+
+diabetes_table = gvisTable(diabetes, 
+                 options=list(width=800, height=300))
+
+HT = gvisMerge(diabetes_histogram, diabetes_table) 
+
+plot(HT)
+```
+
+![interactive](images/diabetes_interactive.png)
+
+
 
 ## Identifying group membership with non-linear (IRREGULAR) clusters
 
 ***DBSCAN HERE***
+
+
 
 ## How to partition the results of a hierarchical cluster analysis
 
