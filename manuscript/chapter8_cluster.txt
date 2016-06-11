@@ -6,6 +6,8 @@
 - Identifying and describing group membership with kMeans and PAM
 - Determining optimal numbers of groups with model-based clustering
 - Identifying group membership with irregular clusters
+- Variable selection in cluster analysis
+- Error checking cluster results with known outcomes 
 - Exploring outliers
 - Finding associations in shopping carts
 
@@ -528,11 +530,11 @@ Running the main function, `Mclust`, is easy. Interpreting the results takes mor
 
 | Model Name | Model Type | 
 | ---------- | ---------- |
-| <b>Univariate</b> | | 
+| **Univariate** | | 
 | "E"	|	equal variance (one-dimensional) | 
 | "V"	|	variable variance (one-dimensional) |
 | | | 
-| <b>Multivariate</b>| |
+| **Multivariate** | |
 | "EII"	|	spherical, equal volume |
 | "VII"	|	spherical, unequal volume |
 | "EEI"	|	diagonal, equal volume and shape |
@@ -548,7 +550,7 @@ Running the main function, `Mclust`, is easy. Interpreting the results takes mor
 | "EVV"	|	ellipsoidal, equal volume |
 | "VVV"	|	ellipsoidal, varying volume, shape, and orientation |
 | | | 
-| <b>Single Component</b>	|  	|
+| **Single Component**	|  	|
 | "X"	|	univariate normal |
 | "XII"	|	spherical multivariate normal |
 | "XXI"	|	diagonal multivariate normal |
@@ -720,6 +722,136 @@ ggplot(multishapes, aes(x, y)) +
 ```
 
 ![](image/dbscan_results.png)
+
+
+## Variable selection in cluster analysis
+
+
+```
+# Download the Wisconsin Breast Cancer data
+breast_cancer = read.table("http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data", sep=",", na.strings = c("NA", "?"), header=F, col.names=c("Sample", "Clump_Thickness", "Uniformity_Cell_Size", "Uniformity_Cell_Shape", "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei", "Bland_Chromatin", "Normal_Nucleoli", "Mitoses", "Class"))
+
+# Label the outcomes
+breast_cancer$Diagnosis = ifelse(breast_cancer$Class==2, "benign", ifelse(breast_cancer$Class==4, "malignant", "unk"))
+
+# Remove incomplete rows, then create data-only object
+bc_wisc = na.omit(breast_cancer[,c(2:10, 12)])
+bc_wisc_data = bc_wisc[,1:8]
+
+# Perform variable selection (with parallel processing)
+varsel_fwd = clustvarsel(bc_wisc_data, parallel = TRUE)
+varsel_fwd
+
+Stepwise (forward/backward) greedy search
+----------------------------------------- 
+              Variable proposed  Type of step  BIC difference  Decision
+1                   Bare_Nuclei           Add      3577.27017  Accepted
+2               Normal_Nucleoli           Add     -1189.74368  Accepted
+3               Bland_Chromatin           Add       619.81296  Accepted
+4               Bland_Chromatin        Remove       247.84644  Rejected
+5          Uniformity_Cell_Size           Add        67.87812  Accepted
+6               Bland_Chromatin        Remove       493.01606  Rejected
+7   Single_Epithelial_Cell_Size           Add      1122.53709  Accepted
+8          Uniformity_Cell_Size        Remove     -1393.18387  Accepted
+9               Clump_Thickness           Add      -474.17028  Rejected
+10              Bland_Chromatin        Remove      1978.99023  Rejected
+
+Selected subset: Bare_Nuclei, Normal_Nucleoli, Bland_Chromatin,
+  Single_Epithelial_Cell_Size
+```
+
+
+```
+# Create data frame of the date with only the chosen variables
+bc_fwd = bc_wisc_data[,varsel_fwd$subset]
+
+# Run Mclust on subsetted data frame
+bc_mclust_fwd = Mclust(bc_fwd)
+
+# Add clustering result to data
+bc_wisc$mclust_fwd_cluster = bc_mclust_fwd$classification
+
+# Review Mclust results
+summary(bc_mclust_fwd)
+
+----------------------------------------------------
+Gaussian finite mixture model fitted by EM algorithm 
+----------------------------------------------------
+
+Mclust VII (spherical, varying volume) model with 2 components:
+
+ log.likelihood   n df       BIC       ICL
+      -4492.643 683 11 -9057.077 -9068.989
+
+Clustering table:
+  1   2 
+399 284 
+```
+
+
+W> **Cluster analysis results are strongly dependent on the method used.**  
+W> 
+W> If you run all of the clustering algorithms in this chapter on the same dataset, you will find sometimes similar and sometimes very different outcomes. There are lots of ways you can cluster data, but no method can substitute for careful comparison of a variety of results against subject matter knowledge.  
+W> For example, if you run the variable selection algorithm from all the variables, removing *backwards*, you'll get different (and poorer) results than seen above with the defaul *forward" algorithm.  
+W> Some sort of senstitivity analysis of cluster analysis results is *always* warranted.  
+
+
+## Error checking cluster results with known outcomes 
+
+When you have known outcomes in your data (e.g., benign, malignant), the `mclust` package has two functions that help you evaluate your results. 
+
+`classError` provides an overall error rate:
+
+```
+classError(bc_wisc$Diagnosis, bc_wisc$mclust_fwd_cluster)
+
+$misclassified
+ [1]   2   4   7  37  49  71  74  79  82 109 114 117 128 134 141 145 191 227
+[19] 229 237 242 245 252 286 287 298 306 307 333 339 349 390 401 405 417 420
+[37] 427 447 480 493 539 541 606 610 612 635 642
+
+$errorRate
+[1] 0.06881406
+```
+
+And `adjustedRandIndex` provides the adjusted Rand Index value, where 1 = perfect classification and 0 = random classification:
+
+```
+adjustedRandIndex(bc_wisc$Diagnosis, bc_wisc$mclust_fwd_cluster)
+
+0.7426946
+```
+
+You can compare different clustering algorithms to see which performs better. 
+
+```
+# Run Mclust on the full variable set of the Wisconsin Breast Cancer data
+bc_mclust = Mclust(bc_wisc_data)
+bc_wisc$mclust_all = bc_mclust$classification
+
+classError(bc_wisc$Diagnosis, bc_wisc$mclust_all)
+
+$misclassified
+  [1]   2   3   4   7  14  24  37  44  46  60  63  71  74  76  77  79  82  89
+ [19]  92  94 107 109 113 114 115 117 118 120 124 128 134 141 144 145 150 159
+ [37] 160 166 167 188 191 192 197 199 207 211 212 220 227 229 234 237 238 239
+ [55] 242 245 252 258 262 269 270 283 286 287 290 292 295 296 298 306 307 311
+ [73] 312 314 319 324 328 333 334 339 341 349 350 357 363 365 366 369 372 374
+ [91] 376 389 390 391 392 394 395 397 401 403 404 405 406 408 412 414 416 417
+[109] 420 427 428 429 430 440 447 467 471 480 491 493 526 528 537 538 539 541
+[127] 548 553 559 563 564 565 570 585 599 606 610 612 622 635 636 642 645 658
+[145] 659 672 679
+
+$errorRate
+[1] 0.2152269
+
+
+adjustedRandIndex(bc_wisc$Diagnosis, bc_wisc$mclust_all)
+
+[1] 0.3827008
+```
+
+It seems that the use of all of the variables contributes some noise to the classification as compared with the subset chosen by forward variable selection.
 
 
 ## Exploring outliers
