@@ -58,19 +58,6 @@ You should also be at least familiar with the ideas behind many of the tools use
 This book uses R, RStudio, and Git software. I used R 3.3 and RStudio 0.99 to create this book. If you are on a Windows system, you'll need to ensure either Perl and/or Java are installed to use some of the Excel import functions (if you are using Mac or Unix/Linux, Perl was probably installed with the OS). Make sure that the architecture for Perl/Java you have or install matches that of your R install, i.e., if you are using 64-bit R make sure your Java is also x64. 
 
 
-## Acknowledgements
-
-Writing a book is a really fucking stupid thing to do. Seriously. So I gotta thank people who helped me do this stupid shit. 
-
-First, thanks so much to the Lab Rats at the NASA Lab, my first real data science team. Chris, Shea, Rebecca, Branden, Erin, Kayli, Brenda, and a wide variety of NSF interns who passed through as well--thanks for being willing to explore what was then the cutting edge in methods and analytics. (Also, double-shot-thanks for the tequila. Best lecture I don't remember.) Thanks are also due to Bill, Brian, Dan, Anne, Matt, and Jeff for helping get the Lab funded, supported, and off the ground (so to speak). The roots of this book--and the understanding of the need for a book like this--all started there.    
-
-Thanks to Alison for being willing to take a chance on an academic when I moved into industry--and additional thanks for being an outstanding guide to the intricacies of business management politics. (Everyone jokes about the politics of academia, and yeah, they're ridiculous. But those pale in comparison to business at its best. Yeesh.) Vince, Maria, Howard, Chris, Scott, Adam, and Roy all provided me with great insights across the breadth of research/business analytics, walked me through new tools and ideas, and generally help me become a truly well-rounded analytics professional. And Susan, for your humor--thanks for the snack, stupid!
-
-Special thanks are due to Joan, Kathleen, Karin, Becky, Julie, and Tee, for great times in IP, and for the many opportunities we had that put our work at the front of analytics for the enterprise. And to Ryan, Steve, Amber, Andy, and Bryan, for some incredible teamwork and projects that have "moved the needle" (did I really just say that?!?), and also for great times both at and away from work, including enduring the "sick pythons." 
-
-Finally, thanks to my family--Tami, Katie, and David--for putting up with the many, many hours it took to pull this book together. I love you guys so much.  
-
-
 ## Website/Code
 
 {icon=download}
