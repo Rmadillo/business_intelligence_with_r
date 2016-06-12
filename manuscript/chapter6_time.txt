@@ -42,7 +42,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
     theme_bw()
 ```
 
-![loess trend](images/biwr_05_loess.png)
+![](images/biwr_05_loess.png)
 
 `ggplot2` automatically smooths via a GAM if you have > 1,000 points. If you have fewer, and want to see the trend a GAM can plot, you'll need to change the the `geom_smooth` method *and* include the option, written just like it is here: `formula = y ~ s(x)`. Don't replace the `y` and `x` with the variable names; you'll get an error. Other GAM options can be included in the `geom_smooth` call inside the formula (e.g., `formula = y ~ s(x), k=10`). 
 
@@ -57,7 +57,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
     theme_bw()
 ```
 
-![loess trend](images/biwr_05_gam.png)
+![](images/biwr_05_gam.png)
 
 
 ### Quantile trends
@@ -76,7 +76,7 @@ ggplot(bike_share_daily, aes(x=temp, y=casual)) +
     theme_bw()
 ```
 
-![quantile trend](images/biwr_05_quant.png)
+![](images/biwr_05_quant.png)
 
 ### Simple linear trends
 
@@ -91,7 +91,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
     theme_bw()
 ```
 
-![linear trend](images/biwr_05_linear.png)
+![](images/biwr_05_linear.png)
 
 If you’re exploring trends, it’s good habit to not start with an OLS/linear trend, as in real data exploration you usually don’t have any *a priori* knowledge about the functional relationship or trend. Only using this approach after you’ve tried the others helps prevent starting your thinking into a (linear) rut.
 
@@ -116,7 +116,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
     theme_bw()
 ```
 
-![segmented trend](images/biwr_05_segment.png)
+![](images/biwr_05_segment.png)
 
 The `psi` option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a `psi` of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same. However, with fewer data points, and/or a lot of variance, the choice of `psi` could change the results, so try a few different values. 
 
@@ -161,7 +161,7 @@ bad_model = lm(cnt ~ atemp * hum * windspeed, data=bike_share_daily)
 dwplot(bad_model)
 ```
 
-![dw plot](images/dw_plot.png)
+![](images/dw_plot.png)
 
 
 ## Working with temporal data
@@ -310,7 +310,7 @@ plot(UK_births_ts, xlab="Date", ylab="Count", main="Monthly Births in the UK
   (2003-2012)", col="darkblue")
 ```
 
-![time series](images/biwr_05_ukbirths1.png)
+![](images/biwr_05_ukbirths1.png)
 
 And we can use `ggplot2` to make it prettier:
 
@@ -322,7 +322,7 @@ ggplot(UK_births, aes(x=Date, y=Value)) +
     theme_minimal()
 ```
 
-![time series 2](images/biwr_05_ukbirths2.png)
+![](images/biwr_05_ukbirths2.png)
 
 
 ## Detecting autocorrelation
@@ -333,7 +333,7 @@ Autocorrelation can be present in non-temporal data as well as in time series; t
 acf(UK_births_ts)
 ```
 
-![autocorrelation](images/autocorrelation.png)
+![](images/autocorrelation.png)
 
 What's often underappreciated is that autocorrelated data, temporal or not, will make standard confidence intervals *too small*. In other words, if you want to plot a trend and use the default confidence intervals, you'll underestimate the actual uncertainty associated with a trend line or data points across time. 
 
@@ -348,7 +348,7 @@ monthplot(UK_births_ts, main="Monthly Patterns in UK Births (2003-2012)",
   col.base="gray40")
 ```
 
-![time series 3](images/biwr_05_ukbirths3.png)
+![](images/biwr_05_ukbirths3.png)
 
 You can plot out the seasonal, trend, or random components in a `monthplot` with the `choice` option, e.g., `choice = "seasonal"`). 
 
@@ -361,7 +361,7 @@ seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)",
   cex.axis=0.8)
 ```
 
-![time series 4](images/biwr_05_ukbirths4.png)
+![](images/biwr_05_ukbirths4.png)
 
 
 ## Decomposing time series into components
@@ -378,7 +378,7 @@ The `decompose` function uses a moving average for simplicity:
 plot(decompose(UK_births_ts), col="darkblue")
 ```
 
-![decomp of uk births](images/biwr_05_decomp1.png)
+![](images/biwr_05_decomp1.png)
 
 
 
@@ -395,7 +395,7 @@ data(AirPassengers)
 plot(AirPassengers)
 ```
 
-![air passengers](images/air_passengers.png)
+![](images/air_passengers.png)
 
 Use the `BoxCox.lambda` function and view the results:
 
@@ -406,7 +406,7 @@ plot(BoxCox(AirPassengers, AirPassengers_lambda))
 plot(decompose(BoxCox(AirPassengers, AirPassengers_lambda)))
 ```
 
-![decomp of air passengers](images/biwr_05_decomp2.png)
+![](images/biwr_05_decomp2.png)
 
 ![decomp of air passengers second plot](images/biwr_05_decomp3.png)
 
@@ -427,7 +427,7 @@ To find the cycle times, look for a clear peak (or peaks) in the plot.
 sunny = TSA::periodogram(diff(sunspot.year))
 ```
 
-![sunspots spectral](images/sunny_periodogram.png)
+![](images/sunny_periodogram.png)
 
 You can also extract the `$freq` and `$spec` values from the spectrum object into a data frame as x and y, respectively, to get the exact frequency where the spectrum is maximized (or if you want to create a pretty plot with `ggplot2`).
 
@@ -460,7 +460,7 @@ tongue_survival = survfit(Surv(time = time, event = delta) ~ tumor, data = tongu
 ggsurvplot(tongue_survival, risk.table = TRUE, conf.int = TRUE)
 ```
 
-![survival](images/survival.png)
+![](images/survival.png)
 
 ## Evaluating quality with control charts
 
@@ -486,7 +486,7 @@ infection_control = qcc(infections, sizes=patient_days/1000, type="u",
   u-chart for Jan 2012 - Jan 2014")
 ```
 
-![qcc u-chart](images/qcc.png)
+![](images/qcc.png)
 
 You can remove the components of the resulting R object for use or plotting elsewhere (e.g., with `ggplot2`).
 
@@ -538,7 +538,7 @@ lines(confint(breakpoints(US_co2_ts ~ 1), level=0.90), col="darkgreen")
 text(2008.8, 555, "Jan 2009", cex=0.75, col="darkgreen", pos=4, font=3)
 ```
 
-![breakpoints diagnostics](images/biwr_05_bps.png)
+![](images/biwr_05_bps.png)
 
 
 
@@ -584,7 +584,7 @@ An ACF plot shows pattern of each and both combinations for 18 months
 acf(ts.union(fuel_detrend, fare_detrend))
 ```
 
-![acf for ccf](images/acf_ccf.png)
+![](images/acf_ccf.png)
 
 You can combine these views into a single plot with the `ccf` function:
 
@@ -594,7 +594,7 @@ ccfvalues = ccf(fuel_detrend, fare_detrend, lag.max=48)
 ccfvalues
 ```
 
-![ccf](images/ccf_plot.png)
+![](images/ccf_plot.png)
 
 We can see that the maximum occurs just to the left of zero, we can infer that fuel costs lead airline fares slightly. Since it's hard to read values off a plot, we can use a small function can find the maximum correlation value:
 
@@ -669,6 +669,6 @@ summary(total_use_fc)
 plot(total_use_fc)
 ```
 
-![forecast model output](images/forecast_model_output.png)
+![](images/forecast_model_output.png)
 
-![total_use_forecast](images/total_use_forecast.png)
+![](images/total_use_forecast.png)
