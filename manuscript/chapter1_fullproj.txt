@@ -105,7 +105,7 @@ We'll look at the structure of the data to see what's been read in:
 str(power)
 ```
 
-![str 1](images/power_str_1.png)
+![](images/power_str_1.png)
 
 The `Date` and `Time` variables were read in as characters, so we'll convert them to date and time classes, respectively, as well as create a new `DateTime` column:
 
@@ -126,14 +126,14 @@ power$Month = as.Date(paste0(power$Month, "-01"))
 str(power)
 ```
 
-![str 2](images/power_str_2.png)
+![](images/power_str_2.png)
 
 ```
 # Get an overview of the variables
 summary(power)
 ```
 
-![summary](images/summary_power.png)
+![](images/summary_power.png)
 
 We can see from the summary that there are about 26k missing values (`NAs`) in our primary variable, `Global_active_power`—about 1.25% of the ~2 million records. We can quickly get a table and graph of missing data over time by using setting a counting marker for missing values with `ifelse`, then using the `dplyr` package to group and summarize the data, and finally pull a ready-made R function from the web to create a calendar graph that shows the daily distribution of the missing values.  
 
@@ -156,7 +156,7 @@ calendarHeat(power_day_missing$Date, power_day_missing$Count_Missing,
   varname="Missing Data", color="w2b")
 ```
 
-![missing](images/biwr_01_power_missing.png)
+![](images/biwr_01_power_missing.png)
 
 You can view the the actual values of missing data on each day by exploring the `power_day_missing` data frame. 
 
@@ -183,7 +183,7 @@ density_plot
 ggsave("Results/density_plot.png", width=6, height=4, dpi=600, units="in")
 ```
 
-![power histograms](images/biwr_01_power_histos.png)
+![](images/biwr_01_power_histos.png)
 
 The overall shape hasn't changed, though we can see a small spike at about 1 kW. This should be fine for our purposes. 
 
@@ -208,7 +208,7 @@ power_monthly$Month = as.Date(paste0(power_monthly$Month, "-01"))
 str(power_monthly)
 ```
 
-![power monthly str](images/power_monthly_str.png)
+![](images/power_monthly_str.png)
 
 ## Analytics
 
@@ -228,7 +228,7 @@ total_use_plot
 ggsave("Results/total_use_plot.png", width=6, height=4, dpi=600, units="in")
 ```
 
-![total use plot](images/total_use_plot.png)
+![](images/total_use_plot.png)
 
 We can see clear patterns in the data—higher in the winter and lower in the summer. 
 
@@ -250,7 +250,7 @@ total_use_fc = forecast(total_use_ts, h=6)
 summary(total_use_fc)
 ```
 
-![forecast model output](images/forecast_model_output.png)
+![](images/forecast_model_output.png)
 
 ```
 # "Sink" a copy of the model results into a text file in the Results folder
@@ -268,7 +268,7 @@ plot(total_use_fc)
 dev.off() 
 ```
 
-![total_use_forecast](images/total_use_forecast.png)
+![](images/total_use_forecast.png)
 
 
 ## Reporting
@@ -315,7 +315,7 @@ saveWidget(energy_use_prediction_widget, "energy_use_prediction_widget.html")
 
 Opening the `energy_use_prediction_widget.html` from the Reports folder shows us the result. This stand-alone file can be sent to the decision-maker(s) who can explore the exact trend and forecast values with a mouse hover, while still seeing the overall pattern.
 
-![energy widget](images/energy_widget_screenshot.png)
+![](images/energy_widget_screenshot.png)
 
 
 ## Documenting the project
@@ -326,7 +326,7 @@ Even better is when it's a small project—I can make the code, documentation, a
 
 To run that file manually, just load it into RStudio and click the *Knit HTML* button in the Source window. A preview window will pop up. In some systems, the .html file is concurrently saved to the working directory, while in others you may need to *Open in browser* and then *Save as* from there. 
 
-![html report for Hautevill House](images/biwr_ch1_knitr_ex.png)
+![](images/biwr_ch1_knitr_ex.png)
 
 To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run it from the console, a command line, or a "make" file (see Appendix 1) via the `render` function:
 
