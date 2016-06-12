@@ -48,7 +48,7 @@ ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7),
   title="Daily Bike Sharing Data", axisLabels="show", color="season")
 ```
 
-![ggpairs](images/Ch4_01.png)
+![](images/Ch4_01.png)
 
 It’s helpful to use a non-parametric correlation method if you don’t know *a priori* whether the quantitative variables are linearly related in their raw forms. Unfortunately, `ggpairs` doesn’t yet provide this functionality, so know that for continuous pairs of variables that don’t show a linear point cloud, the correlation coefficients printed in this graph will be larger than they actually are.
 
@@ -64,7 +64,7 @@ require(psych)
 multi.hist(bike_share_daily[,sapply(bike_share_daily, is.numeric)])
 ```
 
-![multi.hist](images/Ch4_02.png)
+![](images/Ch4_02.png)
 
 
 ### A better "pairs" plot
@@ -76,7 +76,7 @@ pairs.panels(bike_share_daily[,sapply(bike_share_daily, is.numeric)],
   ellipses=FALSE, pch=".", las=2, cex.axis=0.7, method="kendall")
 ```
 
-![pairs.panels](images/Ch4_03.png)
+![](images/Ch4_03.png)
 
 ### Mosaic plots: "Scatterplots" for categorical data
 
@@ -89,7 +89,7 @@ require(vcd)
 pairs(Titanic, highlighting=2)
 ```
 
-![mosaic pairs](images/Ch4_04.png)
+![](images/Ch4_04.png)
 
 
 ## Plotting univariate distributions
@@ -137,7 +137,7 @@ ggplot(bike_share_daily, aes(casual)) +
     theme_bw()
 ```
 
-![density and histogram](images/0815OS_02_06a.png)
+![](images/0815OS_02_06a.png)
 
 ...as well as together:
 
@@ -151,7 +151,7 @@ ggplot(bike_share_daily, aes(casual)) +
     theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
 ```
 
-![density and histogram](images/0815OS_02_06b.png)
+![](images/0815OS_02_06b.png)
 
 When asked, I’ve usually explained density plots as “more objectives histograms,” which, while not quite true, is accurate enough for business users. See `?density` for more details on the methods and useful additional references; `?stat_density` provides an overview of calculation methods used in `ggplot2`, while `?geom_density` provides information on graphical options. 
 
@@ -179,7 +179,7 @@ ggplot(bike_share_daily, aes(x=weathersit, y=..count..)) +
     theme_bw()
 ```
 
-![bar and dot](images/bar_and_dot.png)
+![](images/bar_and_dot.png)
 
 
 ### Plotting multiple univariate distributions with faceting
@@ -200,7 +200,7 @@ ggplot(bike_share_daily, aes(casual, fill=season)) +
           axis.title.x = element_text(vjust=-0.5))
 ```
 
-![ggplot multi.hist](images/0815OS_02_08.png)
+![](images/0815OS_02_08.png)
 
 The same can be done for categorical distributions, too, of course:
 
@@ -216,7 +216,7 @@ ggplot(bike_share_daily, aes(weathersit, fill=season)) +
     theme_light()
 ```
 
-![ggplot multi.bar](images/0815OS_02_09.png)
+![](images/0815OS_02_09.png)
 
 A> #### What about pie charts?
 A> 
@@ -253,7 +253,7 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
     legend.position="top")
 ```
 
-![double density plot](images/bike_double_density.png)
+![](images/bike_double_density.png)
 
 ### Boxplots
 
@@ -270,7 +270,7 @@ ggplot(bike_share_daily, aes(mnth, casual, fill=workingday)) +
     theme(legend.position="bottom")
 ```
 
-![boxplot](images/bike_boxplot.png)
+![](images/bike_boxplot.png)
 
 ### Beanplots
 
@@ -287,7 +287,7 @@ beanplot(casual ~ mnth, data = bike_share_daily, side="first",
 
 If you prefer a more traditional look, with the density curves pointing up, you can use `horizontal=TRUE`, change `side` to `"second"`, and flip your axis titles:
 
-![beanplot](images/beanplot1.png)  
+![](images/beanplot1.png)  
 
 ```
 beanplot(casual ~ mnth, data = bike_share_daily, side="second", 
@@ -296,7 +296,7 @@ beanplot(casual ~ mnth, data = bike_share_daily, side="second",
     xlab = "Daily Casual Bike Use Count", horizontal=TRUE)
 ```
 
-![bean density](images/beanplot2.png)  
+![](images/beanplot2.png)  
 
 Like the boxplot example above, you can also add a comparison for groups within a category, and each group's density is plotted base-to-base. So while you don't have the exact symmetry of violin plots, the result can provide much the same visual impression, so it's probably best to stick with the use of one side of the "bean."
 
@@ -319,13 +319,21 @@ Then, use `ggMarginal` to create the final product:
 bike_air_temp_mh = ggMarginal(bike_air_temp, type="histogram")
 ```
 
-![marginal histograms](images/scatter_marginal_hist.png)
+![](images/scatter_marginal_hist.png)
 
 Sometimes density plots can be useful, or perhaps you want to keep it simple and show a boxplot. Just change the `type` option:
 
-![marginal density](images/scatter_marginal_density.png)  
+```
+bike_air_temp_mh = ggMarginal(bike_air_temp, type="density")
+```
 
-![marginal boxplot](images/scatter_marginal_boxplot.png)  
+![](images/scatter_marginal_density.png)  
+
+```
+bike_air_temp_mh = ggMarginal(bike_air_temp, type="boxplot")
+```
+
+![](images/scatter_marginal_boxplot.png)  
 
 
 ### Mosaic plots
@@ -339,7 +347,7 @@ mosaic(~ weathersit + season, data=bike_share_daily, shade=T,
   c("Clear", "Cloudy/Rainy",  "Stormy"))))
 ```
 
-![mosaic](images/0815OS_02_11.png)
+![](images/0815OS_02_11.png)
 
 A> #### Um. What's a mosaic plot?
 A> 
@@ -373,7 +381,7 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
     legend.position="top")
 ```
 
-![faceted bikeshare densities](images/bike_facet_densities.png)
+![](images/bike_facet_densities.png)
 
 
 ## Pareto charts
@@ -408,7 +416,7 @@ Pareto chart analysis for xtabs(Readmits ~ Dx)
   Aortic aneurysm               8      3683  0.2172142    100.00000
 ```
 
-![pareto_chart](images/pareto_chart.png)
+![](images/pareto_chart.png)
 
 
 ## Plotting survey data
@@ -418,17 +426,21 @@ There are a variety of ways you can plot survey data, but the `likert` package m
 ```
 require(likert)
 mathiness = likert(mass[2:15])
+
+# Complete plot
 plot(mathiness)
 ```
 
-![basic likert plot](images/0815OS_02_13.png)
+![](images/0815OS_02_13.png)
 
 ```
 gender_math = likert(items=mass[,c(4,6,15), drop=FALSE], grouping=mass$Gender)
+
+# Grouped plot
 plot(gender_math, include.histogram=TRUE)
 ```
 
-![grouped likert plot](images/0815OS_02_14.png)
+![](images/0815OS_02_14.png)
 
 
 ## Obtaining summary and conditional statistics
@@ -447,7 +459,7 @@ Basic `describe`:
 describe(bike_share_daily[10:16])
 ```
 
-![describe1](images/describe1.png)
+![](images/describe1.png)
 
 Using `describeBy`:
 
@@ -455,7 +467,7 @@ Using `describeBy`:
 describeBy(bike_share_daily[10:16], bike_share_daily$holiday)
 ```
 
-![describe2](images/describe2.png)
+![](images/describe2.png)
 
 The `table` and `prop.table` functions from the `base` package provide the simplest summary stats for categorical and ordinal variables:
 
@@ -478,14 +490,14 @@ Summary stats for bike use during the winter season:
 describeBy(bike_share_daily[14:16], bike_share_daily$season == "Winter")
 ```
 
-![describe1](images/describe3.png)
+![](images/describe3.png)
 
 Summary stats for weather on days where there were less than/greater than 1000 casual uses:
 ```
 describeBy(bike_share_daily[10:13], bike_share_daily$casual <= 1000)
 ```
 
-![describe1](images/describe4.png)
+![](images/describe4.png)
 
 Summary stats for bike use on days in which the windspeed was greater than/less than average:
 
@@ -494,7 +506,7 @@ describeBy(bike_share_daily$casual, bike_share_daily$windspeed >
   mean(bike_share_daily$windspeed))
 ```
 
-![describe1](images/describe5.png)
+![](images/describe5.png)
 
 
 I> Although `describeBy` gives you more versatility, you can use `sum` for a
@@ -675,7 +687,7 @@ p4 = ggplot(PlantGrowth, aes(group, weight)) +
 grid.arrange(p1, p2, p3, p4, nrow=2)
 ```
 
-![conf interval plots](images/plotcis.png)
+![](images/plotcis.png)
 
 
 
@@ -706,7 +718,7 @@ You can also obtain a graphical summary with the plottout function, which shows 
 plottol(commute_time_npti, commute_time, side="two", plot.type="both")
 ```
 
-![tolerance interval plot](images/0815OS_02_05.png)
+![](images/0815OS_02_05.png)
 
 
 If you plotted both tolerance graphs (plot.type="both"), you'll need to return par to normal manually: 
@@ -748,7 +760,7 @@ colnames(tao)[4] = "Sea.Temp"
 summary(tao)
 ```
 
-![tao summary](images/tao_summary.png)
+![](images/tao_summary.png)
 
 The `matrixplot` function will display the entire dataset as a set of rectangles to represent each cell. Similar values in the data will have similar grayscale values, and NAs will show up clearly in red:
 
@@ -756,7 +768,7 @@ The `matrixplot` function will display the entire dataset as a set of rectangles
 matrixplot(tao)
 ```
 
-![matrixplot image](images/tao_cells.png)
+![](images/tao_cells.png)
 
 To complement the detailed picture given by `matrixplot`, you can get a numeric and visual summary of missing values with the `aggr` function:
 
@@ -771,7 +783,7 @@ tao_aggr
          Humidity    93
 ```
 
-![aggr image](images/tao_aggr.png)
+![](images/tao_aggr.png)
 
 You can compare missingness across fields with histograms, such as the distribution of missing humidity values by corresponding air temperature:
 
@@ -779,7 +791,7 @@ You can compare missingness across fields with histograms, such as the distribut
 histMiss(tao[5:6])
 ```
 
-![histMiss image](images/tao_hist1.png)
+![](images/tao_hist1.png)
 
 You can flip the variables to see the opposite distribution:
 
@@ -787,7 +799,7 @@ You can flip the variables to see the opposite distribution:
 histMiss(tao[c(6,5)])
 ```
 
-![histMiss reversed image](images/tao_hist2.png)
+![](images/tao_hist2.png)
 
 You can show the same data in a scatterplot for more details:
 
@@ -795,7 +807,7 @@ You can show the same data in a scatterplot for more details:
 marginplot(tao[5:6])
 ```
 
-![marginplot image](images/tao_marginplot.png)
+![](images/tao_marginplot.png)
 
 This can be expanded to pairwise visual comparisons with the `marginmatrix` function:
 
@@ -803,7 +815,7 @@ This can be expanded to pairwise visual comparisons with the `marginmatrix` func
 marginmatrix(tao[4:6])
 ```
 
-![marginmatrix image](images/tao_marginmatrix.png)
+![](images/tao_marginmatrix.png)
 
 I> `VIM` also has a separate GUI for interactive/on-the-fly exploration called `VIMGUI`. Even if you prefer coding, it contains a [vignette](http://cran.r-project.org/web/packages/VIMGUI/vignettes/VIM-Imputation.pdf) from which these examples are drawn, so it's worth installing to learn more about how it works and the many options you can control in the imputation process. 
 
@@ -826,7 +838,7 @@ This function appends a set of indicator variables to the data that show TRUE/FA
 marginplot(tao_knn[c(5:6, 13:14)], delimiter="_imp")
 ```
 
-![marginplot imputed](images/tao_marginplot_imputed.png)
+![](images/tao_marginplot_imputed.png)
 
 Light and dark orange show results imputed for the variable on that axis; black points show observations for which both were imputed. Blue continues to show the distribution of the non-imputed values. 
 
@@ -836,7 +848,7 @@ Viewing a matrix works here as well:
 marginmatrix(tao_knn[c(4:6, 12:14)], delimiter="_imp")
 ```
 
-![marginmatrix imputed](images/tao_marginmatrix_imputed.png)
+![](images/tao_marginmatrix_imputed.png)
 
 There are other methods in `VIM`, including a model-based approach:
 
@@ -872,7 +884,7 @@ ggplot(tao_compare_melt, aes(Air.Temp, color=variable)) +
     theme_minimal()
 ```
 
-![imputed results](images/tao_compare_melt.png)
+![](images/tao_compare_melt.png)
 
 I> #### More imputation in R: other packages
 I> 
