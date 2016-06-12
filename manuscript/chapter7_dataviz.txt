@@ -1,7 +1,5 @@
 # Chapter 7: A Dog's Breakfast of Dataviz
 
-In this chapter, we will cover:
-
 - Plotting multivariate data
 - Interactive data visualizations
 - Making maps in R
@@ -51,7 +49,7 @@ ggplot(bike_share_sd, aes(weekday, mnth)) +
     theme(plot.title = element_text(vjust = 1))
 ```
 
-![heatmap](images/0815OS_04_01.png)
+![](images/0815OS_04_01.png)
 
 ### Creating calendar heatmaps
 
@@ -69,7 +67,7 @@ calendarHeat(bike_share_daily$dteday, bike_share_daily$casual,
   varname="Casual Daily Bike Use", color="green_color_ramp")
 ```
 
-![calendar heatmap](images/0815OS_04_05.png)
+![](images/0815OS_04_05.png)
 
 ### Parallel coordinates plots
 
@@ -92,7 +90,7 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
   scale="globalminmax", alphaLines=0.5)
 ```
 
-![pcp plain](images/0815OS_04_02.png)
+![](images/0815OS_04_02.png)
 
 A neat feature of `ggparcoord` is the ability to put boxplots on the background of the plot:
 
@@ -101,7 +99,7 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
   scale="globalminmax", boxplot=TRUE, alphaLines=0.3)
 ```
 
-![pcp boxplots](images/0815OS_04_03.png)
+![](images/0815OS_04_03.png)
 
 ### Peeking at multivariate data with `dplyr` and a bubblechart
 
@@ -122,7 +120,7 @@ customer_survey %>%
     theme_bw()
 ```
 
-![bubble](images/0815OS_04_04.png)
+![](images/0815OS_04_04.png)
 
 
 ## Plotting a table
@@ -148,7 +146,7 @@ ggplot(bike_share_mean_wide, aes(Year, Jan)) +
         axis.text = element_blank(), axis.title = element_blank())
 ```
 
-![ggtable](images/0815OS_04_06.png)
+![](images/0815OS_04_06.png)
 
 
 ## Interactive dataviz
@@ -190,7 +188,7 @@ tauchart(bike_share_count) %>%
   tau_tooltip()
 ```
 
-![tau barchart](images/tau_bar.png)
+![](images/tau_bar.png)
 
 ```
 tauchart(bike_share_count) %>% 
@@ -198,7 +196,7 @@ tauchart(bike_share_count) %>%
   tau_tooltip()
 ```
 
-![tau dotplot](images/tau_dot.png)
+![](images/tau_dot.png)
 
 
 Bivariate and faceted plots are similarly simple:
@@ -210,7 +208,7 @@ tauchart(bike_share_count_season) %>%
   tau_tooltip()
 ```
 
-![tau horizontal faceted barchart](images/tau_bar_facets.png)
+![](images/tau_bar_facets.png)
 
 ```
 tauchart(bike_share_daily) %>%
@@ -218,7 +216,7 @@ tauchart(bike_share_daily) %>%
   tau_tooltip()
 ```
 
-![tau scatterplot](images/tau_scatter.png)
+![](images/tau_scatter.png)
 
 ```
 tauchart(bike_share_daily) %>% 
@@ -226,7 +224,7 @@ tauchart(bike_share_daily) %>%
   tau_tooltip()
 ```
 
-![tau faceted scatterplot](images/tau_scatter_facets.png)
+![](images/tau_scatter_facets.png)
 
 ### Scatterplot matrix
 
@@ -241,7 +239,7 @@ pairsD3(bike_share_daily[,11:14], group = bike_share_daily[,3],
         col = c("#0571b0", "#92c5de", "#ca0020", "#f4a582"))
 ```
 
-![pairsd3](images/pairs.png)
+![](images/pairs.png)
 
 
 ### Motionchart: a moving bubblechart
@@ -267,7 +265,7 @@ plot(gvisMotionChart(rosling_data,
      options=list(width = 700, height = 600)))
 ```
 
-![motionchart](images/motionplot.png)
+![](images/motionplot.png)
 
 
 ### Interactive tables with `DT`
@@ -306,7 +304,7 @@ map("state", xlim=c(min(ozone$x-0.5),max(ozone$x+0.5)), ylim=range(ozone$y),
 box(col="gray50")
 text(ozone$x, ozone$y, ozone$median, cex=0.5)
 ```
-![ozone map](images/0815OS_04_07.png)
+![](images/0815OS_04_07.png)
 
 It's "deceptively simple" because as long as you don't need anything fancy or if the boundaries you intend to map haven't changed in a while, you're fine—just use a map base and a dataframe with x (longitude), y (latitude), and data values. But what if the boundaries have changed? Let's look at Europe from the world map within the map package:
 
@@ -315,7 +313,7 @@ map('world', xlim=c(-12,45), ylim=c(35,60), col="gray90", fill=T)
 box()
 ```
 
-![old europe](images/0815OS_04_08.png)
+![](images/0815OS_04_08.png)
 
 A little outdated, to say the least. A look at the database option inside the ?map help file tells us why—it's from an old CIA database that predates the collapse of the USSR (the mapdata package, which contains more maps for the maps package, has the same problem). To get newer boundaries, you'll need to download and convert a spatial data file from an online source—something we'll see an example of below.
 
@@ -330,7 +328,7 @@ data(df_pop_county)
 county_choropleth(df_pop_county)
 ```
 
-![chloropleth county](images/0815OS_04_09.png)
+![](images/0815OS_04_09.png)
 
 You can subset this to states or regions with the zoom option, and display a continuous scale instead of breaks with the buckets=1 option:
 
@@ -341,7 +339,7 @@ county_choropleth(df_pop_county,
         zoom=c("arizona", "colorado", "new mexico", "utah"))
 ```
 
-![chloropleth zoom county](images/0815OS_04_10.png)
+![](images/0815OS_04_10.png)
 
 Want to map by zipcodes instead of counties?
 
@@ -354,7 +352,7 @@ zip_map(df_pop_zip,
         zoom=c("arizona", "colorado", "new mexico", "utah"))
 ```
 
-![chloropleth zoom zips](images/0815OS_04_11.png)
+![](images/0815OS_04_11.png)
 
 The world map data that `choroplethr` and `choroplethrMaps` includes is up to date. But if you want to subset on Europe? Unfortunately, you'll have to do that manually, either by extracting the countries you need by name or ISO code, since `x`- and `y`-`lim` options don't work in this package (see `?choroplethr_wdi` or `?df_pop_country` for more details on names/ISO codes), or by acquiring map boundaries by different means. We'll explore the latter option below, as it takes considerably less effort.  
 
@@ -374,7 +372,7 @@ require(choroplethrMaps)
 choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
 ```
 
-![chloropleth acs](images/0815OS_04_15.png)
+![](images/0815OS_04_15.png)
 
 If you don't know which tables you need, the US Census provides more information [here](http://factfinder2.census.gov/faces/affhel/jsf/pages/metadata.xhtml?lang=en&type=survey&id=survey.en.ACS_ACS).
 
@@ -394,7 +392,7 @@ box(col="gray30")
  # © EuroGeographics for the administrative boundaries
 ```
 
-![euro map](images/0815OS_04_12.png)
+![](images/0815OS_04_12.png)
 
 We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this book's github repo (subset to ozone pollution data and linked to each station's geographic coordinates; code to do so yourself is [here](https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/eu_o3.R)). We'll plot the annual daily median values with the modern EU boundaries obtained above:
 
@@ -407,7 +405,7 @@ text(eu_o3$longitude, eu_o3$latitude, round(eu_o3$statistic_value,0), cex=0.5,
   col="gray20")
 ```
 
-![euro messy map](images/0815OS_04_13.png)
+![](images/0815OS_04_13.png)
 
 Too much data! Turning the values into a color scale takes a little more effort, but allows us to see the data:
 
@@ -426,7 +424,7 @@ legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8,
   border="gray60")
 ```
 
-![euro point map](images/0815OS_04_14.png)
+![](images/0815OS_04_14.png)
 
 ### Using `ggmap` for point data and heatmaps
 
@@ -474,7 +472,7 @@ seattle_map +
         legend.position='none')
 ```
 
-![point map](images/point_map.jpg)
+![](images/point_map.jpg)
 
 ...or as faceted heatmaps:
 
@@ -494,7 +492,7 @@ seattle_map +
         legend.position='none')
 ```
 
-![heat map](images/heat_map_facet.jpg)
+![](images/heat_map_facet.jpg)
 
 ### Interactive maps with `leaflet`
 
@@ -531,11 +529,11 @@ bike_theft_interactive = leaflet() %>%
         colors=c("red","blue"), labels=c("December 2014", "January 2015"))
 ```
 
-![leaflet map](images/bike_theft_interactive.png)
+![](images/bike_theft_interactive.png)
 
 
 ### Why map with R?
 
-It's important to remember that mapping in R is relatively easy *if* the maps, boundaries, and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
+Mapping in R is relatively easy *if* the maps, boundaries, and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
 
-My recommendation: don't use R for mapping unless you have to or your need is solved simply by existing functionality. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's [spatial.ly blog](http://spatial.ly/).
+My recommendation: don't use R for mapping unless your need is solved by existing functionality. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's [spatial.ly blog](http://spatial.ly/).
