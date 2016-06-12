@@ -1,4 +1,4 @@
-# Chapter 8: Pattern Discovery and Dimension Reduction: Proximity, Clusters, and Outliers
+# Chapter 8: Pattern Discovery and Dimension Reduction
 
 - Mapping multivariate relationships with non-metric multidimensional scaling (nMDS), Principal Components Analysis (PCA), and Correspondence Analysis (CA)
 - Grouping observations with hierarchical clustering 
@@ -12,15 +12,15 @@
 - Finding associations in shopping carts
 
 
-Humans like to put things in boxes. "What things are most like each other?" is one of the most common questions you face in the analysis of multivariate data. Technically, we can think of these tasks as dimension reduction--how can we take a mass of data and reduce it to something that provides insight? Techniques to take many variables and cluster observations or detect outliers have been around for decades, though it’s been only recently where desktop computing power was sufficient for more advanced similarity-analysis tool development. 
+Humans like to put things in boxes. "What things are most like each other?" is one of the most common questions you face in the analysis of multivariate data. Technically, we can think of these tasks as dimension reduction---how can we take a mass of data and reduce it to something that provides insight? Techniques to take many variables and cluster observations or detect outliers have been around for decades, though it’s been only recently where desktop computing power was sufficient for more advanced similarity-analysis tool development. 
 
-Non-metric multidimensional scaling (nMDS) is one such tool. It’s similar to Principal Components Analysis (PCA), but does not suffer from the assumption that the multivariate relationships must be linear. As a result, it has already replaced PCA as the primary descriptive and dimension reduction tool for multivariate data in some fields, and is moving rapidly into others. But although nMDS works better for nearly all applied problems and is easier to explain to business client, PCA is still widely used. 
+Non-metric multidimensional scaling (nMDS) is one such tool. It’s similar to Principal Components Analysis (PCA), but does not suffer from the assumption that the multivariate relationships must be linear. As a result, it has already replaced PCA as the primary descriptive and dimension reduction tool for multivariate data in some fields, and is moving rapidly into others. But although nMDS works better for nearly all applied problems and is easier to explain to business clients, PCA is still widely used. 
 
-Cluster analysis has advanced as well, with the development of techniques for clustering non-linear groupings by density via DBSCAN and similar tools, and being able to make inferential claims on cluster membership with model-based clustering. Still, the old standbys of kMeans, PAM, and hierarchical clustering all remain excellent first-order descriptive tools for multivariate data. 
+Cluster analysis has advanced as well, with the development of techniques for clustering irregular groupings by density via DBSCAN and similar tools, and being able to make inferential claims on cluster membership with model-based clustering. Still, the old standbys of kMeans, PAM, and hierarchical clustering all remain excellent first-order descriptive tools for multivariate data. 
 
-If anyone has ever asked you for an "automatic outlier detection" data product, you probably realized that they probably don't understand analytics. What counts as an outlier is completely dependent on context. That said, sometimes you need to explore what might count as an outlier across enough variables that visualization becomes difficult, if not impossible. Other times, you might want to get a head-start on investigating a potential outlier or trend before it wrecks things. Multivariate outlier exploration and anomaly detection are two useful exploratory tools for these purposes. 
+On the flip side of the coin of similarity is the exploration of outliers. If anyone has ever asked you for an "automatic outlier detection" data product, you immediately realized that they probably don't understand analytics. What counts as an outlier is completely dependent on context. That said, sometimes you need to explore what might count as an outlier across enough variables that visualization becomes difficult, if not impossible. Other times, you might want to get a head-start on investigating a potential outlier or trend before it wrecks things. Or perhaps you need to understand the probabilities associated with unusual but possible events. Multivariate outlier exploration, extreme value analysis, and anomaly detection are useful exploratory tools for these purposes. 
 
-Finding things that are (really) similar or (really) different has been the common theme to the tools in this chapter. Sometimes, you just want to be purely empirical about it, and let the data itself give you information to explore based simply on common co-occurrences. Association analysis--more commonly called "shopping cart analysis"--is a great way to do this. 
+Finding things that are (really) similar or (really) different is the common theme to the tools in this chapter. Sometimes, you just want to be purely empirical about it, and let the data itself give you information to explore based simply on common co-occurrences. Association analysis---more commonly called "shopping cart analysis"---is a great way to do this. 
 
  
 ## Mapping multivariate relationships
@@ -29,7 +29,7 @@ Finding things that are (really) similar or (really) different has been the comm
 
 Non-metric multidimensional scaling (nMDS) is a useful way to identify groups, outliers, and influential variables in multivariate space. In essence, nMDS collapses multiple dimensions into two or three so that relationships based on multivariate proximity can be visualized. nMDS models a similarity matrix in low dimensional space in much the same way as a map can be created from scattered GPS coordinates.
 
-The data in this example we first saw in Chapter 7--nine financial ratios for 66 Spanish banks, 29 of which failed during the Spanish banking crisis (Serrano-Cinca 2001). 
+The data in this example we first saw in Chapter 7---nine financial ratios for 66 Spanish banks, 29 of which failed during the Spanish banking crisis ([Serrano-Cinca 2001](http://www.tandfonline.com/doi/abs/10.1080/13518470122202)). 
 
 The nMDS analysis is largely automated in the `vegan` package using the `metaMDS` function (see `?metaMDS` for all the details). This function defaults to expecting count data; for continuous data, setting the distance metric to euclidean is more appropriate. There are dozens of distance metrics (see `?vegdist` for the options available in `vegan`), but only two are really needed for most applications: Bray-Curtis for count data (the default) and Euclidean for continuous data. `metaMDS` automatically performs transformations when given count data. Manual transformations are sometimes needed if the variables are continuous and have considerably different scales (e.g., scale to mean 0/sd 1, see `?scale`).
 
@@ -63,7 +63,7 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n",
   pt.bg=c("darkred", "blue"), cex=0.75)
 ```
 
-![initial nmds](images/0815OS_05_nmds1.png)
+![](images/0815OS_05_nmds1.png)
 
 You also can easily explore regions within the plot in more detail by using `xlim` and `ylim` to zoom in on an area of interest, such as the right-side cluster:
 
@@ -78,22 +78,22 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", col=c("darkred",
   "blue"), cex=0.75)
 ```
 
-![zoomed nmds](images/0815OS_05_nmds2.png)
+![](images/0815OS_05_nmds2.png)
 
 nMDS does not use the absolute values of the variables, but rather their rank orders. While this loses some information contained in the raw data, the use of ranks omits some of the issues associated with using absolute distance (e.g., sensitivity to transformation and linearity), and as a result is a very flexible technique that works well with a variety of types of data. It's also particularly useful when there are a large number of predictors relative to the number of entities, where using actual values could easily lead to overfitting.
 
-A> Essentially, nMDS creates a map of a similarity matrix. For example, a matrix of European inter-city distance (see `?eurodist`) creates an nMDS plot that closely reflects the actual distance between these cities:
-A> 
-A> ```
-A> par(mar=c(1.5,4,1,4))
-A> euromap = metaMDS(eurodist, distance="euclidean", autotransform=FALSE, 
-A>   noshare=FALSE, wascores=FALSE)
-A> euromap$points[,1] = -euromap$points[,1]
-A> ordiplot(euromap, display="sites", xaxt="n", yaxt="n", xlab=" ", ylab=" ", 
-A>   type="t")
-A> ```
-A> 
-A> ![euromap nmds](images/0815OS_05_nmds4.png)
+If you need to describe it succinctly, say that nMDS creates a map of a similarity matrix. For example, a matrix of European inter-city distance (see `?eurodist`) creates an nMDS plot that closely reflects the actual distance and spatial direction between these cities:
+
+```
+par(mar=c(1.5,4,1,4))
+euromap = metaMDS(eurodist, distance="euclidean", autotransform=FALSE, 
+   noshare=FALSE, wascores=FALSE)
+euromap$points[,1] = -euromap$points[,1]
+ordiplot(euromap, display="sites", xaxt="n", yaxt="n", xlab=" ", ylab=" ", 
+   type="t")
+```
+
+![](images/0815OS_05_nmds4.png)
 
 
 ### Diagnostics for nMDS results
@@ -110,13 +110,13 @@ banks.stress
 stressplot(banks_mds, xaxt="n", yaxt="n")
 ```
 
-![stress plot](images/0815OS_05_nmds3.png)
+![](images/0815OS_05_nmds3.png)
 
 The stress value itself is a single value that represents how well the plot represents the underlying similarity matrix. It can be roughly interpreted as follows:
 
 {width="narrow"}
 | Stress Score | How well the plot represents the matrix |
-| ------------ |:---------------------------------------:|
+| -------------------- |:---------------------------------------:|
 | < 0.05 | Excellent |
 | > 0.05-0.10 | Very Good |
 | > 0.10-0.15 | Good |
@@ -151,12 +151,12 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n",
   pt.bg=c("darkred", "blue"), cex=0.75)
 ```
 
-![vectors nmds](images/0815OS_05_nmds5.png)
+![](images/0815OS_05_nmds5.png)
 
 
 ### Contour mapping influential variables over the nMDS plot
 
-Since there is a clear left-right gradient, and the R8 variable (the ratio of Cost of Sales to Sales) seems to be one of the major reasons for that, a contour of that variable, in that variable’s scale values--in this case, the ratio--can be mapped in the nMDS plot. Other contours can be mapped as well; this example shows R8 and R4 contours: 
+Since there is a clear left-right gradient, and the R8 variable (the ratio of Cost of Sales to Sales) seems to be one of the major reasons for that, a contour of that variable, in that variable’s scale values---in this case, the ratio---can be mapped in the nMDS plot. Other contours can be mapped as well; this example shows R8 and R4 contours: 
 
 ```
 par(mar=c(1.5,0,1,0))
@@ -180,7 +180,7 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n",
   pt.bg=c("darkred", "blue"), cex=0.75)
 ```
 
-![initial nmds](images/0815OS_05_nmds7.png)
+![](images/0815OS_05_nmds7.png)
 
 While technically any number of contours can be plotted, in practice more than two renders the plot essentially unreadable.
 
@@ -229,7 +229,7 @@ ggbiplot(banks_pca, labels =  rownames(banks), ellipse=T, groups=
   theme_bw()
 ```
 
-![pca biplot](images/0815OS_05_07.png)
+![](images/0815OS_05_07.png)
 
 
 Finally, variance plots often accompany PCA work; here's a way to do it with ggplot:
@@ -246,7 +246,7 @@ ggplot(variances, aes(PCs, var_cumsum)) +
   theme_bw()
 ```
 
-![pca variance](images/0815OS_05_08.png)
+![](images/0815OS_05_08.png)
 
 
 ### nMDS for Categories: Correspondence Analysis
@@ -287,16 +287,16 @@ Columns:
 plot(smoke_ca, arrows=c("F","T"), mass = c(TRUE, TRUE))
 ```
 
-![ca nmds](images/0815OS_05_ca.png)
+![](images/0815OS_05_ca.png)
  
 
 ## Grouping observations with hierarchical clustering
 
-Hierarchical clustering can be a useful way to summarize high-dimensional data, but results can be strongly dependent on the clustering method. The average, Ward’s, and centroid methods tend to be the best places to start. 
+Hierarchical clustering can be a useful way to summarize high-dimensional data, but results can be strongly dependent on the clustering method. Ward’s, average, and centroid methods tend to be the best places to start. 
 
 Hierarchical cluster analysis tools are built into the `base` installation, so no specific packages are required here. 
 
-Typically, variables to cluster on are scaled (usually to mean 0 and sd 1), a distance matrix is created on the scaled data, and a clustering method is applied to the distance matrix. Since the set of descriptive variables in this data set are all on the same scale (i.e., a set of ratios), we won’t scale this data. We'll use Ward's clustering method here with the Spanish banks dataset, which aims to create compact clusters by minimizing variance.
+Typically, variables to cluster on are scaled (usually to mean 0 and sd 1), a distance matrix is created on the scaled data, and a clustering method is applied to the distance matrix. Since the set of descriptive variables in this data set are all on the same scale (i.e., a set of ratios), we don't need to scale this data. We'll use Ward's clustering method here with the Spanish banks dataset, which aims to create compact clusters by minimizing variance.
 
 ```
 banks_dist = dist(banks[,3:11])
@@ -306,14 +306,14 @@ banks_hclust = hclust(banks_dist, method="ward.D")
 plot(banks_hclust, hang=-1, labels=paste(banks$Banco, banks$Numero, sep="-"))
 ```
 
-![basic hclust](images/0815OS_05_01.png)
+![](images/0815OS_05_01.png)
 
-See `?hclust` for a short overview of the clustering methods available. The method and approach you use are important--changes in either will change the result (see below for an example).  
+See `?hclust` for a short overview of the clustering methods available. The method and approach you use are important---changes in either will change the result (see below for an example).  
 
 
 ### Plotting a cluster dendrogram with ggplot
 
-The `NeatMap` package has a helper function--`draw.dendrogram`--that allows you to place an `hclust` object in `ggplot2`, where you can style or label it from there however you wish, e.g.:
+The `NeatMap` package has a helper function (`draw.dendrogram`) that allows you to place an `hclust` object in `ggplot2`, where you can style or label it from there however you wish, e.g.:
 
 ```
 require(NeatMap)
@@ -331,7 +331,7 @@ ggplot() +
     axis.ticks = element_blank(), legend.position="top")
 ```
 
-![neatmap hclust](images/0815OS_05_08_old.png)
+![](images/0815OS_05_08_old.png)
 
 As we mentioned above, a small change in approach can completely alter the result. Say we had scaled the data first. 
 
@@ -345,7 +345,7 @@ banks_hclust = hclust(banks_dist, method="ward.D")
 # Now rerun the ggplot commands as above
 ```
 
-![neatmap hclust](images/0815OS_05_09.png)
+![](images/0815OS_05_09.png)
 
 The clear structure seen above in the unscaled data is now somewhat muddled. 
 
@@ -363,41 +363,47 @@ draw.dendrogram3d(banks_hclust, banks_pos, labels=banks$Numero,
   label.colors=banks$Solvente+3, label.size=1)
 ```
 
-![neatmap nmds hclust](images/0815OS_05_10.png)
+![](images/0815OS_05_10.png)
 
 
 ## How to partition the results of a hierarchical cluster analysis
 
-The `cutree` function will cut a hierarchical cluster dendrogram into a user-supplied number of groups, which can be useful when combined with the results of a `clusGap`-based PAM or kMeans analysis (see the recipes later in this chapter). Since we know there are two natural clusters--bankrupt and solvent--we’ll use *k*=2 here. Note that since it is cutting the tree based on the clustering method’s distance values, results from `cutree` may not match the clusters obtained with `pam` or `kmeans`.
+The `cutree` function will cut a hierarchical cluster dendrogram into a user-supplied number of groups, which can be useful when combined with the results of a `clusGap`-based PAM or kMeans analysis (see the recipes later in this chapter). Since we know there are two natural clusters---bankrupt and solvent---we’ll use *k*=2 here. Note that since it is cutting the tree based on the clustering method’s distance values, results from `cutree` may not match the clusters obtained with `pam` or `kmeans`.
 
 Using our original `hclust` object:
 
 ```
+# Run cutree for 2 groups
 bank_clusters = cutree(banks_hclust, k=2)
 
+# View results
 table(bank_clusters)
-
-aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
 
 bank_clusters
  1  2
 62  4
 
+# Show variable medians for each group
+aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
+
   cluster      R1      R2      R3     R4      R5      R6      R7      R8       R9
 1       1 0.39265 0.26210 0.40725 0.0203  0.0042  0.1002  0.0044 0.87650  0.00955
 2       2 0.36585 0.23295 0.38455 0.0152 -0.0380 -0.9390 -0.0397 1.30815 -0.01630
 
-plot(banks_hclust, hang=-1, labels=paste(banks$Banco, banks$Numero, sep="-"), cex=0.9)
+# Plot dendrogram
+plot(banks_hclust, hang=-1, labels=paste(banks$Banco, banks$Numero, sep="-"), 
+   cex=0.9)
 
+# Add cluster boxes to dendrogram
 rect.hclust(banks_hclust, k=2)
 ```
 
-![rect hclust](images/0815OS_05_14.png)
+![](images/0815OS_05_14.png)
 
 
 ## Identifying and describing group membership with kMeans and PAM
 
-kMeans and Partitioning Around Medoids (PAM) are two methods that will divide your observations into *k* groups. kMeans works with quantitative data only, and can be susceptible to outliers, while PAM works with both quantitative as well as categorical data. As medoids are simply the “most representative” member of a cluster, outliers don’t really affect PAM. As a result, it is a more robust version of kMeans. If you have a large data set, look at the `clara` package, which performs PAM by iteratively sampling the data to speed up analysis time.
+kMeans and Partitioning Around Medoids (PAM) are two methods that will divide your observations into *k* groups. kMeans works with quantitative data only, and can be susceptible to outliers, while PAM works with both quantitative as well as categorical data. As medoids are simply the “most representative” member of a cluster, outliers don’t really affect PAM. As a result, it is a more robust version of kMeans. If you have a really large data set, look at the `clara` package, which performs PAM by iteratively sampling the data to speed up analysis time.
 
 The `cluster` package contains the basic PAM function, so load that first. We’ll continue to use the Spanish banking data.
 
@@ -415,13 +421,23 @@ banks_pam = pam(banks[,3:11], k=2)
 banks_pam
 
 Medoids:
-     ID     R1     R2     R3     R4      R5      R6      R7     R8      R9
-[1,] 58 0.4074 0.2764 0.4397 0.0156  0.0043  0.0582  0.0046 0.8846  0.0095
-[2,] 17 0.3740 0.2205 0.3938 0.0012 -0.0537 -1.0671 -0.0565 1.3713 -0.0231
+     ID R1Liqui1 R2Liqui2 R3Liqui3 R4Autof R5RenEc R6RenFin  R7Apal R8CosVen
+[1,] 58   0.4074   0.2764   0.4397  0.0156  0.0043   0.0582  0.0046   0.8846
+[2,] 17   0.3740   0.2205   0.3938  0.0012 -0.0537  -1.0671 -0.0565   1.3713
+      R9Cash
+[1,]  0.0095
+[2,] -0.0231
 Clustering vector:
- [1] 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-[46] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-```
+ [1] 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1
+[38] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+Objective function:
+   build     swap 
+0.219742 0.219742 
+
+Available components:
+ [1] "medoids"    "id.med"     "clustering" "objective"  "isolation" 
+ [6] "clusinfo"   "silinfo"    "diss"       "call"       "data"     
+ ```
 
 To run kMeans with *k*=2:
 
@@ -430,23 +446,28 @@ banks_kmeans = kmeans(banks[,3:11], centers=2, nstart=50)
 
 banks_kmeans
 
-K-means clustering with 2 clusters of sizes 3, 63
+K-means clustering with 2 clusters of sizes 63, 3
 
 Cluster means:
-         R1        R2        R3         R4           R5         R6           R7        R8
-1 0.3409333 0.2465000 0.3561333 0.01186667 -0.052733333 -1.2071667 -0.055200000 1.2808000
-2 0.3952127 0.2674238 0.4173810 0.02471746  0.005095238  0.1117937  0.005436508 0.8728571
-            R9
-1 -0.017966667
-2  0.009780952
+   R1Liqui1  R2Liqui2  R3Liqui3    R4Autof      R5RenEc   R6RenFin
+1 0.3952127 0.2674238 0.4173810 0.02471746  0.005095238  0.1117937
+2 0.3409333 0.2465000 0.3561333 0.01186667 -0.052733333 -1.2071667
+        R7Apal  R8CosVen       R9Cash
+1  0.005436508 0.8728571  0.009780952
+2 -0.055200000 1.2808000 -0.017966667
 
 Clustering vector:
- [1] 2 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 1 2 2 2 2 2 2 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-[46] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+ [1] 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1
+[38] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 
 Within cluster sum of squares by cluster:
-[1] 0.495665 3.595726
+[1] 3.595726 0.495665
  (between_SS / total_SS =  57.3 %)
+
+Available components:
+
+[1] "cluster"      "centers"      "totss"        "withinss"     "tot.withinss"
+[6] "betweenss"    "size"         "iter"         "ifault" 
 ```
 
 If you’re satisfied with your results, you can add them to the original data frame:
@@ -459,6 +480,22 @@ banks$km2 = banks_kmeans$cluster
 
 PAM and kMeans work by assigning observations into a set of discrete categories, the number of which (*k*) is assigned by the user. Like `hclust`, there are several algorithms to choose from, so explore those options with `?kmeans` and `?pam`.
 
+If you do have known outcome values, a table of actual vs. modeled clusters can give you a sense of each algorithms' performance on your data. 
+
+```
+table(banks$Output, banks$pam2)
+   
+     1  2
+  0 26  3
+  1 37  0
+  
+table(banks$Output, banks$km2)
+   
+     1  2
+  0 26  3
+  1 37  0
+```
+
 Both `pam` and `kmeans` objects have ready-to-use plotting functions that allow you to compare the results of the cluster with actual values on an nMDS plot. If you’re looking for a production plot, you’re probably better off doing it manually in `ggplot2`, but both of these functions work fine for quick validation work. 
 
 For `pam` results, the `plot` function provides two plots, the first of which has what we’re looking for. Note that the y-axis is reversed as compared to the other nMDS plots we’ve seen:
@@ -467,7 +504,7 @@ For `pam` results, the `plot` function provides two plots, the first of which ha
 plot(banks_pam, which.plot=1, xlab="", ylab="")
 ```
 
-![neatmap hclust](images/0815OS_05_11.png)
+![](images/0815OS_05_11.png)
 
 The `useful` package allows you to plot a kmeans object via a simplified ggplot:
 
@@ -477,7 +514,7 @@ require(useful)
 plot(banks_kmeans, data=banks, class="Solvente", xlab="", ylab="")
 ```
 
-![neatmap hclust](images/0815OS_05_12.png)
+![](images/0815OS_05_12.png)
 
 ## How to choose an optimal number of clusters with bootstrapping
 
@@ -495,10 +532,12 @@ ggplot(banks_gap_df, aes(x=1:nrow(banks_gap_df))) +
   geom_errorbar(aes(ymin=gap-SE.sim, ymax=gap+SE.sim))
 ```
 
-![bootstrapped clusters](images/0815OS_05_13.png)
+![](images/0815OS_05_13.png)
+
+The two cluster solution is clearly the best option.
 
 
-## Determining optimal numbers of groups with model-based clustering
+## Determining optimal numbers of clusters with model-based clustering
 
 Sometimes you actually need to be able to justify your cluster analysis results with more than verbal arguments and intuition. Model-based clustering lets you do formal inference on cluster grouping results using finite mixture density models. Even better, it can pick up clusters that traditional kmeans or hierarchical clustering fail at, because of the flexibility of its clustering shapes. 
 
@@ -526,7 +565,7 @@ Clustering table:
 82 33 30 
 ```
 
-Running the main function, `Mclust`, is easy. Interpreting the results takes more work. There are currently 20 possible model types, which allow for a huge amount of flexibility in cluster shapes, something essential for oddly-distributed data (which is exactly why we have used the `diabetes` dataset here). These are summarized below (for more details, run `?mclustModelNames`).
+Running the main function, `Mclust`, is easy. Interpreting the results takes more work. There are currently 20 possible model types in this package, which allows for a huge amount of flexibility in cluster shapes, something essential for oddly-distributed data (which is exactly why we have used the `diabetes` dataset here). These are summarized below (for more details, run `?mclustModelNames`).
 
 | Model Name | Model Type | 
 | ---------- | ---------- |
@@ -592,7 +631,7 @@ Top 3 models based on the BIC criterion:
 plot(diabetes_mclust, what="BIC")
 ```
 
-![BIC](images/diabetes_BIC.png)
+![](images/diabetes_BIC.png)
 
 We can see that the **VVV** model is definitely the best among the top three. 
 
@@ -603,7 +642,7 @@ Now we can plot the clusters over a pairs plot of the variables:
 plot(diabetes_mclust, what="classification")
 ```
 
-![class](images/diabetes_class.png)
+![](images/diabetes_class.png)
 
 
 We can explore the bivariate density of the original data through this package as well, with some simple code:
@@ -617,9 +656,9 @@ plot(dens, what = "density", type = "persp",
      border = adjustcolor(grey(0.1), alpha.f = 0.25))
 ```
 
-![dens](images/diabetes_density.png)
+![](images/diabetes_density.png)
 
-![persp](images/diabetes_persp.png)
+![](images/diabetes_persp.png)
 
 Understanding the uncertainty associated with specific observations and their cluster assignment is a useful diagnostic tool as well. 
 
@@ -628,9 +667,9 @@ Understanding the uncertainty associated with specific observations and their cl
 plot(diabetes_mclust, what="uncertainty")
 ```
 
-![uncert1](images/diabetes_uncert.png)
+![](images/diabetes_uncert.png)
 
-This graph shows us *where* the uncertainty occurs, but it doesn't tell us which observation are the most uncertain. Much as we have done in previous recipes, we can plot the uncertainty values in an interactive setting for exploration. We'll use the `googleVis` package here:
+This graph shows us *where* the uncertainty occurs, but it doesn't tell us which observation are the most uncertain. We can plot the uncertainty values in an interactive setting for more directed exploration. We'll use the `googleVis` package here:
 
 ```
 # Add classification and uncertainty to data set
@@ -644,15 +683,14 @@ diabetes_histogram = gvisHistogram(data.frame(diabetes$mclust_uncertainty),
                      options=list(width=800, height=300, legend="none",
                      title="Distribution of Mclust Uncertainty Values"))
 
-diabetes_table = gvisTable(diabetes, 
-                 options=list(width=800, height=300))
+diabetes_table = gvisTable(diabetes, options=list(width=800, height=300))
 
 HT = gvisMerge(diabetes_histogram, diabetes_table) 
 
 plot(HT)
 ```
 
-![interactive](images/diabetes_interactive.png)
+![](images/diabetes_interactive.png)
 
 
 
@@ -670,33 +708,39 @@ ggplot(multishapes, aes(x, y)) +
   scale_color_discrete(name="Known\nGrouping", labels = 
                          levels(as.factor(multishapes$shape))) +
   theme_bw()
-dev.off()
 ```
 
 ![](images/dbscan_data.png)
 
+`dbscan` requires you choose a value for the epsilon parameter. The `kNNdistplot` function can help you choose this value; you should try a variety of values close to the bend in the resulting line to explore how changes in this value affect the outcome. *k* is usually taken to be the number of variables you have plus one, though you can also play with this option as a way to explore the sensitivity of any solution. 
 
 ```
-kNNdistplot(multishapes[,1:2], k=5)
-abline(h=0.12)
+# Estimate eps with kNN distance plot
+kNNdistplot(multishapes[,1:2], k=3)
+
+# Try an eps value of 0.15
+abline(h=0.15, color="blue", lty=3)
 ```
 
 ![](images/dbscan_knn.png)
 
-
+Once you have chosen `eps`, run it through the main `dbscan` function:
 
 ```
-multishapes_dbscan = dbscan(multishapes[,1:2], eps = 0.12, minPts = 3)
+multishapes_dbscan = dbscan(multishapes[,1:2], eps = 0.15, minPts = 3)
+multishapes_dbscan
 
 DBSCAN clustering for 1100 objects.
-Parameters: eps = 0.12, minPts = 3
-The clustering contains 5 cluster(s) and 48 noise points.
+Parameters: eps = 0.15, minPts = 3
+The clustering contains 5 cluster(s) and 25 noise points.
 
   0   1   2   3   4   5 
- 48 396 406 102  96  52 
+ 25 411 406 106 100  52 
 
 Available fields: cluster, eps, minPts
 ```
+
+We can add the modeled cluster assignment to the original data, and match that assignment (columns) against the known groupings in the data (`multishapes$shape`, here designated in the rows):
 
 ```
 multishapes$dbscan = multishapes_dbscan$cluster
@@ -704,24 +748,24 @@ multishapes$dbscan = multishapes_dbscan$cluster
 table(multishapes$shape, multishapes$dbscan)
 
       0   1   2   3   4   5
-  1  10 389   1   0   0   0
+  1   1 398   1   0   0   0
   2   0   0 400   0   0   0
-  3   3   0   0  97   0   0
-  4   5   0   0   0  95   0
-  5  30   7   5   5   1   2
+  3   0   0   0 100   0   0
+  4   1   0   0   0  99   0
+  5  23  13   5   6   1   2
   6   0   0   0   0   0  50
 ```
 
+We can see the outcome and the known values together graphically:
 
 ```
 ggplot(multishapes, aes(x, y)) +
-  geom_point(aes(color=as.factor(dbscan), 
-                 shape=as.factor(shape))) +
-  labs(color="DBSCAN\nGrouping", shape="Known\nGrouping") +
-  theme_bw()
+   geom_point(aes(color=as.factor(dbscan), shape=as.factor(shape))) +
+   labs(color="DBSCAN\nGrouping", shape="Known\nGrouping") +
+   theme_bw()
 ```
 
-![](image/dbscan_results.png)
+![](images/dbscan_results.png)
 
 
 ## Variable selection in cluster analysis
@@ -856,10 +900,14 @@ It seems that the use of all of the variables contributes some noise to the clas
 
 ## Exploring outliers
 
-Outliers are easy enough to explore with standard EDA methds when you have three or fewer dimensions, but after that you need ways to detect and explore multivariate outliers. `mvoutlier` is one package that makes this straightforward. We'll first use the Spanish banks data to illustrate its use:
+Outliers are easy enough to explore with standard EDA methds when you have three or fewer dimensions, but after that you need ways to detect and explore multivariate outliers. `mvoutlier` and `lof` are two packages that make it fairly simple. But don't ever forget that what constitutes a *real* outlier is completely contextual; think of these tools as a way to explore, not as a way to define. 
+
+### Identifying outliers with distance functions
+
+`mvoutlier` is one package that makes multivariate outlier identification straightforward. We'll first use the Spanish banks data to illustrate some of it, and later will use the bike sharing data to illustrate other components.
 
 ```
-library(mvoutlier)
+require(mvoutlier)
 
 quiebra_outliers = uni.plot(banks[,3:11], symb = T)
 ```
@@ -869,14 +917,17 @@ quiebra_outliers = uni.plot(banks[,3:11], symb = T)
 The `uni.plot` function provides the numeric and visual results automatically, so if you assign it to an object, you can also attach the outlier designation and distance measures to your data frame:
 
 ```
+# Assign outlier grouping to main data
 banks$mv_outlier = quiebra_outliers$outliers
 
+# Add Mahalanobis distance results to main data
 banks$mv_md = quiebra_outliers$md
 
+# Add Euclidean distance results to main data
 banks$mv_euclidean = quiebra_outliers$euclidean
 ```
 
-Interactive plots are useful for multivariate outlier exploration--static plots like the one above show us that there are multivariate outliers, but they don't tell us which observations they are. Tables can, of course, but at the expense of time. We can use the (newly open sourced) `plotly` library's ability to make a ggplot of the Mahalanobis distance measure interactive, via the `ggplotly` function:
+Interactive plots are useful for multivariate outlier exploration---static plots like the one above show us that there are multivariate outliers, but they don't tell us which observations they are. Tables can, of course, but at the expense of time. We can use the (newly open-sourced) `plotly` library's ability to make a ggplot of the Mahalanobis distance measure interactive, via the `ggplotly` function:
 
 ```
 p1 = ggplot(banks, aes(mv_md, text = paste("Bank:", Numero, 
@@ -890,7 +941,9 @@ ggplotly(p1)
 
 ![](images/mvout_ly.png)
 
-The `uni.plot` function allows you to pass through plotting options, but not always easily--for example, you'll have to modify the function to change point colors. You can use point assignment via `pch`, however, to show a factor variable. Using the bike sharing data, we can plot the weather-based variables and use the point type to show the weather situation. The values of the weather situation are mapped to the matching `pch` values, so `pch=1`, a circle, represents observations under clear weather, and so on. 
+The `uni.plot` function allows you to pass through plotting options, but not always easily---for example, you'll have to modify the function to change point colors. You can use point assignment via `pch`, however, to show a factor variable. 
+
+For our second `mvoutlier` example, we'll use the bike sharing data. We can plot the weather-based variables and use the point type to show the weather situation relative to potential outlier observation. The values of the weather situation are mapped to the matching `pch` values, so `pch=1`, a circle, represents observations under clear weather, and so on, while the outlier status is mapped to red (outlier) or green (not an outlier).  
 
 ```
 uni.plot(bike_share_daily[,10:13], pch=as.numeric(bike_share_daily$weathersit))
@@ -898,13 +951,17 @@ uni.plot(bike_share_daily[,10:13], pch=as.numeric(bike_share_daily$weathersit))
 
 ![](images/mvout_bike.png)
 
-A more recent outlier algorithm is the local outlier factor (lof), with an implementation in the `DMwR` package. You need to specify `k`, which here refers to the number of neighbors to use when calculating the lof value. 
+### Identifying outliers with the local outlier factor
+
+A more recently-developed outlier algorithm is the local outlier factor (lof), with an implementation in the `DMwR` package. You need to specify `k`, which here refers to the number of neighbors to use when calculating the lof value. 
 
 ```
 require(DMwR)
 
+# Calculate the local outlier factor values
 banks$lof = lofactor(banks[,2:10], k=4)
 
+# Plot the lof results interactively
 p_lof = ggplot(banks, aes(lof, text = paste("Bank:", Numero, 
  "<br>Solvency: ", Output))) +
  xlab("Local Outlier Factor") + 
@@ -914,6 +971,16 @@ ggplotly(p_lof)
 ```
 
 ![](images/lof.png)
+
+
+## Anomaly detection
+
+***PLACEHOLDER***
+
+
+## Extreme value analysis
+
+***PLACEHOLDER***
 
 
 ## Finding associations in shopping carts
@@ -926,6 +993,7 @@ The `arules` package has a special function that allows you to read a data set d
 require(arules)
 require(arulesViz)
 
+# Download data and convert to a transactions object
 basket_url = "http://dmg.org/pmml/pmml_examples/baskets1ntrans.csv"
 basket_trans = read.transactions(basket_url, format = "single", sep = ",", 
   cols = c("cardid", "Product"), rm.duplicates=TRUE)
@@ -973,7 +1041,7 @@ itemFrequencyPlot(basket_trans, topN=11, type="absolute") #arules
 
 ![basket case](images/basket_freq.png)
 
-The `apriori` function takes a transaction object and creates a rule set using default confidence and support levels of 0.8 and 0.1, respectively, with no more than 10 items on any one side of a rule. Accepting the defaults makes the call as simple as `basket_rules = apriori(basket_trans)`, but you will likely want to modify those to expand the rule set. To do so requires setting the `parameter` function with the details in a list. The `minlen` is set at 1, which means that items purchased by themselves will show up--if you want to exclude single-item purchases, set `minlen=2` here. Note that since there are a variety of possible target types (see `?ASparameter-classes`), you need to specify that you are looking for rules. 
+The `apriori` function takes a transaction object and creates a rule set using default confidence and support levels of 0.8 and 0.1, respectively, with no more than 10 items on any one side of a rule. Accepting the defaults makes the call as simple as `basket_rules = apriori(basket_trans)`, but you will likely want to modify those to expand the rule set. To do so requires setting the `parameter` function with the details in a list. The `minlen` default is set at 1, which means that items purchased by themselves will show up---if you want to exclude single-item purchases, set `minlen=2` here. Note that since there are a variety of possible target types (see `?ASparameter-classes`), you need to specify that you are looking for rules. 
 
 ```
 basket_rules_custom = apriori(basket_trans, parameter = list(support = 0.01, 
@@ -1010,7 +1078,7 @@ I>
 I> *Support* is the proportion of transactions that contain that item or item set. 
 I> Higher support = relevant to large proportion of transactions.  
 
-Now we can look at the rules. A key concept for rule usefulness is *lift*. A lift value at or close to one suggests that the items or either side of the rule are independent, so are usually of little further interest. Lift values above 1 suggest that the presence of the items on one side of the rule set increase the chances of seeing items on the other side. Where items are all purchased or occur at once (e.g., as in a supermarket), the direction of the rule set is irrelevant. Where items are purchased or occur in a series (e.g., as in a web store, where orders for specific items are placed in order), the rule set is ordered from the first purchased (the `{rhs}`, right hand side), to those placed in the cart later (the `{lhs}`, left hand side). 
+Now we can look at the rules. A key concept for rule usefulness is *lift*. A lift value at or close to one suggests that the items or either side of the rule are independent, so are usually of little further interest. Lift values above 1 suggest that the presence of the items on one side of the rule set increase the chances of seeing items on the other side. Where items are all purchased or occur at once (e.g., as in a supermarket), the direction of the rule set is irrelevant. Where items are purchased or occur in a series (e.g., as in a web store, where orders for specific items are placed in order), the rule set is ordered from the first purchased (the `{lhs}`, left hand side), to those placed in the cart later (the `{rhs}`, right hand side). 
 
 We'll look first at the rule sets that generate the greatest lift with the `inspect` function:
 
