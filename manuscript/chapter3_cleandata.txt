@@ -106,7 +106,7 @@ Before moving on, make sure you remove the duplicated row:
 customers = unique(customers)
 ```
 
-![unique customers](images/R_unique_screenshot.png)
+![](images/R_unique_screenshot.png)
 
 
 ### Sorting 
@@ -271,7 +271,7 @@ plot(customers$customer_age, customers$customer_purchase,
      length(customers$customer_age), "Customers"))
 ```
 
-![paste plot](images/pasteplot.png)
+![](images/pasteplot.png)
 
 Every once in a while you'll get a file that has commas in a numeric field (cough Excel cough). A data type conversion, `paste`, and `gsub` can be used together to clean that up in one line:
 
@@ -546,21 +546,21 @@ If you want to check on how one or more of the `dplyr` actions will perform in t
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
 ```
 
-![image here](images/head1full.png)
+![](images/head1full.png)
 
 ```
 head(arrange(customer_survey, region, desc(customer_age), 
     desc(customer_purchases)))
 ```
 
-![image here](images/head2full.png)
+![](images/head2full.png)
 
 ```
 head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
     purchase_proportion=customer_purchases/sum(customer_purchases)))
 ```
 
-![image here](images/head3full.png)
+![](images/head3full.png)
 
 
 ## Reshaping a dataframe between wide and long
