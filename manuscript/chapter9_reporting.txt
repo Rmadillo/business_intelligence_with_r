@@ -7,13 +7,13 @@
 - Shiny apps
 - Tweaking the YAML headers
 
-It's fine to create reports in word processing or slide show software, but it can be smarter to create data products entirely inside R. There are a number of benefits to doing this: you have the code embedded in your data product, so that final product automatically updates when you change the code or its outputs the next time you 'knit' it; you can share documents that others can use for both the product and the code, which is great for reproducibility as well as documentation; and you can include interactive content, something impossible to do in static documents. 
+It's fine to create reports in word processing or slide show software, but it can be smarter to create data products entirely inside R. There are a number of benefits to doing this: you have the code embedded in your data product, so that final product automatically updates when you change the data or code the next time you 'knit' it; you can share documents that others can use for both the product and the code, which is great for reproducibility as well as documentation; and you can include interactive content, something impossible to do in static documents. 
 
-Basically, to get started, just open a new R Markdown document, choose Document (keeping the html output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that blow away decision makers used to PDFs and slide decks. 
+If you haven't created data products using R Markdown yet, you're in for a treat. To get started, just open a new R Markdown document, choose Document (keeping the html output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that really impress decision makers used to PDFs and static slide decks. 
 
 Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html or other output types via R Markdown, a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. You can also use regular html as well, such as `<br>` for line breaks, and so on. See Appendix 3 for a cheatsheet of R Markdown symbols and usage, and RStudio's [R Markdown page](http://rmarkdown.rstudio.com/) for detailed information and appropaches. 
 
-The single biggest "oops" in using R Markdown--that you will immediately remedy the first time it happens, but you will also inevitably forget to do this--is ensuring you have put *two spaces* at the end of each line where you want a line break after text. I've used R Markdown for years, but even creating one of the examples below, I forgot to do this on a few lines and got a jumbled mess as a result. So, yeah, it's gonna happen. 
+The single biggest "oops" in using R Markdown---that you will immediately remedy the first time it happens, but you will also inevitably forget to do this---is ensuring you have put *two spaces* at the end of each line where you want a line break after text. I've used R Markdown for years, but even creating one of the examples below, I forgot to do this on a few lines and got a jumbled mess as a result. So, yeah, it's gonna happen. 
 
 Ultimately, there is rapidly increasing emphasis on reproducible research in research and academia, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is adopting the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. "The code *is* the documentation" is longer a viable excuse (or career choice!), so using R Markdown to create your data products from the start can save a **lot** of time later. Having it become an enterprise best practice/standard process is even better. 
 
@@ -24,9 +24,11 @@ The examples in this chapter are just simple examples; there are many, many poss
 
 Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. The vast majority of analytics in modern BI tend to be report-oriented. Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
 
-We saw an example of a data product that could be considered either a report or a memo in Chapter 1, in the exploration and forecasting of the Hauteville House's power consumption (full code in Appendix 2). 
+We saw an example of a data product that could be considered either a report or a memo in Chapter 1, in the exploration and forecasting of the Hauteville House's power consumption (full code in Appendix 2): 
 
-![reprise Chapter 1 report result](images/biwr_ch1_knitr_ex.png)
+![](images/biwr_ch1_knitr_ex.png)
+
+### Output formats for `.Rmd` documents
 
 Web (html) reports are ready to create out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office:
 
@@ -40,9 +42,9 @@ Web (html) reports are ready to create out-of-the-box. To create PDF or Word doc
 
 ## Dashboards
 
-There are a lot of dashboards in BI that don't really deserve the name. Just because you have graphs and interactivity doesn't mean you have a real dashboard; much like driving a car, if you're getting information about how fast you were going 10 minutes ago, it's not of much use. Dashboards are usually about real-time analytics or for analytics that help decision makers plan their day's activities after a no more than a quick viewing. Forecasting fits into this group as well, much as a GPS or driving app provides you information about where you're going. "Dashboards" meant for "what has happened"-type needs or for more methodical exploration are more accurately termed "reports."   
+There are a lot of dashboards in business intelligence that don't really deserve the name. Just because you have graphs and interactivity doesn't mean you have a real dashboard; much like driving a car, if you're getting information about how fast you were going 10 minutes ago, it's not of much use. Dashboards are usually about real-time analytics or for analytics that help decision makers plan their day's activities after a no more than a quick viewing. Forecasting fits into this group as well, much as a GPS or driving app provides you information about where you're going. "Dashboards" meant for "what has happened"-type needs or for more methodical exploration and drill-downs are more accurately termed "reports."   
 
-Still, several commercial products have allowed BI analysts to create interactive, dataviz-based reports. By habit, if nothing else, these have come to be known generally as dashboards anyway. So call them what you want, just make sure you're clear on what type of tool you really need when asked to create a "dashboard."  
+Still, several commercial products have allowed BI analysts to create interactive, dataviz-based reports. By habit, if nothing else, these have come to be known generally as dashboards anyway. So call them what you want, just make sure you're clear on what type of tool you really need when you're asked to create a "dashboard."  
 
 ### Simple dashboarding with R Markdown
 
@@ -52,7 +54,7 @@ Using data from the [University of Queensland Vital Signs Dataset](http://dx.doi
 
 Because the `sparkline` package was never fully completed, you need to add a small `<style>` hack to the css to get the tooltips to work properly. That hack is included at the top of the R Markdown file, just after the YAML header. 
 
-To explore this dashboard, open a new R Markdown file and replace the template text with the text below, then press the "Knit HTML" button. 
+To explore this dashboard, open a new R Markdown file and replace the template text with the text below, then press the **Knit HTML** button. 
 
 ~~~~~~~~
 ---
@@ -105,7 +107,7 @@ Case Start Time: `r vs$Date_Time_ct[1]`
 <small>*Green bands show normal ranges.*</small>  
 ~~~~~~~~
 
-![vitals](images/vitals.png)
+![](images/vitals.png)
 
 Note that the green bands are *not* the proper normal ranges for those vital signs, they're just there as an example. (Anyway, why would you take medical advice from a coding book?) 
 
@@ -117,13 +119,23 @@ Note that the green bands are *not* the proper normal ranges for those vital sig
 
 ## Slide decks
 
-At some point, every analyst needs to report their results in a meeting or briefing. Traditional static slide decks are fine, but one of the powerful features of R is the ability to create slide decks or apps with interactive features, allowing the analyst to help decision makers explore the results and their implications interactively, in real time. Even if you don't create interactive content, having a slide deck that includes the code that generated the results is really useful for documentation, code review, or--most often--the inevitable revision when a decision maker asks another "what if you tried...?" question. 
+At some point, every analyst needs to report their results in a meeting or briefing. Traditional static slide decks are fine, but one of the powerful features of R Markdown is the ability to create slide decks or apps with interactive features, allowing the analyst to help decision makers explore the results and their implications interactively, in real time. Even if you don't create interactive content, having a slide deck that includes the code that generated the results is really useful for documentation, code review, or---most often---the inevitable revision when a decision maker asks another "what if you tried...?" question. 
 
 RStudio has two slide deck styles built in, `ioslides` and `Slidy`. Which is better is probably a matter of taste, though I tend to like the aesthetics of `ioslides.`
 
+~~~~~~~~
+---
+title: Faster Than Thought 
+subtitle: A Symposium on Digital Computing Machines
+author: A.A.L
+date: December 10, 1815
+output: ioslides_presentation
+---
+~~~~~~~~
+
 ![](images/default_css_slide.png)
 
-`ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the grey text. To change this, get the latest ioslides style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
+`ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the grey text. As an example of how to change this, get the latest ioslides style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
 
 | Line | Style block | Original setting | Change to: |
 | ---- | ----------- | ---------------- | ---------- |
@@ -134,22 +146,28 @@ RStudio has two slide deck styles built in, `ioslides` and `Slidy`. Which is bet
 | 1344 | `.title-slide hgroup h2` | `color: darkgrey;` | `color: black;` |
 | 1339 | `.title-slide hgroup p` | `color: #797979;` | `color: black;` |
 
-I save this new stylesheet as `default_black.css`. Then, in the YAML header of your `.Rmd` file, change ```output: ioslides_presentation`` to (spacing matters!):
+I save this new stylesheet as `default_black.css`. Then, in the YAML header of your `.Rmd` file, change `output: ioslides_presentation` to (line breaks and spacing matters!):
 
-```
+~~~~~~~~
+---
+title: Faster Than Thought 
+subtitle: A Symposium on Digital Computing Machines
+author: A.A.L
+date: December 10, 1815
 output:
   ioslides_presentation:
     css: default_black.css
-```
+---
+~~~~~~~~
 
 ![](images/black_css_slide.png)
 
-As long as you have both the `.css` and `.Rmd` files in the same place, it will make the conversion for you. Obviously, any style element can be changed in the same way, so even if you don't know css, you can probably web search what you want to change to find out what that particular element is named in html, and go from there.  
+As long as you have both the `.css` and `.Rmd` files in the same folder, it will make the conversion for you. Obviously, any style element can be changed in the same way, so even if you don't know css, you can probably web search what you want to change to find out what that particular element is named in html, and go from there.  
 
 
 ## `purl`-ing: scraping the raw code from your `.Rmd` files
 
-The `purl` function in `knitr` allows you to "scrape" your R Markdown files for the R code. So if you've created a data product in R Markdown and you want just the code from it copied into a separate file, do this (using the Chapter 1 final data product as an example):
+The `purl` function in `knitr` allows you to "scrape" your R Markdown files for the R code. So if you've created a data product in R Markdown and you want just the code from it copied into a separate file, you can use `purl`. Using the Chapter 1 final data product as an example:
 
 ```
 purl("Hauteville_House_Power_Forecast_20101127.Rmd", documentation = 0)
@@ -159,27 +177,27 @@ The `documentation = 0` option removes the `knitr` code chunk options from your 
 
 A new `.R` file will appear in your working directory with the raw R code. 
 
-![purled](images/Hauteville_purl.png)
+![](images/Hauteville_purl.png)
 
 
 ## Shiny apps
 
-Shiny is an incredible tool--being able to update parameters and inputs on the fly is a tremendous improvement for decision makers in exploring "what if?" scenarios alongside the analyst or even flying solo. Basically, if you can do it in R, you can do it in Shiny. RStudio's [Shiny page](http://shiny.rstudio.com/) is a wealth of [knowledge](http://shiny.rstudio.com/tutorial/), [demos](https://www.rstudio.com/products/shiny/shiny-user-showcase/), and [examples](http://shiny.rstudio.com/gallery/) you can pull from to create your own app. 
+Shiny is an incredible tool---being able to update parameters and inputs on the fly is a tremendous improvement for decision makers in exploring "what if?" scenarios alongside the analyst or even flying solo. Basically, if you can do it in R, you can do it in Shiny. RStudio's [Shiny page](http://shiny.rstudio.com/) is a wealth of [knowledge](http://shiny.rstudio.com/tutorial/), [demos](https://www.rstudio.com/products/shiny/shiny-user-showcase/), and [examples](http://shiny.rstudio.com/gallery/) you can pull from to create your own app. 
 
-A great use of Shiny is for risk assessment, where the decision maker can see the effects of assumptions on the probability of a value or range of values occuring in real time. (This can be dangerous as well, if they change their assumptions to obtain the outcome they want to see!) 
+A great use-case for Shiny is in risk assessment, where the decision maker can see the effects of assumptions on the probability of a value or range of values, exploring them in real time. (This can be dangerous as well, if they change their assumptions to obtain the outcome they want to see!) 
 
 Below is a screenshot of an app that uses the basic risk assessment tool of the [betaPERT distribution](https://www.riskamp.com/beta-pert) to create a probability model of expert opinion, where the subject matter expert provides the value of minimum and maximum possible values as well as the most likely value. An uncertainty parameter *gamma* provides the user with the ability to modify the kurtosis of the distribution; a value of 4 is the [standard betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm), while lower values show increased uncertainty and larger values show increased certainty in the estimate of the most likely value (termed the [modified betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm). 
 
 The code that created this app is contained in Appendix 3.
 
-![risk app](images/risk_app.png)
+![](images/risk_app.png)
 
 
 ## Tweaking the YAML headers
 
 The YAML header provides you with a way to customize the output of R Markdown files. The defaults are generally great for most needs, but occasionally you want to make some modifications, and I've found that the web doesn't have a lot of information readily available on this specific to R Markdown. There is some information [here](http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html#extension-yaml_metadata_block), and a few tips and tricks I use often are below. 
 
-The header can include R code and html. For example, if you have an ioslides file and want to have the date automatically show up when run, use single quotes + back ticks (<code>'`</code>) to contain the R Markdown text:
+The header can include R code and html. For example, if you have an ioslides file and want to have the date automatically show up when run, use single quotes with back ticks to contain the R Markdown text:
 
 ~~~~~~~~
 ---
@@ -191,7 +209,7 @@ output: ioslides_presentation
 ---
 ~~~~~~~~
 
-![ioslides_r](images/ioslide_r.png)
+![](images/ioslide_r.png)
 
 You can use html to customize the text. For example:
 
@@ -205,9 +223,9 @@ output: ioslides_presentation
 ---
 ~~~~~~~~
 
-![ioslides_html](images/ioslide_html.png)
+![](images/ioslide_html.png)
 
-Some characters need to be escaped in YAML for it to work--for example, to use a colon (`:`) you need to escape the whole string with double quotes (or use single quotes and double them up for apostrophes):
+Some characters need to be escaped in YAML for it to work with text you wish to display---for example, to use a colon (`:`) you need to escape the whole string with double quotes (or use single quotes and double them up for apostrophes):
 
 ~~~~~~~~
 ---
@@ -218,10 +236,10 @@ output: ioslides_presentation
 ---
 ~~~~~~~~
 
-![ioslides_colon](images/ioslide_colon.png)
+![](images/ioslide_colon.png)
 
 The gear button at the top of the Source window can be used to modify the YAML via a GUI for many of the major options for each type of R Markdown document. For example, if you wanted a PDF output of your slide deck, the gear dialog would show this:
 
-![gear](images/rmarkdown_gear.png)
+![](images/rmarkdown_gear.png)
 
 If you poke around the [R Markdown site](http://rmarkdown.rstudio.com/) and/or [Stack Overflow](http://stackoverflow.com/search?q=R+YAML+header), you can probably find answers to most R/YAML-associated questions you may have.  
