@@ -326,7 +326,7 @@ delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
   x.name="Fall", y.name="Spring")
 ```
 
-![delta gr ES plot](images/0801OS_02_15.png)
+![](images/0801OS_02_15.png)
 
 
 ### Determining the probability of a difference
@@ -366,7 +366,7 @@ of <0.001 and larger for Group 2 by a probability of >0.999 .
 plot(workday_diff_bayes)
 ```
 
-![Bayes prop ES](images/0815OS_02_16.png)
+![](images/0815OS_02_16.png)
 
 To look at the difference between means of two groups, we can use the `bayes.t.test` function:
 
@@ -392,7 +392,7 @@ and less than 0 by a probability of <0.001
 plot(casual_notworkingday_mean_bayes)
 ```
 
-![Bayes mean ES](images/0815OS_02_17.png)
+![](images/0815OS_02_17.png)
 
 The package allows the use of `summary` for its output; with it we can see the CIs for each statistic as well as the standardized effect size (`eff_size`, *d*) on this contrast:
 
@@ -478,7 +478,7 @@ y_pred: predicted distribution for a new datapoint
   generated as group Fall 
 ```
 
-![bayes diagnostics](images/bayes_diff_diagnostics.png)
+![](images/bayes_diff_diagnostics.png)
 
 
 ## Effect sizes: Measuring *relationships* between groups
@@ -591,7 +591,7 @@ and less than 0 by a probability of <0.001
 plot(atemp_bike_cor_bayes)
 ```
 
-![Bayes cor](images/0815OS_02_18.png)
+![](images/0815OS_02_18.png)
 
 
 ### Partial correlations
@@ -788,7 +788,7 @@ Calculations and Intervals on Original Scale
 plot(air_temp_R2)
 ```
 
-![R2 bootstrapped CI](images/r2bootstrapped.png)
+![](images/r2bootstrapped.png)
 
 
 W> *R^2^* by itself can be misleading; you can get a high value from pure noise, as this example illustrates:
