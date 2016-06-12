@@ -696,6 +696,7 @@ plot(HT)
 
 ## Identifying group membership with irregular clusters
 
+Sometimes the clusters we want to identify have clear patterns but consist of non-linear or irregular groupings---things we can identify readily by eye but cannot cluster them with the usual methods. The DBSCAN algorithm was built for this purpose. We'll use a synthetic dataset from the `multishapes` package to demonstrate exactly what this means. 
 
 ```
 data("multishapes", package="factoextra")
@@ -712,9 +713,13 @@ ggplot(multishapes, aes(x, y)) +
 
 ![](images/dbscan_data.png)
 
-`dbscan` requires you choose a value for the epsilon parameter. The `kNNdistplot` function can help you choose this value; you should try a variety of values close to the bend in the resulting line to explore how changes in this value affect the outcome. *k* is usually taken to be the number of variables you have plus one, though you can also play with this option as a way to explore the sensitivity of any solution. 
+The patterns are clear to your eye, but the methods we've explored above completely fail in identifying them. The `dbscan` function in the package of the same name *can* identify these groupings. 
+
+The algorithm requires you choose a value for the &epsilon; (*epsilon*) parameter. The `kNNdistplot` function can help you choose this value; you should try a variety of values close to the bend in the resulting line to explore how changes in this value affect the outcome. *k* is usually taken to be the number of variables you have plus one, though you can also play with this option as a way to explore the sensitivity of any solution. 
 
 ```
+require(dbscan)
+
 # Estimate eps with kNN distance plot
 kNNdistplot(multishapes[,1:2], k=3)
 
@@ -740,7 +745,7 @@ The clustering contains 5 cluster(s) and 25 noise points.
 Available fields: cluster, eps, minPts
 ```
 
-We can add the modeled cluster assignment to the original data, and match that assignment (columns) against the known groupings in the data (`multishapes$shape`, here designated in the rows):
+We can add the modeled cluster assignment to the original data, and compare the DBSCAN assignment (columns) against the known groupings in the data (`multishapes$shape`, here designated in the rows):
 
 ```
 multishapes$dbscan = multishapes_dbscan$cluster
@@ -770,8 +775,13 @@ ggplot(multishapes, aes(x, y)) +
 
 ## Variable selection in cluster analysis
 
+We often find that we have many, many variables, and are not sure of the extent to which they add value or noise to the clustering process. The `clustvarsel` package---created by the same folks who created `mclust`---provides a way to assess this.
+
+We'll use the famous Wisconson Breast Cancer data set, which consists of nine diagnostic cell features measured on a 1-10 ordinal scale that was automatically computed from biopsy tissue images (see [this paper](http://dollar.biz.uiowa.edu/~street/research/hu_path95/hp95.pdf) for more details). Higher values are linked with higher chances of a tumor being malignant, and lower values are more likely from benign tissue.  
 
 ```
+require(clustvarsel)
+
 # Download the Wisconsin Breast Cancer data
 breast_cancer = read.table("http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data", sep=",", na.strings = c("NA", "?"), header=F, col.names=c("Sample", "Clump_Thickness", "Uniformity_Cell_Size", "Uniformity_Cell_Shape", "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei", "Bland_Chromatin", "Normal_Nucleoli", "Mitoses", "Class"))
 
@@ -804,6 +814,7 @@ Selected subset: Bare_Nuclei, Normal_Nucleoli, Bland_Chromatin,
   Single_Epithelial_Cell_Size
 ```
 
+Based on BIC values, the algorithm selected only four of the nine variables that should be used for clustering. We'll now take those variables and run model-based clustering using `Mclust` on that reduced data set. 
 
 ```
 # Create data frame of the date with only the chosen variables
@@ -832,11 +843,13 @@ Clustering table:
 399 284 
 ```
 
+We will compare the results from this reduced clustering to a clustering using the full variable set in the next recipe. 
+
 
 W> **Cluster analysis results are strongly dependent on the method used.**  
 W> 
 W> If you run all of the clustering algorithms in this chapter on the same dataset, you will find sometimes similar and sometimes very different outcomes. There are lots of ways you can cluster data, but no method can substitute for careful comparison of a variety of results against subject matter knowledge.  
-W> For example, if you run the variable selection algorithm from all the variables, removing *backwards*, you'll get different (and poorer) results than seen above with the defaul *forward" algorithm.  
+W> For example, if you run the variable selection algorithm from the full set of variables, removing variables one-by-one *backwards*, you'll get different (and poorer) results than seen above with the default "forward" algorithm.  
 W> Some sort of senstitivity analysis of cluster analysis results is *always* warranted.  
 
 
