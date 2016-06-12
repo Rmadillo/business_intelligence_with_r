@@ -256,7 +256,7 @@ currency_data = currency_list$list$resources$resource$fields
 str(currency_data)
 ```
 
-![str json](images/str_json.png)
+![](images/str_json.png)
 
 You'll notice that every variable is in character format, so you'll need to do a little cleaning to get this data into a format we can analyze. We'll see more on changing formats in the next chapter. 
 
