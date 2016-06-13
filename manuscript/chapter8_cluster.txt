@@ -993,7 +993,169 @@ ggplotly(p_lof)
 
 ## Extreme value analysis
 
-***PLACEHOLDER***
+"It is impossible that the improbable will never happen." --Emil Gumbel
+
+Extreme value analysis (EVA) is a different way to explore outliers; by acknowledging that outliers are real and can be incredibly useful for analysis, we can better assess the likelihood of "improbable" events. 
+
+There are a lot of packages in R that can do EVA, though some remain pretty technical in their documentation, when they have documentation at all. A great entry point for EVA in R is through the `extremeStat` package, which wraps around other R packages to allow for semi-automated distribution fitting and return-interval analysis. 
+
+We'll use data on economic damages in the United States caused by hurricanes between 1926 and 1995. The data are for each major hurricane, so we'll use `dplyr` to aggregate those to yearly sums and to insert 0 for years in which there was no major damage. 
+
+```
+require(dplyr) 
+
+data("damage", package="extRemes")
+
+hurricane_cost = damage %>% group_by(Year) %>% summarise(total_damage = sum(Dam))
+
+yearz = data.frame(Year = seq(1926, 1995, 1))
+
+hurricane_cost = full_join(yearz, hurricane_cost)
+
+hurricane_cost$total_damage[is.na(hurricane_cost$total_damage)] = 0
+```
+
+Now that the data is complete, we can use the `distLfit` function from `extremeStat` to fit a variety of extreme-value-oriented probability models to our data, and view the results:
+
+```
+require(extremeStat)
+
+hurr_fit = distLfit(hurricane_cost$total_damage)
+```
+
+![](images/eva_hist.png)
+
+A standard histogram is returned from this function call, which isn't as helpful as a CDF plot to compare against the actual values. Use `distLplot` with `cdf=TRUE` to return a CDF plot:
+
+```
+distLplot(hurr_fit, cdf=TRUE, main="Total Annual Hurricane Damages (in billion USD)",
+   xlab="Damages ($1B USD)")
+```
+
+![](images/eva_cdf.png)
+
+Unlike many R packages, `summary` and other universal functions don't work with `extremeStat` result objects because they result lists. So, to see a summary of the result, use `distLprint`.
+
+```
+distLprint(hurr_fit)
+
+----------
+Dataset 'hurricane_cost$total_damage' with 70 values. min/median/max: 0/1.1/74.4  nNA: 0
+truncate: 0 threshold: 0. dat_full with 70 values: 0/1.1/74.4  nNA: 0
+dlf with 16 distributions. In descending order of fit quality:
+gam, kap, pe3, wei, ln3, gno, wak, gpa, gev, glo, exp, gum, ray, nor, revgum, rice
+gofProp: 1, RMSE min/median/max: 0.037/0.076/0.3  nNA: 0
+ 5 distribution colors: #3300FFFF, #00D9FFFF, #00FF19FF, #F2FF00FF, #FF0000FF
+```
+
+`distLfit` ranks the distribution models by goodness-of-fit, with the best fitting models at the top. You can evaluate the model list and their goodness of fit statistics with a call to the `$gof` portion of the list:
+ 
+``` 
+hurr_fit$gof
+
+             RMSE        R2     weight1    weight2   weight3 weightc
+gam    0.03687682 0.9831812 0.080260879 0.08360687 0.1513246     NaN
+kap    0.03690034 0.9875113 0.080254559 0.08359936 0.1513110     NaN
+pe3    0.04638276 0.9851915 0.077706869 0.08057171 0.1458311     NaN
+wei    0.04791014 0.9728583 0.077296502 0.08008403 0.1449485     NaN
+ln3    0.05935699 0.9641990 0.074221019 0.07642915 0.1383333     NaN
+gno    0.06361586 0.9527421 0.073076767 0.07506933 0.1358721     NaN
+wak    0.06965965 0.9435495 0.071452952 0.07313961 0.1323794     NaN
+gpa    0.06965965 0.9435495 0.071452952 0.07313961 0.0000000     NaN
+gev    0.08185683 0.9337443 0.068175873 0.06924516 0.0000000     NaN
+glo    0.08242552 0.9309928 0.068023081 0.06906358 0.0000000     NaN
+exp    0.11283198 0.8597058 0.059853627 0.05935507 0.0000000     NaN
+gum    0.13746709 0.8141283 0.053234789 0.05148931 0.0000000     NaN
+ray    0.14435908 0.7933789 0.051383083 0.04928876 0.0000000     NaN
+nor    0.16469704 0.7654365 0.045918783 0.04279503 0.0000000     NaN
+revgum 0.19498790 0.7189435 0.037780386 0.03312344 0.0000000     NaN
+rice   0.29872851 0.7589475 0.009907879 0.00000000 0.0000000     NaN
+```
+
+As you probably noticed with the graphs, only the top five models are plotted, but this list will allow you to determine the extent to which other models may fit almost as well. The list of the actual model names that go with those abbreviations is below (also see `?prettydist` in the `lmomco` package).
+
+
+| R abbreviation | Distribution | 
+| -------------- | ----------------------|
+| `aep4` | 4-p Asymmetric Exponential Power |
+| `cau` | Cauchy |
+| `emu` | Eta minus Mu |
+| `exp` | Exponential |
+| `texp` | Truncated Exponential |
+| `gam` | Gamma | 
+| `gep` | Generalized Exponential Poisson |
+| `gev` | Generalized Extreme Value |
+| `gld` | Generalized Lambda |
+| `glo` | Generalized Logistic |
+| `gno` | Generalized Normal |
+| `gov` | Govindarajulu |
+| `gpa` | Generalized Pareto |
+| `gum` | Gumbel |
+| `kap` | Kappa |
+| `kmu` | Kappa minus Mu |
+| `kur` | Kumaraswamy |
+| `lap` | Laplace |
+| `lmrq` | Linear Mean Residual Quantile Function |
+| `ln3` | log-Normal3 |
+| `nor` | Normal | 
+| `pe3` | Pearson Type III |
+| `ray` | Rayleigh | 
+| `revgum` | Reverse Gumbel |
+| `rice` | Rice |
+| `sla` | Slash |
+| `st3` | Student t (3-parameter) |
+| `tri` | Triangular |
+| `wak` | Wakeby |
+| `wei` | Weibull | 
+
+
+You can evaluate the quantiles of these models to help determine what "counts" as an outlier with the `distLquantile` function. Use the `probs` option to see the quantiles you want returned, whether low or high. You also need to use the 'returnlist=TRUE` option to ensure you can work with the results after the call. 
+
+```
+# Calculate quantiles for different models
+hurr_quant = distLquantile(hurricane_cost$total_damage, 
+    probs=c(0.80, 0.90, 0.95, 0.99), returnlist=TRUE)
+
+# Look at the top five models only
+hurr_quant$quant[1:5,]
+
+         80%      90%      95%      99%
+gam 7.269448 14.90234 23.92810 47.89042
+kap 6.949505 13.98193 22.79060 50.00316
+pe3 7.159698 14.86357 24.03902 48.52204
+wei 6.639476 13.45379 22.53004 52.15676
+ln3 6.165669 11.94520 20.29897 53.86717
+
+# Plot the cdf of top five models with their quantiles
+distLplot(hurr_fit, cdf=T, main="Total Annual Hurricane Damages (in billion USD)", 
+   xlab="Damages ($1B USD)", qlines=TRUE)
+```
+
+![](images/eva_cdf_quant.png)
+
+A great feature of this package is the easy of calculating and plotting return/recurrence interval estimates. Use the `distLextreme` function with your desired return levels set with the `RP` option. 
+
+```
+# Calcluate return intervals. 
+hurr_returns = distLextreme(hurricane_cost$total_damage, RPs = c(2,10,50,100))
+
+# View top five model results
+hurr_returns$returnlev[1:5,]
+
+         RP.2    RP.10    RP.50   RP.100
+gam 0.9028442 14.90234 37.18940 47.89042
+kap 1.0322659 13.98193 37.07409 50.00316
+pe3 0.8707481 14.86357 37.57498 48.52204
+wei 1.1854233 13.45379 37.94427 52.15676
+ln3 1.4838727 11.94520 36.52829 53.86717
+
+
+# Plot return intervals
+distLextremePlot(hurr_returns, main="Total Annual Hurricane Damages (in billion USD)",
+   ylab="Damages ($1B USD)")
+```
+
+![](images/eva_returns.png)
 
 
 ## Finding associations in shopping carts
