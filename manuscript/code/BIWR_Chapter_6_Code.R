@@ -3,7 +3,7 @@
 # Dwight Barry
 # Chapter 6 Code: Trends and Time
 #
-# 
+# https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_Chapter_6_Code.R
 #
 ######################################################################
 
