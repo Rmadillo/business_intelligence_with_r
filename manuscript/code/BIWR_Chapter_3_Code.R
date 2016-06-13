@@ -291,10 +291,16 @@ customer_survey = mutate(customer_survey, proportion2 = customer_purchases / sum
 
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
 
+![](images/)
+
 head(arrange(customer_survey, region, desc(customer_age), desc(customer_purchases)))
 
-head(mutate(customer_survey, Location = paste(city, state, sep=", "), purchase_proportion=customer_purchases/sum(customer_purchases)))
+![](images/)
 
+head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
+    purchase_proportion=customer_purchases/sum(customer_purchases)))
+
+![](images/)
 
 ## Reshaping a dataframe between wide and long
 
@@ -302,11 +308,14 @@ head(mutate(customer_survey, Location = paste(city, state, sep=", "), purchase_p
   
 require(reshape2)
 
-surgery_outcomes = read.table("surgery_outcomes.csv", header=T, sep=",")
+surgery_outcomes = read.table("https://raw.githubusercontent.com/Rmadillo/
+    business_intelligence_with_r/master/manuscript/code/surgery_outcomes.tsv", 
+    header=T, sep="\t")
 
 head(surgery_outcomes, 4)
 
-surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3), measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
+surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3), 
+    measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
 
 head(surgery_outcomes_melted, 4)
 
@@ -339,13 +348,13 @@ dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
 # sd, and sum for each state, and calculate the coeffient of
 # variation, rounded to 2 decimal places
 customer_500_piped = customer_survey %>%  
-  filter(customer_purchases >= 500) %>%   
-  group_by(state) %>%  
-  summarize(count_purchases = n(),  
+    filter(customer_purchases >= 500) %>%   
+    group_by(state) %>%  
+    summarize(count_purchases = n(),  
             mean_purchases = mean(customer_purchases, na.rm=T),  
             sd_purchases = sd(customer_purchases, na.rm=T),  
             sum_est = sum(est)) %>%  
-  mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
+    mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
 
 
 ##### End of File #####
