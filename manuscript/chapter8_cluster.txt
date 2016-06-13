@@ -988,7 +988,29 @@ ggplotly(p_lof)
 
 ## Anomaly detection
 
-***PLACEHOLDER***
+Twitter has come up with an anomaly detection algorithm for vectors, or for even things like time series that have cyclical patterns. (It's not on CRAN, so install it from Github: `devtools::install_github("twitter/AnomalyDetection"`.) 
+
+The vignette has a great built-in demo dataset---presumably tweets per minute---so we'll use that here. 
+
+```
+require(AnomalyDetection)
+data(raw_data)
+
+# Run the algorithm, include expected values and plotting features
+raw_data_anomalies = AnomalyDetectionTs(raw_data, direction='both', 
+   e_value=TRUE, plot=TRUE)
+   
+# Plot the time series and the anomalies
+raw_data_anomalies$plot
+```
+
+![](images/anomaly/png)
+
+The algorithm defaults to determining no more than 10% of the data will be classified as anomalous. Use `max_anoms=0.01`, for example, if you wish to change that to 1% (or any other percent you deem important). 
+
+You can use the `threshold` option to identify values *above* the median, 95th, or 99th percentiles of daily maximums. There's no equivalent option for values *below* a threshold, unfortunately---using it on this data misses the low end anomalies. 
+
+Finally, you can extract the data with the expected values by pulling it from the list, e.g., `raw_data_anomalies_df = raw_data_anomalies$anoms`. 
 
 
 ## Extreme value analysis
