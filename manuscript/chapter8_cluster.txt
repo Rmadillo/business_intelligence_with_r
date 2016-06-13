@@ -1233,7 +1233,7 @@ includes extended transaction information - examples:
 We can see that there are only 11 distinct items in this data set (must be a very small store!) from 939 distinct transactions, so we can plot all items by frequency using the `itemFrequencyPlot` function. Larger item sets can use the `topN` value to cut off the plot to show just the 15 or 20 or so most common items.
 
 ```
-itemFrequencyPlot(basket_trans, topN=11, type="absolute") #arules
+itemFrequencyPlot(basket_trans, topN=11, type="absolute")
 ```
 
 ![basket case](images/basket_freq.png)
