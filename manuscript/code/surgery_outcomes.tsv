@@ -1,0 +1,31 @@
+row	ID	Side	Phase	Verbal	Nonverbal
+1	1	Right	Post	146	115
+2	1	Right	Pre	129	103
+3	2	Right	Post	126	115
+4	2	Right	Pre	138	115
+5	3	Left	Post	110	104
+6	3	Left	Pre	100	100
+7	4	Right	Post	104	106
+8	4	Right	Pre		
+9	5	Left	Post	95	112
+10	5	Left	Pre	102	123
+11	6	Left	Post	98	110
+12	6	Left	Pre	82	101
+13	7	Left	Post	80	93
+14	7	Left	Pre	90	93
+15	8	Right	Post	100	110
+16	8	Right	Pre	97	90
+17	9	Left	Post	96	100
+18	9	Left	Pre		
+19	10	Right	Post	83	93
+20	10	Right	Pre	86	98
+21	11	Left	Post	100	83
+22	11	Left	Pre		
+23	12	Left	Post	99	86
+24	12	Left	Pre	88	86
+25	13	Left	Post	134	133
+26	13	Left	Pre	120	100
+27	14	Right	Post	89	88
+28	14	Right	Pre		
+29	15	Left	Post	110	86
+30	15	Left	Pre	102	79
