@@ -3,7 +3,7 @@
 # Dwight Barry
 # Chapter 8 Code: Patterns and Outliers
 #
-# 
+# https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_Chapter_8_Code.R
 #
 ######################################################################
 
