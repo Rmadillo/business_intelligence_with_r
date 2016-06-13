@@ -13,7 +13,7 @@ If you haven't created data products using R Markdown yet, you're in for a treat
 
 Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into html or other output types via R Markdown, a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted html. You can also use regular html as well, such as `<br>` for line breaks, and so on. See Appendix 3 for a cheatsheet of R Markdown symbols and usage, and RStudio's [R Markdown page](http://rmarkdown.rstudio.com/) for detailed information and appropaches. 
 
-The single biggest "oops" in using R Markdown---that you will immediately remedy the first time it happens, but you will also inevitably forget to do this---is ensuring you have put *two spaces* at the end of each line where you want a line break after text. I've used R Markdown for years, but even creating one of the examples below, I forgot to do this on a few lines and got a jumbled mess as a result. So, yeah, it's gonna happen. 
+The single biggest "oops" in using R Markdown---that you will immediately easily fix the first time it happens, but you will *also* inevitably forget to do this later---is ensuring you have put *two spaces* at the end of each line where you want a line break after text. I've used R Markdown for years, but even creating one of the examples below, I forgot to do this on a few lines and got a jumbled mess as a result. So, yeah, it's gonna happen. 
 
 Ultimately, there is rapidly increasing emphasis on reproducible research in research and academia, the idea that *any* analytic product can be reproduced by an independent analyst. Industry is adopting the same philosophy, where ideally any analytic product created in one division of a company can be completely reproduced (and often subsequently modified) by another division, without having to spend time and resources reverse-engineering it. "The code *is* the documentation" is longer a viable excuse (or career choice!), so using R Markdown to create your data products from the start can save a **lot** of time later. Having it become an enterprise best practice/standard process is even better. 
 
@@ -112,9 +112,19 @@ Case Start Time: `r vs$Date_Time_ct[1]`
 Note that the green bands are *not* the proper normal ranges for those vital signs, they're just there as an example. (Anyway, why would you take medical advice from a coding book?) 
 
 
-### `flexdashboard`
+### Dashboarding and reporting with `flexdashboard`
 
-***FLEXDASHBOARD EXAMPLE***
+Yet another brilliant product from the RStudio folks is an easy-to-use dashboard template package called [`flexdashboard`](http://rmarkdown.rstudio.com/flexdashboard/). It's built on top of the not-nearly-as-easy-to-use [Shiny dashboard](https://rstudio.github.io/shinydashboard/) approach, which hides the complexity of the Shiny system for users who just want to make highly customizable dashboards using (mostly) R Markdown instead. That said, you can still use Shiny inside a flexdashboard, making it the best of both worlds. 
+
+View the [layouts](http://rmarkdown.rstudio.com/flexdashboard/layouts.html) and [examples](http://rmarkdown.rstudio.com/flexdashboard/examples.html) before diving in; there's probably a combination of those already out there that will meet a good proportion of you initial design needs.  
+
+To show a simple example, we'll use the 
+
+```
+# flexdashboard code here
+```
+
+
 
 
 ## Slide decks
