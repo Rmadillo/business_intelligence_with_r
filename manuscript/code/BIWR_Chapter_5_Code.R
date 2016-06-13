@@ -3,7 +3,7 @@
 # Dwight Barry
 # Chapter 5 Code: Effect Sizes
 #
-# 
+# https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_Chapter_5_Code.R
 #
 ######################################################################
 
