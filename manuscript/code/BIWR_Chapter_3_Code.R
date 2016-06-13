@@ -291,16 +291,11 @@ customer_survey = mutate(customer_survey, proportion2 = customer_purchases / sum
 
 head(select(customer_survey, contains("customer", ignore.case=TRUE)))
 
-![](images/)
-
 head(arrange(customer_survey, region, desc(customer_age), desc(customer_purchases)))
-
-![](images/)
 
 head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
     purchase_proportion=customer_purchases/sum(customer_purchases)))
 
-![](images/)
 
 ## Reshaping a dataframe between wide and long
 
@@ -308,9 +303,7 @@ head(mutate(customer_survey, Location = paste(city, state, sep=", "),
   
 require(reshape2)
 
-surgery_outcomes = read.table("https://raw.githubusercontent.com/Rmadillo/
-    business_intelligence_with_r/master/manuscript/code/surgery_outcomes.tsv", 
-    header=T, sep="\t")
+surgery_outcomes = read.table("https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/surgery_outcomes.tsv", header=T, sep="\t")
 
 head(surgery_outcomes, 4)
 
