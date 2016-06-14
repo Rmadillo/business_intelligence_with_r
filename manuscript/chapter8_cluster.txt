@@ -1004,7 +1004,7 @@ raw_data_anomalies = AnomalyDetectionTs(raw_data, direction='both',
 raw_data_anomalies$plot
 ```
 
-![](images/anomaly/png)
+![](images/anomaly.png)
 
 The algorithm defaults to determining no more than 10% of the data will be classified as anomalous. Use `max_anoms=0.01`, for example, if you wish to change that to 1% (or any other percent you deem important). 
 
