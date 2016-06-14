@@ -6,12 +6,6 @@
 
 Dwight Barry is a data scientist at Seattle Children's Hospital, in Seattle, Washington, USA. 
 
-| |  
-  
-
-### About the Cover
-
-stuff about cover image
 
 | |  
   
@@ -25,7 +19,7 @@ R session info here (from final run through)
 
 ### Version Info
 
-Version 1.0, June 2016
+Version 0.9 for peer review, June 2016
 
 
 {icon=download}
