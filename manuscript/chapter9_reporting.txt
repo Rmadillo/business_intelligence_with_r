@@ -116,9 +116,13 @@ Note that the green bands are *not* the proper normal ranges for those vital sig
 
 Yet another brilliant product from the RStudio folks is an easy-to-use dashboard template package called [`flexdashboard`](http://rmarkdown.rstudio.com/flexdashboard/). It's built on top of the not-nearly-as-easy-to-use [Shiny dashboard](https://rstudio.github.io/shinydashboard/) approach, which hides the complexity of the Shiny system for users who just want to make highly customizable dashboards using (mostly) R Markdown instead. That said, you can still use Shiny inside a flexdashboard, making it the best of both worlds. 
 
-View the [layouts](http://rmarkdown.rstudio.com/flexdashboard/layouts.html) and [examples](http://rmarkdown.rstudio.com/flexdashboard/examples.html) before diving in; there's probably a combination of those already out there that will meet a good proportion of your initial design needs.  
+View the [layouts](http://rmarkdown.rstudio.com/flexdashboard/layouts.html) and [examples](http://rmarkdown.rstudio.com/flexdashboard/examples.html) before diving in; there's probably a combination of those already out there that will meet a good proportion of your initial design needs.
 
-To show a simple example, we'll can the same data and approach we used in Chapter 1, exploring and forecasting the power usage at the Hauteville House. The code that creates this dashboard/report is contained in Appendix 4. 
+After you've installed `flexdashboard`, the creating a **New R Markdown** document dialog will have added the appropriate template to your options:
+
+![](images/flexdashboard_template.png)
+
+To show a simple example, we can use the same data and approach we used in Chapter 1, exploring and forecasting the power usage at the Hauteville House, only putting it into a dashboard-like format instead of a report. The code that creates this dashboard is contained in Appendix 4. 
 
 ![](images/flexdashboard.png)
 
