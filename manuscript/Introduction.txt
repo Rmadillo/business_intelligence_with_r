@@ -4,12 +4,12 @@ The growth of R has been phenomenal over the past several years, reaching out pa
 
 While there are already many books that explore the use of R in statistics and data science, nearly all of them are set as a series of case studies or are written predominantly for academic audiences as textbooks. There are also many R cookbooks, but they tend to cover the breadth of R's capabilities and options. This book aims to provide a cookbook of R recipes that are specifically of use in the daily workflow of data scientists and analysts in business and industry. 
 
-*Business Intelligence with R* is a practical, hands-on overview of many of the major BI/analytic tasks that can be accomplished with R. It is not meant to be exhaustive--there is always more than one way to accomplish a given task in R, so this book aims to provide the simplest and/or most robust approaches to meet daily workflow needs. It can serve as the go-to desk reference for the professional analyst who needs to get things done in R. From setting up a project under version control to creating an interactive dashboard of a data product, this book will provide you with the pieces to put it all together. 
+*Business Intelligence with R* is a practical, hands-on overview of many of the major BI/analytic tasks that can be accomplished with R. It is not meant to be exhaustive---there is always more than one way to accomplish a given task in R, so this book aims to provide the simplest and/or most robust approaches to meet daily workflow needs. It can serve as the go-to desk reference for the professional analyst who needs to get things done in R. From setting up a project under version control to creating an interactive dashboard of a data product, this book will provide you with the pieces to put it all together. 
 
  
 ## Overview
 
-Chapter 1 takes only about 50 lines of R code to cover the spectrum of an analytics workflow, from data acquisition to business forecasting to the creation of an interactive report. Because "learning R" is difficult, this example points out that "learning R to accomplish *x*" is really fairly simple for anyone comfortable with coding. And if all you've ever developed are formulas in Excel, you *have* coded--using R is certainly within any analyst's abilities, and you'll find that it simplifies your workflow tremendously. 
+Chapter 1 takes only about 50 lines of R code to cover the spectrum of an analytics workflow, from data acquisition to business forecasting to the creation of an interactive report. Because "learning R" is difficult, this example points out that "learning R to accomplish *x*" is really fairly simple for anyone comfortable with coding. And if all you've ever developed are formulas in Excel, you *have* coded---using R is certainly within any analyst's abilities, and you'll find that it simplifies your workflow tremendously. 
 
 Chapter 2 covers bringing data into R, from text files to databases. 
 
@@ -21,7 +21,7 @@ Chapter 5 covers effect sizes; many non-analytic business customers have been tr
 
 Chapter 6 covers the timeless business need to understand trends. It used to be that the analysis of time series and/or autocorrelated data was not at all simple. But R has tools that make this type analysis easy, considerably faster than what it would take to accomplish the same in Excel. 
 
-If the glut of dashboarding and graphing in data products is any indication, modern business runs on dataviz. That's a good thing--I've seen far too many examples of decision-makers using tables to make decisions that ended poorly because tables just can't capture the big picture. Chapter 7 explores data visualization tools not covered in earlier chapters, including multivariate visualization, maps, and interactivity. 
+If the glut of dashboarding and graphing in data products is any indication, modern business runs on dataviz. That's a good thing---I've seen far too many examples of decision-makers using tables to make decisions that ended poorly because tables just can't capture the big picture. Chapter 7 explores data visualization tools not covered in earlier chapters, including multivariate visualization, maps, and interactivity. 
 
 Chapter 8 explores pattern discovery, via dimension reduction, clustering, outlier exploration, and association rules. "What things are like/not like other things?" is a common part of analytics daily workflows, so the tools in this chapter provide the means to accomplish those ends.  
 
@@ -47,7 +47,7 @@ With respect to variable naming, I tend to use `pothole_case` for variable, data
 
 ## What you need 
 
-This is not the best book for a never-used-R-and-need-to-teach-myself analyst. Perhaps you've had an intro course or workshop already--you don't need to be an expert to get value from this book but you will probably struggle without a more detailed overview of how to use R. Rob Kabakoff's wonderful *[R in Action](http://www.manning.com/kabacoff2/)* is a good book to introduce new users to R, and it works well as a self-teaching or classroom text. There are also a wide variety of websites, videos, and online training programs that can give you the initial understanding of R that will make this book useful. 
+This is not the best book for a never-used-R-and-need-to-teach-myself analyst. Perhaps you've had an intro course or workshop already---you don't need to be an expert to get value from this book but you will probably struggle without a more detailed overview of how to use R. Rob Kabakoff's wonderful *[R in Action](http://www.manning.com/kabacoff2/)* is a good book to introduce new users to R, and it works well as a self-teaching or classroom text. There are also a wide variety of websites, videos, and online training programs that can give you the initial understanding of R that will make this book useful. 
 
 You don't need to be an R programmer, however; **this book is aimed at people who use R to accomplish day-to-day analytic ends for business purposes**, *not* for those who want to improve their code efficiency, create custom algorithms, or develop new packages.
 
@@ -63,9 +63,9 @@ This book uses R, RStudio, and Git software. I used R 3.3 and RStudio 0.99 to cr
 {icon=download}
 G> The code is available from [this book's Github site](https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code).
 
-Feedback, criticism, and improvements are always welcome; send me an email to dbarryanalytics at gmail dot com, or submit pull requests or issues online at https://github.com/Rmadillo/business_intelligence_with_r.   
+Feedback, criticism, and improvements are always welcome; send me an email to dbarryanalytics at gmail dot com, or submit pull requests or issues on [Github](https://github.com/Rmadillo/business_intelligence_with_r).   
 
-I hope that this book serves well in its intended purpose as a desktop reference for busy professionals--giving you fingertip access to a variety of BI analytic methods done in R as simply as possible.
+I hope that this book serves well in its intended purpose as a desktop reference for busy professionals---giving you fingertip access to a variety of BI analytic methods done in R as simply as possible.
 
 
 
