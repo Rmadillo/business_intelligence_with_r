@@ -10,4 +10,4 @@ render("Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
 
 W> This code will *fail* if you've already created the directories; comment those sections out if you're running it locally for testing.  
 
-A> <<(code/Hauteville_House_Power_Forecast_20101127.Rmd)
+<<(code/Hauteville_House_Power_Forecast_20101127.Rmd)
