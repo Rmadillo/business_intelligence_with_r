@@ -195,8 +195,6 @@ In coming months, usage will peak between ~950-1150 kWh (80% prediction range) i
 
 <a href="https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption" target="_blank">Data Source and Metadata</a> 
 
-
-
 Row {data-height=550}
 -----------------------------------------------------------------------
 
@@ -250,7 +248,6 @@ use_histo = ggplot(power_monthly, aes(Total_Use_kWh, text=paste("Month: ",
   
 ggplotly(use_histo)
 ```
-
 
 ### You Are Here
 
