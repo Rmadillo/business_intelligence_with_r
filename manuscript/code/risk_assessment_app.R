@@ -17,10 +17,10 @@
 ##### Global #####
 
 # Load Packages
-library(shiny)
-library(ggplot2)
-library(htmlTable)
-library(mc2d)
+require(shiny)
+require(ggplot2)
+require(htmlTable)
+require(mc2d)
 
 
 #######################################################
