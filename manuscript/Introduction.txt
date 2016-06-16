@@ -62,6 +62,15 @@ This book uses R, RStudio, and Git software. I used R 3.3 and RStudio 0.99 to cr
 You can find the installation list for the packages used in this book [here](https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_install_package_list.R). 
 
 
+## Acknowledgments 
+
+I originally started this book as a way to organize the code snippets I had cluttering up a variety of computers, servers, and repos... and as I started to organize those snippets, I also started getting more and more requests from colleagues who wanted to learn R. So this book is the culmination of both efforts. 
+
+Several people generously donated their time to review this book and test its code, including Howard Rosenfeld, ... 
+
+I've been using R for about a decade, and along the way, I have taken ideas from across the web wherever I could find them. If you see some of *your* code here and I have not given you or the source proper attribution, please let me know! I will fix that immediately.
+
+
 ## Website/Code
 
 {icon=download}
