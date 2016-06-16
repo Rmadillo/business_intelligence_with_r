@@ -31,6 +31,8 @@ Perhaps the largest advance in scientific research in recent years is the idea o
 
 This book will be updated with additional functions and ideas on an ad hoc basis; check the *About* page to see the version number and differences from previous versions. 
 
+Although the title should make it clear who the intended audience is for this book, I should point out that this *not* a data science book. There are already some great books out there on using R for data science work; I particularly like Williams' [Data Mining with Rattle and R](https://www.amazon.com/Data-Mining-Rattle-Excavating-Knowledge/dp/1441998896) and Zumel and Mount's [Practical Data Science with R](https://www.amazon.com/Practical-Data-Science-Nina-Zumel/dp/1617291560/) for those interested in getting into predictive analytics via R. Kuhn and Johnson's [Applied Predictive Modeling](https://www.amazon.com/Applied-Predictive-Modeling-Max-Kuhn/dp/1461468485/) and (http://www-bcf.usc.edu/~gareth/ISL/) are both great for those needing a more thorough text. Provost and Fawcett's [Data Science for Business](https://www.amazon.com/Data-Science-Business-Data-Analytic-Thinking/dp/1449361323/) is a great way to learn the conceptual side of data science tools *as applied in business settings*, and it's wonderfully well written.   
+
 
 ## Conventions
 
@@ -57,11 +59,13 @@ You should also be at least familiar with the ideas behind many of the tools use
 
 This book uses R, RStudio, and Git software. I used R 3.3 and RStudio 0.99 to create this book. If you are on a Windows system, you'll need to ensure either Perl and/or Java are installed to use some of the Excel import functions (if you are using Mac or Unix/Linux, Perl was probably installed with the OS). Make sure that the architecture for Perl/Java you have or install matches that of your R install, i.e., if you are using 64-bit R make sure your Java is also x64. 
 
+You can find the installation list for the packages used in this book [here](https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_install_package_list.R). 
+
 
 ## Website/Code
 
 {icon=download}
-G> The code is available from [this book's Github site](https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code).
+G> The code is available at [this book's Github site](https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code).
 
 Feedback, criticism, and improvements are always welcome; send me an email to dbarryanalytics at gmail dot com, or submit pull requests or issues on [Github](https://github.com/Rmadillo/business_intelligence_with_r).   
 
