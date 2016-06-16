@@ -742,6 +742,26 @@ There is usually no reason to save a dataframe for use outside R in any format o
 write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
 ```
 
+Sometimes you have a single data frame that you want to export as separate text files based on a factor. Here's how to do that:
+
+```
+# Split data frame into a list by a factor
+pses2011_split = split(pses2011, pses2011$LEVEL1ID)
+
+# Save each new data frame as an individual .csv file based on its name
+lapply(1:length(pses2011_split), function(i) 
+    write.csv(pses2011_split[[i]], 
+    file = paste0("~/PATH/TO/FOLDER/", 
+    names(pses2011_split[i]), ".csv"),  
+    row.names = FALSE))
+```
+
+If you want to save a data frame in XML format (at the cost of a larger file size!), use the write.xml` function in the `kulife` package. 
+
+```
+kulife::write.xml(iris, file="iris.xml")
+```
+
 If you want to save data in JSON format, use `jsonlite` with the `pretty` option set to true to have it formatted cleanly. Then `sink` it into a file in the working directory.
 
 ```
