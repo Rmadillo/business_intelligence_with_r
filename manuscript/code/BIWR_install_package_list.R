@@ -3,7 +3,7 @@
 # Dwight Barry
 # Package installation list
 #
-# 
+# https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_install_package_list.R
 #
 ######################################################################
 
