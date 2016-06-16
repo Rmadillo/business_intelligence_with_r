@@ -68,6 +68,8 @@ I originally started this book as a way to organize the code snippets I had clut
 
 Several people generously donated their time to review this book and test its code, including Howard Rosenfeld, ... 
 
+The [cover photo](https://pixabay.com/en/toronto-ontario-canada-road-1439133/) was taken by [Gerd Altmann](https://pixabay.com/en/users/geralt-9301/), and was released as [CC0](https://pixabay.com/en/service/terms/#usage). 
+
 I've been using R for about a decade, and along the way, I have taken ideas from across the web wherever I could find them. If you see some of *your* code here and I have not given you or the source proper attribution, please let me know! I will fix that immediately.
 
 
