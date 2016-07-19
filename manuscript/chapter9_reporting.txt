@@ -112,7 +112,7 @@ Case Start Time: `r vs$Date_Time_ct[1]`
 Note that the green bands are *not* the proper normal ranges for those vital signs, they're just there as an example. (Anyway, why would you take medical advice from a coding book?) 
 
 
-### Dashboarding and reporting with `flexdashboard`
+### Dashboarding and reporting with flexdashboard
 
 Yet another brilliant product from the RStudio folks is an easy-to-use dashboard template package called [`flexdashboard`](http://rmarkdown.rstudio.com/flexdashboard/). It's built on top of the not-nearly-as-easy-to-use [Shiny dashboard](https://rstudio.github.io/shinydashboard/) approach, which hides the complexity of the Shiny system for users who just want to make highly customizable dashboards using (mostly) R Markdown instead. That said, you can still use Shiny inside a flexdashboard, making it the best of both worlds. 
 
@@ -133,6 +133,7 @@ At some point, every analyst needs to report their results in a meeting or brief
 
 RStudio has two slide deck styles built in, `ioslides` and `Slidy`. Which is better is probably a matter of taste, though I tend to like the aesthetics of `ioslides.`
 
+{lang="text"}
 ~~~~~~~~
 ---
 title: Faster Than Thought 
@@ -158,6 +159,7 @@ output: ioslides_presentation
 
 I save this new stylesheet as `default_black.css`. Then, in the YAML header of your `.Rmd` file, change `output: ioslides_presentation` to (line breaks and spacing matters!):
 
+{lang="text"}
 ~~~~~~~~
 ---
 title: Faster Than Thought 
@@ -196,7 +198,7 @@ Shiny is an incredible tool---being able to update parameters and inputs on the 
 
 A great use-case for Shiny is in risk assessment, where the decision maker can see the effects of assumptions on the probability of a value or range of values, exploring them in real time. (This can be dangerous as well, if they change their assumptions to obtain the outcome they want to see!) 
 
-Below is a screenshot of an app that uses the basic risk assessment tool of the [betaPERT distribution](https://www.riskamp.com/beta-pert) to create a probability model of expert opinion, where the subject matter expert provides the value of minimum and maximum possible values as well as the most likely value. An uncertainty parameter *gamma* provides the user with the ability to modify the kurtosis of the distribution; a value of 4 is the [standard betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm), while lower values show increased uncertainty and larger values show increased certainty in the estimate of the most likely value (termed the [modified betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm). 
+Below is a screenshot of an app that uses the basic risk assessment tool of the [betaPERT distribution](https://www.riskamp.com/beta-pert) to create a probability model of expert opinion, where the subject matter expert provides the value of minimum and maximum possible values as well as the most likely value. An uncertainty parameter *gamma* provides the user with the ability to modify the kurtosis of the distribution; a value of 4 is the [standard betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm), while lower values show increased uncertainty and larger values show increased certainty in the estimate of the most likely value (termed the [modified betaPERT](http://vosesoftware.com/ModelRiskHelp/index.htm#Distributions/Continuous_distributions/PERT_distribution.htm)). 
 
 The code that created this app is contained in Appendix 3.
 
@@ -209,6 +211,7 @@ The YAML header provides you with a way to customize the output of R Markdown fi
 
 The header can include R code and html. For example, if you have an ioslides file and want to have the date automatically show up when run, use single quotes with back ticks to contain the R Markdown text:
 
+{lang="text"}
 ~~~~~~~~
 ---
 title: This title doesn't have a short title 
@@ -223,6 +226,7 @@ output: ioslides_presentation
 
 You can use html to customize the text. For example:
 
+{lang="text"}
 ~~~~~~~~
 ---
 title: This title <br>doesn't have<br> a short title 
@@ -237,9 +241,11 @@ output: ioslides_presentation
 
 Some characters need to be escaped in YAML for it to work with text you wish to display---for example, to use a colon (`:`) you need to escape the whole string with double quotes (or use single quotes and double them up for apostrophes):
 
+{lang="text"}
 ~~~~~~~~
 ---
-title: "This title <br>doesn't have<br> a short title: <br>Dude, <em>where's</em> <del>my</del> <b>&beta;anana</b>?"
+title: "This title <br>doesn't have<br> a short title: 
+  <br>Dude, <em>where's</em> <del>my</del> <b>&beta;anana</b>?"
 author: Dr. Nefario, Gru, and Kevin
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: ioslides_presentation
