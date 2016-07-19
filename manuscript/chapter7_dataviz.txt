@@ -111,13 +111,13 @@ customer_survey %>%
     filter(customer_purchases >= 500) %>%
     group_by(state) %>%
     summarize(mean_purchases = mean(customer_purchases, na.rm=T),
-              sd_purchases = sd(customer_purchases, na.rm=T),
-              sum_est = sum(est)) %>%
+        sd_purchases = sd(customer_purchases, na.rm=T),
+        sum_est = sum(est)) %>%
     mutate(cv_purchases = round(sd_purchases / mean_purchases, 2)) %>%
-   ggplot(aes(mean_purchases, sd_purchases, color=cv_purchases, size=sum_est)) +
-    geom_point() +
-    scale_size(range=c(2,6)) +
-    theme_bw()
+    ggplot(aes(mean_purchases, sd_purchases, color=cv_purchases, size=sum_est)) +
+        geom_point() +
+        scale_size(range=c(2,6)) +
+        theme_bw()
 ```
 
 ![](images/0815OS_04_04.png)
@@ -397,7 +397,9 @@ box(col="gray30")
 We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this book's github repo (subset to ozone pollution data and linked to each station's geographic coordinates; code to do so yourself is [here](https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/eu_o3.R)). We'll plot the annual daily median values with the modern EU boundaries obtained above:
 
 ```
-eu_o3 = read.table("https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/eu_o3.csv", sep=",", header=T)
+eu_o3 = read.table("https://raw.githubusercontent.com/Rmadillo/
+    business_intelligence_with_r/master/manuscript/code/eu_o3.csv", 
+    sep=",", header=T)
     
 plot(worldmap2014, xlim=c(2,12), ylim=c(35, 70), col="gray60")
 box(col="gray30")
@@ -426,7 +428,7 @@ legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8,
 
 ![](images/0815OS_04_14.png)
 
-### Using `ggmap` for point data and heatmaps
+### Using ggmap for point data and heatmaps
 
 The `ggmap` package makes it relatively easy to map point-location data, as well as to covert those points into "heatmaps" (actually, a density map). 
 
@@ -480,9 +482,9 @@ seattle_map +
 # Density map of bike theft by year
 seattle_map +  
   stat_density2d(aes(fill=..level..), 
-                 alpha=0.5,
-                 bins = 10,
-                 geom = 'polygon') +
+        alpha=0.5,
+        bins = 10,
+        geom = 'polygon') +
   scale_alpha(guide = FALSE) +
   ggtitle('Seattle Bike Thefts (2014-2015)') +
   xlab('') +
