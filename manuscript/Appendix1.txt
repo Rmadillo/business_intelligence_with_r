@@ -14,7 +14,7 @@ The particular folder names and organization are not important. What's important
 
 After completing the directory setup, open RStudio.
 
-The best way to organize a project within R and put it under version control is through RStudio. Under the File menu, click New Project. Then click Create project from: Existing directory. A blank RStudio environment will open. Then select the Tools menu, click Version Control, and then Project Setup. A window will open:
+The best way to organize a project within R and put it under version control is through RStudio. Under the **File** menu, click *New Project*. Then click *Create project from: Existing directory*. A blank RStudio environment will open. Then select the **Tools** menu, click *Version Control*, and then *Project Setup*. A window will open:
 
 ![](images/Apx1_02.png)
 
@@ -40,9 +40,9 @@ Rolling back to a previous state is as simple as clicking the Revert button in t
 
 ### Packaging a project
 
-By setting up a project this way, the only additional thing you need to do is use relative paths in all scripts and R markdown files—you'll be able to tar/zip up the entire project and ship it to others, knowing it is already set up to run as-is.
+By setting up a project this way, the only additional thing you need to do is use relative paths in all scripts and R markdown files---you'll be able to tar/zip up the entire project and ship it to others, knowing it is already set up to run as-is.
 
-RStudio has a good overview of its integration with version control for both Git and Subversion at https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN.
+RStudio has a good overview of its integration with version control for both [Git and Subversion](https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN).
 
 
 ## "Make" files in R
