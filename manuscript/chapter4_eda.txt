@@ -33,7 +33,7 @@ If you were to poll data scientists on the "Three Most Important Steps in Any An
 
 The recipes below are aimed at giving you a quick visual summary of the data, not to produce final plots—and so they're rough and use functions that can be difficult to modify. We'll see recipes for production plots later in this chapter and throughout the book, but we often just need to see the data before doing anything else.
 
-### Everything at once: `ggpairs`
+### Everything at once: ggpairs
 
 The `ggpairs` function in the `GGally` package has a relatively slow but visually wonderful way to plot your dataset, so load that library before continuing.
 
@@ -153,9 +153,9 @@ ggplot(bike_share_daily, aes(casual)) +
 
 ![](images/0815OS_02_06b.png)
 
-When asked, I’ve usually explained density plots as “more objectives histograms,” which, while not quite true, is accurate enough for business users. See `?density` for more details on the methods and useful additional references; `?stat_density` provides an overview of calculation methods used in `ggplot2`, while `?geom_density` provides information on graphical options. 
+When asked, I’ve usually explained density plots as “more objective histograms,” which, while not quite true, is accurate enough for business users. See `?density` for more details on the methods and useful additional references; `?stat_density` provides an overview of calculation methods used in `ggplot2`, while `?geom_density` provides information on graphical options. 
 
-I> That pattern carries over to many `ggplot2` options—find details of the method by replacing the `x` with the stat or geom in `?stat_x` and `?geom_x` for calculation and plotting information, respectively.
+I> That pattern carries over to many `ggplot2` options—find details of the method by adding the particular stat or geom in `?stat_` and `?geom_` for calculation and plotting information, respectively.
 
 ### Bar and dot plots
 
@@ -184,7 +184,7 @@ ggplot(bike_share_daily, aes(x=weathersit, y=..count..)) +
 
 ### Plotting multiple univariate distributions with faceting
 
-We saw the quick-and-dirty way to plot multiple histograms with multi.hist a few recipes ago; here's how to use ggplot2 to create the same thing more elegantly:
+We saw the quick-and-dirty way to plot multiple histograms with `multi.hist` a few recipes ago; here's how to use ggplot2 to create the same thing more elegantly:
 
 ```
 ggplot(bike_share_daily, aes(casual, fill=season)) +
@@ -225,7 +225,7 @@ A> With apologies to Hunter S. Thompson, if you use pie charts for anything outs
 
 ## Plotting bivariate and comparative distributions
 
-Most of the time, we want to understand how one thing compares to something else. There’s no better way to do this by plotting each group’s distribution against the other’s.
+Most of the time, we want to understand how one thing compares to something else. There’s no better way to do this other than by plotting each group’s distribution against the other’s.
 
 We continue using the bike share data, along with `ggplot2`, `vcd`, and `beanplot`. 
 
@@ -619,7 +619,7 @@ When we don’t have a full population to assess, we often need to determine how
 {width="90%"}
 | Statistic | Data type | Distribution | Function |
 | --------- | --------- | ------------ | -------- |
-| Median | Any | Any | `asbio::ci.median(bike_share_daily$cnt)` |
+| Median | Any | Any | `asbio::ci.median(x)` |
 | Mean| Continuous | Normal, t, “normal enough” | `t.test(x)$conf.int` |
 | Proportion | Percentage | Binomial | `binom.test(x, n)$conf.int` |
 | Count | Count | Poisson | `poisson.test(x)$conf.int` |
@@ -712,7 +712,7 @@ commute_time_npti
 1  0.05 0.75            37            68
 ```
 
-You can also obtain a graphical summary with the plottout function, which shows a control chart on the left and a histogram on the right:
+You can also obtain a graphical summary with the `plottol` function, which shows a control chart on the left and a histogram on the right:
 
 ```
 plottol(commute_time_npti, commute_time, side="two", plot.type="both")
@@ -721,7 +721,7 @@ plottol(commute_time_npti, commute_time, side="two", plot.type="both")
 ![](images/0815OS_02_05.png)
 
 
-If you plotted both tolerance graphs (plot.type="both"), you'll need to return par to normal manually: 
+If you plotted both tolerance graphs (`plot.type="both"`), you'll need to return par to normal manually: 
 
 ```
 par(mfrow=c(1,1))
