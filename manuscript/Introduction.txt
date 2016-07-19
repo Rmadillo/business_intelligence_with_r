@@ -78,6 +78,8 @@ I've been using R for about a decade, and along the way, I have taken ideas from
 {icon=download}
 G> The code is available at [this book's Github site](https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code).
 
+Due to page width constraints, some of the code *as printed in the book* have unnecessary line breaks, primarily in long URLs to acquire data or code snippets. The book's code on Github does not contain these line breaks, so it should work as-is. So, if you cut & paste from the book, note that long URLs may require that you remove a line break for the code to function correctly. 
+
 Feedback, criticism, and improvements are always welcome; send me an email to dbarryanalytics at gmail dot com, or submit pull requests or issues on [Github](https://github.com/Rmadillo/business_intelligence_with_r).   
 
 I hope that this book serves well in its intended purpose as a desktop reference for busy professionals---giving you fingertip access to a variety of BI analytic methods done in R as simply as possible.
