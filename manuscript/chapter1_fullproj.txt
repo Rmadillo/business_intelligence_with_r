@@ -15,7 +15,7 @@ This chapter shows how simple it can be do some advanced analytics in R, working
 
 ## The analytics problem
 
-The data we'll use in this chapter contains 2+ million records of minute-scale power consumption in a single household for about 47 months, collected by Electricité de France and archived at the UCI Machine Learning Repository. The data set's page can be accessed [here](https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption) for more details, but for convience, the attributes of this dataset are as follows:
+The data we'll use in this chapter contains 2+ million records of minute-scale power consumption in a single household for about 47 months, collected by Electricité de France and archived at the UCI Machine Learning Repository. The data set's page can be accessed [here](https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption) for more details, but for convenience, the attributes of this dataset are as follows:
 
 1. **`date`**: date in format dd/mm/yyyy
 2. **`time`**: time in format hh:mm:ss
@@ -159,7 +159,7 @@ calendarHeat(power_day_missing$Date, power_day_missing$Count_Missing,
 
 ![](images/biwr_01_power_missing.png)
 
-You can view the the actual values of missing data on each day by exploring the `power_day_missing` data frame. 
+You can view the actual values of missing data on each day by exploring the `power_day_missing` data frame. 
 
 The "recent" 4-5 day spans of missing data may be a little concerning since we want to perform automated forecasting. However, since we're aggregating to months and forecasting into months with very few missing values, we should be ok. But to make automatic forecasting work, we need to fill in those missing values. If we convert each missing value to 0, we'll definitely underestimate usage for those times. A reasonable first pass is to carry the last value forward, which we can do with the `na.locf` function in the `zoo` package. While other approaches are possible (and perhaps better, e.g., using some sort of mean or median value instead of the last value, or even a seasonal Kalman filter), we'll proceed with this option to keep the example simple. 
 
