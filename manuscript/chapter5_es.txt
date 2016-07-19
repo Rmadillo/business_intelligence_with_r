@@ -27,12 +27,12 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | | \|D\| | BayesianFirstAid | `bayes.t.test` |   
 | | | | | |  
 | Difference in medians |  | simpleboot | `two.boot(..., median)$t0` |   
-| | | | | `boot.ci` of `two.boot` object |  
+| | | | `boot.ci` of `two.boot` object |  
 | | | | | |  
 | |  | BayesianFirstAid | *not yet implemented* | 
 | | | | | |  
 | Difference in quantiles |  | simpleboot | `two.boot(..., quantile, probs=0.75)$t0` | 
-| | | | | `boot.ci` of `two.boot` object |  
+| | | | `boot.ci` of `two.boot` object |  
 | | | | | |  
 | Standardized mean difference | Cohen's *d* | bootES | `bootES` with `effect.type="cohens.d"` | 
 | | | | | |  
@@ -66,7 +66,7 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | | | | |  
 | | BayesianFirstAid | *not yet implemented* | 
 | | | | |
-| Difference between variances | asympTest | `asymp.test(...)$estimate`, `asymp(...).test$conf.int` with `parameter="dVar"` | 
+| Difference between variances | asympTest | `asymp.test(...)$estimate`, `asymp.test(...)$conf.int` with `parameter="dVar"` | 
 | | | | |
 | | | | |
 
@@ -183,7 +183,8 @@ Stat         CI (Low)     CI (High)    bias        SE
 To look at a difference between medians (with a CI), use `two.test` from the `simpleboot` package. Unfortunately, `simpleboot` doesn't use formula notation so we'll have to reuse some intermediate data frames created above:
 
 ```
-diff_medians = two.boot(casual_notworking_Spring$casual, casual_notworking_Fall$casual, median, R=2000)
+diff_medians = two.boot(casual_notworking_Spring$casual, 
+  casual_notworking_Fall$casual, median, R=2000)
 diff_medians_ci = boot.ci(diff_medians, conf=0.95, type='bca')
 diff_medians$t0; diff_medians_ci
 
@@ -204,7 +205,8 @@ Calculations and Intervals on Original Scale
 `simpleboot` allows you to compare any two univariate statistics. For example, you could compare the 75% percentile of the two groups:
 
 ```
-diff_75 = two.boot(casual_notworking_Spring$casual, casual_notworking_Fall$casual, quantile, probs=0.75, R=2000)
+diff_75 = two.boot(casual_notworking_Spring$casual, 
+  casual_notworking_Fall$casual, quantile, probs=0.75, R=2000)
 diff_75_ci = boot.ci(diff_medians, conf=0.95, type='bca')
 diff_75$t0; diff_75_ci
 
@@ -333,7 +335,7 @@ delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
 
 The rapid increase in computing power in recent years has put previously-intractable analytics tools at anyone's fingertips. Markov-chain Monte Carlo (MCMC) is one of the breakout stars of this revolution, which provides the mathematical basis for the resurgence of interest in Bayesian methods.
 
-You'll need to install JAGS to your system before starting (http://mcmc-jags.sourceforge.net/), and also install the R package `rjags` to allow R to converse with JAGS.
+You'll need to install [JAGS](http://mcmc-jags.sourceforge.net/) to your system before starting, and also install the R package `rjags` to allow R to converse with JAGS.
 
 `BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from Github:
 
@@ -345,6 +347,7 @@ require(BayesianFirstAid)
 
 Using the earlier example above for the differences in proportions, we get the same sort of results (i.e., the effect size and CIs), as well as a plot of the posterior distributions:
 
+{lang="text"}
 ```
 workday_diff_bayes = bayes.prop.test(casual_workingday_use$Yes, 
   casual_workingday_use$sum)
@@ -370,6 +373,7 @@ plot(workday_diff_bayes)
 
 To look at the difference between means of two groups, we can use the `bayes.t.test` function:
 
+{lang="text"}
 ```
 casual_notworkingday_mean_bayes = bayes.t.test(casual~season, 
   data=casual_notworkingday)
@@ -396,6 +400,7 @@ plot(casual_notworkingday_mean_bayes)
 
 The package allows the use of `summary` for its output; with it we can see the CIs for each statistic as well as the standardized effect size (`eff_size`, *d*) on this contrast:
 
+{lang="text"}
 ```
 summary(casual_notworkingday_mean_bayes)
 
@@ -435,6 +440,7 @@ Evaluations of the difference in median and variance contrasts (among others) ar
 
 Finally, you can review the MCMC diagnostics for any of these functions by using diagnostics:
 
+{lang="text"}
 ```
 diagnostics(casual_notworkingday_mean_bayes)
 
@@ -552,7 +558,7 @@ ar_tm-count      0.39       0.39     0.43       0.47      0.47 0
 
 ### Bootstrapping BCa CIs for non-parametric correlation
 
-If you want to use the `boot` package to calculate BCa confidence intervals on the Spearman or Kendell correlation coefficients, here’s how to acquire them for each method:
+If you want to use the `boot` package to calculate BCa confidence intervals on Spearman's or Kendell's correlation coefficients, here’s how to acquire them for each method:
 
 ```
 rs_function = function(x,i){cor(x[i,1], x[i,2], method="spearman")
@@ -573,6 +579,7 @@ boot.ci(rt_boot, type="bca")$bca[4:5]
 
 We saw the Bayesian approach to difference-based effect size calculations earlier in this chapter; here's the approach for correlation:
 
+{lang="text"}
 ```
 require(BayesianFirstAid)
 bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
