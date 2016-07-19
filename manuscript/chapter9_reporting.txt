@@ -3,7 +3,7 @@
 - Reports and technical memos
 - Dashboards
 - Slide decks 
-- `purl`-ing: scraping the raw code from your `.Rmd` files
+- purl: scraping the raw code from your .Rmd files
 - Shiny apps
 - Tweaking the YAML headers
 
@@ -28,7 +28,7 @@ We saw an example of a data product that could be considered either a report or 
 
 ![](images/biwr_ch1_knitr_ex.png)
 
-### Output formats for `.Rmd` documents
+### Output formats for .Rmd documents
 
 Web (html) reports are ready to create out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office:
 
@@ -177,7 +177,7 @@ output:
 As long as you have both the `.css` and `.Rmd` files in the same folder, it will make the conversion for you. Obviously, any style element can be changed in the same way, so even if you don't know css, you can probably web search what you want to change to find out what that particular element is named in html, and go from there.  
 
 
-## `purl`-ing: scraping the raw code from your `.Rmd` files
+## purl: scraping the raw code from your .Rmd files
 
 The `purl` function in `knitr` allows you to "scrape" your R Markdown files for the R code. So if you've created a data product in R Markdown and you want just the code from it copied into a separate file, you can use `purl`. Using the Chapter 1 final data product as an example:
 
