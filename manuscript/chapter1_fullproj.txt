@@ -2,7 +2,7 @@
 
 Learning R is an infamously difficult thing to do. However, if you need to accomplish a particular analytics goal, a solution in R can be found relatively easily if you focus on that single task. Over time, completing a variety of single tasks leads you to a practical working knowledge of R in general. So don't think about "learning R"—think instead about "learning how to solve the problem at hand with R," and things get a lot easier.  
 
-Essentially, the technical part of the typical BI workflow is
+Essentially, the technical part of the typical BI workflow is to:
 
 1. Set up and develop project space  
 2. Acquire data  
@@ -84,7 +84,8 @@ Download the data from a zipped flat file (semi-colon delimted .txt format) on t
 
 ```
 # Download the zip file into the data folder
-download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip", destfile = "Data/household_power_consumption.zip")
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/
+  household_power_consumption.zip", destfile = "Data/household_power_consumption.zip")
 
 # Unzip the data from the zip file into the Data folder
 unzip("Data/household_power_consumption.zip", exdir="Data")
@@ -195,8 +196,8 @@ power_group = group_by(power, Month)
 
 # Use 'dplyr' to get monthly max demand and total use results
 power_monthly = summarise(power_group, 
-    Max_Demand_kW = max(Global_active_power_locf), 
-    Total_Use_kWh = sum(Global_active_power_locf)/60)
+  Max_Demand_kW = max(Global_active_power_locf), 
+  Total_Use_kWh = sum(Global_active_power_locf)/60)
 
 # Remove partial months from data frame
 power_monthly = power_monthly[2:47,]
@@ -219,7 +220,7 @@ Plotting your data is the single most important part of analytics, so this book 
 ```
 # Create plot of total use by month
 total_use_plot = ggplot(power_monthly, aes(Month, Total_Use_kWh)) +
-    geom_line(col="blue", lwd=1) 
+  geom_line(col="blue", lwd=1) 
 
 # Display plot
 total_use_plot
@@ -281,14 +282,14 @@ With the forecast summary and plot we have the essential pieces for addressing t
 # Create a data frame with the original data
 # and space for the forecast details
 use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh, 
-                    Forecast = NA, Upper_80 = NA, 
-                    Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
+  Forecast = NA, Upper_80 = NA, 
+  Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
 
 # Create a data frame for the forecast details
 # with a column for the original data
 use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
-    total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
-    Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
+  total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
+  Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
 
 # "Union" the two data frames into one
 use_ts_fc = rbind(use_df, use_fc)
@@ -298,12 +299,12 @@ total_use_forecast = ts(use_ts_fc, start=c(2007, 1), freq=12)
 
 # Create the widget
 energy_use_prediction_widget = dygraph(total_use_forecast, 
-    main = "Predicted Monthly Electricty Use (kWh)",
-    ylab = "Total kWh", width=900, height=500) %>% 
-    dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
-    dyEvent(date = "2008-08-01", "Went on vacation", labelLoc = "top") %>%
-    dyRangeSelector(dateWindow = c("2008-09-15", "2011-06-01")) %>%
-    dyLegend(width = 800)
+  main = "Predicted Monthly Electricty Use (kWh)",
+  ylab = "Total kWh", width=900, height=500) %>% 
+  dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
+  dyEvent(date = "2008-08-01", "Went on vacation", labelLoc = "top") %>%
+  dyRangeSelector(dateWindow = c("2008-09-15", "2011-06-01")) %>%
+  dyLegend(width = 800)
 
 # Display the widget in the Viewer window
 # Hit the Zoom button for a pop-out 
