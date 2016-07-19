@@ -480,7 +480,7 @@ banks$km2 = banks_kmeans$cluster
 
 PAM and kMeans work by assigning observations into a set of discrete categories, the number of which (*k*) is assigned by the user. Like `hclust`, there are several algorithms to choose from, so explore those options with `?kmeans` and `?pam`.
 
-If you do have known outcome values, a table of actual vs. modeled clusters can give you a sense of each algorithms' performance on your data. 
+If you do have known outcome values, a table of actual vs. modeled clusters can give you a sense of each algorithm's performance on your data. 
 
 ```
 table(banks$Output, banks$pam2)
@@ -550,7 +550,9 @@ data("diabetes")
 diabetes_mclust = Mclust(diabetes[,2:4])
 
 summary(diabetes_mclust)
-
+```
+{lang="text"}
+```
 ----------------------------------------------------
 Gaussian finite mixture model fitted by EM algorithm 
 ----------------------------------------------------
@@ -703,11 +705,11 @@ data("multishapes", package="factoextra")
 
 ggplot(multishapes, aes(x, y)) +
   geom_point(aes(shape=as.factor(shape), 
-                 color=as.factor(shape))) +
+    color=as.factor(shape))) +
   scale_shape_discrete(name="Known\nGrouping", labels = 
-                      levels(as.factor(multishapes$shape))) +
+    levels(as.factor(multishapes$shape))) +
   scale_color_discrete(name="Known\nGrouping", labels = 
-                         levels(as.factor(multishapes$shape))) +
+    levels(as.factor(multishapes$shape))) +
   theme_bw()
 ```
 
@@ -765,9 +767,9 @@ We can see the outcome and the known values together graphically:
 
 ```
 ggplot(multishapes, aes(x, y)) +
-   geom_point(aes(color=as.factor(dbscan), shape=as.factor(shape))) +
-   labs(color="DBSCAN\nGrouping", shape="Known\nGrouping") +
-   theme_bw()
+  geom_point(aes(color=as.factor(dbscan), shape=as.factor(shape))) +
+  labs(color="DBSCAN\nGrouping", shape="Known\nGrouping") +
+  theme_bw()
 ```
 
 ![](images/dbscan_results.png)
@@ -783,10 +785,18 @@ We'll use the famous Wisconson Breast Cancer data set, which consists of nine di
 require(clustvarsel)
 
 # Download the Wisconsin Breast Cancer data
-breast_cancer = read.table("http://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/breast-cancer-wisconsin.data", sep=",", na.strings = c("NA", "?"), header=F, col.names=c("Sample", "Clump_Thickness", "Uniformity_Cell_Size", "Uniformity_Cell_Shape", "Marginal_Adhesion", "Single_Epithelial_Cell_Size", "Bare_Nuclei", "Bland_Chromatin", "Normal_Nucleoli", "Mitoses", "Class"))
+breast_cancer = read.table("http://archive.ics.uci.edu/ml/
+  machine-learning-databases/breast-cancer-wisconsin/
+  breast-cancer-wisconsin.data", sep=",", na.strings = 
+  c("NA", "?"), header=F, col.names=c("Sample", 
+  "Clump_Thickness", "Uniformity_Cell_Size", 
+  "Uniformity_Cell_Shape", "Marginal_Adhesion", 
+  "Single_Epithelial_Cell_Size", "Bare_Nuclei", 
+  "Bland_Chromatin", "Normal_Nucleoli", "Mitoses", "Class"))
 
 # Label the outcomes
-breast_cancer$Diagnosis = ifelse(breast_cancer$Class==2, "benign", ifelse(breast_cancer$Class==4, "malignant", "unk"))
+breast_cancer$Diagnosis = ifelse(breast_cancer$Class==2, "benign", 
+  ifelse(breast_cancer$Class==4, "malignant", "unk"))
 
 # Remove incomplete rows, then create data-only object
 bc_wisc = na.omit(breast_cancer[,c(2:10, 12)])
@@ -795,7 +805,9 @@ bc_wisc_data = bc_wisc[,1:8]
 # Perform variable selection (with parallel processing)
 varsel_fwd = clustvarsel(bc_wisc_data, parallel = TRUE)
 varsel_fwd
-
+```
+{lang="text"}
+```
 Stepwise (forward/backward) greedy search
 ----------------------------------------- 
               Variable proposed  Type of step  BIC difference  Decision
@@ -828,7 +840,9 @@ bc_wisc$mclust_fwd_cluster = bc_mclust_fwd$classification
 
 # Review Mclust results
 summary(bc_mclust_fwd)
-
+```
+{lang="text"}
+```
 ----------------------------------------------------
 Gaussian finite mixture model fitted by EM algorithm 
 ----------------------------------------------------
@@ -849,11 +863,13 @@ We will compare the results from this reduced clustering to a clustering using t
 W> **Cluster analysis results are strongly dependent on the method used.**  
 W> 
 W> If you run all of the clustering algorithms in this chapter on the same dataset, you will find sometimes similar and sometimes very different outcomes. There are lots of ways you can cluster data, but no method can substitute for careful comparison of a variety of results against subject matter knowledge.  
+W> 
 W> For example, if you run the variable selection algorithm from the full set of variables, removing variables one-by-one *backwards*, you'll get different (and poorer) results than seen above with the default "forward" algorithm.  
+W> 
 W> Some sort of senstitivity analysis of cluster analysis results is *always* warranted.  
 
 
-## Error checking cluster results with known outcomes 
+## Error-checking cluster results with known outcomes 
 
 When you have known outcomes in your data (e.g., benign, malignant), the `mclust` package has two functions that help you evaluate your results. 
 
@@ -1015,7 +1031,8 @@ Finally, you can extract the data with the expected values by pulling it from th
 
 ## Extreme value analysis
 
-"It is impossible that the improbable will never happen." --Emil Gumbel
+D> "It is impossible that the improbable will never happen." 
+D> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--Emil Gumbel
 
 Extreme value analysis (EVA) is a different way to explore outliers; by acknowledging that outliers are real and can be incredibly useful for analysis, we can better assess the likelihood of "improbable" events. 
 
@@ -1050,22 +1067,25 @@ hurr_fit = distLfit(hurricane_cost$total_damage)
 A standard histogram is returned from this function call, which isn't as helpful as a CDF plot to compare against the actual values. Use `distLplot` with `cdf=TRUE` to return a CDF plot:
 
 ```
-distLplot(hurr_fit, cdf=TRUE, main="Total Annual Hurricane Damages (in billion USD)",
-   xlab="Damages ($1B USD)")
+distLplot(hurr_fit, cdf=TRUE, main="Total Annual Hurricane Damages
+  (in billion USD)", xlab="Damages ($1B USD)")
 ```
 
 ![](images/eva_cdf.png)
 
 Unlike many R packages, `summary` and other universal functions don't work with `extremeStat` result objects because they result lists. So, to see a summary of the result, use `distLprint`.
 
+{lang="text"}
 ```
 distLprint(hurr_fit)
 
 ----------
-Dataset 'hurricane_cost$total_damage' with 70 values. min/median/max: 0/1.1/74.4  nNA: 0
+Dataset 'hurricane_cost$total_damage' with 70 values. 
+  min/median/max: 0/1.1/74.4  nNA: 0
 truncate: 0 threshold: 0. dat_full with 70 values: 0/1.1/74.4  nNA: 0
 dlf with 16 distributions. In descending order of fit quality:
-gam, kap, pe3, wei, ln3, gno, wak, gpa, gev, glo, exp, gum, ray, nor, revgum, rice
+gam, kap, pe3, wei, ln3, gno, wak, gpa, gev, glo, exp, gum, ray, nor, 
+  revgum, rice
 gofProp: 1, RMSE min/median/max: 0.037/0.076/0.3  nNA: 0
  5 distribution colors: #3300FFFF, #00D9FFFF, #00FF19FF, #F2FF00FF, #FF0000FF
 ```
@@ -1131,7 +1151,7 @@ As you probably noticed with the graphs, only the top five models are plotted, b
 | `wei` | Weibull | 
 
 
-You can evaluate the quantiles of these models to help determine what "counts" as an outlier with the `distLquantile` function. Use the `probs` option to see the quantiles you want returned, whether low or high. You also need to use the 'returnlist=TRUE` option to ensure you can work with the results after the call. 
+You can evaluate the quantiles of these models to help determine what "counts" as an outlier with the `distLquantile` function. Use the `probs` option to see the quantiles you want returned, whether low or high. You also need to use the `returnlist=TRUE` option to ensure you can work with the results after the call. 
 
 ```
 # Calculate quantiles for different models
@@ -1149,8 +1169,8 @@ wei 6.639476 13.45379 22.53004 52.15676
 ln3 6.165669 11.94520 20.29897 53.86717
 
 # Plot the cdf of top five models with their quantiles
-distLplot(hurr_fit, cdf=T, main="Total Annual Hurricane Damages (in billion USD)", 
-   xlab="Damages ($1B USD)", qlines=TRUE)
+distLplot(hurr_fit, cdf=T, main="Total Annual Hurricane Damages
+  (in billion USD)", xlab="Damages ($1B USD)", qlines=TRUE)
 ```
 
 ![](images/eva_cdf_quant.png)
@@ -1173,8 +1193,8 @@ ln3 1.4838727 11.94520 36.52829 53.86717
 
 
 # Plot return intervals
-distLextremePlot(hurr_returns, main="Total Annual Hurricane Damages (in billion USD)",
-   ylab="Damages ($1B USD)")
+distLextremePlot(hurr_returns, main="Total Annual Hurricane Damages
+  (in billion USD)", ylab="Damages ($1B USD)")
 ```
 
 ![](images/eva_returns.png)
@@ -1200,7 +1220,9 @@ As usual, `summary` provides details of the resulting object:
 
 ```
 summary(basket_trans)
-
+```
+{lang="text"}
+```
 transactions as itemMatrix in sparse format with
  939 rows (elements/itemsets/transactions) and
  11 columns (items) and a density of 0.2708878 
@@ -1243,7 +1265,9 @@ The `apriori` function takes a transaction object and creates a rule set using d
 ```
 basket_rules_custom = apriori(basket_trans, parameter = list(support = 0.01, 
   confidence = 0.01, target="rules"))
-
+```
+{lang="text"}
+```
 Apriori
 
 Parameter specification:
@@ -1297,6 +1321,7 @@ inspect(head(sort(basket_rules_custom, by="lift"), 10))
 
 We can also plot the rule set using a variety of graph types; accepting the default gives you a scatterplot of confidence, support, and lift, and setting `interactive` to `TRUE` allows you to explore particular subsets based on the combination of those three values. For example, we can select the rules with relatively high values of all three within the graph, and see those rules in the console once we've clicked `inspect` in the graph: 
 
+{lang="text"}
 ```
 plot(basket_rules_custom, interactive = T)
 
