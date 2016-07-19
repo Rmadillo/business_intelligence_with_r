@@ -3,17 +3,17 @@
 - Understanding your data  
 - Cleaning up  
 - Merging dataframes: Joins, unions, and bindings  
-- Subsetting: `filter`ing and `select`ing from a dataframe  
+- Subsetting: filter and select from a dataframe  
 - Creating a derived column  
 - Reshaping a dataframe between wide and long  
-- Piping with %>% : Stringing it together in `dplyr`  
+- Piping with %>% : Stringing it together in dplyr  
 
 
 ## Understanding your data
 
 ### Identifying data types and overall structure
 
-Before you do anything else—every dataset should be evaluated with a few basic functions. It’s funny how often this is overlooked…but it’s not funny how much time you can waste writing code that fails until you realize you don’t have the data in the proper format.
+Before you do anything else---every dataset should be evaluated with a few basic functions. It’s funny how often this is overlooked…but it’s not funny how much time you can waste writing code that fails until you realize you don’t have the data in the proper format.
 
 Factors, characters, dates, values that are out-of-range for the measurement, inappropriate dummy values, and NAs tend to be the data types or results that will screw up future analyses—so using the the following functions, every time you first pull in a dataset, will save a lot of time and grief in the long run.
 
@@ -48,7 +48,8 @@ Factors can be ordered or unordered; when created they usually are arranged alph
 
 ```
 levels(customers$customer_gender)
-[1] "F"       "M"       "Unknown"
+
+"F"       "M"       "Unknown"
 ```
 
 If you do need to change the order for example, if you want them to display in plots in a different order, you can use the `ordered` function:
@@ -56,7 +57,8 @@ If you do need to change the order for example, if you want them to display in p
 ```
 customers$customer_gender = ordered(customers$customer_gender, 
     c("Unknown", "F", "M"))
-[1] "Unknown" "F"       "M" 
+
+"Unknown" "F"       "M" 
 ```
 
 
@@ -66,6 +68,7 @@ The `unique` function will provide the distinct values in a variable, in the ord
 
 ```
 unique(customers$customer_age)
+
  [1] 72 44 83 74 66 42 18 NA 34 35 32 50 76 23 36 54
 [17] 47 49 33 70 71 68 43 61 45 41 86 85 60 87 24 19
 [33] 31 78 59 48 40 69 22 21 67 80 65 84 39 81 51 58
@@ -76,6 +79,7 @@ You can use the `sort` function to see the unique values in order:
 
 ```
 sort(unique(customers$customer_age))
+
  [1] 18 19 21 22 23 24 30 31 32 33 34 35 36 39 40 41
 [17] 42 43 44 45 47 48 49 50 51 54 58 59 60 61 65 66
 [33] 67 68 69 70 71 72 74 76 78 80 81 83 84 85 86 87
@@ -85,6 +89,7 @@ You can see if any rows are duplicated in the data frame with the `duplicated` f
 
 ```
 customers[duplicated(customers),]
+
 [1] customer_id        customer_gender   
 [3] customer_age       customer_purchases
 [5] customer_zip      
@@ -95,7 +100,9 @@ There aren't any, so to illustrate what it shows when it finds a duplicate, we'l
 
 ```
 customers[10001,] = customers[2718,]
+
 customers[duplicated(customers),]
+
       customer_id customer_gender customer_age customer_purchases customer_zip
 10001        2718               M           47              75.43        73140
 ```
@@ -193,8 +200,11 @@ Sometimes, you’ll find values or placeholders where no data should be; for exa
 # This will work 
 my_data$my_variable = as.numeric(gsub("9999", NA, my_data$my_variable))
 
-# But this is better
+# But this is better, albeit less transparent
 my_data$my_variable[my_data$my_variable==9999] = NA 
+
+# And this will do it for the entire data frame
+my_data[my_data == 9999] = NA
 ```
 
 It’s also useful to remember to use `na.rm=TRUE` when including data with NA values in calls to many base installation functions (e.g., `mean`), otherwise R will return `NA` or throw an error. 
@@ -202,11 +212,11 @@ It’s also useful to remember to use `na.rm=TRUE` when including data with NA v
 ```
 # This won't work
 mean(customers$customer_age)
-[1] NA
+NA
 
 # This will
 mean(customers$customer_age, na.rm=TRUE)
-[1] 53.42279
+53.42279
 ```
 
 
@@ -238,13 +248,13 @@ Sometimes you'll have data that's already summarized in some form (e.g., means) 
 
 ```
 round(mean(customers$customer_age, na.rm=TRUE), 1)
-[1] 53.4
+53.4
 
 signif(mean(customers$customer_age, na.rm=TRUE), 1)
-[1] 50
+50
 
 signif(mean(customers$customer_age, na.rm=TRUE), 3)
-[1] 53.4
+53.4
 ```
 
 `ceiling`, `floor`, and `trunc` provide other ways to round numbers to an integer if you need to round up, down, or remove the decimal portion, respectively.  
@@ -368,7 +378,7 @@ Obviously, there's more to life than left joins. The following table lays out th
 
 \* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
-You can merge large files with `data.tables`, but at the time of this writing, the way you specify the joins is opaque—e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time—so for now it's probably best employed for single-user/casual use and not for production code.
+You can merge large files with `data.tables`, but the way you specify the joins is opaque---e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time---so for now it's probably best employed for single-user/casual use and not for production code unless speed needs to trump clarity.
 
 
 ### Unions and bindings
@@ -464,7 +474,7 @@ As in the last recipe, here's a visualization and function summary for unions an
 \* Use `UNION` to bind the two tables, but you'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
 
 
-## Subsetting: `filter`ing and `select`ing from a dataframe
+## Subsetting: filter and select from a dataframe
 
 Even after joining, the dataset we have is rarely the dataset we need to complete a project. The `dplyr` package has a few really useful data manipulation functions that work on data frames just like they do on databases, and tend to be simpler, faster, and more intuitive than comparable `base` installation functions like `merge`, `order`, or `subset`.
 
@@ -627,7 +637,7 @@ I> The `tidyr` package is a new, simpler way to reshape data. At the time of thi
 There is tremendous variety in reshaping options using the formula structure in `dcast`. The tilde sign (`~`) separates the variables you want representing the rows (left of the ~) and those you want representing the columns (right of the ~). For example, we can cross phase and the test type in the columns:
 
 ```
-head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase), 4)
+head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase, value.var='IQ_score'), 4)
 
      ID  Verbal_Post  Verbal_Pre  Nonverbal_Post  Nonverbal_Pre
 1    1   146          129         115             103
@@ -639,7 +649,7 @@ head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase), 4)
 We could also return the `Side` variable to the same shape:
 
 ```
-head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase), 4)
+head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase, value.var='IQ_score'), 4)
 
    ID  Side   Verbal_Post  Verbal_Pre  Nonverbal_Post  Nonverbal_Pre
 1  1   Right  146          129         115             103
@@ -651,7 +661,7 @@ head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase), 4)
 Perhaps you only want to use `Phase` to look at Verbal and Nonverbal separately:
 
 ```
-head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type), 4)
+head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type, value.var='IQ_score'), 4)
 
   ID Phase Verbal Nonverbal
 1  1  Post    146       115
@@ -670,7 +680,7 @@ While `dplyr` provides you with all you need for summarizing data once your data
 Get the mean for each `Test_type`, by `Phase`:
 
 ```
-dcast(surgery_outcomes_melted, Phase ~ Test_type, mean, na.rm=T)
+dcast(surgery_outcomes_melted, Phase ~ Test_type, value.var='IQ_score', mean, na.rm=T)
 
   Phase   Verbal Nonverbal
 1  Post 104.6667 102.26667
@@ -680,7 +690,7 @@ dcast(surgery_outcomes_melted, Phase ~ Test_type, mean, na.rm=T)
 Get the mean for each `Side`, by combination of `Test_type` and `Phase`:
 
 ```
-dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, mean, na.rm=T)
+dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, value.var='IQ_score', mean, na.rm=T)
 
    Side Verbal_Post Verbal_Pre Nonverbal_Post Nonverbal_Pre
 1  Left    102.4444   97.71429       100.7778      97.42857
@@ -690,7 +700,7 @@ dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, mean, na.rm=T)
 Get the standard deviation for each combination of `Test_type`, `Side`, and `Phase`:
 
 ```
-dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
+dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., value.var='IQ_score', sd, na.rm=T)
 
   Test_type  Side Phase        .
 1    Verbal  Left  Post 14.78269
@@ -703,7 +713,7 @@ dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., sd, na.rm=T)
 8 Nonverbal Right   Pre 10.47219
 ```
 
-## Piping with `%>%`: Stringing it together in `dplyr`
+## Piping with %>%: Stringing it together in dplyr
   
 A useful additional feature of `dplyr` is that you can string together a bunch of functions with the `%>%` ("then") operator, a feature that is growing in popularity across a variety of R packages. So, if you want to filter, group, do some summary stats, create a new column, etc., you can pipe them all together instead of nesting them in parentheses or over multiple lines. 
 
