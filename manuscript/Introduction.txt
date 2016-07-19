@@ -66,7 +66,7 @@ You can find the installation list for the packages used in this book [here](htt
 
 I originally started this book as a way to organize the code snippets I had cluttering up a variety of computers, servers, and repos... and as I started to organize those snippets, I also started getting more and more requests from colleagues who wanted to learn R. So this book is the culmination of both efforts. 
 
-Several people generously donated their time to review this book and test its code, including Howard Rosenfeld, Seth Terrell, Robert Samohyl, Deb Curley, and Alexis Gaevsky. Remaining errors are, of course, my own---so if you find any, please let me know so that I can correct and update the book.  
+Several people generously donated their time to review this book and test its code, including Howard Rosenfeld, Seth Terrell, Robert Samohyl, Deb Curley, and Alexis Gaevsky. Remaining errors are, of course, my own---so if you find any, please submit a pull request or otherwise let me know so that I can correct and update the book.  
 
 The [cover photo](https://pixabay.com/en/toronto-ontario-canada-road-1439133/) was taken by [Gerd Altmann](https://pixabay.com/en/users/geralt-9301/), and was released as [CC0](https://pixabay.com/en/service/terms/#usage). 
 
