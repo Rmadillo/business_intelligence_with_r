@@ -53,7 +53,6 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | | Vargha-Delaney's *A* | orrdom | `dmes.boot` with `theta.es="Ac"` | 
 | | | | | |  
 
-
 --------
 
 ***Differences in variability*** 
@@ -117,7 +116,7 @@ In this section, we'll go through all the major effect size metrics for differen
 
 Effect size measures that estimate a population value should be accompanied by an appropriate confidence or credible interval whenever possible. This is usually best done by bootstrap unless you can meet distributional assumptions, although at larger sample sizes the differences will be trivial. We'll look at several ways to obtains CIs in this section.
 
-We'll continue to use the bike share data, but we'll reshape and filter some of it for this section. We'll use `bootES`, `orddom`, 'BayesianFirstAid`, and `asympTest` to acquire confidence intervals for some of the contrasts we'll consider.
+We'll continue to use the bike share data, but we'll reshape and filter some of it for this section. We'll use `bootES`, `orddom`, `BayesianFirstAid`, and `asympTest` to acquire confidence intervals for some of the contrasts we'll consider.
 
 ```
 # Load libraries
@@ -587,7 +586,7 @@ bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
 
     Bayesian First Aid Pearson's Correlation Coefficient Test
 
-data: bike_use_atemp$\textdollar$air_temp and bike_use_atemp$count (n = 731)
+data: bike_use_atemp$air_temp and bike_use_atemp$count (n = 731)
 Estimated correlation:
   0.63
 95% credible interval:
