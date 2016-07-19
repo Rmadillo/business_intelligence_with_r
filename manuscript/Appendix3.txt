@@ -1,4 +1,4 @@
-# Appendix 3: `.R` file for Chapter 9 Shiny app example
+# Appendix 3: .R file for Chapter 9 Shiny app example
 
 Below is the full code used to build the risk assessment Shiny app in *Chapter 9*. When I create R code that will be used by many  analysts, I use a *lot* more whitespace. Again, use whatever standards you think are appropriate; I find that sharing code that many eyes will see is much nicer on those eyes when it's easy to see what each piece is doing. 
 
