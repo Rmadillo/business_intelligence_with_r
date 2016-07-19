@@ -577,7 +577,7 @@ head(mutate(customer_survey, Location = paste(city, state, sep=", "),
 
 A lot of analysis and plotting functions require that data be organized in *long* format, where the variable of interest is in one column and the id/categorical portions of the data are repeated as necessary in other columns. Then again, other tools need the data in *wide* format, so being able to move between the two formats is essential. The `reshape2` package provides just that ability.  
 
-### Reshaping: `melt` and `cast`
+### Reshaping: melt and cast
 
 We'll use a small dataset to illustrate some of the possibilities `reshape2` offers—this shows the verbal and nonverbal IQ test scores for children before and after neurosurgery (and in which hemisphere, i.e. "Side" of the brain). Load the package and the data:
 
