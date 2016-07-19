@@ -101,12 +101,11 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
 
 ![](images/0815OS_04_03.png)
 
-### Peeking at multivariate data with `dplyr` and a bubblechart
+### Peeking at multivariate data with dplyr and a bubblechart
 
-In Chapter 3, we used `dplyr` to string together commands with the `%>%` ("then") operator to do some grouping and summarization to create a new dataframe. The following code performs essentially the same operations as we saw in Chapter 3, but outputs a `ggplot2` bubblechart instead of a dataframe:
+In *Chapter 3*, we used `dplyr` to string together commands with the `%>%` ("then") operator to do some grouping and summarization to create a new dataframe from the fake customer service data. The following code performs essentially the same operations as we saw in *Chapter 3*, but outputs a `ggplot2` bubblechart instead of a dataframe:
 
 ```
-customer_survey = read.table("Data/customer_survey.csv", sep=",", header=T)
 customer_survey %>%
     filter(customer_purchases >= 500) %>%
     group_by(state) %>%
@@ -268,7 +267,7 @@ plot(gvisMotionChart(rosling_data,
 ![](images/motionplot.png)
 
 
-### Interactive tables with `DT`
+### Interactive tables with DT
 
 Interactive tables, courtesy of the `DT` package, are made with a single line of code:
 
