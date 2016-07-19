@@ -1,4 +1,4 @@
-# Appendix 2: `.Rmd` File for the Chapter 1 final report example
+# Appendix 2: .Rmd File for the Chapter 1 final report example
 
 To run this file manually, just load it into RStudio and click the *Knit HTML* button in the Source window. A preview window will pop up. In some systems, the .html file is concurrently saved to the working directory, while in others you may need to *Open in browser* and then *Save as* from there. 
 
@@ -8,6 +8,6 @@ To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run
 render("Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
 ```
 
-W> This code will *fail* if you've already created the directories; comment those sections out if you're running it locally for testing.  
+W> This code **will fail* if you've already created the directories; comment those sections out if you're running it locally for testing.  
 
 <<(code/Hauteville_House_Power_Forecast_20101127.Rmd)
