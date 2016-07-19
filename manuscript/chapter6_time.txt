@@ -118,7 +118,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
 
 ![](images/biwr_05_segment.png)
 
-The `psi` option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a `psi` of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same. However, with fewer data points, and/or a lot of variance, the choice of `psi` could change the results, so try a few different values. 
+The `psi` option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a `psi` of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same. However, with fewer data points and/or a lot of variance, the choice of `psi` could change the results, so try a few different values. 
 
 
 ## The many flavors of regression
@@ -149,7 +149,7 @@ The coefficients, of course, are effect sizes.
 
 ## Plotting regression results
 
-The `dotwhisker` package has a simple function over ggplot to graph regression results. `dwplot` shows the coefficients and their confidence intervals (95% by default):
+The `dotwhisker` package has a simple function to graph regression results using `ggplot2`. `dwplot` shows the coefficients and their confidence intervals (95% by default):
 
 ```
 require(dwplot)
@@ -168,7 +168,7 @@ dwplot(bad_model)
 
 Date and time formats are the bane of coders everywhere. No matter which coding language you use, you’ll eventually run into the need to convert dates or times and end up wanting to punch your screen. 
 
-Time series analysis requires specific data types or structures—we’ll explore different types of those structures below, and the CRAN Time Series task view is worth spending time exploring if you need to evaluate time series in any depth (http://cran.r-project.org/web/views/TimeSeries.html).
+Time series analysis requires specific data types or structures—we’ll explore different types of those structures below, and the [CRAN Time Series task view](http://cran.r-project.org/web/views/TimeSeries.html) is worth spending time exploring if you need to evaluate time series in any depth.
 
 The informal consensus is that in R, `as.Date` is best for dates and `as.POSIXct` is best for times because these are the simplest ways to work with each data type. The `lubridate` package provides a more intuitive wrapper to `as.POSIXct` and can be very useful for date conversions between types. 
 
@@ -250,7 +250,7 @@ It’s useful to have a cheat-sheet of the major date and time formats; you can 
 
 ## Calculate a mean or correlation in circular time (clock time)
 
-Sometimes you want to know the average time at which something happens, or the relationship between times, but if the data occur near the end of a time period, the use of mean() will give you incorrect results. The `psych` package comes to the rescue with the `circadian.mean` and `circadian.cor` functions:
+Sometimes you want to know the average time at which something happens, or the relationship between times, but if the data occur near the end of a time period, the use of `mean()` will give you incorrect results. The `psych` package comes to the rescue with the `circadian.mean` and `circadian.cor` functions:
 
 ```
 require(psych)
@@ -454,7 +454,8 @@ data(tongue, package = "KMsurv")
 tongue$tumor = ifelse(tongue$type==1, "Aneuploid",  "Diploid")
 
 # Create survival model
-tongue_survival = survfit(Surv(time = time, event = delta) ~ tumor, data = tongue)
+tongue_survival = survfit(Surv(time = time, event = delta) ~ tumor, 
+    data = tongue)
 
 # Plot the curves and table
 ggsurvplot(tongue_survival, risk.table = TRUE, conf.int = TRUE)
@@ -464,7 +465,7 @@ ggsurvplot(tongue_survival, risk.table = TRUE, conf.int = TRUE)
 
 ## Evaluating quality with control charts
 
-Industrial and businesses with quality control processes or activities often use control charts (aka “Shewhart charts”) to evaluate whether a **stable** process is moving “out of control” over time and thus requires intervention. The `qcc` package provides a way to plot all major control chart types simply and quickly.
+Companies with quality control processes or activities often use control charts (aka “Shewhart charts”) to evaluate whether a **stable** process is moving “out of control” over time and thus requires intervention. The `qcc` package provides a way to plot all major control chart types simply and quickly.
 
 As an example, we’ll create some fake data on hospital-acquired-infections (HAI) for a 25-month period to illustrate the creation of a u-chart, a control chart that plots changes in a rate over time:
 
@@ -488,7 +489,7 @@ infection_control = qcc(infections, sizes=patient_days/1000, type="u",
 
 ![](images/qcc.png)
 
-You can remove the components of the resulting R object for use or plotting elsewhere (e.g., with `ggplot2`).
+You can remove the components of the resulting R object for use or plotting elsewhere (e.g., with `ggplot2`):
 
 ```
 infection_control_qcc = data.frame(Month = month_name, infection_control$limits, 
@@ -504,12 +505,14 @@ T> chart on this type of data, use a GAM instead.
 
 We’ll explore intervention analysis in more detail in Part 2 of this book, but this is a useful place to demonstrate a simple way to identify changes in the statistical structure of a time series using the `strucchange` package.
 
-We’ll look at total monthly United States CO_2 emissions between February 2001 and June 2015 ([data from the US Energy Information Administration](http://www.eia.gov/beta/MER/index.cfm?tbl=T12.01#/?f=M&start=200101&end=201506&charted=0-1-13)). Load the `strucchange` package, download and filter the data, and convert the data to a time series object:
+We’ll look at total monthly United States $CO_2$ emissions between February 2001 and June 2015 ([data from the US Energy Information Administration](http://www.eia.gov/beta/MER/index.cfm?tbl=T12.01#/?f=M&start=200101&end=201506&charted=0-1-13)). Load the `strucchange` package, download and filter the data, and convert the data to a time series object:
 
 ```
 require(strucchange)
-US_co2 = read.table("http://www.eia.gov/totalenergy/data/browser/csv.cfm?tbl=T12.01", sep=",", header=T)
-US_co2 = filter(US_co2, Column_Order == 14 & YYYYMM >= 200102 & substr(YYYYMM, 5, 7) != 13)
+US_co2 = read.table("http://www.eia.gov/totalenergy/data/browser/
+    csv.cfm?tbl=T12.01", sep=",", header=T)
+US_co2 = filter(US_co2, Column_Order == 14 & YYYYMM >= 200102 & 
+    substr(YYYYMM, 5, 7) != 13)
 US_co2_ts = ts(US_co2[,3], freq=12, start=c(2001,2))
 ```
 
