@@ -505,7 +505,7 @@ T> chart on this type of data, use a GAM instead.
 
 We’ll explore intervention analysis in more detail in Part 2 of this book, but this is a useful place to demonstrate a simple way to identify changes in the statistical structure of a time series using the `strucchange` package.
 
-We’ll look at total monthly United States $CO_2$ emissions between February 2001 and June 2015 ([data from the US Energy Information Administration](http://www.eia.gov/beta/MER/index.cfm?tbl=T12.01#/?f=M&start=200101&end=201506&charted=0-1-13)). Load the `strucchange` package, download and filter the data, and convert the data to a time series object:
+We’ll look at total monthly United States CO{$$}_2{/$$} emissions between February 2001 and June 2015 ([data from the US Energy Information Administration](http://www.eia.gov/beta/MER/index.cfm?tbl=T12.01#/?f=M&start=200101&end=201506&charted=0-1-13)). Load the `strucchange` package, download and filter the data, and convert the data to a time series object:
 
 ```
 require(strucchange)
