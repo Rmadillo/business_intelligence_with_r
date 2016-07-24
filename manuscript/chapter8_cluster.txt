@@ -125,11 +125,11 @@ The stress value itself is a single value that represents how well the plot repr
 | > 0.30 | No representation |
 
 
-Based on the diagnostics, the this plot represents the similarity matrix quite well, so we can be confident in the nMDS representation of this dataset.
+Based on the diagnostics, then this plot represents the similarity matrix quite well, so we can be confident in the nMDS representation of this dataset.
 
 Note: in general, stress values rise with the size of the dataset. Thus, interpreting the final stress score requires considering the size of the dataset in addition to considering the Shepard plot and the patterns revealed in the nMDS plot. When stress is high, sometimes it can be brought down by `metaMDS` options `k` and `trymax`, but the guidelines above should not be considered definitive—sometimes clear patterns can be seen even with relatively higher levels of stress.
 
-The final configuration may differ depending on the noise in the data, the initial configuration, and the number of iterations, so running the nMDS multiple times and compare the interpretation from the lowest stress results is a good practice. `metaMDS` does this automatically, however, so multiple restarts are only necessary when running nMDS manually.
+The final configuration may differ depending on the noise in the data, the initial configuration, and the number of iterations, so running the nMDS multiple times and comparing the interpretations from the lowest stress results is a good practice. `metaMDS` does this automatically, however, so multiple restarts are only necessary when running nMDS manually.
 
 
 ### Vector mapping influential variables over the nMDS plot
@@ -598,7 +598,7 @@ Running the main function, `Mclust`, is easy. Interpreting the results takes mor
 | "XXX"	|	ellipsoidal multivariate normal |
 
 
-By looking at the BIC table as well as plotting the modeling results, we can see why the algorithm close the **VVV** model type:
+By looking at the BIC table as well as plotting the modeling results, we can see why the algorithm chose the **VVV** model type:
 
 ```
 diabetes_mclust$BIC
@@ -671,7 +671,7 @@ plot(diabetes_mclust, what="uncertainty")
 
 ![](images/diabetes_uncert.png)
 
-This graph shows us *where* the uncertainty occurs, but it doesn't tell us which observation are the most uncertain. We can plot the uncertainty values in an interactive setting for more directed exploration. We'll use the `googleVis` package here:
+This graph shows us *where* the uncertainty occurs, but it doesn't tell us which observations are the most uncertain. We can plot the uncertainty values in an interactive setting for more directed exploration. We'll use the `googleVis` package here:
 
 ```
 # Add classification and uncertainty to data set
@@ -698,7 +698,7 @@ plot(HT)
 
 ## Identifying group membership with irregular clusters
 
-Sometimes the clusters we want to identify have clear patterns but consist of non-linear or irregular groupings---things we can identify readily by eye but cannot cluster them with the usual methods. The DBSCAN algorithm was built for this purpose. We'll use a synthetic dataset from the `multishapes` package to demonstrate exactly what this means. 
+Sometimes the clusters we want to identify have clear patterns but consist of non-linear or irregular groupings---things we can identify readily by eye but cannot cluster with the usual methods. The DBSCAN algorithm was built for this purpose. We'll use a synthetic dataset from the `multishapes` package to demonstrate exactly what this means. 
 
 ```
 data("multishapes", package="factoextra")
@@ -1073,7 +1073,7 @@ distLplot(hurr_fit, cdf=TRUE, main="Total Annual Hurricane Damages
 
 ![](images/eva_cdf.png)
 
-Unlike many R packages, `summary` and other universal functions don't work with `extremeStat` result objects because they result lists. So, to see a summary of the result, use `distLprint`.
+Unlike many R packages, `summary` and other universal functions don't work with `extremeStat` result objects because they return lists. So, to see a summary of the result, use `distLprint`.
 
 {lang="text"}
 ```
@@ -1366,7 +1366,7 @@ plot(beer_rules, method="graph", interactive=T)
 
 ![basket graph](images/basket_graph.png)
 
-To expore the rules in greater depth, you can write them to a text file to view outside of R using the `write` function. 
+To explore the rules in greater depth, you can write them to a text file to view outside of R using the `write` function. 
 
 ```
 write(basket_rules_custom, file = "basket_rules_custom.csv", 
