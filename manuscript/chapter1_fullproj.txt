@@ -43,7 +43,7 @@ Create the directory space with `dir.create`, the R equivalent to `mkdir`:
 ```
 # Creates directory/ies, use recursive=TRUE in the first
 # command to create the entire path at once
-dir.create("~/BIWR/Chapter1/Code", recursive=T)
+dir.create("~/BIWR/Chapter1/Code", recursive=TRUE)
 dir.create("~/BIWR/Chapter1/Data")
 dir.create("~/BIWR/Chapter1/Results")
 ```
