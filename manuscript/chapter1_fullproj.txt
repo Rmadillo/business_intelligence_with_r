@@ -23,8 +23,8 @@ The data we'll use in this chapter contains 2+ million records of minute-scale p
 4. **`global_reactive_power`**: household global minute-averaged reactive power (in kilowatts)
 5. **`voltage`**: minute-averaged voltage (in volts)
 6. **`global_intensity`**: household global minute-averaged current intensity (in amperes)
-7. **`sub_metering_1`**: energy sub-metering No. 1 (in watt-hours of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered).
-8. **`sub_metering_2`**: energy sub-metering No. 2 (in watt-hours of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light.
+7. **`sub_metering_1`**: energy sub-metering No. 1 (in watt-hours of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven, and a microwave (hot plates are not electric but gas powered).
+8. **`sub_metering_2`**: energy sub-metering No. 2 (in watt-hours of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator, and a light.
 9. **`sub_metering_3`**: energy sub-metering No. 3 (in watt-hours of active energy). It corresponds to an electric water-heater and an air-conditioner.
 
 Our purpose is to describe past monthly power usage and forecast potential usage for six months following the last full month of data in the dataset.
@@ -48,7 +48,9 @@ dir.create("~/BIWR/Chapter1/Data")
 dir.create("~/BIWR/Chapter1/Results")
 ```
 
-Normally, at this point we'd use the script window to write out the script, often using R Markdown to create the report and documentation as we go. For now, you either cut and paste each line into the console as we go, open a new R Script window and put the code as-is into that, or just load the chapter's code from github. At the end of this chapter, we'll go through the process using an R Markdown file to document the project and create a final data product. 
+Normally, at this point we'd use the script window to write out the script, often using R Markdown to create the report and documentation as we go. For now, you either cut and paste each line into the console as we go, open a new R Script window and put the code into that, or just load [this chapter's code from Github](https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_Chapter_1_Code.R). At the end of this chapter, we'll go through the process using an R Markdown file to document the project and create a final data product. 
+
+Remember, if you are cutting and pasting code from the book, you will need to manually edit the URLs, which are broken up here because of page width constraints. 
 
 Move into your new directory and load the R packages we'll use in this project:
 
@@ -59,7 +61,7 @@ setwd("~/BIWR/Chapter1")
 # This package will allow us to interpolate between missing time series values
 require(zoo)
 
-# These packages provides functions for easy data wrangling
+# These packages provide functions for easy data wrangling
 require(dplyr)
 require(reshape2)
 
@@ -85,7 +87,8 @@ Download the data from a zipped flat file (semi-colon delimted .txt format) on t
 ```
 # Download the zip file into the data folder
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/
-  household_power_consumption.zip", destfile = "Data/household_power_consumption.zip")
+  household_power_consumption.zip", destfile = 
+  "Data/household_power_consumption.zip")
 
 # Unzip the data from the zip file into the Data folder
 unzip("Data/household_power_consumption.zip", exdir="Data")
@@ -111,7 +114,7 @@ str(power)
 The `Date` and `Time` variables were read in as characters, so we'll convert them to date and time classes, respectively, as well as create a new `DateTime` column:
 
 ```
-# Convert data to Date object
+# Convert date to an ISO date 
 power$Date = as.Date(power$Date, format="%d/%m/%Y")
 
 # Create a DateTime object
@@ -120,7 +123,7 @@ power$DateTime = as.POSIXct(paste(power$Date, power$Time))
 # Obtain the Month and Year for each data point
 power$Month = format(power$Date,"%Y-%m")
 
-# Add the first to each Y-m combo and convert back to Date
+# Add the first to each Y-m combo and convert back to ISO Date
 power$Month = as.Date(paste0(power$Month, "-01"))
 
 # Verify the changes
@@ -136,18 +139,18 @@ summary(power)
 
 ![](images/summary_power.png)
 
-We can see from the summary that there are about 26k missing values (`NAs`) in our primary variable, `Global_active_power`—about 1.25% of the ~2 million records. We can quickly get a table and graph of missing data over time by using setting a counting marker for missing values with `ifelse`, then using the `dplyr` package to group and summarize the data, and finally pull a ready-made R function from the web to create a calendar graph that shows the daily distribution of the missing values.  
+We can see from the summary that there are about 26k missing values (`NAs`) in our primary variable, `Global_active_power`—about 1.25% of the ~2 million records. We can quickly get a table and graph of missing data over time by setting a counting marker for missing values with `ifelse`, then using the `dplyr` package to group and summarize the data, and finally pull a ready-made R function from the web to create a calendar graph that shows the daily distribution of the missing values.  
 
 ```
-# Use 'ifelse' to count each minute that is NA
+# Use ifelse to count each minute that is NA
 power$Missing = ifelse(is.na(power$Global_active_power), 1, 0)
 
-# Use 'dplyr' to group the data by Date
+# Use dplyr's group_by function to group the data by Date
 power_group_day = group_by(power, Date)
 
-# Use 'dplyr' to summarize by our NA indicator 
+# Use dplyr's summarize function to summarize by our NA indicator 
 # (where 1 = 1 minute with NA)
-power_day_missing = summarise(power_group_day, Count_Missing = sum(Missing))
+power_day_missing = summarize(power_group_day, Count_Missing = sum(Missing))
 
 # Download the 'calendarHeat' function from revolutionanalytics.com
 source("http://blog.revolutionanalytics.com/downloads/calendarHeat.R")
@@ -161,14 +164,16 @@ calendarHeat(power_day_missing$Date, power_day_missing$Count_Missing,
 
 You can view the actual values of missing data on each day by exploring the `power_day_missing` data frame. 
 
-The "recent" 4-5 day spans of missing data may be a little concerning since we want to perform automated forecasting. However, since we're aggregating to months and forecasting into months with very few missing values, we should be ok. But to make automatic forecasting work, we need to fill in those missing values. If we convert each missing value to 0, we'll definitely underestimate usage for those times. A reasonable first pass is to carry the last value forward, which we can do with the `na.locf` function in the `zoo` package. While other approaches are possible (and perhaps better, e.g., using some sort of mean or median value instead of the last value, or even a seasonal Kalman filter), we'll proceed with this option to keep the example simple. 
+The "recent" 4-5 day spans of missing data may be a little concerning since we want to perform automated forecasting. However, since we're aggregating to months and forecasting into months with very few missing values, we should be ok. But to make automatic forecasting work, we need to fill in those missing values. If we convert each missing value to 0, we'll definitely underestimate usage for those times. 
+
+A reasonable first pass is to carry the last value forward, which we can do with the `na.locf` function in the `zoo` package. While other approaches are possible (and perhaps better, e.g., using some sort of mean or median value instead of the last value, or even a seasonal Kalman filter), we'll proceed with this option to keep the example simple. 
 
 ```
-# Use 'zoo' to perform interpolation for missing time series values
+# Use zoo to perform interpolation for missing time series values
 power$Global_active_power_locf = na.locf(power$Global_active_power)
 
 # Compare the original and interpolated distributions
-# Reshape the two variables into 'long' form for ggplot
+# Reshape the two variables into long form for ggplot
 power_long = melt(power, id.vars= "DateTime", measure.vars=
   c("Global_active_power", "Global_active_power_locf"))
 
@@ -181,21 +186,22 @@ density_plot = ggplot(power_long, aes(value, fill=variable, color=variable)) +
 density_plot
 
 # Save density plot to Results folder
+# Note that ggave uses "dpi" to set image resolution
 ggsave("Results/density_plot.png", width=6, height=4, dpi=600, units="in")
 ```
 
 ![](images/biwr_01_power_histos.png)
 
-The overall shape hasn't changed, though we can see a small spike at about 1 kW. This should be fine for our purposes. 
+The overall shape hasn't changed, though we can see a small spike at about 1 kW in the last-observation-carried-forward data. This should be fine for our purposes, as the overall pattern is essentially the same. 
 
 Now that we have a complete time series, we can determine total monthly use (kWh). While we're at it, we can calculate maximum demand for a given month (kW) over the period of record as an example of how to calculate multiple summaries at once. kWh measures use, i.e., how much energy is used, while kW measures demand. We're interested in usage, because that's how power companies charge us.
 
 ```
-# Use 'dplyr' to group by month
+# Use dplyr to group by month
 power_group = group_by(power, Month)
 
-# Use 'dplyr' to get monthly max demand and total use results
-power_monthly = summarise(power_group, 
+# Use dplyr to get monthly max demand and total use results
+power_monthly = summarize(power_group, 
   Max_Demand_kW = max(Global_active_power_locf), 
   Total_Use_kWh = sum(Global_active_power_locf)/60)
 
@@ -239,11 +245,11 @@ We can see clear patterns in the data—higher in the winter and lower in the su
 Now we want to forecast total use for the next six months. We'll create the model with the automated `forecast` function from the `forecast` package, then plot the results and view the model itself. 
 
 ```
-# Create a time series object of Total Usage
+# Create a time series object of monthly total use
 total_use_ts = ts(power_monthly$Total_Use_kWh, start=c(2007,1), frequency=12)
 
 # Automatically obtain the forecast for the next 6 months
-# using the 'forecast' package's forecast function
+# using the forecast package's forecast function
 # See ?forecast for more details
 total_use_fc = forecast(total_use_ts, h=6)
 
@@ -254,7 +260,7 @@ summary(total_use_fc)
 ![](images/forecast_model_output.png)
 
 ```
-# "Sink" a copy of the model results into a text file in the Results folder
+# Export a copy of the model results into a text file in the Results folder
 sink("Results/Forecast_Model.txt")
 summary(total_use_fc)
 sink()
@@ -274,24 +280,24 @@ dev.off()
 
 ## Reporting
 
-With the forecast summary and plot we have the essential pieces for addressing the problem. Now we need to create a "report" for decision-making; in this case, we'll again keep it simple and just produce an interactive browser app of the monthly trends and forecast results. 
+With the forecast summary and plot we have the essential pieces for addressing the problem. Now we need to create a report for decision-making. In this case, we'll again keep it simple and just produce an interactive browser app of the monthly trends and forecast results. 
 
-### Create an interactive .html plot
+### Create an interactive HTML plot
 
 ```
 # Create a data frame with the original data
-# and space for the forecast details
+# and placeholders for the forecast details
 use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh, 
   Forecast = NA, Upper_80 = NA, 
   Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
 
 # Create a data frame for the forecast details
-# with a column for the original data
+# with a placeholder column for the original data
 use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
   total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
   Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
 
-# "Union" the two data frames into one
+# Union the two data frames into one using rbind
 use_ts_fc = rbind(use_df, use_fc)
 
 # Create a time series of the data and forecast results
@@ -302,7 +308,7 @@ energy_use_prediction_widget = dygraph(total_use_forecast,
   main = "Predicted Monthly Electricty Use (kWh)",
   ylab = "Total kWh", width=900, height=500) %>% 
   dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
-  dyEvent(date = "2008-08-01", "Went on vacation", labelLoc = "top") %>%
+  dyEvent(x = "2008-08-01", "Went on vacation", labelLoc = "top") %>%
   dyRangeSelector(dateWindow = c("2008-09-15", "2011-06-01")) %>%
   dyLegend(width = 800)
 
@@ -323,9 +329,9 @@ Opening the `energy_use_prediction_widget.html` from the Reports folder shows us
 
 I often have a script window (`.R`) and an R Markdown (.`Rmd`) window open at the same time when working on projects. Once I have the code the way I want it, I transfer that code to the `.Rmd` file if I intend to include it in any data/reporting products. When I have steps or results and want to jot down my rationale for the methods I'm using, interpretations and ideas for future use, and so on, I do that in an `.Rmd` file as well. At the end, I aim for an `.Rmd` file that will allow another user to reproduce the entire analysis and have an understanding of why I chose certain methods or came to the conclusions I report. For longer analyses, this may require a "make" file type of setup (see Appendix 1). 
 
-Even better is when it's a small project—I can make the code, documentation, and report all one file. Since decision makers want the answer first, I include all of the code except for results inside a single code chunk near the top. The results I place in separate code chunks, placed where appropriate. For example, had the forecasting project above required a report, I'd structure it all inside an `.Rmd` like I've shown in *Appendix 2*.  
+Even better is when it's a small project—I can make the code, documentation, and report all one file. Since decision makers want the answer first, I include all of the code except for results inside a single code chunk near the top. The results I place in separate code chunks, placed where appropriate. For example, had the forecasting project above required a report, I'd structure it all inside an `.Rmd` like I've shown in Appendix 2.  
 
-To run that file manually, just load it into RStudio and click the *Knit HTML* button in the Source window. A preview window will pop up. In some systems, the .html file is concurrently saved to the working directory, while in others you may need to *Open in browser* and then *Save as* from there. 
+To run that file manually, just load it into RStudio and click the **Knit HTML** button in the *Source* window. A preview window will pop up. In some systems, the HTML file is concurrently saved to the working directory, while in others you may need to **Open in browser** and then **Save as** from there. 
 
 ![](images/biwr_ch1_knitr_ex.png)
 
@@ -335,7 +341,7 @@ To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run
 render("Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
 ```
 
-W> Note: as I prefer to have the `.Rmd` file self-contained, I sometimes include the directory creation steps in the code. This will *fail* if you've already created the directories; what I do is comment those sections out if I'm running it locally for testing.  
+W> Note: as I prefer to have the `.Rmd` file self-contained, I sometimes include the directory creation steps in the code. This will ***fail*** if you've already created the directories---comment those sections out if you're (re)running it several times locally for testing.  
 
 
 ## Summary
