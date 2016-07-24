@@ -89,5 +89,7 @@ Feedback, criticism, and improvements are always welcome; send me an email to db
 I hope that this book serves well in its intended purpose as a desktop reference for busy professionals---giving you fingertip access to a variety of BI analytic methods done in R as simply as possible.
 
 
-
+|  |  
+|  |  
+|  |  
 
