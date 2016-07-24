@@ -1,5 +1,4 @@
 about.txt
 Introduction.txt
-chapter5_es.txt
-chapter6_time.txt
+chapter1_fullproj.txt
 
