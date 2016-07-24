@@ -125,7 +125,7 @@ The stress value itself is a single value that represents how well the plot repr
 | > 0.30 | No representation |
 
 
-Based on the diagnostics, then this plot represents the similarity matrix quite well, so we can be confident in the nMDS representation of this dataset.
+Based on the diagnostics, this plot represents the similarity matrix quite well, so we can be confident in the nMDS representation of this dataset.
 
 Note: in general, stress values rise with the size of the dataset. Thus, interpreting the final stress score requires considering the size of the dataset in addition to considering the Shepard plot and the patterns revealed in the nMDS plot. When stress is high, sometimes it can be brought down by `metaMDS` options `k` and `trymax`, but the guidelines above should not be considered definitive—sometimes clear patterns can be seen even with relatively higher levels of stress.
 
@@ -1030,9 +1030,6 @@ Finally, you can extract the data with the expected values by pulling it from th
 
 
 ## Extreme value analysis
-
-D> "It is impossible that the improbable will never happen." 
-D> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--Emil Gumbel
 
 Extreme value analysis (EVA) is a different way to explore outliers; by acknowledging that outliers are real and can be incredibly useful for analysis, we can better assess the likelihood of "improbable" events. 
 
