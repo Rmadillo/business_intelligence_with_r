@@ -45,7 +45,8 @@ GGally is built over `ggplot2` (which we'll use often in this book), and its syn
 
 ```
 ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7), 
-  title="Daily Bike Sharing Data", axisLabels="show", color="season")
+  title="Daily Bike Sharing Data", axisLabels="show", 
+  mapping=aes(color=season, alpha=0.3))
 ```
 
 ![](images/Ch4_01.png)
