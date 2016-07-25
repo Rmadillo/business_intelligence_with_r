@@ -25,7 +25,7 @@ levels(bike_share_daily$yr) = c(2011, 2012)
 
 require(GGally)
 
-ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7), title="Daily Bike Sharing Data", axisLabels="show", color="season")
+ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7), title="Daily Bike Sharing Data", axisLabels="show", mapping=aes(color = season, alpha=0.3))
 
 
 ### Create histograms of all numeric variables in one plot
