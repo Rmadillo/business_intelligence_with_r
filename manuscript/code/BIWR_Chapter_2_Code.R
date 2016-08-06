@@ -397,7 +397,7 @@ zipcodes = zipcodes[,c(1,11:12,10)]
 
 # Table A, continued (Part 2)
 customer_zip = zipcodes[sample(1:nrow(zipcodes), 10000, replace=TRUE),]$zip
-customers = data.frame(customer_id, customer_gender, customer_age, customer_purchases, customer_zip)
+customers = data.frame(customer_id, customer_gender, customer_age, customer_purchases, customer_zip, stringsAsFactors=FALSE)
 
 # TABLE C – results of a product interest survey
 ones = seq(1, 1, length.out = 2000)
@@ -410,7 +410,7 @@ strongly_disagree = c(zeros, zeros, zeros, zeros, ones)
 survey = data.frame(customer_id, strongly_agree, agree, neutral, disagree, strongly_disagree)
 
 # TABLE D – lookup table to match states to regions
-state_regions = data.frame(datasets::state.abb, datasets::state.name, datasets::state.region, datasets::state.division)
+state_regions = data.frame(datasets::state.abb, datasets::state.name, datasets::state.region, datasets::state.division, stringsAsFactors=FALSE)
 colnames(state_regions) = c("abb", "state", "region", "division")
 
 
