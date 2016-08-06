@@ -229,10 +229,16 @@ VHA_Patient_Satisfaction = xmlToDataFrame(vha_pt_sat_raw)
 When there are more complex structures in the file, you may have to use another approach. Here we'll use the Federal Housing Finance Agency's [House Price Index (HPI)](http://www.fhfa.gov/DataTools/Downloads/Pages/House-Price-Index.aspx), which measures average price changes in repeat sales or refinancings on single-family homes. If you try the simple approach shown above, it will fail, with the warning `'data' must be of a vector type, was 'NULL'`. Going through a list first and then into a data frame can often make these types of xml files import successfully:
 
 ```
+# Read the file from the web
 FHFA_HPI_raw = readLines("http://www.fhfa.gov/DataTools/Downloads/Documents/
   HPI/HPI_master.xml")
+  
+# Convert the XML to an R list 
 FHFA_HPI_list = xmlToList(xmlParse(FHFA_HPI_raw))
-FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list)) 
+
+# Turn the list into a data frame
+FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list), 
+  row.names = make.unique(names(FHFA_HPI_list)))
 ```
 
 
@@ -243,6 +249,7 @@ JSON data can be really useful for nested data, so it is becoming more popular f
 ```
 # Load the jsonlite package
 require(jsonlite)
+
 # Get JSON data of UFO sightings
 ufos = fromJSON("http://metricsgraphicsjs.org/data/ufo-sightings.json")
 ```
@@ -319,7 +326,7 @@ T>
 T> Instead of hard-coding your password into code, you can add a pop-up prompt for a password in RStudio. 
 T> In the `odbcConnect` function, use this:
 T> 
-T> `pwd=..rs.askForPassword("Please enter your password")`
+T> `pwd = .rs.askForPassword("Please enter your password")`
 
 We can verify the connection is working:
 
@@ -332,6 +339,7 @@ Once the connection is made, data can flow. If you don't already know the names 
 ```
 # To see all tables:
 sqlTables(connection)
+
 # To see all tables in a given schema, e.g. dbo:
 sqlTables(connection, schema="dbo")
 ```
@@ -358,6 +366,8 @@ To make a SQL query and put the results into a dataframe, set up the query in an
 # Within the double quotes you can put a valid SQL query,
 # using single quotes to name the table
 query_1 = "SELECT * FROM 'table_name'"
+
+# Then use sqlQuery to pull the table into R
 query_1_dataframe = sqlQuery(connection, query_1)
 
 # While not as clear for large queries, you can combine them into one step:
@@ -367,9 +377,11 @@ query_1_dataframe = sqlQuery(connection, "SELECT * FROM 'table_name'")
 Any typical SQL query will work; for example, this query will pull in all columns but only those records specified by the where clause, and will sort it by the order by variable(s):
 
 ```
+# Usual SQL syntax works
 query_2 = "SELECT * FROM 'table_name$' 
   WHERE variable_name = some_condition 
   ORDER BY ordering_variable_name"
+  
 query_2_dataframe = sqlQuery(connection, query_2)
 ```
 
@@ -405,17 +417,30 @@ Creating a new database with sqldf is easy:
 sqldf("attach 'PSES_database.sqlite' as new")
 ```
 
-It's just a shell at the moment; next create a connection to that database for use in subsequent table import and manipulation:
+It's just a shell at the moment (which is why the command returns `NULL`); next create a connection to that database for use in subsequent table import and manipulation:
 
 ```
 connect = dbConnect(SQLite(), dbname="PSES_database.sqlite")
 ```
 
-And now you can read csv files directly into the database (i.e., so it is not throttled by passing through R first). We'll use the PSES 2011 file we downloaded in the flat files section earlier in this chapter.
+And now you can read R data frames into the database using `dbWriteTable`:
 
 ```
-read.csv.sql("pses2011.csv", sql = "CREATE TABLE pses2011 AS SELECT * FROM file",
-    dbname = "PSES_database.sqlite")
+# Write a data frame into a database table
+# options are connection name, name of the table to write, and name of the dataframe
+dbWriteTable(connect, "pses2011", pses2011)
+```
+
+You can also read csv files directly into the database (i.e., so it is not throttled by passing through R first). We'll use the PSES 2011 data again, this time downloading it directly:
+
+```
+# Download the PSES2011 file
+download.file("http://www.tbs-sct.gc.ca/pses-saff/2011/data/
+  2011_results-resultats.csv", "pses2011.csv")
+
+# Read the csv into the database as a table called pses2011_downloaded
+read.csv.sql("pses2011.csv", sql = "CREATE TABLE pses2011_downloaded 
+  AS SELECT * FROM file", dbname = "PSES_database.sqlite")
 ```
 
 Because an Excel file must be loaded into R first, and then passed to the database, you need to consider other options. If your Excel file has only a few sheets in it, saving them as csvs might be preferable. If you have many sheets to import, using `XLConnect` to import the sheets all at once could save a little time. They'll still need to be loaded into the database individually, however, and you should remove the dataframes when you've transferred them to the database.
@@ -522,7 +547,7 @@ Load the `sqldf` package if it's not already loaded, and then reconnect to the d
 
 ```
 require(sqldf)
-connection = dbConnect(SQLite(), dbname="PSES_database.sqlite")
+connect = dbConnect(SQLite(), dbname="PSES_database.sqlite")
 ```
 
 Selecting subsets from a database table using `sqldf` is based on (of course) SQL select statements. For example, this statement brings in three of the columns from the LEVEL1ID table:
@@ -549,15 +574,15 @@ pses2011_agency = sqldf("SELECT
   dbname="PSES_db.sqlite")
 ```
 
-Don't forget to close the connection:  `dbDisconnect(connection)` or `close(connection)`.
+Don't forget to close the connection:  `dbDisconnect(connect)` or `close(connect)`.
 
-Basically, `sqldf("SQL QUERY", dbname="NAME OF DATABASE")` is all you need to use SQLite within R, and it works on both databases and dataframes—if the latter, it's just `sqldf("SQL QUERY")`. It is important to note that unlike R, SQLite is not case sensitive, so be careful naming tables and columns—a and A are identical to SQLite. (SQL functions are in CAPS in the code examples in this book simply to distinguish them from table and column names, which are left in the same case that R sees them.)
+Basically, `sqldf("SQL QUERY", dbname="NAME OF DATABASE")` is all you need to use SQLite within R, and it works on both databases and dataframes---if the latter, it's just `sqldf("SQL QUERY")`. It is important to note that unlike R, SQLite is not case sensitive, so be careful naming tables and columns---`a` and `A` are identical to SQLite. (SQL functions are in CAPS in the code examples in this book simply to distinguish them from table and column names, which are left in the same case that R sees them.)
 
 You can do most basic types of SQL work in this fashion; for example, if you want to count the number of rows in your new dataframe where `ANSWER3` ("Neutral") is more than 50% of the total responses, have it grouped by `Question` and `Agency`, and order the result by highest to lowest counts, you can use:
 
 ```
 agency_row_count = sqldf("SELECT
-   Question
+  Question
   , Agency
   , COUNT(ANSWER3) as Answer3_Count
   FROM pses2011_agency
@@ -578,7 +603,7 @@ agency_row_count = sqldf("SELECT
   ORDER BY Question desc")  
 ```
 
-It's worth pointing out that if your data fits in memory, there usually isn't need for a database; merging and manipulation can occur inside R—recipes in the next chapter explore ways to do that.
+It's worth pointing out that if your data fits in memory, there usually isn't need for creating a local database; merging and manipulation can occur inside R, and recipes in the next chapter explore ways to do that.
 
 
 ## Getting data from the web
@@ -611,32 +636,32 @@ While there are a few R packages that allow scraping, the `XML` package is the s
 require(XML)
 ```
 
-As a simple example, we can explore the [2010 National Survey on Drug Use and Health](http://oas.samhsa.gov/NSDUH/2k10NSDUH/tabs/Sect1peTabs1to46.htm). Like many websites, it has pages that contain multiple tables. Say we just want Table 1.1A. First, read in the raw html:
+As a simple example, we can explore the [2010 National Survey on Drug Use and Health](http://archive.samhsa.gov/data/NSDUH/2k10nsduh/tabs/Sect1peTabs1to46.htm). Like many websites, it has pages that contain multiple tables. Say we just want Table 1.1A. First, read in the raw html:
 
 ```
-drug_use_2010_table = readLines("http://oas.samhsa.gov/NSDUH/2k10NSDUH/tabs/
-  Sect1peTabs1to46.htm")
+drug_use_2010 = readLines("http://archive.samhsa.gov/data/NSDUH/
+  2k10nsduh/tabs/Sect1peTabs1to46.htm")
 ```
 
 Then read in the first table (`which=1`) part of the html:
 
 ```
-drug_use_table1_1 = readHTMLTable(druguse, header=T, which=1, 
+drug_use_table1_1 = readHTMLTable(drug_use_2010, header=T, which=1, 
   stringsAsFactors=FALSE)
 ```
 
-What if you want more than one table? Since we've read in the entire webpage, we can scrape it to extract whatever information we need. For example, let's say we want tables 1.17A and 1.17B. Using the webpage's [table of contents](http://oas.samhsa.gov/NSDUH/2k10NSDUH/tabs/TOC.htm#TopOfPage), we see that the tables we want are 31st and 32nd:
+What if you want more than one table? Since we've read in the entire webpage, we can scrape it to extract whatever information we need. For example, let's say we want tables 1.17A and 1.17B. Using the webpage's [table of contents](http://archive.samhsa.gov/data/NSDUH/2k10nsduh/tabs/TOC.htm#TopOfPage), we find that the tables we want are 31st and 32nd:
 
 ```
-drug_use_table1_17a = readHTMLTable(druguse, header=T, which=31, 
+drug_use_table1_17a = readHTMLTable(drug_use_2010, header=T, which=31, 
   stringsAsFactors=FALSE)
-drug_use_table1_17b = readHTMLTable(druguse, header=T, which=32, 
+drug_use_table1_17b = readHTMLTable(drug_use_2010, header=T, which=32, 
   stringsAsFactors=FALSE)
 ```
 
 #### Scraping tables that cover multiple pages
 
-What about a case where you need a table that goes over many pages? For example, ProPublica has a website that lists [deficiencies in nursing home care in the United States](http://projects.propublica.org/nursing-homes/); the subset that includes Texas includes more than 3,400 rows that cover 189 different (web)pages.  
+What about a case where you need a table that goes over many pages? For example, ProPublica has a website that lists [deficiencies in nursing home care in the United States](http://projects.propublica.org/nursing-homes/). At the time of this writing (mid 2016), the subset that includes Texas contains more than 22 thousand rows that cover 524 different (web)pages.  
 
 Obviously, cutting and pasting that would seriously suck.
 
@@ -644,7 +669,7 @@ Here's how you can do it in R with a few lines of code. First, set up an R objec
 
 ```
 allpages = paste("http://projects.propublica.org/nursing-homes/findings/
-  search?page=", 1:189, "&search=&ss=ALL&state=TX", sep="")
+  search?page=", 1:524, "&search=&ss=ALL&state=TX", sep="")
 ```
 
 ...then read in each page into an R list format:
@@ -666,7 +691,7 @@ nursing_home_deficiencies = do.call(rbind, lapply(tablelist, data.frame,
   stringsAsFactors=FALSE))
 ```
 
-This result still needs some cleaning before we can move to analysis; Chapter 3 provides an example of cleaning this particular scrape in addition to the more general recipes. 
+This result still needs some cleaning before we can move to analysis---Chapter 3 provides an example of cleaning this particular scrape in addition to the more general recipes. 
 
 
 ### Working with APIs
@@ -774,7 +799,7 @@ pses2011_split = split(pses2011, pses2011$LEVEL1ID)
 # Save each new data frame as an individual .csv file based on its name
 lapply(1:length(pses2011_split), function(i) 
     write.csv(pses2011_split[[i]], 
-    file = paste0("~/PATH/TO/FOLDER/", 
+    file = paste0("~/BIWR/", 
     names(pses2011_split[i]), ".csv"),  
     row.names = FALSE))
 ```
@@ -782,13 +807,13 @@ lapply(1:length(pses2011_split), function(i)
 If you want to save a data frame in XML format (at the cost of a larger file size!), use the `write.xml` function in the `kulife` package. 
 
 ```
-kulife::write.xml(iris, file="iris.xml")
+kulife::write.xml(iris, file = "iris.xml")
 ```
 
 If you want to save data in JSON format, use `jsonlite` with the `pretty` option set to true to have it formatted cleanly. Then `sink` it into a file in the working directory.
 
 ```
-iris_json = jsonlite::toJSON(iris, pretty=TRUE)
+iris_json = jsonlite::toJSON(iris, pretty = TRUE)
 sink("iris_json.json")
 iris_json
 sink()
