@@ -114,12 +114,15 @@ vha_pt_sat_raw = readLines("http://www1.va.gov/VETDATA/docs/Datagov/Data_Gov_VHA
 # Convert xml to a data frame
 VHA_Patient_Satisfaction = xmlToDataFrame(vha_pt_sat_raw)
     
-# From list first and then into a data frame 
+# Read the file from the web
 FHFA_HPI_raw = readLines("http://www.fhfa.gov/DataTools/Downloads/Documents/HPI/HPI_master.xml")
-
+  
+# Convert the XML to an R list 
 FHFA_HPI_list = xmlToList(xmlParse(FHFA_HPI_raw))
 
-FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list)) 
+# Turn the list into a data frame
+FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list), 
+  row.names = make.unique(names(FHFA_HPI_list)))
 
 
 ### Reading JSON files 
@@ -155,7 +158,11 @@ enron = stream_in(file("enron.json"))
 
 require(RODBC)
 
-connection = odbcConnect("NAME OF DSN CONNECTION", uid="YOUR USER ID",pwd="YOUR PASSWORD")
+# Hard-coded password entry
+connection = odbcConnect("NAME OF DSN CONNECTION", uid = "YOUR USER ID", pwd = "YOUR PASSWORD")
+
+# Interactive password entry in RStudio
+connection = odbcConnect("NAME OF DSN CONNECTION", uid = "YOUR USER ID", pwd = .rs.askForPassword("Please enter your password"))
 
 # Verify the connection is working:
 odbcGetInfo(connection)
@@ -179,15 +186,15 @@ whole_table = sqlFetch(connection, "table_name")
 
 # Within the double quotes you can put a valid SQL query,
 # using single quotes to name the table
-
 query_1 = "SELECT * FROM 'table_name'"
 
+# Then use sqlQuery to pull the table into R
 query_1_dataframe = sqlQuery(connection, query_1)
 
 # While not as clear for large queries, you can combine them into one step:
-
 query_1_dataframe = sqlQuery(connection, "SELECT * FROM 'table_name'")
 
+# Usual SQL syntax works
 query_2 = "SELECT * FROM 'table_name$' 
   WHERE variable_name = some_condition 
   ORDER BY ordering_variable_name"
@@ -206,14 +213,20 @@ vignette("RODBC", package="RODBC")
 require(sqldf)
 
 # Create empty database
-
 sqldf("attach 'PSES_database.sqlite' as new")
 
 # Create a connection
 connect = dbConnect(SQLite(), dbname="PSES_database.sqlite")
 
-# Populate database with csv
-read.csv.sql("pses2011.csv", sql = "CREATE TABLE pses2011 AS SELECT * FROM file", dbname = "PSES_database.sqlite")
+# Write a data frame into a database table
+# options are connection name, name of the table to write, and name of the dataframe
+dbWriteTable(connect, "pses2011", pses2011)
+
+# Download the PSES2011 csv file (instead of importing it, as above)
+download.file("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", "pses2011.csv")
+
+# Read the csv into the database as a table called pses2011_downloaded
+read.csv.sql("pses2011.csv", sql = "CREATE TABLE pses2011_downloaded AS SELECT * FROM file", dbname = "PSES_database.sqlite")
 
 # Populate database with Excel files using `XLConnect` 
 
@@ -325,20 +338,22 @@ vignette("quickstart", package="httr")
 
 require(XML)
 
-drug_use_2010_table = readLines("http://oas.samhsa.gov/NSDUH/2k10NSDUH/tabs/Sect1peTabs1to46.htm")
+# Scrape the webpage
+drug_use_2010 = readLines("http://archive.samhsa.gov/data/NSDUH/2k10nsduh/tabs/Sect1peTabs1to46.htm")
 
-drug_use_table1_1 = readHTMLTable(druguse, header=T, which=1, stringsAsFactors=FALSE)
+# Read the first HTML table on the page into a dataframe
+drug_use_table1_1 = readHTMLTable(drug_use_2010, header=T, which=1, stringsAsFactors=FALSE)
 
-drug_use_table1_17a = readHTMLTable(druguse, header=T, which=31, 
-stringsAsFactors=FALSE)
+# Read the 31st HTML table into a dataframe
+drug_use_table1_17a = readHTMLTable(drug_use_2010, header=T, which=31, stringsAsFactors=FALSE)
 
-drug_use_table1_17b = readHTMLTable(druguse, header=T, which=32, 
-stringsAsFactors=FALSE)
+# Read the 32nd HTML table into a dataframe
+drug_use_table1_17b = readHTMLTable(drug_use_2010, header=T, which=32, stringsAsFactors=FALSE)
 
 
 #### Scraping tables that cover multiple pages
 
-allpages = paste("http://projects.propublica.org/nursing-homes/findings/search?page=", 1:189, "&search=&ss=ALL&state=TX", sep="")
+allpages = paste("http://projects.propublica.org/nursing-homes/findings/search?page=", 1:524, "&search=&ss=ALL&state=TX", sep="")
 
 tablelist = list()
 for(i in seq_along(allpages)){
@@ -401,10 +416,23 @@ colnames(state_regions) = c("abb", "state", "region", "division")
 
 ## Writing files to disk
 
-# csv
+# CSV
 write.table(pses2011, "pses2011.csv", sep=",", row.names=FALSE)
 
-# json
+# Split data frame into a list by a factor
+pses2011_split = split(pses2011, pses2011$LEVEL1ID)
+
+# Save each new data frame as an individual .csv file based on its name
+lapply(1:length(pses2011_split), function(i) 
+    write.csv(pses2011_split[[i]], 
+    file = paste0("~/BIWR/", 
+    names(pses2011_split[i]), ".csv"),  
+    row.names = FALSE))
+
+# XML
+kulife::write.xml(iris, file="iris.xml")
+
+# JSON
 iris_json = jsonlite::toJSON(iris, pretty=TRUE)
 sink("iris_json.json")
 iris_json
