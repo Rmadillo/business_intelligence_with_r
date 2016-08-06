@@ -13,7 +13,7 @@
 ### read.table
 
 # read.table from Chapter 1
-power = read.table("Data/household_power_consumption.txt", sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
+power = read.table("~/BIWR/Chapter1/Data/household_power_consumption.txt", sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
 
 # Read in a csv from the internet with non-ASCII characters
 pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/2011_results-resultats.csv", sep=",", encoding="UTF-8")
@@ -24,7 +24,7 @@ require(data.table)
 
 # If you want to read in a csv directly, use fread, e.g., if you
 # had the raw pses2011 in a local csv, you'd read it in this way:
-power = fread("Data/household_power_consumption.txt", sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
+power = fread("~/BIWR/Chapter1/Data/household_power_consumption.txt", sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
 
 #If you *already* have a data frame and want to speed up reading 
 # and accessing it, use the `data.table` function:
