@@ -27,6 +27,7 @@ str(customers)
 
 # Look at the first (or last) 6 lines of the data frame
 head(customers)
+
 tail(customers)
 
 # Obtain basic summary stats
@@ -34,6 +35,7 @@ summary(customers)
 
 # Look at the rows with missing data
 missing_data = customers[!complete.cases(customers),]
+
 missing_data
 ```
 
@@ -150,22 +152,24 @@ There are many possible approaches to cleaning, so as an example, the following 
 ```
 # Create cleaner column names
 colnames(nursing_home_deficiencies) = c("Date", "Home", "City", "State", 
-    "Deficiency_Count", "Severity")
+  "Deficiency_Count", "Severity")
 
 # Replace abbreviations and extraneous text
 nursing_home_deficiencies$State = gsub("Tex.", "TX", 
-    nursing_home_deficiencies$State, fixed = TRUE)
+  nursing_home_deficiencies$State, fixed = TRUE)
+
 nursing_home_deficiencies$Home = gsub(" (REPORT)  Home Info", "", 
-    nursing_home_deficiencies$Home, fixed = TRUE)
-    
+  nursing_home_deficiencies$Home, fixed = TRUE)
+ 
 # Take the first letter (severity score) and remove the 
 # duplicate and extraneous text
 nursing_home_deficiencies$Severity = substr(nursing_home_deficiencies$Severity,
-    1, 1)
+  1, 1)
     
 # Clean the date information and convert to date objcet
 nursing_home_deficiencies$Date = gsub(".", "", nursing_home_deficiencies$Date,
-    fixed = TRUE)
+  fixed = TRUE)
+
 clean = function(col) {
     col = gsub('Jan', 'January', col, fixed = TRUE)
     col = gsub('Feb', 'February', col, fixed = TRUE)
@@ -176,9 +180,11 @@ clean = function(col) {
     col = gsub('Dec', 'December', col, fixed = TRUE)
     return(col)
   }
+
 nursing_home_deficiencies$Date = clean(nursing_home_deficiencies$Date)
+
 nursing_home_deficiencies$Date = as.Date(nursing_home_deficiencies$Date, 
-    format="%B %d, %Y")
+  format="%B %d, %Y")
 ```
 
 The use of `fixed = TRUE` option above tells `gsub` to use exact matching; the default is `false`, which uses [POSIX 1003.2 extended regular expressions](http://www.cheatography.com/davechild/cheat-sheets/regular-expressions/). 
@@ -233,14 +239,15 @@ In the previous chapter, we saw a JSON import that turned all of the variables i
 | Date | `as.Date(OBJECT, format="yyyy-mm-dd", ...)` |
 | Datetime | `as.POSIXct(OBJECT, tz="CURRENT TIME ZONE", ...)` |
 
-Note that conversion to and between dates and times can be tricky, depending on the structure of the existing date/time variable. If it's already in standard ISO format (e.g., `yyyy-mm-dd`), these basic conversions will work fine. If not, you'll have to mess with the `format` option and/or use other techniques. See Chapter 8 (*Trends and Time*) for lots of details on working with and converting date and time values. 
-
 Sometimes you may need to reduce your data set to only a certain type of variable, say all numeric and none of the other variable types. Use the `sapply` function as follows:
 
 ```
 customers_numeric = customers[sapply(customers,is.numeric)]
 ```
 
+W> #### Dates and Times
+W> 
+W> Note that conversion to and between dates and times can be tricky, depending on the structure of the existing date/time variable. If it's already in standard ISO format (e.g., `yyyy-mm-dd`), these basic conversions will work fine. If not, you'll have to mess with the `format` option and/or use other techniques. See Chapter 6 (*Trends and Time*) for lots of details on working with and converting date and time values. 
 
 ### Rounding
 
@@ -268,6 +275,7 @@ For example, if you want to attach the first of the month to a `yyyy-mm` field, 
 
 ```
 my_data$date = as.Date(paste(mydata$yyyy_mm, "01", sep="-"))
+
 my_data$date = as.Date(paste0(mydata$yyyy_mm, "-01"))
 ```
 
@@ -277,17 +285,19 @@ It can also be useful for including soft-coded values in a title or a plot, axis
 
 ```
 plot(customers$customer_age, customers$customer_purchase, 
-     main=paste("Age vs Purchase Amount for", 
-     length(customers$customer_age), "Customers"))
+  main=paste("Age vs Purchase Amount for", 
+  length(customers$customer_age), "Customers"))
 ```
 
 ![](images/pasteplot.png)
 
-Every once in a while you'll get a file that has commas in a numeric field (cough Excel cough). A data type conversion, `paste`, and `gsub` can be used together to clean that up in one line:
-
-```
-my_data$my_variable = as.numeric(paste(gsub(",", "", my_data$my_variable)))
-```
+A> #### Commas in Numbers
+A> 
+A> Every once in a while you'll get a file that has commas in a numeric field (cough Excel cough). A data type conversion, `paste`, and `gsub` can be used together to clean that up in one line of code:
+A> 
+A> ```
+A> my_data$my_variable = as.numeric(paste(gsub(",", "", my_data$my_variable)))
+A> ```
 
 
 ## Merging dataframes
@@ -316,8 +326,10 @@ Our objective is to merge the four tables so that we have the customer data alon
 ```
 customer_locations = left_join(customers, zipcodes, by = 
   c("customer_zip" = "zip"))
+  
 customer_regions = left_join(customer_locations, state_regions, by= 
   c("stabbr" = "abb"))
+  
 customer_survey = left_join(customer_regions, survey, by = 
   c("customer_id" = "customer_id"))
 ```
@@ -327,18 +339,21 @@ The base package's `merge` function is the old standby, but is considerably slow
 ```
 customer_locations = merge(customers, zipcodes, by.x = "customer_zip", 
   by.y = "zip", all.x = TRUE)
+  
 customer_regions = merge(customer_locations, state_regions, by.x = "stabbr", 
   by.y = "abb", all.x = TRUE)
+  
 customer_survey = merge(customer_regions, survey, by.x="customer_id", 
   by.y="customer_id", all.x=TRUE)
 ```
 
-W> R will match on columns with the same names, so while you can usually get away without specifying the `by` variables with `merge` or `dplyr`, you should *always* specify them anyway—remember your downstream users!
+W> R will match on columns with the same names, so while you can usually get away without specifying the `by` variables with `merge` or `dplyr`, you should *always* specify them anyway---remember your downstream users!
 
-With both the `dplyr` `*_join` and the `base` `merge` functions, you get everything in both dataframes. You either have to select only the columns you want in a new dataframe before the merge, or remove the excess columns after it. Of course, using SQL you can choose just the columns you want, which is illustrated below.
+With both the `dplyr` joins and the `base` merges, you get everything in both dataframes. You either have to select only the columns you want in a new dataframe before the merge, or remove the excess columns after it. Of course, using SQL you can choose just the columns you want, which is illustrated below.
 
 ```
-customer_survey = sqldf("SELECT
+customer_survey = sqldf("
+  SELECT
     customers.*
     , zipcodes.city
     , state_regions.state
@@ -349,17 +364,17 @@ customer_survey = sqldf("SELECT
     , survey.neutral
     , survey.disagree
     , survey.strongly_disagree
-    FROM customers
-    LEFT JOIN zipcodes
-        ON customers.customer_zip = zipcodes.zip
-    LEFT JOIN state_regions
-        ON zipcodes.stabbr = state_regions.abb
-    LEFT JOIN survey
-        ON customers.customer_id = survey.customer_id"
-    , stringsAsFactors=FALSE)
+  FROM customers
+  LEFT JOIN zipcodes
+    ON customers.customer_zip = zipcodes.zip
+  LEFT JOIN state_regions
+    ON zipcodes.stabbr = state_regions.abb
+  LEFT JOIN survey
+    ON customers.customer_id = survey.customer_id"
+  , stringsAsFactors=FALSE)
 ```
 
-If you're coming to R with some SQL in your background, you might wonder why this wasn't the primary method of this recipe—after all, we can do it all in one step, and we get exactly what we want, and we can sort (`ORDER BY`) or add any other SQL statement here to get what we need. The reason is that showing each join/merge in a single step allows other R coders to see exactly what was done more clearly. SQL merge code can get ugly fast, so it's useful to consider whether the project (=code) is going to be passed on to others in the future and whether they are familiar with SQL, and code accordingly.
+If you're coming to R with some SQL in your background, you might wonder why this wasn't the method to start with---after all, we can do it all in one step, and we get exactly what we want, and we can sort (`ORDER BY`) or add any other SQL statement here to get what we need. The reason is that showing each join/merge in a single step allows other R coders to see exactly what was done more clearly. SQL merge code can get ugly fast, so it's useful to consider whether the project (=code) is going to be passed on to others in the future and whether they are familiar with SQL, and code accordingly.
 
 That said, I love using this approach; SQL provides you many more options and ability to customize your output to be exactly what you need. As long as your downstream dependencies are fine with SQL, you might consider this as your *primary* approach to joining.
 
@@ -376,7 +391,7 @@ Obviously, there's more to life than left joins. The following table lays out th
 | Right* | ![Right join](images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM B LEFT JOIN A ON B.key = A.key` |
 | Right Anti* | ![Right anti join](images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM B LEFT JOIN A ON B.key = A.key WHERE A.key iS NULL` |
 
-\* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me—right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
+\* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me---right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
 You can merge large files with `data.tables`, but the way you specify the joins is opaque---e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time---so for now it's probably best employed for single-user/casual use and not for production code unless speed needs to trump clarity.
 
@@ -415,14 +430,14 @@ If you have some variables in one table that don't occur in the other table, you
 # Create a data frame with the original data
 # and space for the forecast details
 use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh, 
-    Forecast = NA, Upper_80 = NA, 
-    Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
+  Forecast = NA, Upper_80 = NA, 
+  Lower_80 = NA, Upper_95 = NA, Lower_95 = NA)
 
 # Create a data frame for the forecast details
 # with a column for the original data
 use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
-    total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
-    Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
+  total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
+  Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
 
 # "Union" the two data frames into one
 use_ts_fc = rbind(use_df, use_fc)
@@ -454,10 +469,9 @@ customers_right_half = customer_survey[,c(1,8:14)]
 
 # Use sqldf to make a natural join
 customers_back_together = sqldf("
-    SELECT *
-    FROM customers_left_half A
-    JOIN 
-    customers_right_half B
+  SELECT *
+  FROM customers_left_half A
+  JOIN customers_right_half B
     ON A.customer_id = B.customer_id")
 ```    
 
@@ -560,14 +574,14 @@ head(select(customer_survey, contains("customer", ignore.case=TRUE)))
 
 ```
 head(arrange(customer_survey, region, desc(customer_age), 
-    desc(customer_purchases)))
+  desc(customer_purchases)))
 ```
 
 ![](images/head2full.png)
 
 ```
 head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
-    purchase_proportion=customer_purchases/sum(customer_purchases)))
+  purchase_proportion=customer_purchases/sum(customer_purchases)))
 ```
 
 ![](images/head3full.png)
@@ -583,7 +597,11 @@ We'll use a small dataset to illustrate some of the possibilities `reshape2` off
 
 ```
 require(reshape2)
-surgery_outcomes = read.table("surgery_outcomes.csv", header=T, sep=",")
+
+surgery_outcomes = read.table("https://raw.githubusercontent.com/Rmadillo/
+  business_intelligence_with_r/master/manuscript/code/surgery_outcomes.tsv", 
+  header=T, sep="\t")
+
 head(surgery_outcomes, 4)
 
 row  ID  Side   Phase  Verbal  Nonverbal
@@ -599,7 +617,8 @@ Suppose each measurement needs its own row, that is, we need to make this a long
 
 ```
 surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3),
-    measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
+  measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
+
 head(surgery_outcomes_melted, 4)
 
 row  ID  Side   Phase  Test_type  IQ_score
@@ -615,7 +634,8 @@ Any data in long form can be `cast` into a variety of wide forms, with a `d` or 
 
 ```
 surgery_outcomes_original = dcast(surgery_outcomes_melted, ID + Side + 
-    Phase ~ Test_type)
+  Phase ~ Test_type)
+
 head(surgery_outcomes_original, 4)
 
 row  ID  Side   Phase  Verbal  Nonverbal
@@ -722,13 +742,13 @@ A useful additional feature of `dplyr` is that you can string together a bunch o
 # sd, and sum for each state, and calculate the coeffient of
 # variation, rounded to 2 decimal places
 customer_500_piped = customer_survey %>%  
-    filter(customer_purchases >= 500) %>%   
-    group_by(state) %>%  
-    summarize(count_purchases = n(),  
-       mean_purchases = mean(customer_purchases, na.rm=T),  
-       sd_purchases = sd(customer_purchases, na.rm=T),  
-       sum_est = sum(est)) %>%  
-    mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
+  filter(customer_purchases >= 500) %>%   
+  group_by(state) %>%  
+  summarize(count_purchases = n(),  
+    mean_purchases = mean(customer_purchases, na.rm=T),  
+    sd_purchases = sd(customer_purchases, na.rm=T),  
+    sum_est = sum(est)) %>%  
+  mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
 ```
 
 This is also a good example where `mutate` is more convenient than traditional assignment.  
