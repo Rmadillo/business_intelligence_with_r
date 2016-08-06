@@ -40,8 +40,8 @@ To import flat files, it's probably best to get in the habit of using `read.tabl
 We saw reading in a semi-colon delimited flat file in the first chapter:
 
 ```
-power = read.table("Data/household_power_consumption.txt", sep=";", header=T, 
-  na.strings=c("?",""), stringsAsFactors=FALSE)
+power = read.table("~/BIWR/Chapter1/Data/household_power_consumption.txt", 
+  sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
 ```
 
 While reading in a flat file is pretty standard fare for any R user, it can sometimes require a little extra work to make sure it comes in correctly. One important option to remember is `na.strings`; while R will read missing data from blank cells as `NA` automatically, you find a wide variety of ways people code missing values, from `-99` to `?` and sometimes even '0'. Occasionally you find more than one `NA` designator in the same file, as you can see in the `power` dataset example, above.
@@ -65,8 +65,8 @@ The `data.table` package is extremely useful—and much, *much* faster than `rea
 require(data.table)
 # If you want to read in a csv directly, use fread, e.g., if you
 # had the raw pses2011 in a local csv, you'd read it in this way:
-power = fread("Data/household_power_consumption.txt", sep=";", header=T, 
-  na.strings=c("?",""), stringsAsFactors=FALSE)
+power = fread("~/BIWR/Chapter1/Data/household_power_consumption.txt", 
+  sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
 ```
 
 If you *already* have a data frame and want to speed up reading and accessing it, use the `data.table` function:
