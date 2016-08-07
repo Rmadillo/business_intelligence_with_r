@@ -1,4 +1,4 @@
-# Chapter 4: Know Thy Data
+# Chapter 4: Know Thy Data---Exploratory Data Analysis
 
 - Creating summary plots  
 - Plotting univariate distributions  
@@ -674,7 +674,7 @@ When we don’t have a full population to assess, we often need to determine how
 | Statistic | Data type | Distribution | Function |
 | --------- | --------- | ------------ | -------- |
 | Median | Any | Any | `asbio::ci.median(x)` |
-| Mean| Continuous | Normal, t, “normal enough” | `t.test(x)$conf.int` |
+| Mean| Continuous | Normal, t, "normal enough" | `t.test(x)$conf.int` |
 | Proportion | Percentage | Binomial | `binom.test(x, n)$conf.int` |
 | Count | Count | Poisson | `poisson.test(x)$conf.int` |
 | Rate | Count/*n* | Poisson | `poisson.test(x, n)$conf.int` |
