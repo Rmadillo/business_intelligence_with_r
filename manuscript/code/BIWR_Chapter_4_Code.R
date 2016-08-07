@@ -7,15 +7,31 @@
 #
 ######################################################################
 
+require(ggplot2)
+require(scales)
 
+# Useful ggplot2 websites
+# http://www.rstudio.com/wp-content/uploads/2015/12/ggplot2-cheatsheet-2.0.pdf
+# http://www.cookbook-r.com/Graphs/
+# http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html
+# http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
+
+
+# Acquire the bike share data and set factor levels
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00275/Bike-Sharing-Dataset.zip", "Bike-Sharing-Dataset.zip")
 
 bike_share_daily = read.table(unz("Bike-Sharing-Dataset.zip", "day.csv"), colClasses=c("character", "Date", "factor", "factor", "factor", "factor", "factor", "factor", "factor", "numeric", "numeric", "numeric", "numeric", "integer", "integer", "integer"), sep=",", header=TRUE)
+
 levels(bike_share_daily$season) = c("Winter", "Spring", "Summer", "Fall")
+
 levels(bike_share_daily$workingday) = c("No", "Yes")
+
 levels(bike_share_daily$holiday) = c("No", "Yes")
+
 bike_share_daily$mnth = ordered(bike_share_daily$mnth, 1:12)
+
 levels(bike_share_daily$mnth) = c(month.abb)
+
 levels(bike_share_daily$yr) = c(2011, 2012)
 
 
@@ -48,19 +64,6 @@ pairs(Titanic, highlighting=2)
 
 
 ## Plotting univariate distributions
-
-require(ggplot2)
-require(scales)
-
-# http://www.rstudio.com/wp-content/uploads/2015/12/ggplot2-cheatsheet-2.0.pdf)
-# http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html
-# http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/
-
-require(XML)  
-machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")
-gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1, stringsAsFactors=F)
-write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)
-
 
 ### Histograms and density plots
 
@@ -128,9 +131,7 @@ ggplot(bike_share_daily, aes(weathersit, fill=season)) +
 
 ## Plotting bivariate and comparative distributions
 
-require(ggplot2)
 require(ggExtra)
-require(scales)
 require(vcd)
 require(beanplot)
 
@@ -177,6 +178,16 @@ bike_air_temp = ggplot(bike_share_daily, aes(x=atemp, y=casual)) +
 
 bike_air_temp_mh = ggMarginal(bike_air_temp, type="histogram")
 
+bike_air_temp_mh
+
+bike_air_temp_md = ggMarginal(bike_air_temp, type="density")
+
+bike_air_temp_md
+
+bike_air_temp_mb = ggMarginal(bike_air_temp, type="boxplot")
+
+bike_air_temp_mb
+
 
 ### Mosaic plots
 
@@ -211,12 +222,16 @@ pareto.chart(xtabs(Readmits ~ Dx), main='Pareto Chart for Unplanned Readmissions
 
 require(likert)
 
+# Create a likert object
 mathiness = likert(mass[2:15])
 
+# Plot the likert object
 plot(mathiness)
 
+# Create likert object with a grouping factor
 gender_math = likert(items=mass[,c(4,6,15), drop=FALSE], grouping=mass$Gender)
 
+# Grouped plot
 plot(gender_math, include.histogram=TRUE)
 
 
@@ -249,7 +264,7 @@ addmargins(table(bike_share_daily[c(3,6:7)]))
 prop.table(table(bike_share_daily[c(3,9)]))
 
 require(dplyr)
-summarise(group_by(bike_share_daily, season, holiday, weekday), count=n())
+summarize(group_by(bike_share_daily, season, holiday, weekday), count=n())
 
 
 ## Finding local maxima/minima
@@ -289,24 +304,23 @@ boot.ci(q75_boot, type="bca")$bca[4:5]
 # Mean | Standard deviation | mean_sdl(x, mult=2, ...) 
 # Median | Quantile | median_hilow(x, conf.int=0.95, ...) 
 
-require(ggplot2)
 require(gridExtra)
 
 p1 = ggplot(PlantGrowth, aes(group, weight)) +
   ggtitle("Bootstrapped") +
-  stat_summary(fun.data = mean_cl_boot, conf.int = 0.95) 
+  stat_summary(fun.data = mean_cl_boot, fun.args=list(conf.int = 0.95)) 
 
 p2 = ggplot(PlantGrowth, aes(group, weight)) +
   ggtitle("Normal") +
-  stat_summary(fun.data = mean_cl_normal, conf.int = 0.95) 
+  stat_summary(fun.data = mean_cl_normal, fun.args=list(conf.int = 0.95)) 
 
 p3 = ggplot(PlantGrowth, aes(group, weight)) +
   ggtitle("2 SDs") +
-  stat_summary(fun.data = mean_sdl, mult=2) 
+  stat_summary(fun.data = mean_sdl, fun.args=list(mult=2)) 
 
 p4 = ggplot(PlantGrowth, aes(group, weight)) +
   ggtitle("Median+IQR") +
-  stat_summary(fun.data = median_hilow, conf.int = 0.5) 
+  stat_summary(fun.data = median_hilow, fun.args=list(conf.int = 0.5)) 
 
 grid.arrange(p1, p2, p3, p4, nrow=2)
 
