@@ -455,13 +455,15 @@ plot(gender_math, include.histogram=TRUE)
 
 ## Obtaining summary and conditional statistics
 
-Once you've got plots, it's good to have the summary statistics to go along with the variables you’ve plotted. Functions to calculate summary statistics are in the `base` installation and a wide variety of packages, but I’ve found that the `psych` package probably has the most useful way to obtain them simply, particularly for groupings or when you want to condition on a particular value or threshold.
+It's no accident that all the plotting work came before the summary stats in this book, although traditionally it's been the other way around. In the old days, when graphing was hard work, summary stats were used as a workaround to tell the story more simply. Now, the emphasis in both business and academia is finding the graph that tells the story, and summary stats are provided more as points of reference than the focal point. As the old saying goes, "the mean alone means nothing." 
+
+Still, they do provide useful points of reference to help interpret graphical results. Functions to calculate summary statistics are in the `base` installation and a wide variety of packages, but I’ve found that the `psych` package probably has the most useful way to obtain them simply, particularly for groupings or when you want to condition on a particular value or threshold.
 
 ```
 require(psych)
 ```
 
-For numeric variables, the `describe` and `describeBy` functions do all the work for you, although you do need to specify which columns are quantitative—or which columns you want summary stats on—or it will return (non-sensically) all of them.
+For numeric variables, the `describe` and `describeBy` functions do all the work for you, although you do need to specify which columns are quantitative—or which columns you want summary stats on---or it will return (non-sensically) all of them.
 
 Basic `describe`:
 
@@ -493,7 +495,7 @@ prop.table(table(bike_share_daily$holiday))
 0.97127223 0.02872777
 ```
 
-There are a variety of approaches and options using these functions. For example, you can subset the quantitative stats based on factors or conditions. 
+There are a variety of approaches and options using these functions to acquire summary statistics. For example, you can subset the quantitative stats based on factors or conditions. 
 
 Summary stats for bike use during the winter season:
 
@@ -521,10 +523,17 @@ describeBy(bike_share_daily$casual, bike_share_daily$windspeed >
 ![](images/describe5.png)
 
 
-I> Although `describeBy` gives you more versatility, you can use `sum` for a
-I> quick-and-dirty conditional count, e.g., 
-I> `sum(bike_share_daily$cnt > , na.rm=T` or
-I> `sum(bike_share_daily$workingday == 'Yes')`. 
+I> Although `describeBy` gives you more versatility, you can also use `sum` for a quick-and-dirty conditional count, e.g., 
+I> 
+I> ```
+I> sum(bike_share_daily$cnt > 2500, na.rm=T)  
+I> 
+I> 587
+I> 
+I> sum(bike_share_daily$workingday == 'Yes')
+I> 
+I> 500
+I> ```
 
 
 You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums. 
@@ -614,23 +623,52 @@ Groups: season, holiday
 ```
 
 
-A> #### Finding local maxima/minima
-A>
-A> The `which.max` (or `which.min`) function can show you the set of values for a chosen maximum (or minimum) observation: 
-A> 
-A> ```
-A> bike_share_daily[which.min(bike_share_daily[,14]),]
-A> ```
-A> 
-A> ![](images/whichmax.png)
+## Finding the mode or local maxima/minima
 
+The `which.max` (or `which.min`) function can show you the set of values for a chosen maximum (or minimum) observation: 
+
+```
+# What were the other variables on the day of minimum casual use?
+bike_share_daily[which.min(bike_share_daily[,14]),]
+```
+
+![](images/whichmax.png)
+
+This trick can help you find the mode of a distribution (actually, the point of maximum density):
+
+```
+# Calculate density of casual bike use
+casual_dens = data.frame(casual = density(bike_share_daily$casual)$x, 
+  density_value = density(bike_share_daily$casual)$y)
+
+# Mode / maximum density
+casual_dens[which.max(casual_dens[,2]),]
+
+     casual density_value
+80 238.3353  0.0007430897
+```
+
+We can then plot that value on our ggplot from earlier in this chapter by adding it as a `geom_vline`:
+
+```
+ggplot(bike_share_daily, aes(casual)) +
+  ylab("density and count") +
+  xlab("Casual Use") +
+  geom_histogram(aes(y=..density..), col="blue", fill="blue", alpha=0.3) +
+  geom_density(col="blue", fill="blue", alpha=0.2) +
+  theme_bw() +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
+  geom_vline(xintercept = dens[which.max(dens[,2]),1], color = "yellow")
+```
+
+![](images/whichmax_ggplot.png)
 
 
 ## Inference on summary statistics
 
 ### Confidence intervals
 
-When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are `base` installation functions for most of the ones we typically need:
+When we don’t have a full population to assess, we often need to determine how uncertain our estimates of the population parameters are—we need confidence intervals on those point estimates. There are `base` installation functions for most (but not all) of the ones we typically need:
 
 {width="90%"}
 | Statistic | Data type | Distribution | Function |
@@ -641,20 +679,60 @@ When we don’t have a full population to assess, we often need to determine how
 | Count | Count | Poisson | `poisson.test(x)$conf.int` |
 | Rate | Count/*n* | Poisson | `poisson.test(x, n)$conf.int` |
 
-Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the `PlantGrowth` dataset that comes with R for simplicity’s sake:
+```
+# 95% CI for median daily casual bike use
+asbio::ci.median(bike_share_daily$casual) 
+
+95% Confidence interval for population median 
+Estimate     2.5%    97.5% 
+  713      668      760 
+
+# 95% CI for mean daily casual bike use
+t.test(bike_share_daily$casual)$conf.int
+
+798.3192 898.0337
+
+# 95% CI for proportion of casual bike use of all rentals
+binom.test(sum(bike_share_daily$casual), sum(bike_share_daily$cnt))$conf.int
+
+0.1878795 0.1887244
+
+# Subset data to winter only
+bike_share_winter = filter(bike_share_daily, season == "Winter")
+
+# 95% CI for count of winter casual bike use
+poisson.test(sum(bike_share_winter$casual))$conf.int
+
+60140.37 61106.52
+
+# 95% CI for count of winter casual bike use per 1000 rentals
+poisson.test(sum(bike_share_winter$casual), sum(bike_share_winter$cnt)/1000)$conf.int
+
+127.5923 129.6421
+```
+
+
+Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. 
+
+Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the `PlantGrowth` dataset that comes with R for simplicity’s sake:
 
 ```
 require(boot)
 
+# Create the boot function
 sd_boot_function = function(x,i){sd(x[i])}
 
+# Run the bootstrapping
 sd_boot = boot(PlantGrowth$weight, sd_boot_function, R=10000)
 
+# Bootstrapped sd
 sd(PlantGrowth$weight)
 
+0.7011918
+
+# 95% CI for bootstrapped sd 
 boot.ci(sd_boot, type="bca")$bca[4:5]
 
-0.7011918
 0.5741555 0.8772850
 ```
 
@@ -669,44 +747,45 @@ q75_boot = boot(PlantGrowth$weight, q75_function, R=10000)
 
 quantile(PlantGrowth$weight,0.75)
 
+5.53 
+
 boot.ci(q75_boot, type="bca")$bca[4:5]
 
-5.53 
 5.24 5.99
 ```
 
-You can get quick (gg)plots of means/medians and confidence intervals, standard deviations (defaults to 2), or quantiles with the `stat_summary` and one of the following options:  
+You can get quick (gg)plots of means/medians and confidence intervals, standard deviations (`mult`, defaults to 2), or quantiles with the `stat_summary` `args` functions:  
 
 | Statistic | Interval Type | Function |
 | --------- | ------------- | -------- |
-| Mean | Bootstrapped CI | `mean_cl_boot(x, conf.int=0.95, ...)` |
-| Mean | Normal CI | `mean_cl_mean_sdl(x, conf.int=0.95, ...)` |
-| Mean | Standard deviation | `mean_sdl(x, mult=2, ...)` |
-| Median | Quantile | `median_hilow(x, conf.int=0.95, ...)` |
+| Mean | Bootstrapped CI | `(fun.data = mean_cl_boot, fun.args = list(conf.int = 0.95), ...)` |
+| Mean | Normal CI | `(fun.data = mean_cl_normal, fun.args = list(conf.int = 0.95), ...)` |
+| Mean | Standard deviation | `(fun.data = mean_sdl, fun.args = list(mult = 2), ...)` |
+| Median | Quantile | `(fun.data = median_hilow, fun.args = list(conf.int = 0.5), ...)` |
 
 
-The following code demonstrates all three options (and provides an example of plotting `ggplot2` objects together using the `grid.arrange` function from the `gridExtra` package):
+The following code demonstrates all four options (and provides an example of plotting `ggplot2` objects together using the `grid.arrange` function from the `gridExtra` package):
 
 ```
 require(gridExtra)
 
 p1 = ggplot(PlantGrowth, aes(group, weight)) +
   ggtitle("Bootstrapped") +
-  stat_summary(fun.data = mean_cl_boot, fun.args=list(conf.int = 0.95)) 
+  stat_summary(fun.data = mean_cl_boot, fun.args = list(conf.int = 0.95)) 
 
 p2 = ggplot(PlantGrowth, aes(group, weight)) +
   ggtitle("Normal") +
-  stat_summary(fun.data = mean_cl_normal, fun.args=list(conf.int = 0.95)) 
+  stat_summary(fun.data = mean_cl_normal, fun.args = list(conf.int = 0.95)) 
 
 p3 = ggplot(PlantGrowth, aes(group, weight)) +
   ggtitle("2 SDs") +
-  stat_summary(fun.data = mean_sdl, fun.args=list(mult=2)) 
+  stat_summary(fun.data = mean_sdl, fun.args = list(mult = 2)) 
 
 p4 = ggplot(PlantGrowth, aes(group, weight)) +
   ggtitle("Median+IQR") +
-  stat_summary(fun.data = median_hilow, fun.args=list(conf.int = 0.5)) 
+  stat_summary(fun.data = median_hilow, fun.args = list(conf.int = 0.5)) 
 
-grid.arrange(p1, p2, p3, p4, nrow=2)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
 ```
 
 ![](images/plotcis.png)
@@ -757,7 +836,7 @@ The following table provides a short overview of the primary univariate toleranc
 | Percent | Binomial | `bintol.int(x, n, m, …)` |
 | Count or Rate | Poisson | `poistol.int(x, n, m, side, …)` |
 | Nonparametric | None | `nptol.int(x, …)` |
-| Continuous | Normal, t, “normal enough” | `normtol.int(x, side, …)`|
+| Continuous | Normal, t, "normal enough" | `normtol.int(x, side, …)`|
 | Continuous | Uniform | `uniftol.int(x, …)` |
 | Lifetime/survival | Exponential | `exptol.int(x, type.2, …)` |
 | Score | Laplace | `laptol.int(x, …)` |
