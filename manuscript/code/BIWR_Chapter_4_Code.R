@@ -364,12 +364,15 @@ colnames(tao)[4] = "Sea.Temp"
 # Look at the data, esp. NAs
 summary(tao)
 
+# Plot missings (you can ignore the error message)
 matrixplot(tao)
 
+# Missing value summary values and plot
 tao_aggr = aggr(tao)
 
 tao_aggr
 
+# Two-variable missingness comparisons
 histMiss(tao[5:6])
 
 histMiss(tao[c(6,5)])
