@@ -270,6 +270,22 @@ summarize(group_by(bike_share_daily, season, holiday, weekday), count=n())
 ## Finding local maxima/minima
 bike_share_daily[which.min(bike_share_daily[,14]),]
 
+# Calculate density of casual bike use
+casual_dens = data.frame(casual = density(bike_share_daily$casual)$x, 
+  density_value = density(bike_share_daily$casual)$y)
+
+# Mode / maximum density
+casual_dens[which.max(casual_dens[,2]),]
+
+# Plot histogram and density with mode as a line
+ggplot(bike_share_daily, aes(casual)) +
+  ylab("density and count") +
+  xlab("Casual Use") +
+  geom_histogram(aes(y=..density..), col="blue", fill="blue", alpha=0.3) +
+  geom_density(col="blue", fill="blue", alpha=0.2) +
+  theme_bw() +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) +
+  geom_vline(xintercept = dens[which.max(dens[,2]),1], color = "yellow")
 
 ## Inference on summary statistics
 
@@ -281,28 +297,54 @@ bike_share_daily[which.min(bike_share_daily[,14]),]
 # Count | poisson.test(x)$conf.int 
 # Rate | poisson.test(x, n)$conf.int
 
+# 95% CI for median daily casual bike use
+asbio::ci.median(bike_share_daily$casual) 
+
+# 95% CI for mean daily casual bike use
+t.test(bike_share_daily$casual)$conf.int
+
+# 95% CI for proportion of casual bike use of all rentals
+binom.test(sum(bike_share_daily$casual), sum(bike_share_daily$cnt))$conf.int
+
+# Subset data to winter only
+bike_share_winter = filter(bike_share_daily, season == "Winter")
+
+# 95% CI for count of winter casual bike use
+poisson.test(sum(bike_share_winter$casual))$conf.int
+
+# 95% CI for count of winter casual bike use per 1000 rentals
+poisson.test(sum(bike_share_winter$casual), sum(bike_share_winter$cnt)/1000)$conf.int
+
+
+## Bootstrapping
+
 require(boot)
 
+# Create the boot function
 sd_boot_function = function(x,i){sd(x[i])}
 
+# Run the bootstrapping
 sd_boot = boot(PlantGrowth$weight, sd_boot_function, R=10000)
 
+# Bootstrapped sd
 sd(PlantGrowth$weight)
 
+# 95% CI for bootstrapped sd 
 boot.ci(sd_boot, type="bca")$bca[4:5]
 
+# Example for 75th percentile
 q75_function = function(x,i){quantile(x[i], probs=0.75)}
 
 q75_boot = boot(PlantGrowth$weight, q75_function, R=10000)
 
-quantile(PlantGrowth$weight,0.75)
+quantile(PlantGrowth$weight, 0.75)
 
 boot.ci(q75_boot, type="bca")$bca[4:5]
 
-# Mean | Bootstrapped CI | mean_cl_boot(x, conf.int=0.95, ...) 
-# Mean | Normal CI | mean_cl_mean_sdl(x, conf.int=0.95, ...)
-# Mean | Standard deviation | mean_sdl(x, mult=2, ...) 
-# Median | Quantile | median_hilow(x, conf.int=0.95, ...) 
+# Mean | Bootstrapped CI | (fun.data = mean_cl_boot, fun.args = list(conf.int = 0.95), ...)
+# Mean | Normal CI | (fun.data = mean_cl_normal, fun.args = list(conf.int = 0.95), ...)
+# Mean | Standard deviation | (fun.data = mean_sdl, fun.args = list(mult = 2), ...)
+# Median | Quantile | (fun.data = median_hilow, fun.args = list(conf.int = 0.5), ...)
 
 require(gridExtra)
 
