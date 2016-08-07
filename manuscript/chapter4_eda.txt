@@ -793,6 +793,8 @@ matrixplot(tao)
 
 ![](images/tao_cells.png)
 
+I> The error message you may see in the console about `gamma` was submitted as an issue to the creators of `VIM` in mid 2016. It doesn't affect the plotting in this package (as the message says, it `has no effect`), so you can just ignore it. 
+
 To complement the detailed picture given by `matrixplot`, you can get a numeric and visual summary of missing values with the `aggr` function:
 
 ```
