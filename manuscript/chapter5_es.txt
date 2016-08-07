@@ -124,28 +124,35 @@ require(simpleboot)
 require(bootES)
 require(orddom)
 require(asympTest)
-require(BayesianFirstAid)
 require(reshape2)
 require(dplyr)
+# devtools::install_github("rasmusab/bayesian_first_aid")
+require(BayesianFirstAid)
 
 # Reshape the data
 casual_workingday_use = dcast(bike_share_daily, yr~workingday, 
   value.var="casual", sum)
+  
 casual_workingday_use$sum = casual_workingday_use$Yes + casual_workingday_use$No
 
 # Filter the data into subsets
 casual_notworkingday = filter(bike_share_daily, workingday == "No" & 
   season == "Spring" | workingday == "No" & season == "Fall")
+
 casual_notworking_Spring = filter(casual_notworkingday, season == "Spring")
+
 casual_notworking_Fall = filter(casual_notworkingday, season == "Fall")
 ```
 
 ### Basic differences
 
+#### Proportions
+
 For a difference between two proportions, we'll look at the effect of it being a working day on casual bike use in 2011 versus 2012:
 
 ```
 workday_diff = prop.test(casual_workingday_use$Yes, casual_workingday_use$sum)
+
 round(workday_diff$estimate[1] - workday_diff$estimate[2], 2)
 
 -0.02
@@ -155,22 +162,30 @@ round(workday_diff$conf.int, 2)
 -0.02 -0.01
 ```
 
-When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average (or median) casual bike use between Spring and Fall non-working days, we can use `t.test` (or `two.test`):
+#### Means
+
+When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average (or median) casual bike use between Spring and Fall non-working days, we can use `t.test` (or `two.boot`):
 
 ```
+# Difference in means, t-test version
 casual_notworkingday_mean = t.test(casual~season, data=casual_notworkingday)
-abs(casual_notworkingday_mean$estimate[1] - 
-  casual_notworkingday_mean$estimate[2]); casual_notworkingday_mean$conf.int
+
+abs(casual_notworkingday_mean$estimate[1] - casual_notworkingday_mean$estimate[2])
 
 636.6031
+
+casual_notworkingday_mean$conf.int
+
 350.6546 922.5516
 ```
 
-Because the distribution isn't really normal, getting bootstrapped CIs on the difference of means is probably a better option in this case. Using the `bootES` package:
+Because the distribution isn't really normal, getting bootstrapped CIs on the difference of means is probably a better option in this case. Using the `bootES` package with 10,000 replications:
 
 ```
+# Difference in means, bootstrapped version
+# Your results will vary unless you set a seed
 bootES(casual_notworkingday, data.col="casual", group.col="season", 
-  contrast=c("Fall", "Spring"), effect.type="unstandardized")
+  contrast=c("Fall", "Spring"), effect.type="unstandardized", R=10000)
 
 User-specified lambdas: (Fall, Spring)
 Scaled lambdas: (-1, 1)
@@ -179,38 +194,22 @@ Stat         CI (Low)     CI (High)    bias        SE
 636.603      332.203      908.222      3.116       149.380     
 ```
 
-To look at a difference between medians (with a CI), use `two.test` from the `simpleboot` package. Unfortunately, `simpleboot` doesn't use formula notation so we'll have to reuse some intermediate data frames created above:
+#### Medians
+
+To look at a difference between medians (with a CI), use `two.boot` from the `simpleboot` package. Unfortunately, `simpleboot` doesn't use formula notation so we'll have to reuse some intermediate data frames created above:
 
 ```
+# Difference in medians
 diff_medians = two.boot(casual_notworking_Spring$casual, 
   casual_notworking_Fall$casual, median, R=2000)
-diff_medians_ci = boot.ci(diff_medians, conf=0.95, type='bca')
-diff_medians$t0; diff_medians_ci
+  
+diff_medians$t0
 
 834
 
-BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
-Based on 2000 bootstrap replicates
+diff_medians_ci = boot.ci(diff_medians, conf=0.95, type='bca')
 
-CALL : 
-boot.ci(boot.out = diff_medians, conf = 0.95, type = "bca")
-
-Intervals : 
-Level       BCa          
-95%   ( 480.0, 1277.8 )  
-Calculations and Intervals on Original Scale
-```
-
-`simpleboot` allows you to compare any two univariate statistics. For example, you could compare the 75% percentile of the two groups:
-
-```
-diff_75 = two.boot(casual_notworking_Spring$casual, 
-  casual_notworking_Fall$casual, quantile, probs=0.75, R=2000)
-diff_75_ci = boot.ci(diff_medians, conf=0.95, type='bca')
-diff_75$t0; diff_75_ci
-
-   75% 
-731.25 
+diff_medians_ci
 
 BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
 Based on 2000 bootstrap replicates
@@ -227,17 +226,54 @@ Calculations and Intervals on Original Scale
 Sometimes you may want the median difference instead of the difference between medians. Use `wilcox.test` for that:
 
 ```
+# Median difference
 median_diff = wilcox.test(casual~season, 
   data=casual_notworkingday, conf.int=TRUE)
-median_diff$estimate; median_diff$conf.int
+  
+median_diff$estimate
 
 684.0001
+
+median_diff$conf.int
+
 399 997
 ```
+
+#### Any summary statistic
+`simpleboot` allows you to compare any two univariate statistics. For example, you could compare the 75th percentile of the two groups:
+
+```
+# Difference between 75th percentiles
+diff_75 = two.boot(casual_notworking_Spring$casual, 
+  casual_notworking_Fall$casual, quantile, probs=0.75, R=10000)
+  
+diff_75$t0
+
+   75% 
+731.25 
+
+diff_75_ci = boot.ci(diff_medians, conf=0.95, type='bca')
+
+diff_75_ci
+
+BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 2000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = diff_medians, conf = 0.95, type = "bca")
+
+Intervals : 
+Level       BCa          
+95%   ( 480.0, 1277.8 )  
+Calculations and Intervals on Original Scale
+```
+
+#### Variance
 
 We also often want to know whether two groups differ in terms of their variances, i.e., is one group more variable than another? If both groups are normally distributed, `var.test` is appropriate to obtain the variance ratio:
 
 ```
+# Variance ratio
 var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$estimate
 
 ratio of variances
@@ -251,6 +287,7 @@ var.test(casual_notworkingday$casual ~ casual_notworkingday$season)$conf.int
 More typically, our groups are not normally distributed, and when that's the case, the `var.test` will give misleading results because it is very sensitive to departures from normality. The `asymp.test` function in the `asympTest` package provides a suitable alternative:
 
 ```
+# Robust variance ratio
 asymp.test(casual_notworkingday$casual ~ casual_notworkingday$season,
   parameter = "dVar")$estimate
 
@@ -299,10 +336,12 @@ dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
 
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
   theta.es="dc")$theta.bci.lo
+
+0.2493734
+
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
   theta.es="dc")$theta.bci.up
 
-0.2493734
 0.6265664
 
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
@@ -313,10 +352,12 @@ dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
 
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
   theta.es="Ac")$theta.bci.lo
-dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
-  theta.es="Ac")$theta.bci.up
 
 0.6246867
+
+dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual,
+  theta.es="Ac")$theta.bci.up
+  
 0.8132832
 ```
 
@@ -339,7 +380,6 @@ You'll need to install [JAGS](http://mcmc-jags.sourceforge.net/) to your system 
 `BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from Github:
 
 ```
-require(devtools)
 devtools::install_github("rasmusab/bayesian_first_aid")
 require(BayesianFirstAid)
 ```
@@ -350,6 +390,7 @@ Using the earlier example above for the differences in proportions, we get the s
 ```
 workday_diff_bayes = bayes.prop.test(casual_workingday_use$Yes, 
   casual_workingday_use$sum)
+  
 workday_diff_bayes
 
     Bayesian First Aid propotion test
@@ -486,14 +527,14 @@ y_pred: predicted distribution for a new datapoint
 ![](images/bayes_diff_diagnostics.png)
 
 
-## Effect sizes: Measuring *relationships* between groups
+## Effect sizes: Measuring *similarities* between groups
 
 The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary (standardized) tool here, although a wide variety of other approaches exist; of particular use is the use of regression coeffients to answer the answer the question: to what extent are two groups related?
 
 
 ### Associations between numeric variables (correlation)
 
-Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho (&rho;), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this section.
+Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho ({$$}r_s{/$$}), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this section.
 
 As before, every effect size measure should be accompanied by an appropriate credible or confidence interval whenever possible, which is usually best done by bootstrap unless you can meet the method’s assumptions.
 
@@ -512,9 +553,11 @@ Traditional Pearson’s correlation (*r*) is easy to acquire:
 
 ```
 cor(bike_use_atemp$air_temp, bike_use_atemp$count)
-cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)$conf.int
 
 0.6310657
+
+cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)$conf.int
+
 0.5853376 0.6727918
 ```
 
@@ -528,20 +571,10 @@ Stat        CI (Low)    CI (High)   bias        SE
 0.650       0.633       0.667       -0.000      0.009      
 ```
 
-However, it’s pretty clear that this relationship isn’t truly linear if you plot it. Spearman’s and Kendall’s can be acquired with the `cor.ci` function as follows (use the *x*`.emp`—empirical—CI values to obtain the percentile confidence interval values, although the differences will be trivial with large sample sizes):
+However, it’s pretty clear that this relationship isn’t truly linear if you plot it. Kendall’s and Spearman’s can be acquired with the `cor.ci` function as follows (use the *x*`.emp`—empirical—CI values to obtain the percentile confidence interval values, although the differences will be trivial with large sample sizes):
 
 ```
-cor.ci(bike_use_atemp, method="spearman", n.iter = 10000, plot=FALSE)
-
-Coefficients and bootstrapped confidence intervals
-         ar_tm count
-air_temp 1.00       
-count    0.62  1.00
-
- scale correlations and bootstrapped confidence intervals
-            lower.emp lower.norm estimate upper.norm upper.emp p
-ar_tm-count      0.57       0.57     0.62       0.67      0.67 0
-
+# Kendall's (which should generally be preferred)
 cor.ci(bike_use_atemp, method="kendall", n.iter = 10000, plot=FALSE)
 
 Coefficients and bootstrapped confidence intervals
@@ -553,24 +586,57 @@ count    0.43  1.00
             lower.emp lower.norm estimate upper.norm upper.emp p
 ar_tm-count      0.39       0.39     0.43       0.47      0.47 0
 
+# Spearman's
+cor.ci(bike_use_atemp, method="spearman", n.iter = 10000, plot=FALSE)
+
+Coefficients and bootstrapped confidence intervals
+         ar_tm count
+air_temp 1.00       
+count    0.62  1.00
+
+ scale correlations and bootstrapped confidence intervals
+            lower.emp lower.norm estimate upper.norm upper.emp p
+ar_tm-count      0.57       0.57     0.62       0.67      0.67 0
+
 ```
+
+A> **Kendall's vs. Spearman's: What's the difference?**
+A> 
+A> In short, they measure different things, although both can be used on numeric as well as ordinal scales. Spearman's is meant to measure the monotonic association between two variables, and is often used in place of Pearson's when the relationship is non-linear (but still monotonic) and where outliers or other factors are skewing the relationship away from *bivariate* normality (the individual variables can be any distribution). Kendall's has a huge advantage in that it can be used when an association has a trend that is not monotonic, and also has some superior statistical properties we'll get to in a moment. 
+A> 
+A> Historically, Spearman's was often used because it was easier to calculate and it mimicked the least-squares approach of Pearson's. Perhaps somewhat cynically, I'd also bet Spearman's was often used instead of Kendall's because it gives you higher values, which when you're used to interpreting *r* makes your result look better. Finally, explaining Spearman's "as simply an extension of Pearson's *r*" can be far easier than having to explain Kendall's in a business meeting.
+A> 
+A> Computers have since rendered the first reason irrelevant, and statisticians have determined the second one to be statistically naive: Spearman's is less robust and less efficient than Kendall's approach, especially when trying to compute standard errors---there is still no widely accepted way to do it with Spearman's coefficient. Kendall's coefficient estimates a population value, while Spearman's does not. Spearman's approach also breaks down in the presence of only a few large deviations between pairs of values, even when most of the pairs in the data are fairly close. In addition, there is no intuitive interpretation of what Spearman's coefficient *really* means (only that "further from zero is better"), while Kendall's can be directly interpreted as a probability.
+A> 
+A> As for the third and fourth reasons... well, as analysts we should be honest and not use Spearman's or any other statistic just because it looks better (you're just *asking* for trouble down the road). Off-the-cuff explanation of Kendall's in business settings *is* tough, though a simple tranformation can help: using the formula **&tau; + (0.5 * ( 1 - $tau;))**. For example, using the Kendall's &tau; value above---`0.43 + (0.5 * (1 - 0.43))`---we can determine that there is a positive association between 71% of all possible pairs of data points. Still not as easy as dropping Spearman's coefficient and leaving it to the audience, but hey, it's your choice as an analyst when it's worth it to "move the needle"\* of managerial stats literacy...
+A>
+A> <small>\* I can't believe I just wrote that without irony.</small>
+
 
 ### Bootstrapping BCa CIs for non-parametric correlation
 
 If you want to use the `boot` package to calculate BCa confidence intervals on Spearman's or Kendell's correlation coefficients, here’s how to acquire them for each method:
 
 ```
-rs_function = function(x,i){cor(x[i,1], x[i,2], method="spearman")
-rs_boot = boot(bike_use_atemp, rs_function, R=10000)
-boot.ci(rs_boot, type="bca")$bca[4:5]
-
-0.5748000 0.6669792
-
+# Boot function for Kendall's CI
 rt_function = function(x,i){cor(x[i,1], x[i,2], method="kendall")
+
+# Run boot function for Kendall's CI
 rt_boot = boot(bike_use_atemp, rt_function, R=10000)
+
+# Kendall's CI
 boot.ci(rt_boot, type="bca")$bca[4:5]
 
 0.3931281 0.4665541
+
+# Spearman's
+rs_function = function(x,i){cor(x[i,1], x[i,2], method="spearman")
+
+rs_boot = boot(bike_use_atemp, rs_function, R=10000)
+
+boot.ci(rs_boot, type="bca")$bca[4:5]
+
+0.5748000 0.6669792
 ```
 
 
@@ -581,8 +647,10 @@ We saw the Bayesian approach to difference-based effect size calculations earlie
 {lang="text"}
 ```
 require(BayesianFirstAid)
-bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
 
+atemp_bike_cor_bayes = bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
+
+atemp_bike_cor_bayes
 
     Bayesian First Aid Pearson's Correlation Coefficient Test
 
@@ -605,48 +673,73 @@ plot(atemp_bike_cor_bayes)
 If you have variables you want to control for in a correlation, we can turn again to the `psych` package. For example, if we wanted to evaluate the correlation between air temperature and bike use while controlling for windspeed, we could do it by creating a correlation matrix with the corr.test function:
 
 ```
-bike_use_atemp_wind = data.frame(bike_share_daily$temp, bike_share_daily$cnt, 
-  bike_share_daily$windspeed )
-atemp_wind_count = corr.test(bike_use_atemp_wind, method="kendall")
-atemp_wind_count$ci[1:3]
+# Subset bike share data data
+bike_use_atemp_wind = data.frame(temp = bike_share_daily$temp, 
+  cnt = bike_share_daily$cnt, windspeed = bike_share_daily$windspeed )
 
-                               lower          r       upper
-bk_shr_dly.t-bk_shr_dly.c  0.3713082  0.4321852  0.48936255
-bk_shr_dly.t-bk_shr_dly.w -0.1807640 -0.1096882 -0.03747266
-bk_shr_dly.c-bk_shr_dly.w -0.2173056 -0.1471101 -0.07540089
+# Acquire correlation matrix  
+atemp_wind_count = corr.test(bike_use_atemp_wind, method="kendall")
+
+# Review matrix
+atemp_wind_count$r
+
+                 temp        cnt   windspeed
+temp       1.00000000  0.4320092 -0.09511844
+cnt        0.43200921  1.0000000 -0.14711015
+windspeed -0.09511844 -0.1471101  1.00000000
 ```
 
 Once we have a matrix, we can plug it into the `partial.r` function, specifying that the first two variables of the matrix are the correlation of interest and the third is the variable we wish to control for (the second and third inputs, respectively):
 
 ```
+# Obtain partial r
 partial.r(as.matrix(atemp_wind_count$r), c(1:2), 3)
 
-                       bike_share_daily.atemp bike_share_daily.cnt
-bike_share_daily.atemp                   1.00                 0.42
-bike_share_daily.cnt                     0.42                 1.00
+partial correlations 
+     temp  cnt
+temp 1.00 0.42
+cnt  0.42 1.00
 ```
+
 
 ### Polychoric and polyserial correlation for ordinal data
 
-Polychoric (ordinal-ordinal) and polyserial (numeric-ordinal) correlation allows you to perform correlation when some or all of your variables of interest are on an ordinal scale. Again, `psych` provides the functions we'll use. To illustrate, we'll use the math attitudes survey (`mass`) data seen earlier in this chapter, converted from ordered factor to numeric for the polychoric function to work:
+Polychoric (ordinal-ordinal) and polyserial (numeric-ordinal) correlation allows you to perform correlation when some or all of your variables of interest are on an ordinal scale, particularly if they're likert-type variables. Again, `psych` provides the functions we'll use. To illustrate, we'll use the math attitudes survey (`mass`) data seen in the last chapter, converted from ordered factor to numeric for the polychoric function to work:
 
 ```
+# Get math attitudes data
 data(mass, package="likert")
+
+# Subset and convert to numeric
 poly_math = data.frame(as.numeric(mass[,7]), as.numeric(mass[,14]))
+
+# Name columns
 colnames(poly_math) = c("worry", "enjoy")
-polychoric(poly_math)$rho
 
-           worry      enjoy
-worry  1.0000000 -0.7731209
-enjoy -0.7731209  1.0000000
+# Obtain polychoric correlation
+polychoric(poly_math)
+
+Call: polychoric(x = poly_math)
+Polychoric correlations 
+      worry enjoy
+worry  1.00      
+enjoy -0.77  1.00
+
+ with tau of 
+          1     2    3   4
+worry -0.84 -0.25 0.25 1.3
+enjoy -1.04 -0.25 0.52 1.3
 ```
 
-To perform a polyserial correlation, we'll add a fake variable representing each student's pre-college math assessment test score to see whether it relates to their stated enjoyment:
+To perform a polyserial correlation, we'll add a fake variable representing each student's pre-college math assessment test score to see whether it relates to their stated enjoyment. At the time of this writing, there's a bug in the `psych` package's implementation, but the `polycor` package (which is an indirect suggested dependency of `psych`, so they probably installed together) provides a working version. 
 
 ```
+# Made up math scores
 math_score = c(755, 642, 626, 671, 578, 539, 769, 614, 550, 615, 749, 676, 753, 
   509, 798, 783, 508, 767, 738, 660)
-polyserial(math_score, poly_math$enjoy)
+
+# Obtain polyserial correlation using the polycor package
+polycor::polyserial(math_score, poly_math$enjoy)
 
 0.2664201
 ```
@@ -655,11 +748,12 @@ polyserial(math_score, poly_math$enjoy)
 
 Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users: it provides the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Cohen’s &kappa; is probably the best tool when you want to compare agreement instead of association.
 
-Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore “categorical correlation” with the `Aspirin` data from the `abd` package. The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
+Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore "categorical correlation" with the `Aspirin` data from the `abd` package. The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
 
 ```
 require(epitools)
 require(psych)
+
 data(Aspirin, package="abd")
 
 # Obtain the odds ratio and CI
@@ -685,12 +779,13 @@ Ratings on ordinal scales require special treatment, since they aren’t true nu
 # Doctor ratings
 doctor = c("yes", "no", "yes", "unsure", "yes", "no", "unsure", "no", "no", 
   "yes", "no", "yes", "yes")
+  
 # Model ratings
 model = c("yes", "yes", "unsure", "yes", "no", "no", "unsure", "no", "unsure", 
   "no", "yes", "yes", "unsure")
 
 # Obtain Cohen's kappa
-cohen.kappa(x=cbind(doctor,model))
+cohen.kappa(x=cbind(doctor, model))
 
 Cohen Kappa and Weighted Kappa correlation coefficients and confidence boundaries
 
@@ -703,7 +798,8 @@ weighted kappa   -0.45     0.15  0.75
 The `$agree` output value shows the proportion of agreement for each category:
 
 ```
-cohen.kappa(doctor_vs_model)$agree
+# Category proportion of agreement
+cohen.kappa(x=cbind(doctor, model))$agree
 
         x2f
 x1f              no     unsure        yes
@@ -738,6 +834,7 @@ Coefficients:
 
 # get 95% confidence interval
 confint(effect_air_on_sea)
+
                 2.5 %    97.5 %
 (Intercept) -4.320256 -3.412817
 Air.Temp     1.157677  1.193817
@@ -752,6 +849,8 @@ The *R^2^* effect size is simply the correlation coeffient squared, of course, b
  
 ```
 library(boot)
+
+# R-squared boot function
 rsq = function(formula, data, indices) {
   d = data[indices,] # allows boot to select sample
   fit = lm(formula, data=d)
@@ -770,7 +869,6 @@ ORDINARY NONPARAMETRIC BOOTSTRAP
 Call:
 boot(data = tao, statistic = rsq, R = 10000, formula = Sea.Surface.Temp ~ 
     Air.Temp)
-
 
 Bootstrap Statistics :
      original       bias    std. error
@@ -809,3 +907,7 @@ W>
 W> 0.9736913
 W> ```
 W> 
+
+| | 
+| | 
+| | 
