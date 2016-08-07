@@ -176,6 +176,7 @@ customer_survey = sqldf("
   SELECT
     customers.*
     , zipcodes.city
+    , zipcodes.stabbr
     , state_regions.state
     , state_regions.region
     , state_regions.division
@@ -273,14 +274,14 @@ customers_only_agreement = select(customer_survey, customer_id, matches("agree")
 # Subset the data to only columns with names that DO NOT start with "customer"
 customers_excluded = select(customer_survey, -starts_with("customer"))
 
-vignette("introduction", package="dplyr"))
+vignette("introduction", package="dplyr")
 
 # http://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
 
 
 ## Creating a derived column
 
-customer_survey$Location = paste(city, stabbr, sep=", ")
+customer_survey$Location = paste(customer_survey$city, customer_survey$stabbr, sep=", ")
 # vs
 customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", "))
 
@@ -296,7 +297,7 @@ head(select(customer_survey, contains("customer", ignore.case=TRUE)))
 head(arrange(customer_survey, region, desc(customer_age), desc(customer_purchases)))
 
 head(mutate(customer_survey, Location = paste(city, state, sep=", "), 
-    purchase_proportion=customer_purchases/sum(customer_purchases)))
+  purchase_proportion=customer_purchases/sum(customer_purchases)))
 
 
 ## Reshaping a dataframe between wide and long
@@ -309,12 +310,12 @@ surgery_outcomes = read.table("https://raw.githubusercontent.com/Rmadillo/busine
 
 head(surgery_outcomes, 4)
 
-surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3), 
-    measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
+surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:4), 
+    measure.vars=c(5:6), variable.name="Test_type", value.name="IQ_score")
 
 head(surgery_outcomes_melted, 4)
 
-surgery_outcomes_original = dcast(surgery_outcomes_melted, ID + Side + Phase ~ Test_type)
+surgery_outcomes_original = dcast(surgery_outcomes_melted, ID + Side + Phase ~ Test_type,  value.var="IQ_score")
 
 head(surgery_outcomes_original, 4)
 
@@ -343,13 +344,15 @@ dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., value.var='IQ_score
 # sd, and sum for each state, and calculate the coeffient of
 # variation, rounded to 2 decimal places
 customer_500_piped = customer_survey %>%  
-    filter(customer_purchases >= 500) %>%   
-    group_by(state) %>%  
-    summarize(count_purchases = n(),  
-      mean_purchases = mean(customer_purchases, na.rm=T),  
-      sd_purchases = sd(customer_purchases, na.rm=T),  
-      sum_est = sum(est)) %>%  
-    mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
+  filter(customer_purchases >= 500) %>%   
+  group_by(state) %>%  
+  summarize(count_purchases = n(),  
+    mean_purchases = mean(customer_purchases, na.rm=T),  
+    sd_purchases = sd(customer_purchases, na.rm=T),  
+    sum_purchases = sum(customer_purchases)) %>%
+  mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
+
+head(customer_500_piped, 4)
 
 
 ##### End of File #####
