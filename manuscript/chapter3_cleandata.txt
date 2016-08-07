@@ -356,6 +356,7 @@ customer_survey = sqldf("
   SELECT
     customers.*
     , zipcodes.city
+    , zipcodes.stabbr
     , state_regions.state
     , state_regions.region
     , state_regions.division
@@ -406,6 +407,7 @@ We'll split the `customer_survey` data frame in half row-wise to illustrate unio
 
 ```
 customers_first_half = customer_survey[1:5000,]
+
 customers_second_half = customer_survey[5001:10000,]
 ```
 
@@ -451,6 +453,7 @@ Again, we'll split the `customer_survey` data column-wide in two for illustratio
 
 ```
 customers_left_half = customer_survey[,1:7]
+
 customers_right_half = customer_survey[,8:14]
 ```
 
@@ -458,6 +461,7 @@ We can put them back together again either way:
 
 ```
 customers_back_together = cbind(customers_left_half, customers_right_half)
+
 customers_back_together = data.frame(customers_left_half, customers_right_half)
 ```
 
@@ -546,7 +550,7 @@ You can create a new column based on other columns using either `dplyr`'s `mutat
 Both of these commands create a new column that combine city and the state names. 
 
 ```
-customer_survey$Location = paste(city, stabbr, sep=", ")
+customer_survey$Location = paste(customer_survey$city, customer_survey$stabbr, sep=", ")
 # vs
 customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", "))
 ```
@@ -616,8 +620,8 @@ As is, this data is both wide and long. If you're only interested in looking at 
 Suppose each measurement needs its own row, that is, we need to make this a long data frame so we can compare Verbal and Nonverbal scores. We need to contain those two scores within a single column, such as `IQ_score`. To do this, you `melt` a dataframe from wide into long format:
 
 ```
-surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:3),
-  measure.vars=c(4:5), variable.name="Test_type", value.name="IQ_score")
+surgery_outcomes_melted = melt(surgery_outcomes, id.vars=c(1:4),
+  measure.vars=c(5:6), variable.name="Test_type", value.name="IQ_score")
 
 head(surgery_outcomes_melted, 4)
 
@@ -633,8 +637,8 @@ We now have a completely long form data set, as we have the primary variable of 
 Any data in long form can be `cast` into a variety of wide forms, with a `d` or an `a` tacked on to the front depending on whether you need a dataframe (`d`) or vector, matrix, or array (`a`). To put this data back into the wide/long shape it started as, use `dcast`:
 
 ```
-surgery_outcomes_original = dcast(surgery_outcomes_melted, ID + Side + 
-  Phase ~ Test_type)
+surgery_outcomes_original = dcast(surgery_outcomes_melted, 
+  ID + Side + Phase ~ Test_type, value.var="IQ_score")
 
 head(surgery_outcomes_original, 4)
 
@@ -657,7 +661,8 @@ I> The `tidyr` package is a new, simpler way to reshape data. At the time of thi
 There is tremendous variety in reshaping options using the formula structure in `dcast`. The tilde sign (`~`) separates the variables you want representing the rows (left of the ~) and those you want representing the columns (right of the ~). For example, we can cross phase and the test type in the columns:
 
 ```
-head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase, value.var='IQ_score'), 4)
+head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase, 
+  value.var="IQ_score"), 4)
 
      ID  Verbal_Post  Verbal_Pre  Nonverbal_Post  Nonverbal_Pre
 1    1   146          129         115             103
@@ -669,7 +674,8 @@ head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase, value.var='IQ_score'
 We could also return the `Side` variable to the same shape:
 
 ```
-head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase, value.var='IQ_score'), 4)
+head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase, 
+  value.var='IQ_score'), 4)
 
    ID  Side   Verbal_Post  Verbal_Pre  Nonverbal_Post  Nonverbal_Pre
 1  1   Right  146          129         115             103
@@ -681,7 +687,8 @@ head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase, value.var='IQ
 Perhaps you only want to use `Phase` to look at Verbal and Nonverbal separately:
 
 ```
-head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type, value.var='IQ_score'), 4)
+head(dcast(surgery_outcomes_melted, ID + Phase ~ Test_type, 
+  value.var='IQ_score'), 4)
 
   ID Phase Verbal Nonverbal
 1  1  Post    146       115
@@ -700,7 +707,8 @@ While `dplyr` provides you with all you need for summarizing data once your data
 Get the mean for each `Test_type`, by `Phase`:
 
 ```
-dcast(surgery_outcomes_melted, Phase ~ Test_type, value.var='IQ_score', mean, na.rm=T)
+dcast(surgery_outcomes_melted, Phase ~ Test_type, 
+  value.var='IQ_score', mean, na.rm=T)
 
   Phase   Verbal Nonverbal
 1  Post 104.6667 102.26667
@@ -710,7 +718,8 @@ dcast(surgery_outcomes_melted, Phase ~ Test_type, value.var='IQ_score', mean, na
 Get the mean for each `Side`, by combination of `Test_type` and `Phase`:
 
 ```
-dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, value.var='IQ_score', mean, na.rm=T)
+dcast(surgery_outcomes_melted, Side ~ Test_type + Phase,
+  value.var='IQ_score', mean, na.rm=T)
 
    Side Verbal_Post Verbal_Pre Nonverbal_Post Nonverbal_Pre
 1  Left    102.4444   97.71429       100.7778      97.42857
@@ -720,7 +729,8 @@ dcast(surgery_outcomes_melted, Side ~ Test_type + Phase, value.var='IQ_score', m
 Get the standard deviation for each combination of `Test_type`, `Side`, and `Phase`:
 
 ```
-dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., value.var='IQ_score', sd, na.rm=T)
+dcast(surgery_outcomes_melted, Test_type + Side + Phase ~ ., 
+  value.var='IQ_score', sd, na.rm=T)
 
   Test_type  Side Phase        .
 1    Verbal  Left  Post 14.78269
@@ -747,10 +757,27 @@ customer_500_piped = customer_survey %>%
   summarize(count_purchases = n(),  
     mean_purchases = mean(customer_purchases, na.rm=T),  
     sd_purchases = sd(customer_purchases, na.rm=T),  
-    sum_est = sum(est)) %>%  
+    sum_purchases = sum(customer_purchases)) %>%
   mutate(cv_purchases = round(sd_purchases / mean_purchases, 2))  
+
+head(customer_500_piped, 4)
+
+Source: local data frame [4 x 6]
+
+     state count_purchases mean_purchases sd_purchases sum_purchases cv_purchases
+     (chr)           (int)          (dbl)        (dbl)         (dbl)        (dbl)
+1  Alabama               7       879.2857     301.6824       6155.00         0.34
+2   Alaska               4       928.5350     234.7453       3714.14         0.25
+3  Arizona               8       707.6425     186.9487       5661.14         0.26
+4 Arkansas               5       767.0300     124.2218       3835.15         0.16
 ```
 
 This is also a good example where `mutate` is more convenient than traditional assignment.  
  
 However, not everyone is enamored with this new "piping" trend; when you need to provide verbose code or examples for beginners to understand the processing steps it [may not be the best coding choice](http://www.fromthebottomoftheheap.net/2015/06/03/my-aversion-to-pipes/). As with all "coding standards" advice, do as you think best for you and your context. 
+
+
+|  |
+|  |
+|  |
+|  |
