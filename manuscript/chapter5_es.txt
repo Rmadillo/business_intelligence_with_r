@@ -71,7 +71,7 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 
 --------
 
-***Relationships and Associations*** 
+***Similarities and Associations*** 
 
 {width="wide"}
 | Type | Statistic | Package | Function | 
