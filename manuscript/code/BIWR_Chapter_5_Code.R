@@ -7,8 +7,15 @@
 #
 ######################################################################
 
+
+# install JAGS from http://mcmc-jags.sourceforge.net/ 
+
+# install.packages(rjags)
+# devtools::install_github("rasmusab/bayesian_first_aid")
+
+
 ## Overview
-  
+
 ### Differences in tendency 
   
 # Difference in means 
@@ -135,7 +142,7 @@ casual_workingday_use = dcast(bike_share_daily, yr~workingday, value.var="casual
 casual_workingday_use$sum = casual_workingday_use$Yes + casual_workingday_use$No
 
 # Filter the data into subsets
-casual_notworkingday = filter(bike_share_daily, workingday == "No" & season == "Spring"workingday == "No" & season == "Fall")
+casual_notworkingday = filter(bike_share_daily, workingday == "No" & season == "Spring" | workingday == "No" & season == "Fall")
 
 casual_notworking_Spring = filter(casual_notworkingday, season == "Spring")
 
@@ -204,19 +211,13 @@ dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual, theta.
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual, theta.es="Ac")$theta
 
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual, theta.es="Ac")$theta.bci.lo
+
 dmes.boot(casual_notworking_Fall$casual, casual_notworking_Spring$casual, theta.es="Ac")$theta.bci.up
 
 delta_gr(casual_notworking_Fall$casual, casual_notworking_Spring$casual, x.name="Fall", y.name="Spring")
 
 
 ### Determining the probability of a difference
-
-# http://mcmc-jags.sourceforge.net/
-# install.packages(rjags)
-
-require(devtools)
-devtools::install_github("rasmusab/bayesian_first_aid")
-require(BayesianFirstAid)
 
 workday_diff_bayes = bayes.prop.test(casual_workingday_use$Yes, casual_workingday_use$sum)
 
@@ -235,7 +236,7 @@ summary(casual_notworkingday_mean_bayes)
 diagnostics(casual_notworkingday_mean_bayes)
 
 
-## Effect sizes: Measuring *relationships* between groups
+## Effect sizes: Measuring *similarities* between groups
 
 ### Associations between numeric variables (correlation)
 
@@ -245,69 +246,91 @@ require(bootES)
 # Use count and air temp variables from bike share data
 bike_use_atemp = data.frame(air_temp = bike_share_daily$atemp, count = bike_share_daily$cnt)
 
+# Pearson's
 cor(bike_use_atemp$air_temp, bike_use_atemp$count)
 
+# Normal CI for Pearson's
 cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)$conf.int
 
+# Bootstrapped CI for Pearson's
 bootES(c(bike_use_atemp$air_temp, bike_use_atemp$count), effect.type="r")
 
-cor.ci(bike_use_atemp, method="spearman", n.iter = 10000, plot=FALSE)
-
+# Prefer Kendall's to Spearman's in most cases
+# Kendall's with CI
 cor.ci(bike_use_atemp, method="kendall", n.iter = 10000, plot=FALSE)
+
+# Spearman's with CI
+cor.ci(bike_use_atemp, method="spearman", n.iter = 10000, plot=FALSE)
 
 
 ### Bootstrapping BCa CIs for non-parametric correlation
 
-rs_function = function(x,i){
-  cor(x[i,1], x[i,2], method="spearman")
-  rs_boot = boot(bike_use_atemp, rs_function, R=10000)
-  boot.ci(rs_boot, type="bca")$bca[4:5]
-}
-  
+# Boot function for Kendall's 
 rt_function = function(x,i){cor(x[i,1], x[i,2], method="kendall")}
 
+# Run Kendall's boot function
 rt_boot = boot(bike_use_atemp, rt_function, R=10000)
 
+# Kendall's BCa CI
 boot.ci(rt_boot, type="bca")$bca[4:5]
+
+# Boot function for Spearman's
+rs_function = function(x,i){cor(x[i,1], x[i,2], method="spearman")}
+
+rs_boot = boot(bike_use_atemp, rs_function, R=10000)
+
+boot.ci(rs_boot, type="bca")$bca[4:5]
 
 
 ### Determining the probability of a correlation
 
 require(BayesianFirstAid)
 
-bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
+atemp_bike_cor_bayes = bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
+
+atemp_bike_cor_bayes
 
 plot(atemp_bike_cor_bayes)
 
 
 ### Partial correlations
 
-bike_use_atemp_wind = data.frame(bike_share_daily$temp, bike_share_daily$cnt, bike_share_daily$windspeed)
+# Subset bike share data data
+bike_use_atemp_wind = data.frame(temp = bike_share_daily$temp, cnt = bike_share_daily$cnt, windspeed = bike_share_daily$windspeed )
 
+# Acquire correlation matrix  
 atemp_wind_count = corr.test(bike_use_atemp_wind, method="kendall")
 
-atemp_wind_count$ci[1:3]
+# Review matrix
+atemp_wind_count$r
 
+# Obtain partial r
 partial.r(as.matrix(atemp_wind_count$r), c(1:2), 3)
 
 
 ### Polychoric and polyserial correlation for ordinal data
 
-# Polychoric
+## Polychoric
 
+# Get math attitudes data
 data(mass, package="likert")
 
+# Subset and convert to numeric
 poly_math = data.frame(as.numeric(mass[,7]), as.numeric(mass[,14]))
 
+# Name columns
 colnames(poly_math) = c("worry", "enjoy")
 
-polychoric(poly_math)$rho
+# Obtain polychoric correlation
+polychoric(poly_math)
 
-# Polyserial
+## Polyserial
 
+# Made up math scores
 math_score = c(755, 642, 626, 671, 578, 539, 769, 614, 550, 615, 749, 676, 753, 509, 798, 783, 508, 767, 738, 660)
 
-polyserial(math_score, poly_math$enjoy)
+# Obtain polyserial correlation using the polycor package
+polycor::polyserial(math_score, poly_math$enjoy)
 
 
 ### Associations between categorical variables
@@ -331,9 +354,10 @@ doctor = c("yes", "no", "yes", "unsure", "yes", "no", "unsure", "no", "no", "yes
 model = c("yes", "yes", "unsure", "yes", "no", "no", "unsure", "no", "unsure", "no", "yes", "yes", "unsure")
 
 # Obtain Cohen's kappa
-cohen.kappa(x=cbind(doctor,model))
+cohen.kappa(x=cbind(doctor, model))
 
-cohen.kappa(doctor_vs_model)$agree
+# Category proportion of agreement
+cohen.kappa(x=cbind(doctor, model))$agree
 
 
 ### Regression coefficient
@@ -354,14 +378,15 @@ confint(effect_air_on_sea)
 ### R^2: Proportion of variance explained 
 
 library(boot)
+
+# R-squared boot function
 rsq = function(formula, data, indices) {
   d = data[indices,] # allows boot to select sample
   fit = lm(formula, data=d)
   return(summary(fit)$r.square)
 }
 
-# bootstrap R2 with 10k replications
-
+# bootstrap R^2 with 10k replications
 air_temp_R2 = boot(data=tao, statistic=rsq, R=10000, formula=Sea.Surface.Temp ~ Air.Temp)
 
 # view bootstrapped R2 results
@@ -373,5 +398,11 @@ boot.ci(air_temp_R2, type="bca")
 # plot results
 plot(air_temp_R2)
 
+# Example of getting relatively high R^2 from pure noise
+set.seed(123)
+y = rnorm(10)
+x = sapply(rep(10,8), rnorm)
+noise = lm(y ~ x)
+summary(noise)$r.squared
 
 ##### End of File #####
