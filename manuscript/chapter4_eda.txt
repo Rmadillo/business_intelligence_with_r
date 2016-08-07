@@ -10,20 +10,42 @@
 
 Exploration and evaluation is the heart of analytics; this chapter covers a wide variety of ways to understand, display, and summarize your data. 
 
-We'll primarily use the same bike share data we downloaded from the UCI Machine Learning Repository in Chapter 2. To make it easy, the code below downloads the particular file we'll use throughout much of this chapter and adjusts the column types and levels.
+The `ggplot2` is perhaps the most useful (and logical) graphics package for R, and we'll use it extensively in this book. The `scales` package is often loaded with it, to provide support for things like date and time axes. 
+
+```
+require(ggplot2)
+require(scales)
+```
+
+`ggplot2` can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. 
+
+I> #### Need a `ggplot2` cheat sheet?
+I>
+I> RStudio has a great A3/11x17 sized overview of all the [primary ggplot functions and options](http://www.rstudio.com/wp-content/uploads/2015/12/ggplot2-cheatsheet-2.0.pdf) on their [cheatsheet page](https://www.rstudio.com/resources/cheatsheets/).  
+I>
+I> The [`ggplot2` documentation](http://docs.ggplot2.org/current/) is very thorough, but if you need a cheat-sheet to simplify the possibilities down to some common tasks, there's a great introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html). For an overview of common `ggplot2` tasks with worked examples, [Cookbook R](http://www.cookbook-r.com/Graphs/) is quite useful, and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/).
+
+We'll primarily use the bike share data we downloaded from the UCI Machine Learning Repository as one of the examples in Chapter 2. To make it easy, the code below downloads and imports the data we'll use throughout much of this chapter (as well as the rest of the book) and adjusts the column types and levels.
 
 ```
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/
-    00275/Bike-Sharing-Dataset.zip", "Bike-Sharing-Dataset.zip")
+  00275/Bike-Sharing-Dataset.zip", "Bike-Sharing-Dataset.zip")
+  
 bike_share_daily = read.table(unz("Bike-Sharing-Dataset.zip", "day.csv"),
-    colClasses=c("character", "Date", "factor", "factor", "factor", "factor",
-        "factor", "factor", "factor", "numeric", "numeric", "numeric", "numeric",
-        "integer", "integer", "integer"), sep=",", header=TRUE)
+  colClasses=c("character", "Date", "factor", "factor", "factor", "factor",
+    "factor", "factor", "factor", "numeric", "numeric", "numeric", "numeric",
+    "integer", "integer", "integer"), sep=",", header=TRUE)
+
 levels(bike_share_daily$season) = c("Winter", "Spring", "Summer", "Fall")
+
 levels(bike_share_daily$workingday) = c("No", "Yes")
+
 levels(bike_share_daily$holiday) = c("No", "Yes")
+
 bike_share_daily$mnth = ordered(bike_share_daily$mnth, 1:12)
+
 levels(bike_share_daily$mnth) = c(month.abb)
+
 levels(bike_share_daily$yr) = c(2011, 2012)
 ```
 
@@ -62,6 +84,7 @@ Sometimes you just want to see histograms, but coding and laying out a bunch of 
 
 ```
 require(psych)
+
 multi.hist(bike_share_daily[,sapply(bike_share_daily, is.numeric)])
 ```
 
@@ -87,6 +110,7 @@ The dataset we've used so far in this recipe isn't a great one for mosaic plots 
 
 ```
 require(vcd)
+
 pairs(Titanic, highlighting=2)
 ```
 
@@ -97,30 +121,6 @@ pairs(Titanic, highlighting=2)
 
 We saw the quick-and-dirty way to plot a bunch of distributions at once above; now we focus on production-ready plots using the `ggplot2` package.
 
-```
-require(ggplot2)
-require(scales)
-```
-
-This package can seem daunting at first; the power of its immense flexibility and beauty comes at the cost of a bewildering variety of options. But it's well worth the effort to learn, as you'll be able to customize virtually anything you decide to plot. 
-
-I> #### Need a `ggplot2` cheat sheet?
-I>
-I> RStudio has a great A3/11x17 sized overview of all the [primary ggplot functions and options](http://www.rstudio.com/wp-content/uploads/2015/12/ggplot2-cheatsheet-2.0.pdf) on their [cheatsheet page](https://www.rstudio.com/resources/cheatsheets/).  
-I>
-I> The [`ggplot2` documentation](http://docs.ggplot2.org/current/) is very thorough, but if you need a cheat-sheet to simply the possibilities down to the common needs and uses *with examples*, there's a great introduction on [Computer World](http://www.computerworld.com/article/2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html), and Zev Ross has a more thorough but also well done overview on his [blog](http://zevross.com/blog/2014/08/04/beautiful-plotting-in-r-a-ggplot2-cheatsheet-3/).
-I>
-I> You can scrape Sharon Machlis' wonderful `ggplot` cheat sheet from the above link into a local pipe-delimited text file, to format and display as works best for you:  
-I> 
-I> ~~~~~~~~  
-I> require(XML)  
-I> machlis_cw_ggplot_page = readLines("http://www.computerworld.com/article/  
-I>    2935394/business-intelligence/my-ggplot2-cheat-sheet-search-by-task.html")   
-I> gg_cheat_sheet = readHTMLTable(machlis_cw_ggplot_page, header=T, which=1,  
-I>    stringsAsFactors=F)   
-I> write.table(gg_cheat_sheet, "gg_cheat_sheet.txt", sep="|", row.names=F)   
-I> ~~~~~~~~  
-
 
 ### Histograms and density plots
 
@@ -128,28 +128,28 @@ For quantitative data, business users are used to seeing histograms; quants pref
 
 ```
 ggplot(bike_share_daily, aes(casual)) +
-    geom_density(col="blue", fill="blue", alpha=0.3) +
-    xlab("Casual Use") +
-    theme_bw()
+  geom_density(col="blue", fill="blue", alpha=0.3) +
+  xlab("Casual Use") +
+  theme_bw()
 
 ggplot(bike_share_daily, aes(casual)) +
-    geom_histogram(col="blue", fill="blue", alpha=0.3) +
-    xlab("Casual Use") +
-    theme_bw()
+  geom_histogram(col="blue", fill="blue", alpha=0.3) +
+  xlab("Casual Use") +
+  theme_bw()
 ```
 
 ![](images/0815OS_02_06a.png)
 
-...as well as together:
+...as well as together, with the histogram command set to plot on the density scale instead of by counts:
 
 ```
 ggplot(bike_share_daily, aes(casual)) +
-    ylab("density and count") +
-    xlab("Casual Use") +
-    geom_histogram(aes(y=..density..), col="blue", fill="blue", alpha=0.3) +
-    geom_density(col="blue", fill="blue", alpha=0.2) +
-    theme_bw() +
-    theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
+  ylab("density and count") +
+  xlab("Casual Use") +
+  geom_histogram(aes(y=..density..), col="blue", fill="blue", alpha=0.3) +
+  geom_density(col="blue", fill="blue", alpha=0.2) +
+  theme_bw() +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
 ```
 
 ![](images/0815OS_02_06b.png)
@@ -164,20 +164,20 @@ When you have categorical data, bar or dot plots serve the same purpose:
 
 ```
 ggplot(bike_share_daily, aes(weathersit)) +
-    geom_bar(col="blue", fill="blue", alpha=0.3) +
-    xlab("Weather Pattern") +
-    scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear",
-        "Cloudy/Rainy", "Stormy")) +
-    theme_bw()
+  geom_bar(col="blue", fill="blue", alpha=0.3) +
+  xlab("Weather Pattern") +
+  scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear",
+    "Cloudy/Rainy", "Stormy")) +
+  theme_bw()
 
 ggplot(bike_share_daily, aes(x=weathersit, y=..count..)) +
-    geom_bar(stat="count", width=0.01) +
-    geom_point(stat = "count", size=4, pch=21, fill="darkblue") +
-    xlab("Weather Pattern") +
-    scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", 
-        "Cloudy/Rainy", "Stormy")) +
-    coord_flip() +
-    theme_bw()
+  geom_bar(stat="count", width=0.01) +
+  geom_point(stat = "count", size=4, pch=21, fill="darkblue") +
+  xlab("Weather Pattern") +
+  scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", 
+    "Cloudy/Rainy", "Stormy")) +
+  coord_flip() +
+  theme_bw()
 ```
 
 ![](images/bar_and_dot.png)
@@ -189,16 +189,16 @@ We saw the quick-and-dirty way to plot multiple histograms with `multi.hist` a f
 
 ```
 ggplot(bike_share_daily, aes(casual, fill=season)) +
-    geom_histogram(aes(y = ..density..), alpha=0.2, color="gray50") +
-    geom_density(alpha=0.5, size=0.5) +
-    facet_wrap(~season) +
-    theme_light() +
-    xlab("Daily Bike Use Count") +
-    ylab("") +
-    theme(legend.position="none") +
-    theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-          axis.title = element_text(size=9, face=2, color="gray30"),
-          axis.title.x = element_text(vjust=-0.5))
+  geom_histogram(aes(y = ..density..), alpha=0.2, color="gray50") +
+  geom_density(alpha=0.5, size=0.5) +
+  facet_wrap(~season) +
+  theme_light() +
+  xlab("Daily Bike Use Count") +
+  ylab("") +
+  theme(legend.position="none") +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+    axis.title = element_text(size=9, face=2, color="gray30"),
+    axis.title.x = element_text(vjust=-0.5))
 ```
 
 ![](images/0815OS_02_08.png)
@@ -207,14 +207,14 @@ The same can be done for categorical distributions, too, of course:
 
 ```
 ggplot(bike_share_daily, aes(weathersit, fill=season)) +
-    geom_bar(alpha=0.5) +
-    xlab("") +
-    ylab("Number of Days") +
-    scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", "Cloudy/Rainy", 
-    "Stormy")) +
-    coord_flip() +
-    facet_wrap(~season, ncol=1) +
-    theme_light()
+  geom_bar(alpha=0.5) +
+  xlab("") +
+  ylab("Number of Days") +
+  scale_x_discrete(breaks=c(1, 2, 3), labels=c("Clear", 
+    "Cloudy/Rainy", "Stormy")) +
+  coord_flip() +
+  facet_wrap(~season, ncol=1) +
+  theme_light()
 ```
 
 ![](images/0815OS_02_09.png)
@@ -228,12 +228,10 @@ A> With apologies to Hunter S. Thompson, if you use pie charts for anything outs
 
 Most of the time, we want to understand how one thing compares to something else. There’s no better way to do this other than by plotting each group’s distribution against the other’s.
 
-We continue using the bike share data, along with `ggplot2`, `vcd`, and `beanplot`. 
+We continue using the bike share data, along with `ggExtra`, `vcd, and `beanplot`. 
 
 ```
-require(ggplot2)
 require(ggExtra)
-require(scales)
 require(vcd)
 require(beanplot)
 ```
@@ -244,13 +242,13 @@ For quantitative data, plotting the two distributions over each other provides a
 
 ```
 ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
-    geom_density(alpha=0.4) +
-    theme_minimal() +
-    xlab("Daily Casual Bike Use Count") +
-    ylab("") +
-    scale_fill_discrete(name="Work Day?") +
-    scale_color_discrete(name="Work Day?") +
-    theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), 
+  geom_density(alpha=0.4) +
+  theme_minimal() +
+  xlab("Daily Casual Bike Use Count") +
+  ylab("") +
+  scale_fill_discrete(name="Work Day?") +
+  scale_color_discrete(name="Work Day?") +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), 
     legend.position="top")
 ```
 
@@ -262,13 +260,13 @@ Boxplots can be useful for comparing more than a couple of distributions, and ca
 
 ```
 ggplot(bike_share_daily, aes(mnth, casual, fill=workingday)) +
-    xlab("Month") +
-    ylab("Daily Casual Bike Use Count") +
-    geom_boxplot() +
-    theme_minimal() +
-    scale_fill_discrete(name="Work Day?") +
-    scale_color_discrete(name="Work Day?") +
-    theme(legend.position="bottom")
+  xlab("Month") +
+  ylab("Daily Casual Bike Use Count") +
+  geom_boxplot() +
+  theme_minimal() +
+  scale_fill_discrete(name="Work Day?") +
+  scale_color_discrete(name="Work Day?") +
+  theme(legend.position="bottom")
 ```
 
 ![](images/bike_boxplot.png)
@@ -281,9 +279,9 @@ Fortunately, bean plots allow you to create "half" violin plots, or more accurat
 
 ```
 beanplot(casual ~ mnth, data = bike_share_daily, side="first", 
-    overallline="median", what=c(1,1,1,0), col=c("gray70", 
-    "transparent", "transparent", "blue"), xlab = "Month", 
-    ylab = "Daily Casual Bike Use Count")
+  overallline="median", what=c(1,1,1,0), col=c("gray70", 
+  "transparent", "transparent", "blue"), xlab = "Month", 
+  ylab = "Daily Casual Bike Use Count")
 ```
 
 If you prefer a more traditional look, with the density curves pointing up, you can use `horizontal=TRUE`, change `side` to `"second"`, and flip your axis titles:
@@ -292,9 +290,9 @@ If you prefer a more traditional look, with the density curves pointing up, you 
 
 ```
 beanplot(casual ~ mnth, data = bike_share_daily, side="second", 
-    overallline="median", what=c(1,1,1,0), col=c("gray70", 
-    "transparent", "transparent", "blue"), ylab = "Month", 
-    xlab = "Daily Casual Bike Use Count", horizontal=TRUE)
+  overallline="median", what=c(1,1,1,0), col=c("gray70", 
+  "transparent", "transparent", "blue"), ylab = "Month", 
+  xlab = "Daily Casual Bike Use Count", horizontal=TRUE)
 ```
 
 ![](images/beanplot2.png)  
@@ -308,16 +306,18 @@ The `ggExtra` package provides a simple way to plot scatterplots with marginal d
 
 ```
 bike_air_temp = ggplot(bike_share_daily, aes(x=atemp, y=casual)) +
-    xlab("Daily Mean Normalized Air Temperature") +
-    ylab("Number of Total Casual Bike Uses") +
-    geom_point(col="gray50") +
-    theme_bw()
+  xlab("Daily Mean Normalized Air Temperature") +
+  ylab("Number of Total Casual Bike Uses") +
+  geom_point(col="gray50") +
+  theme_bw()
 ```
 
 Then, use `ggMarginal` to create the final product:
 
 ```
 bike_air_temp_mh = ggMarginal(bike_air_temp, type="histogram")
+
+bike_air_temp_mh
 ```
 
 ![](images/scatter_marginal_hist.png)
@@ -325,13 +325,17 @@ bike_air_temp_mh = ggMarginal(bike_air_temp, type="histogram")
 Sometimes density plots can be useful, or perhaps you want to keep it simple and show a boxplot. Just change the `type` option:
 
 ```
-bike_air_temp_mh = ggMarginal(bike_air_temp, type="density")
+bike_air_temp_md = ggMarginal(bike_air_temp, type="density")
+
+bike_air_temp_md
 ```
 
 ![](images/scatter_marginal_density.png)  
 
 ```
-bike_air_temp_mh = ggMarginal(bike_air_temp, type="boxplot")
+bike_air_temp_mb = ggMarginal(bike_air_temp, type="boxplot")
+
+bike_air_temp_mb
 ```
 
 ![](images/scatter_marginal_boxplot.png)  
@@ -339,7 +343,7 @@ bike_air_temp_mh = ggMarginal(bike_air_temp, type="boxplot")
 
 ### Mosaic plots
 
-The `vcd` package has a nice implementation of mosaic plots for categorical data called, as you might expect, `mosaic`:
+The `vcd` package has a nice implementation of mosaic plots for exploring categorical data distributions called, as you might expect, `mosaic`:
 
 ```
 mosaic(~ weathersit + season, data=bike_share_daily, shade=T, 
@@ -352,7 +356,7 @@ mosaic(~ weathersit + season, data=bike_share_daily, shade=T,
 
 A> #### Um. What's a mosaic plot?
 A> 
-A> If you're not already familiar with them, think of mosaic plots as contingency tables made with shapes—the larger the shape, the higher the cell count.
+A> If you're not already familiar with them, think of mosaic plots as contingency tables made with shapes---the larger the shape, the higher the cell count.
 A> 
 A> For comparison, here's the table that the mosaic plot represents:  
 A> 
@@ -362,7 +366,7 @@ A> | Clear | 111 | 113 | 136 | 103 |
 A> | Cloudy/Rainy | 66 | 68 | 48 | 65 |
 A> | Stormy | 4 | 3 | 4 | 10 |
 A> 
-A> Sure, a table can be more compact, but the mosaic gives you the pattern at a glance; each is an option depending on what you need to get across.
+A> Sure, a table can be more compact, but the mosaic gives you the pattern at a glance; either is an option depending on what you need to get across.
 
 
 ### Multiple bivariate comparisons with faceting
@@ -371,14 +375,14 @@ As with univariate plots, we can facet on another variable for comparison’s sa
 
 ```
 ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
-    geom_density(alpha=0.4) +
-    theme_minimal() +
-    xlab("Daily Casual Bike Use Count") +
-    ylab("") +
-    scale_fill_discrete(name="Work Day?") +
-    scale_color_discrete(name="Work Day?") +
-    facet_wrap(~season, ncol=2) +
-    theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), 
+  geom_density(alpha=0.4) +
+  theme_minimal() +
+  xlab("Daily Casual Bike Use Count") +
+  ylab("") +
+  scale_fill_discrete(name="Work Day?") +
+  scale_color_discrete(name="Work Day?") +
+  facet_wrap(~season, ncol=2) +
+  theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), 
     legend.position="top")
 ```
 
@@ -401,7 +405,7 @@ Dx = c('Septicemia', 'Cancer', 'Diabetes', 'Heart disease',
        'Injury/poisoning') 
 
 pareto.chart(xtabs(Readmits ~ Dx), main='Pareto Chart 
-    for Unplanned Readmissions')
+  for Unplanned Readmissions')
 
 Pareto chart analysis for xtabs(Readmits ~ Dx)
                         Frequency Cum.Freq. Percentage Cum.Percent.
@@ -426,15 +430,20 @@ There are a variety of ways you can plot survey data, but the `likert` package m
 
 ```
 require(likert)
+
+data(mass)
+
+# Create a likert object
 mathiness = likert(mass[2:15])
 
-# Complete plot
+# Plot the likert object
 plot(mathiness)
 ```
 
 ![](images/0815OS_02_13.png)
 
 ```
+# Create likert object with a grouping factor
 gender_math = likert(items=mass[,c(4,6,15), drop=FALSE], grouping=mass$Gender)
 
 # Grouped plot
@@ -474,6 +483,7 @@ The `table` and `prop.table` functions from the `base` package provide the simpl
 
 ```
 table(bike_share_daily$holiday)
+
 No Yes
 710  21
 
@@ -494,6 +504,7 @@ describeBy(bike_share_daily[14:16], bike_share_daily$season == "Winter")
 ![](images/describe3.png)
 
 Summary stats for weather on days where there were less than/greater than 1000 casual uses:
+
 ```
 describeBy(bike_share_daily[10:13], bike_share_daily$casual <= 1000)
 ```
@@ -522,6 +533,7 @@ A three-way table:
 
 ```
 table(bike_share_daily[c(3,6:7)]) 
+
 , , weekday = 0
 
         holiday
@@ -546,6 +558,7 @@ A three-way table with marginals:
 
 ```
 addmargins(table(bike_share_daily[c(3,6:7)]))
+
 , , weekday = 0
 
         holiday
@@ -586,7 +599,9 @@ Sometimes you may want the counts to be in a data frame, either for use in plott
 
 ```
 require(dplyr)
-summarise(group_by(bike_share_daily, season, holiday, weekday), count=n())
+
+summarize(group_by(bike_share_daily, season, holiday, weekday), count=n())
+
 Source: local data frame [37 x 4]
 Groups: season, holiday
 
@@ -630,9 +645,13 @@ Sometimes there isn’t a `base` function for the confidence interval we need, o
 
 ```
 require(boot)
+
 sd_boot_function = function(x,i){sd(x[i])}
+
 sd_boot = boot(PlantGrowth$weight, sd_boot_function, R=10000)
+
 sd(PlantGrowth$weight)
+
 boot.ci(sd_boot, type="bca")$bca[4:5]
 
 0.7011918
@@ -645,8 +664,11 @@ We can also bootstrap confidence intervals for any summary statistic. For exampl
 
 ```
 q75_function = function(x,i){quantile(x[i], probs=0.75)}
+
 q75_boot = boot(PlantGrowth$weight, q75_function, R=10000)
+
 quantile(PlantGrowth$weight,0.75)
+
 boot.ci(q75_boot, type="bca")$bca[4:5]
 
 5.53 
@@ -663,34 +685,31 @@ You can get quick (gg)plots of means/medians and confidence intervals, standard 
 | Median | Quantile | `median_hilow(x, conf.int=0.95, ...)` |
 
 
-The following code demonstrates all three options:
+The following code demonstrates all three options (and provides an example of plotting `ggplot2` objects together using the `grid.arrange` function from the `gridExtra` package):
 
 ```
-require(ggplot2)
 require(gridExtra)
 
 p1 = ggplot(PlantGrowth, aes(group, weight)) +
-    ggtitle("Bootstrapped") +
-    stat_summary(fun.data = mean_cl_boot, conf.int = 0.95) 
+  ggtitle("Bootstrapped") +
+  stat_summary(fun.data = mean_cl_boot, fun.args=list(conf.int = 0.95)) 
 
 p2 = ggplot(PlantGrowth, aes(group, weight)) +
-    ggtitle("Normal") +
-    stat_summary(fun.data = mean_cl_normal, conf.int = 0.95) 
+  ggtitle("Normal") +
+  stat_summary(fun.data = mean_cl_normal, fun.args=list(conf.int = 0.95)) 
 
 p3 = ggplot(PlantGrowth, aes(group, weight)) +
-    ggtitle("2 SDs") +
-    stat_summary(fun.data = mean_sdl, mult=2) 
+  ggtitle("2 SDs") +
+  stat_summary(fun.data = mean_sdl, fun.args=list(mult=2)) 
 
 p4 = ggplot(PlantGrowth, aes(group, weight)) +
-    ggtitle("Median+IQR") +
-    stat_summary(fun.data = median_hilow, conf.int = 0.5) 
+  ggtitle("Median+IQR") +
+  stat_summary(fun.data = median_hilow, fun.args=list(conf.int = 0.5)) 
 
 grid.arrange(p1, p2, p3, p4, nrow=2)
 ```
 
 ![](images/plotcis.png)
-
-
 
 
 ### Tolerance intervals
@@ -703,10 +722,13 @@ The `tolerance` package contains functions for estimating tolerance intervals fo
 
 ```
 require(tolerance)
+
 commute_time = c(68, 42, 40, 69, 46, 37, 68, 68, 69, 38, 51, 36, 50, 37, 41, 
   68, 59, 65, 67, 42, 67, 62, 48, 52, 52, 44, 65, 65, 46, 67, 62, 66, 43, 58, 
   45, 65, 60, 55, 48, 46)
+
 commute_time_npti = nptol.int(commute_time, alpha=0.05, P=0.75, side=2)
+
 commute_time_npti
 
   alpha    P 2-sided.lower 2-sided.upper
@@ -720,7 +742,6 @@ plottol(commute_time_npti, commute_time, side="two", plot.type="both")
 ```
 
 ![](images/0815OS_02_05.png)
-
 
 If you plotted both tolerance graphs (`plot.type="both"`), you'll need to return par to normal manually: 
 
@@ -752,6 +773,7 @@ The `VIM` package has some great tools for visualizing missing data patterns. As
 
 ```
 require(VIM)
+
 data(tao)
 
 # Rename the Sea.Surface.Temp column to make label fit on plot
@@ -775,6 +797,7 @@ To complement the detailed picture given by `matrixplot`, you can get a numeric 
 
 ```
 tao_aggr = aggr(tao)
+
 tao_aggr
 
  Missings in variables:
@@ -866,23 +889,24 @@ By subsetting the results of different methods, you can plot their densities to 
 ```
 # Create a mean-imputed air temp variable
 tao$tao_airtemp_mean = ifelse(is.na(tao$Air.Temp), mean(tao$Air.Temp, 
-    na.rm=TRUE), tao$Air.Temp)
+  na.rm=TRUE), tao$Air.Temp)
 
 # Make a data frame of each air temp result
 tao_compare_airtemp = data.frame(tao=tao[,5], tao_knn=tao_knn[,5], 
-    tao_irmi=tao_irmi[,5], tao_irmi_robust=tao_irmi_robust[,5], mean=tao[,9])
+  tao_irmi=tao_irmi[,5], tao_irmi_robust=tao_irmi_robust[,5], mean=tao[,9])
 
 # Melt the various air temp results into a long data frame
 require(reshape2)
+
 tao_compare_melt = melt(tao_compare_airtemp, value.name="Air.Temp")
 
 # Plot density histograms of each option and 
 # add black dotted line to emphasize the original data
 ggplot(tao_compare_melt, aes(Air.Temp, color=variable)) +
-    geom_density(lwd=1.25) + 
-    geom_density(data=subset(tao_compare_melt, variable=="tao"), 
-        aes(Air.Temp), lty=3, lwd=1.5, color="black") +
-    theme_minimal()
+  geom_density(lwd=1.25) + 
+  geom_density(data=subset(tao_compare_melt, variable=="tao"), 
+    aes(Air.Temp), lty=3, lwd=1.5, color="black") +
+  theme_minimal()
 ```
 
 ![](images/tao_compare_melt.png)
@@ -890,3 +914,7 @@ ggplot(tao_compare_melt, aes(Air.Temp, color=variable)) +
 I> #### More imputation in R: other packages
 I> 
 I> Since imputation is a complex subject, there are of course a lot of different R packages to do it; explore the *Imputation* section of the CRAN Task View [Official Statistics & Survey Methodology](http://cran.r-project.org/web/views/OfficialStatistics.html) for a short overview of those packages and their methods.
+
+| |
+| | 
+| | 
