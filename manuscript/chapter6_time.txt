@@ -124,7 +124,7 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
 The `psi` option is pretty robust to starting values when you have a large sample size and there's at least a hint of a real break in the trend. For example, you can run the above code using a `psi` of 0.2—where there's clearly no change in trend—and the breakpoint estimate is exactly the same. However, with fewer data points and/or a lot of variance, the choice of `psi` could change the results, so try a few different values. 
 
 
-## The many flavors of regression
+### The many flavors of regression
 
 There are many ways to model trends in data, but the majority of cases can be addressed with a few types. Still, there are more flavors of regression than a Ben & Jerry's warehouse after a tornado.  
 
@@ -150,7 +150,7 @@ The coefficients, of course, are effect sizes.
 \* change `+` to `*` to create interactions  
 
 
-## Plotting regression coefficients
+### Plotting regression coefficients
 
 The `dotwhisker` package has a simple function to graph regression results using `ggplot2`. `dwplot` shows the coefficients and their confidence intervals (95% by default):
 
@@ -256,7 +256,7 @@ It’s useful to have a cheat-sheet of the major date and time formats; you can 
 | Time zone | `%Z` |  |
 
 
-## Calculate a mean or correlation in circular time (clock time)
+### Calculate a mean or correlation in circular time (clock time)
 
 Sometimes you want to know the average time at which something happens, or the relationship between times, but if the data occur near the end of a time period, the use of `mean()` will give you incorrect results. The `psych` package comes to the rescue with the `circadian.mean` and `circadian.cor` functions:
 
@@ -280,7 +280,7 @@ wake_time  1.0000000  0.1524331
 sleep_time 0.1524331  1.0000000
 ```
 
-## Plotting time-series data
+### Plotting time-series data
 
 While having dates in the dataset can allow easy plotting via `ggplot2`, there are a few plotting functions that provide one-line insight into time series data. They may not be graphically elegant, but they provide a great way to understand your data more thoroughly.
 
@@ -341,7 +341,7 @@ ggplot(UK_births, aes(x=date, y=values)) +
 ![](images/biwr_05_ukbirths2.png)
 
 
-## Detecting autocorrelation
+### Detecting autocorrelation
 
 Autocorrelation can be present in non-temporal data as well as in time series; the `acf` function works the same for either type of data.
 
@@ -354,7 +354,7 @@ acf(UK_births_ts)
 What's often underappreciated is that autocorrelated data, temporal or not, will make standard confidence intervals *too small*. In other words, if you want to plot a trend and use the default confidence intervals, you'll underestimate the actual uncertainty associated with a trend line or data points across time. 
 
 
-## Plotting monthly patterns
+### Plotting monthly and seasonal patterns
 
 If your data are monthly (or if you aggregate them to months), the `monthplot` function in the `base` installation breaks out each month’s data and plots them separately, along with a horizontal line for each month’s mean (the default) or median (`base = median`) value over the time span. A few manual tweaks helps show the information in this plot more clearly:
 
@@ -380,7 +380,7 @@ seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)",
 
 ![](images/biwr_05_ukbirths4.png)
 
-## Plotting seasonal adjustment on the fly
+### Plotting seasonal adjustment on the fly
 
 The `ggseas` package provides an easy way to plot seasonally-adjusted data in `ggplot2`. There are a variety of ways to adjust for seasonality, so review [its Guthub site](https://github.com/ellisp/ggseas) for more details and options that come with this package.
 
@@ -404,11 +404,11 @@ ggplot(UK_births_ts_df, aes(x=x, y=y)) +
 ![](images/seasonal_adjust.png)
 
 
-## Decomposing time series into components
+### Decomposing time series into components
 
 If you need to explore a time series in more depth, you'll probably want to decompose it into seasonal, trend, and random/remainder components.
 
-### Additive decomposition
+#### Additive decomposition
 
 We’ll continue with the UK monthly births data in its time series format. Most functions we’ll use in this recipe are in the `base` installation’s `stats` package, but one is in the `forecast` package, so make sure it's loaded with the data.
 
@@ -421,7 +421,7 @@ plot(decompose(UK_births_ts), col="darkblue")
 ![](images/biwr_05_decomp1.png)
 
 
-### Decomposing when the variance changes
+#### Decomposing when the variance changes
 
 Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. 
 
@@ -457,7 +457,7 @@ plot(decompose(BoxCox(AirPassengers, AirPassengers_lambda)))
 ![](images/biwr_05_decomp3.png)
 
 
-## Finding cycles in the noise: Using spectral analysis to identify periodicity
+### Using spectral analysis to identify periodicity
 
 Spectral analysis provides a simple way to evaluate whether there are any cyclical patterns in your time series. The `TSA` package's `periodogram` function creates a periodogram, where the highest peak(s) in the plot represent(s) possible cycling times. To do spectral analysis, you need to ensure the data are detrended first. 
 
@@ -488,7 +488,7 @@ sunny_df[which.max(sunny_df[,2]),]
 
 Frequency is the reciprocal of the time period. This data is annual, and since the the highest spectral peak is at a frequency of 0.09, it suggests that there is a ~11 year cycle (1/0.09=11).
 
-## Plotting survival curves
+### Plotting survival curves
 
 The `survminer` package makes a beautiful all-in-one survival plot and risk table. We'll use the `tongue` cancer data from the `KMsurv` package to demonstrate. 
 
@@ -511,7 +511,7 @@ ggsurvplot(tongue_survival, risk.table = TRUE, conf.int = TRUE)
 
 ![](images/survival.png)
 
-## Evaluating quality with control charts
+### Evaluating quality with control charts
 
 Companies with quality control processes or activities often use control charts (aka “Shewhart charts”) to evaluate whether a **stable** process is moving “out of control” over time and thus requires intervention. The `qcc` package provides a way to plot all major control chart types simply and quickly.
 
@@ -575,7 +575,7 @@ T> autocorrelated data. When you need something like a control
 T> chart on this type of data, use a GAM instead.
 
 
-## Identifying possible breakpoints in a time series
+### Identifying possible breakpoints in a time series
 
 We’ll explore intervention analysis in more detail in Part 2 of this book, but this is a useful place to demonstrate a simple way to identify changes in the statistical structure of a time series using the `strucchange` package.
 
@@ -623,7 +623,7 @@ text(2008.8, 555, "Jan 2009", cex=0.75, col="darkgreen", pos=4, font=3)
 ![](images/biwr_05_bps.png)
 
 
-## Exploring relationships between time series: cross-correlation
+### Exploring relationships between time series: cross-correlation
 
 Cross-correlation is extremely useful for helping identify leading and lagging indicators. The `ccf` function makes this easy. 
 
@@ -704,7 +704,7 @@ Max_CCF(fuel_detrend, fare_detrend)
 The maximum cross-correlation value is 0.51, which occurs between airline fares (at time 0) and fuel prices in the prior month (i.e., as 1/12 = 0.08333333).
 
 
-## Basic forecasting
+### Basic forecasting
 
 We saw a forecasting as a portion of the *Chapter 1* example. We’ll explore the `forecast` package more detail in Part 2 of this book, but for sake of keeping ideas together, we'll replay that forecasting example here. An excellent companion to doing forecasting is understanding it: for that, we recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
 
