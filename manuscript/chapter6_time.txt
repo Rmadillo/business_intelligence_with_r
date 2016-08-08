@@ -570,9 +570,7 @@ ggplot(ic_qcc, aes(x=Month, y=Rate)) +
 
 ![](images/qcc_to_ggplot.png)
 
-T> Many people use control charts incorrectly on trending and/or
-T> autocorrelated data. When you need something like a control
-T> chart on this type of data, use a GAM instead.
+T> Many people use control charts incorrectly on trending and/or autocorrelated data. When you need something like a control chart on these types of data, use a GAM instead. Morton et al.'s book [Statistical Methods for Hospital Monitoring with R](https://www.amazon.com/Statistical-Methods-Hospital-Monitoring-R/dp/1118596307) has R code and some good advice on this issue. 
 
 
 ### Identifying possible breakpoints in a time series
