@@ -454,7 +454,7 @@ plot(decompose(BoxCox(AirPassengers, AirPassengers_lambda)))
 
 ![](images/biwr_05_decomp2.png)
 
-![decomp of air passengers second plot](images/biwr_05_decomp3.png)
+![](images/biwr_05_decomp3.png)
 
 
 ## Finding cycles in the noise: Using spectral analysis to identify periodicity
