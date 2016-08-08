@@ -8,6 +8,6 @@ To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run
 render("~/BIWR/Chapter1/Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
 ```
 
-W> This code **will fail* if you've already created the directories; comment those sections out if you're running it locally for testing.  
+W> This code ***will fail*** if you've already created the directories; comment those sections out if you're running it locally for testing.  
 
 <<(code/BIWR_Chapter_1_Hauteville_House_Power_Forecast_20101127.Rmd)
