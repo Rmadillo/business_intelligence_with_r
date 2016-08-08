@@ -23,7 +23,11 @@ Describe past monthly power usage and forecast potential usage for the coming si
 
 <br>
 
-```{r everything, echo=FALSE, warning=FALSE, message=FALSE}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r everything}
 
 # Create project directories
 # Commented out here to avoid error
@@ -44,10 +48,10 @@ require(htmlwidgets)
 require(dygraphs)
 
 # Download the zip file into the data folder
-download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip", destfile="Data/household_power_consumption.zip")
+#download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip", destfile="Data/household_power_consumption.zip")
 
 # Unzip the data from the zip file into the Data folder
-unzip("Data/household_power_consumption.zip", exdir="Data")
+#unzip("Data/household_power_consumption.zip", exdir="Data")
 
 # Read the data into R 
 # NAs are represented by blanks and ? in this data, so need to change to NA
@@ -131,12 +135,11 @@ energy_use_prediction_widget = dygraph(total_use_forecast,
 energy_use_prediction_widget
 ```
 
-<br>  
-<br>  
+<br>
 
 ***Using the upper 80% prediction interval is a reasonable way to plan conservatively for power costs.***   
 
-```{r forecasttable, echo=FALSE, warning=FALSE, message=FALSE}
+```{r forecasttable}
 require(htmlTable)
 total_use_fc_df = data.frame(total_use_fc)
 colnames(total_use_fc_df) = c("Point Forecast", "Low 80%", "High 80%",
@@ -152,7 +155,6 @@ fc_table
 ```
 
 <br>  
-
 <hr>
 
 ### Methods and Analytics Details
@@ -187,7 +189,7 @@ Dimensions: `r dim(power)[1]` observations of `r dim(power)[2]` variables
 
 Missing values pattern:  
 
-```{r missingplot, echo=FALSE, warning=FALSE, message=FALSE}
+```{r missingplot}
 # Download the 'calendarHeat' function from revolutionanalytics.com
 source("http://blog.revolutionanalytics.com/downloads/calendarHeat.R")
 
@@ -200,7 +202,7 @@ calendarHeat(power_day_missing$Date, power_day_missing$Count_Missing,
 
 Missing values were interpolated using the 'carry last value forward' approach. Comparison of distributions:  
 
-```{r missingvalues, echo=FALSE, warning=FALSE, message=FALSE}
+```{r missingvalues, fig.height=2.5}
 # Compare the original and interpolated distributions
 # Reshape the two variables into long form for ggplot
 power_long = melt(power, id.vars= "DateTime", measure.vars=
@@ -218,7 +220,7 @@ density_plot
 
 Values were aggregated to a monthly time step.   
 
-```{r monthlyuse, echo=FALSE, warning=FALSE, message=FALSE}
+```{r monthlyuse, fig.height=2.5}
 # Create plot of total use by month
 total_use_plot = ggplot(power_monthly, aes(Month, Total_Use_kWh)) +
     geom_line(col="blue", lwd=1) 
@@ -240,7 +242,7 @@ R time series object
 6. **`Upper_95`**: Upper 95% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)  
 7. **`Lower_95`**: Lower 95% prediction interval for the forecast of total monthly active power use (in kilowatt-hours)  
 
-```{r basic_fc_plot, echo=FALSE, warning=FALSE, message=FALSE}
+```{r basic_fc_plot, fig.height=3}
 # View model summary
 summary(total_use_fc)
 
