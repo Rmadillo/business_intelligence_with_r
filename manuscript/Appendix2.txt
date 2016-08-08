@@ -2,7 +2,7 @@
 
 To run this file manually, just load it into RStudio and click the *Knit HTML* button in the Source window. A preview window will pop up. In some systems, the HTML file is concurrently saved to the working directory, while in others you may need to *Open in browser* and then *Save as* from there. 
 
-To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run it from the console, a command line, or a "make" file (see Appendix 1) via the `render` function, e.g.,:
+To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run it from the console, a command line, or a "make" file (see *Appendix 1*) via the `render` function, e.g.,:
 
 ```
 render("~/BIWR/Chapter1/Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
