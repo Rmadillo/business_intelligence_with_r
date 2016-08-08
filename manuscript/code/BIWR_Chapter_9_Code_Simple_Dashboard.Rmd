@@ -1,0 +1,48 @@
+---
+output: html_document
+---
+
+<style>
+.jqstooltip {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+</style>
+
+### Vital Signs Dashboard
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# devtools::install_github('htmlwidgets/sparkline')
+# see documentation at https://github.com/htmlwidgets/sparkline
+require(sparkline)
+require(lubridate)
+
+# 10 minute section of vital signs data from University of Queensland
+vs = read.csv("https://outbox.eait.uq.edu.au/uqdliu3/uqvitalsignsdataset/_uqvitalsignsdata/case20/fulldata/uq_vsd_case20_fulldata_10.csv", header=T)
+
+# convert _ to . in case time and make into date time class 
+# Date just defaults to current day since there's no date field in data
+vs$Case_Time = gsub("_", ".", as.character(vs$Time), fixed = TRUE)
+vs$Case_Time_ct = as.POSIXct(vs$Case_Time, format = "%H:%M:%OS")
+
+# Use start time from data set, create object for latest time
+vs$Date_Time_ct = vs$Case_Time_ct + hours(11) + minutes (28)
+curr_time = substr(as.character(vs$Date_Time_ct[length(vs$Date_Time_ct)]), 12, 21)
+```
+
+#### Patient MRN: **123456789**   
+<br>  
+Case Start Time: `r vs$Date_Time_ct[1]`  
+<br>  
+   
+| *Vital* | *Trend up to current time:* `r curr_time`  | *Distribution* | 
+| ------- | ------- | ------- |
+| Heart Rate | `r sparkline(vs$HR, width=250, height=60)` | `r sparkline(vs$HR, width=100, height=60, type="box")` | 
+| Pulse | `r sparkline(vs$Pulse, width=250, height=60)` | `r sparkline(vs$Pulse, width=100, height=40, type="box")` | 
+| Minute Volume | `r sparkline(vs$Minute.Volume, width=250, height=60, normalRangeMin=5, normalRangeMax=8, drawNormalOnTop=T, normalRangeColor="lightgreen")` | `r sparkline(vs$Minute.Volume, width=100, height=40, type="box")` | 
+| Tidal Volume | `r sparkline(vs$Tidal.Volume, width=250, height=60, normalRangeMin=280, normalRangeMax=400, drawNormalOnTop=T, normalRangeColor="lightgreen", fillColor="transparent")` | `r sparkline(vs$Tidal.Volume, width=100, height=60, type="box")` | 
+
+<small>*Green bands show normal ranges.*</small>  
