@@ -270,10 +270,10 @@ rosling_data = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/maste
   
 # create the motion plot using larger plot size than default
 plot(gvisMotionChart(rosling_data, 
-    idvar = "Country", 
-    timevar = "Year", 
-    sizevar = "Population", 
-    options=list(width = 700, height = 600)))
+  idvar = "Country", 
+  timevar = "Year", 
+  sizevar = "Population", 
+  options=list(width = 700, height = 600)))
 ```
 
 ![](images/motionplot.png)
@@ -360,6 +360,7 @@ As you can see from the first example, for a simple point map all you need is lo
 
 But both of these approaches assume that the map boundaries and scale you need are available in the package(s) you're using, of course. If you understand the geographic projection problem—how to fit a curved surface to a flat plot—you'll be able to navigate the creation of maps in other spatial packages in ways that ensure the points and the real world line up correctly. If not... you either have to learn a variety of sometimes-contradictory packages in R and their various approaches as well as how they work together, or (probably the better option) you can just use a tool better suited to spatial analyses.
 
+
 ### Chloropleth mapping with the *American Community Survey*
 
 If you're fortunate enough to need to map American Community Survey (ACS) data, `choroplethr` connects directly to it via the `acs` package. You'll need to acquire a key for the [ACS API](http://www.census.gov/data/developers/about/terms-of-service.html) before you begin, but that key will be emailed to you within a few minutes of requesting it. And then you can make one-line maps directly from the ACS tables:
@@ -383,16 +384,17 @@ It says a lot about mapping in R that what we'll explore next is one of the simp
 download.file("http://epp.eurostat.ec.europa.eu/cache/GISCO
   /geodatafiles/CNTR_2014_03M_SH.zip", destfile="~/world2014.zip")
   
-unzip("world2014.zip")
+unzip("~/Downloads/world2014.zip", exdir="~/Downloads/world2014", 
+  junkpaths = TRUE)
 
 require(maptools)
 
-worldmap2014 = readShapeLines("CNTR_2014_03M_SH/Data/CNTR_BN_03M_2014.shp", 
+worldmap2014 = readShapeLines("~/Downloads/world2014/CNTR_BN_03M_2014.shp", 
   proj4string = CRS("+proj=longlat +datum=WGS84"))
   
-
 plot(worldmap2014, xlim=c(7,16), ylim=c(35,60), col="gray60")
 box(col="gray30")
+
 # © EuroGeographics for the administrative boundaries
 ```
 
@@ -402,8 +404,8 @@ We plotted ground level ozone from the `maps` example data pretty easily—but w
 
 ```
 eu_o3 = read.table("https://raw.githubusercontent.com/Rmadillo/
-    business_intelligence_with_r/master/manuscript/code/eu_o3.csv", 
-    sep=",", header=T)
+  business_intelligence_with_r/master/manuscript/code/eu_o3.csv", 
+  sep=",", header=T)
     
 plot(worldmap2014, xlim=c(2,12), ylim=c(35, 70), col="gray60")
 box(col="gray30")
@@ -417,9 +419,13 @@ Too much data! Turning the values into a color scale takes a little more effort,
 
 ```
 require(RColorBrewer)
+
 o3_colors = brewer.pal(5, "OrRd")
+
 require(classInt)
+
 o3_breaks = classIntervals(sort(eu_o3$statistic_value), n=5, style="quantile")
+
 plot(worldmap2014, xlim=c(2,12), ylim=c(35, 70), col="gray60")
 box(col="gray30")
 points(eu_o3$longitude, eu_o3$latitude, pch=15, cex=0.5, 
@@ -439,6 +445,7 @@ The `ggmap` package makes it relatively easy to map point-location data, as well
 We can use a Socrata connection to download data from the [Seattle Police Department](https://data.seattle.gov) for this recipe. 
 
 ```
+require(ggmap)
 require(dplyr) 
 
 # SPD Police Reports
@@ -457,11 +464,9 @@ You can set up the base map using the `get_map` function and include the data yo
 ```
 ## Set up base map
 seattle_map = ggmap(get_map('Seattle, Washington',
-                      zoom=11,
-                      source='google',
-                      maptype='terrain'), 
-               base_layer = ggplot(aes(x = Longitude, y = Latitude), 
-                      data = bike_theft))
+    zoom=11, source='google', maptype='terrain'), 
+  base_layer = ggplot(aes(x = Longitude, y = Latitude), 
+    data = bike_theft))
 ```
 
 Once the base map is set up, you can plot it a variety of ways, including as individual points...
@@ -475,7 +480,7 @@ seattle_map +
   xlab('') +
   ylab('') +
   theme(axis.ticks=element_blank(), axis.text=element_blank(),
-        legend.position='none')
+    legend.position='none')
 ```
 
 ![](images/point_map.jpg)
@@ -486,16 +491,16 @@ seattle_map +
 # Density map of bike theft by year
 seattle_map +  
   stat_density2d(aes(fill=..level..), 
-        alpha=0.5,
-        bins = 10,
-        geom = 'polygon') +
+    alpha=0.5,
+    bins = 10,
+    geom = 'polygon') +
   scale_alpha(guide = FALSE) +
   ggtitle('Seattle Bike Thefts (2014-2015)') +
   xlab('') +
   ylab('') +
   facet_wrap(~Year) +
   theme(axis.ticks=element_blank(), axis.text=element_blank(),
-        legend.position='none')
+    legend.position='none')
 ```
 
 ![](images/heat_map_facet.jpg)
@@ -508,31 +513,34 @@ The `leaflet` package makes basic interactive maps a breeze. We'll use a subset 
 require(leaflet)
 
 bike_theft_dec = filter(bike_theft, Year==2014 & Month==12)
+
 bike_theft_jan = filter(bike_theft, Year==2015 & Month==1)
 
 bike_theft_interactive = leaflet() %>% 
   addTiles() %>% 
   setView(-122.3397, 47.6144, zoom = 13) %>%
   addCircleMarkers(data = bike_theft_dec, 
-        lat = ~ Latitude, 
-        lng = ~ Longitude, 
-        popup = bike_theft$Hundred.Block.Location, 
-        group="December 2014", 
-        fillOpacity = 0.25, 
-        color="red", 
-        radius=4) %>%
+    lat = ~ Latitude, 
+    lng = ~ Longitude, 
+    popup = bike_theft$Hundred.Block.Location, 
+     group="December 2014", 
+    fillOpacity = 0.25, 
+    color="red", 
+    radius=4) %>%
   addCircleMarkers(data = bike_theft_jan, 
-        lat = ~ Latitude, 
-        lng = ~ Longitude, 
-        popup = bike_theft$Hundred.Block.Location, 
-        group="January 2015", 
-        fillOpacity = 0.25, 
-        color="blue", 
-        radius=4) %>%
+    lat = ~ Latitude, 
+    lng = ~ Longitude, 
+    popup = bike_theft$Hundred.Block.Location, 
+    group="January 2015", 
+    fillOpacity = 0.25, 
+    color="blue", 
+    radius=4) %>%
   addLayersControl(overlayGroups = c("December 2014", "January 2015"), 
-        options = layersControlOptions(collapsed = FALSE)) %>%
+    options = layersControlOptions(collapsed = FALSE)) %>%
   addLegend("bottomright",  title = "Legend", 
-        colors=c("red","blue"), labels=c("December 2014", "January 2015"))
+    colors=c("red","blue"), labels=c("December 2014", "January 2015"))
+
+bike_theft_interactive 
 ```
 
 ![](images/bike_theft_interactive.png)
@@ -543,3 +551,7 @@ bike_theft_interactive = leaflet() %>%
 Mapping in R is relatively easy *if* the maps, boundaries, and scale you need are available in the package(s) you're using. If not, you'll have to do it manually, at considerably more time and mental expense than you'd have spent doing it on a platform more amenable to spatial analysis. The problem only gets harder if you're not comfortable working with geographic projections.
 
 My recommendation: don't use R for mapping unless your need is solved by existing functionality. If you do need to work with spatial data in R, one of the best resources to learn some ways to create beautiful and useful maps in R is James Cheshire's [spatial.ly blog](http://spatial.ly/).
+
+| |
+| |
+| |
