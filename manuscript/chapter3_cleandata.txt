@@ -17,7 +17,7 @@ Before you do anything else---every dataset should be evaluated with a few basic
 
 Factors, characters, dates, values that are out-of-range for the measurement, inappropriate dummy values, and NAs tend to be the data types or results that will screw up future analyses—so using the the following functions, every time you first pull in a dataset, will save a lot of time and grief in the long run.
 
-We saw the frequent use of `str` in the Chapter 1 example to understand our dataset and to ensure our changes worked as expected. `head` (and `tail`), `summary`, and `complete.cases` are a few other important functions that help you understand your data set as seen by R. 
+We saw the frequent use of `str` in the *Chapter 1* example to understand our dataset and to ensure our changes worked as expected. `head` (and `tail`), `summary`, and `complete.cases` are a few other important functions that help you understand your data set as seen by R. 
 
 Using Table A from the fake customer data created in Chapter 2, we might explore our data one or more times a session with the following functions
 
