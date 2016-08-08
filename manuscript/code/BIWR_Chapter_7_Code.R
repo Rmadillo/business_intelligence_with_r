@@ -72,19 +72,18 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, scale="globalminmax", 
 
 ### Peeking at multivariate data with `dplyr` and a bubblechart
 
-customer_survey = read.table("Data/customer_survey.csv", sep=",", header=T)
-
-customer_survey %>%
-  filter(customer_purchases >= 500) %>%
-  group_by(state) %>%
-  summarize(mean_purchases = mean(customer_purchases, na.rm=T),
-  sd_purchases = sd(customer_purchases, na.rm=T),
-  sum_est = sum(est)) %>%
-  mutate(cv_purchases = round(sd_purchases / mean_purchases, 2)) %>%
-  ggplot(aes(mean_purchases, sd_purchases, color=cv_purchases, size=sum_est)) +
-  geom_point() +
-  scale_size(range=c(2,6)) +
-  theme_bw()
+bike_share_daily %>%
+  filter(workingday == "Yes" & weathersit != 1) %>%
+  group_by(yr, mnth) %>%
+  summarize(mean_casual = mean(casual, na.rm=T),
+    sd_casual = sd(casual, na.rm=T),
+    sum_casual = sum(casual)) %>%
+  mutate(cv_casual = round(sd_casual / mean_casual, 2)) %>%
+  ggplot(aes(mean_casual, sd_casual, color=cv_casual, size=sum_casual)) +
+    geom_point() +
+    scale_size(range=c(2,6)) +
+    coord_equal() +
+    theme_bw()
 
 
 ## Plotting a table
@@ -98,17 +97,17 @@ bike_share_mean = summarise(bike_share_grp, mean=mean(casual))
 
 bike_share_mean$mean = round(bike_share_mean$mean, 0)
 
-bike_share_mean_wide = dcast(bike_share_mean, yr~mnth)
+bike_share_mean_wide = dcast(bike_share_mean, yr~mnth, value.var="mean")
 
 bike_share_mean_wide = rename(bike_share_mean_wide, Year = yr)
 
 ggplot(bike_share_mean_wide, aes(Year, Jan)) +
-  annotation_custom(tableGrob(bike_share_mean_wide, show.rownames = FALSE)) +
+  annotation_custom(tableGrob(bike_share_mean_wide, rows=NULL)) +
   ggtitle("Mean Daily Casual Bike Share Use, by Month (2011-2012)") +
   theme_minimal() +
   theme(panel.border = element_blank(), panel.grid.major = element_blank(), 
-  panel.grid.minor = element_blank(), axis.ticks = element_blank(), 
-  axis.text = element_blank(), axis.title = element_blank())
+    panel.grid.minor = element_blank(), axis.ticks = element_blank(), 
+    axis.text = element_blank(), axis.title = element_blank())
 
 
 ## Interactive dataviz
@@ -186,6 +185,7 @@ datatable(rosling_data, filter = "top")
 ### Basic point maps
 
 require(maps)
+
 map("county", xlim=c(min(ozone$x-0.5),max(ozone$x+0.5)), ylim=range(ozone$y), col="gray80")
 
 map("state", xlim=c(min(ozone$x-0.5),max(ozone$x+0.5)), ylim=range(ozone$y), col="gray60", add=TRUE)
@@ -208,13 +208,7 @@ data(df_pop_county)
 
 county_choropleth(df_pop_county)
 
-county_choropleth(df_pop_county, legend="County\nPopulation", buckets=1, zoom=c("arizona", "colorado", "new mexico", "utah"))
-
-require(zipcode)
-
-data(df_pop_zip)
-
-zip_map(df_pop_zip, legend="Zip Code\nPopulation", buckets=1, zoom=c("arizona", "colorado", "new mexico", "utah"))
+county_choropleth(df_pop_county, legend="County\nPopulation", num_colors=1, state_zoom=c("arizona", "colorado", "new mexico", "utah"))
 
 
 ### Chloropleth mapping with the *American Community Survey*
@@ -224,9 +218,6 @@ zip_map(df_pop_zip, legend="Zip Code\nPopulation", buckets=1, zoom=c("arizona", 
 require(acs)
 
 api.key.install("YOUR KEY HERE")
-
-require(choroplethr)
-require(choroplethrMaps)
 
 choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
 
@@ -238,11 +229,11 @@ choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
 download.file("http://epp.eurostat.ec.europa.eu/cache/GISCO/geodatafiles/CNTR_2014_03M_SH.zip", destfile="world2014.zip")
 # © EuroGeographics for the administrative boundaries
 
-unzip("world2014.zip")
+unzip("~/Downloads/world2014.zip", exdir="~/Downloads/world2014", junkpaths = TRUE)
 
 require(maptools)
 
-worldmap2014 = readShapeLines("CNTR_2014_03M_SH/Data/CNTR_BN_03M_2014.shp", proj4string = CRS("+proj=longlat +datum=ETRS89"))
+worldmap2014 = readShapeLines("~/Downloads/world2014/CNTR_BN_03M_2014.shp", proj4string = CRS("+proj=longlat +datum=WGS84"))
 
 plot(worldmap2014, xlim=c(7,16), ylim=c(35,60), col="gray60")
 
@@ -277,6 +268,7 @@ legend("topleft", title=expression(O[3]~Levels~(ppb)), inset=0.007, cex=0.8, leg
 
 ### Using `ggmap` for point data and heatmaps
 
+require(ggmap)
 require(dplyr) 
 
 # SPD Police Reports
@@ -347,6 +339,8 @@ bike_theft_interactive = leaflet() %>%
     options = layersControlOptions(collapsed = FALSE)) %>%
     addLegend("bottomright",  title = "Legend", 
     colors=c("red","blue"), labels=c("December 2014", "January 2015"))
+
+bike_theft_interactive
 
 
 ##### End of File #####
