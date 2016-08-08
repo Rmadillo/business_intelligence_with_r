@@ -65,8 +65,6 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | | BayesianFirstAid | *not yet implemented* | 
 | | | | |
 | Difference between variances | asympTest | `asymp.test(...)$estimate`, `asymp.test(...)$conf.int` with `parameter="dVar"` | 
-| | | | |
-| | | | |
 
 --------
 
