@@ -1,7 +1,7 @@
-# Appendix 3: .R file for Chapter 9 Shiny app example
+# Appendix 3: .R file for *Chapter 9* Shiny app example
 
 Below is the full code used to build the risk assessment Shiny app in *Chapter 9*. When I create R code that will be used by many  analysts, I use a *lot* more whitespace. Again, use whatever standards you think are appropriate; I find that sharing code that many eyes will see is much nicer on those eyes when it's easy to see what each piece is doing. 
 
 If you download this file directly, it helps to put it into its own subdirectory (say, underneath a `Shiny_Apps` folder), and to rename it `app.R`. That way, RStudio recognizes that it is a Shiny app, and will provide the appropriate changes to the Source window options. 
 
-<<(code/risk_assessment_app.R)
+<<(code/BIWR_Chapter_9_Risk_Assessment_Shiny_App.R)
