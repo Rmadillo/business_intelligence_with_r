@@ -6,6 +6,18 @@
 
 Dwight Barry is a data scientist at Seattle Children's Hospital, in Seattle, Washington, USA. 
 
+{icon=github}
+G> [Rmadillo](https://github.com/Rmadillo/)
+
+{icon=leanpub}
+G> [Dwight Barry](https://leanpub.com/u/dwightbarry)
+
+{icon=linkedin}
+G> [Dwight Barry](https://www.linkedin.com/in/dwight-barry-60070417)
+
+{icon=twitter}
+G> [@healthstatsdude](https://twitter.com/healthstatsdude)
+
 
 | |  
 
