@@ -1,8 +1,8 @@
 # Chapter 5: Effect Sizes
 
 - Overview 
-- Effect sizes: Measuring differences between groups
-- Effect sizes: Measuring relationships between groups
+- Measuring differences between groups
+- Measuring similarities between groups
 
 
 ## Overview
@@ -51,7 +51,6 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | Standardized group differences | Cliff's &Delta; | orrdom | `dmes.boot` with `theta.es="dc"` | 
 | | | | | |  
 | | Vargha-Delaney's *A* | orrdom | `dmes.boot` with `theta.es="Ac"` | 
-| | | | | |  
 
 --------
 
@@ -83,11 +82,11 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | | | | | |  
 | | | bootES | `bootES` with `effect.type="r"` |
 | | | | | |  
-| | Spearman's &rho; | pysch | `cor.ci` with `method="spearman"` |
+| | Kendall's &tau;-b | pysch | `cor.ci` with `method="kendall"` |
 | | | | | |  
 | | | boot | *function in recipe below*|
 | | | | | |  
-| | Kendall's &tau;-b | pysch | `cor.ci` with `method="kendall"` |
+| | Spearman's {$$}r_s{/$$} | pysch | `cor.ci` with `method="spearman"` |
 | | | | | |  
 | | | boot | *function in recipe below*|
 | | | | | |  
@@ -95,7 +94,7 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 | | | | | |  
 | Polychoric correlation (ordinal/ordinal) | | psych | `polychoric` |
 | | | | | |  
-| Polyserial correlation (numeric/ordinal) | | psych | `polyserial` | 
+| Polyserial correlation (numeric/ordinal) | | polycor | `polyserial` | 
 | | | | | |  
 | Odds ratio | OR | psych | `oddsratio` |
 | | | | | |  
@@ -170,7 +169,8 @@ When we wish to describe differences in central tendency, we'll want to know whe
 # Difference in means, t-test version
 casual_notworkingday_mean = t.test(casual~season, data=casual_notworkingday)
 
-abs(casual_notworkingday_mean$estimate[1] - casual_notworkingday_mean$estimate[2])
+abs(casual_notworkingday_mean$estimate[1] - 
+  casual_notworkingday_mean$estimate[2])
 
 636.6031
 
@@ -608,9 +608,7 @@ A> Historically, Spearman's was often used because it was easier to calculate an
 A> 
 A> Computers have since rendered the first reason irrelevant, and statisticians have determined the second one to be statistically naive: Spearman's is less robust and less efficient than Kendall's approach, especially when trying to compute standard errors---there is still no widely accepted way to do it with Spearman's coefficient. Kendall's coefficient estimates a population value, while Spearman's does not. Spearman's approach also breaks down in the presence of only a few large deviations between pairs of values, even when most of the pairs in the data are fairly close. In addition, there is no intuitive interpretation of what Spearman's coefficient *really* means (only that "further from zero is better"), while Kendall's can be directly interpreted as a probability.
 A> 
-A> As for the third and fourth reasons... well, as analysts we should be honest and not use Spearman's or any other statistic just because it looks better (you're just *asking* for trouble down the road). Off-the-cuff explanation of Kendall's in business settings *is* tough, though a simple tranformation can help: using the formula **&tau; + (0.5 * ( 1 - $tau;))**. For example, using the Kendall's &tau; value above---`0.43 + (0.5 * (1 - 0.43))`---we can determine that there is a positive association between 71% of all possible pairs of data points. Still not as easy as dropping Spearman's coefficient and leaving it to the audience, but hey, it's your choice as an analyst when it's worth it to "move the needle"\* of managerial stats literacy...
-A>
-A> <small>\* I can't believe I just wrote that without irony.</small>
+A> As for the third and fourth reasons... well, as analysts we should be honest and not use Spearman's or any other statistic just because it looks better (you're just *asking* for trouble down the road). Off-the-cuff explanation of Kendall's in business settings *is* tough, though a simple tranformation can help: using the formula:  **&tau; + (0.5 * ( 1 - &tau;))**. For example, using the Kendall's &tau; value above---`0.43 + (0.5 * (1 - 0.43))`---we can determine that there is a positive association between 71% of all possible pairs of data points. Still not as easy as dropping Spearman's coefficient and leaving it to the audience, but hey, it's your choice as an analyst when it's worth it to ["move the needle"](I can't believe I just wrote that without irony.) of managerial stats literacy...
 
 
 ### Bootstrapping BCa CIs for non-parametric correlation
@@ -648,7 +646,8 @@ We saw the Bayesian approach to difference-based effect size calculations earlie
 ```
 require(BayesianFirstAid)
 
-atemp_bike_cor_bayes = bayes.cor.test(bike_use_atemp$air_temp, bike_use_atemp$count)
+atemp_bike_cor_bayes = bayes.cor.test(bike_use_atemp$air_temp, 
+  bike_use_atemp$count)
 
 atemp_bike_cor_bayes
 
@@ -670,7 +669,7 @@ plot(atemp_bike_cor_bayes)
 
 ### Partial correlations
 
-If you have variables you want to control for in a correlation, we can turn again to the `psych` package. For example, if we wanted to evaluate the correlation between air temperature and bike use while controlling for windspeed, we could do it by creating a correlation matrix with the corr.test function:
+If you have variables you want to control for in a correlation, we can turn again to the `psych` package. For example, if we wanted to evaluate the correlation between air temperature and bike use while controlling for windspeed, we could do it by creating a correlation matrix with the `corr.test` function:
 
 ```
 # Subset bike share data data
