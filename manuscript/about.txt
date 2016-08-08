@@ -6,7 +6,6 @@
 
 Dwight Barry is a data scientist at Seattle Children's Hospital, in Seattle, Washington, USA. 
 
-| | 
 
 ### Session Info  
 
@@ -20,14 +19,12 @@ Running under: OS X 10.10.5 (Yosemite)
 locale:
 [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 ```
-  
-| |  
+
 
 ### Version Info
 
 Version 0.9.2 for final review, August 2016
 
-| |  
 
 ### Code and Data
 
@@ -36,22 +33,16 @@ G> The code is available from the book's [GitHub site](https://github.com/Rmadil
 
 Due to page width constraints, some of the code *as printed in the book* have unnecessary line breaks, primarily in long URLs to acquire data or code from the web. The book's code on Github does not contain these line breaks, so it should work as-is. So, **if you cut & paste from the book, note that long URLs may require that you remove a line break for the code to function correctly**. 
 
-| |  
-| |  
 
 #### Contact 
 
-{icon=github}
-G> [Rmadillo](https://github.com/Rmadillo/)
-
-{icon=leanpub}
-G> [Dwight Barry](https://leanpub.com/u/dwightbarry)
-
-{icon=linkedin}
-G> [Dwight Barry](https://www.linkedin.com/in/dwight-barry-60070417)
-
-{icon=twitter}
-G> [@healthstatsdude](https://twitter.com/healthstatsdude)
-
-
+| | |
+|-|-|
+| {icon=github} | G> [Rmadillo](https://github.com/Rmadillo/) |
+| {icon=leanpub} | |
+| G> [Dwight Barry](https://leanpub.com/u/dwightbarry) | | 
+| {icon=linkedin} | | 
+| G> [Dwight Barry](https://www.linkedin.com/in/dwight-barry-60070417) | | 
+| {icon=twitter} | | 
+| G> [@healthstatsdude](https://twitter.com/healthstatsdude) | | 
 | |  
