@@ -165,7 +165,7 @@ library(googleVis)
 
 # load the data (an excerpt of data from gapminder.org)
 
-rosling_data = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/master/data/rosling_data.csv")
+rosling_data = read.csv("https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/rosling_data.csv")
 
 # create the motion plot using larger plot size than default
 plot(gvisMotionChart(rosling_data, idvar = "Country", timevar = "Year", sizevar = "Population", options=list(width = 700, height = 600)))
