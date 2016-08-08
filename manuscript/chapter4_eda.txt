@@ -757,15 +757,15 @@ boot.ci(q75_boot, type="bca")$bca[4:5]
 5.24 5.99
 ```
 
-You can get quick (gg)plots of means/medians and confidence intervals, standard deviations (`mult`, defaults to 2), or quantiles with the `stat_summary` `args` functions:  
+You can get quick (gg)plots of means/medians and confidence intervals, standard deviations (`mult`, defaults to 2), or quantiles with the `stat_summary` functions:  
 
-{width="90%"}
+{width="100%"}
 | Statistic | Interval Type | Function |
 | --------- | ------------- | -------- |
-| Mean | Bootstrapped CI | `(fun.data = mean_cl_boot, fun.args = list(conf.int = 0.95), ...)` |
-| Mean | Normal CI | `(fun.data = mean_cl_normal, fun.args = list(conf.int = 0.95), ...)` |
-| Mean | Standard deviation | `(fun.data = mean_sdl, fun.args = list(mult = 2), ...)` |
-| Median | Quantile | `(fun.data = median_hilow, fun.args = list(conf.int = 0.5), ...)` |
+| Mean | Bootstrapped CI | `(fun.data = mean_cl_boot, fun.args = list(conf.int=0.95), ...)` |
+| Mean | Normal CI | `(fun.data = mean_cl_normal, fun.args = list(conf.int=0.95), ...)` |
+| Mean | Standard deviation | `(fun.data = mean_sdl, fun.args = list(mult=2), ...)` |
+| Median | Quantile | `(fun.data = median_hilow, fun.args = list(conf.int=0.5), ...)` |
 
 
 The following code demonstrates all four options (and provides an example of plotting `ggplot2` objects together using the `grid.arrange` function from the `gridExtra` package):
