@@ -11,6 +11,7 @@
   
 require(ggplot2)
 require(quantreg)
+require(mgcv)
 
 ### Smoothed trends
 
@@ -20,8 +21,6 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
   geom_point(col="gray50") +
   geom_smooth(method="loess") +
   theme_bw()
-
-require(mgcv)
 
 ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
   xlab("Daily Mean Normalized Air Temperature") +
@@ -71,30 +70,9 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
   theme_bw()
 
 
-## The many flavors of regression
-
-# lm()
-# GLMs
-# glm()
-# glm.nb()
-# Proportional odds
-# polr()
-# Multinomial regression 
-# multinom()
-# Zero-inflated Poisson regression 
-# require (pscl)
-# zeroinfl() 
-# Zero-truncated Poisson regression 
-# require (gamlss.tr)
-# gamlss() 
-# GAM 
-# require(mgcv)
-# gam() 
-
-
 ## Plotting regression results
 
-require(dwplot)
+require(dotwhisker)
 
 # Create a model object
 bad_model = lm(cnt ~ atemp * hum * windspeed, data=bike_share_daily)
@@ -118,19 +96,17 @@ india_natl_holidays = as.Date(india_natl_holidays, format="%b %d, %Y")
 
 str(india_natl_holidays)
 
-Date[1:5], format: "2014-01-26" "2014-04-13" "2014-08-15" "2014-10-02" "2014-12-25"
-
 birthdays = c("20000101", "19991201", "19760704", "20140314")
 
 ymd(birthdays)
 
 age = ymd(today()) - ymd(birthdays)
 
-round(age/eyears(1), 1) # eyears is a lubridate function, not a typo!
+round(age/dyears(1), 1) # dyears is a lubridate function, not a typo!
 
 age = ymd(20141201) - ymd(birthdays)
 
-round(age/eyears(1), 0)
+round(age/dyears(1), 0)
 
 ?strptime 
 
@@ -152,13 +128,13 @@ circadian.cor(wake_sleep)
 
 ## Plotting time-series data
 
-library(eurostat)
+require(eurostat)
 
 demo_fmonth = get_eurostat('demo_fmonth')
 
 demo_fmonth$date = as.Date(paste(substr(demo_fmonth$time, 1, 4), substr(demo_fmonth$month, 2, 3), "01", sep="-"))
-    
-library(dplyr)
+
+require(dplyr)
 
 UK_births = filter(demo_fmonth, geo == "UK" & month != 'TOTAL' & month != 'UNK' & date >= '2003-01-01' & date <= '2012-12-01')
 
@@ -170,7 +146,7 @@ plot(UK_births_ts, xlab="Date", ylab="Count", main="Monthly Births in the UK (20
 
 require(ggplot2)
 
-ggplot(UK_births, aes(x=Date, y=Value)) +
+ggplot(UK_births, aes(x=date, y=values)) +
   geom_line(col="darkblue") +
   ylab("Count") +
   theme_minimal()
@@ -183,11 +159,30 @@ acf(UK_births_ts)
 
 ## Plotting monthly patterns
 
+# Monthplot to plot by month
 monthplot(UK_births_ts, main="Monthly Patterns in UK Births (2003-2012)", xlab="Month", ylab="Count", col="darkblue", lwd=2, lty.base=2, lwd.base=1, col.base="gray40")
 
+# Seasonplot to plot by year
 require(forecast)
 
 seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)", col=rainbow(10), year.labels=TRUE, year.labels.left=TRUE, cex=0.7, cex.axis=0.8)
+
+## Plotting seasonal adjustment on the fly
+
+require(ggseas)
+
+# Convert the time series object to a dataframe for stat_seas
+UK_births_ts_df = tsdf(UK_births_ts)
+
+# Plot seasonally-adjusted data
+ggplot(UK_births_ts_df, aes(x=x, y=y)) +
+  ggtitle("Seasonally-Adjusted Monthly Births in the UK (2003-2012)") + 
+  geom_line(color="gray70") +
+  stat_seas(color="darkblue", size=1) +
+  scale_x_continuous(breaks=seq(2003, 2013, 1)) + 
+  ylab("Count") +
+  xlab("") +
+  theme_minimal()
 
 
 ## Decomposing time series into components
@@ -205,10 +200,13 @@ plot(AirPassengers)
 
 require(forecast)
 
+# Calculate the Box-Cox transformation
 AirPassengers_lambda = BoxCox.lambda(AirPassengers)
 
+# Plot the Box-Cox transformation results
 plot(BoxCox(AirPassengers, AirPassengers_lambda))
 
+# Plot the transformed decomposition
 plot(decompose(BoxCox(AirPassengers, AirPassengers_lambda)))
 
 
@@ -244,15 +242,34 @@ ggsurvplot(tongue_survival, risk.table = TRUE, conf.int = TRUE)
 ## Evaluating quality with control charts
 
 require(qcc)
+
 infections = c(6, 2, 5, 1, 3, 4, 2, 6, 3, 2, 4, 7, 1, 1, 4, 4, 1, 5, 2, 3, 5, 2, 3, 2, 4)
 
 patient_days = c(985, 778, 1010, 834, 750, 729, 1002, 639, 985, 578, 976, 540, 829, 723, 908, 1017, 1097, 1122, 1234, 1022, 1167, 1098, 1201, 1045, 1141)
 
+# These are just labels for qcc, not real dates
 month_name = month.abb[c(1:12, 1:12, 1:1)]
 
 infection_control = qcc(infections, sizes=patient_days/1000, type="u", labels=month_name, axes.las=2, xlab="Month", ylab="", digits=2, title="Hospital Acquired Infections Rate per 1,000 Patient Days\n u-chart for Jan 2012 - Jan 2014")
 
-infection_control_qcc = data.frame(Month = month_name, infection_control$limits, Rate = (infections / patient_days)*1000)
+# Create a real date and move limits and rate into a data frame
+ic_qcc = data.frame(Month = seq(as.Date("2012-01-01"), as.Date("2014-01-01"), "months"), infection_control$limits, Rate = (infections / patient_days)*1000)
+
+# Create a factor for the "special causes" points
+ic_qcc$Violations = factor(ifelse(row.names(ic_qcc) == infection_control$violations$beyond.limits, "Violation", NA))
+
+# Plot a cleaner control chart
+ggplot(ic_qcc, aes(x=Month, y=Rate)) +
+  geom_line() +
+  geom_point(color="darkblue") +
+  geom_point(data=filter(infection_control_qcc, 
+    Violations=="Violation"), color="red", size=3) +
+  geom_line(aes(y=LCL), linetype="dashed", color="gray50") +
+  geom_line(aes(y=UCL), linetype="dashed", color="gray50") +
+  xlab("Month") +
+  ylab("Rate") +
+  ggtitle("Hospital Acquired Infections Rate per 1,000 Patient Days\nu-chart for Jan 2012 - Jan 2014") +
+  theme_minimal()
 
 
 ## Identifying possible breakpoints in a time series
@@ -338,9 +355,9 @@ require(forecast)
 require(dplyr)
 
 # Download data and load into R
-download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip", destfile = "Data/household_power_consumption.zip")
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip", destfile = "~/BIWR/Chapter1/Data/household_power_consumption.zip")
 
-unzip("Data/household_power_consumption.zip", exdir="Data")
+unzip("~/BIWR/Chapter1/Data/household_power_consumption.zip", exdir="Data")
 
 power = read.table("Data/household_power_consumption.txt", sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
 
