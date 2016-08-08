@@ -909,4 +909,4 @@ W>
 | | 
 | | 
 
-[^really]: I can't believe I just wrote that without irony.
+[^really]: I can't believe I just wrote that without irony (or quadrature).
