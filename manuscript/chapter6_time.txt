@@ -706,9 +706,9 @@ The maximum cross-correlation value is 0.51, which occurs between airline fares 
 
 ## Basic forecasting
 
-We saw a forecasting as a portion of the Chapter 1 example. We’ll explore the `forecast` package more detail in Part 2 of this book, but for sake of keeping ideas together, we'll replay that forecasting example here. An excellent companion to doing forecasting is understanding it: for that, we recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
+We saw a forecasting as a portion of the *Chapter 1* example. We’ll explore the `forecast` package more detail in Part 2 of this book, but for sake of keeping ideas together, we'll replay that forecasting example here. An excellent companion to doing forecasting is understanding it: for that, we recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
 
-While this code is the same as in Chapter 1, to keep this chapter self-contained, here's the essential code to get the data and prep it for forecasting:
+While this code is the same as in *Chapter 1*, to keep this chapter self-contained, here's the essential code to get the data and prep it for forecasting:
 
 ```
 require(forecast)
@@ -721,8 +721,8 @@ download.file("http://archive.ics.uci.edu/ml/machine-learning-databases
 
 unzip("~/BIWR/Chapter1/Data/household_power_consumption.zip", exdir="Data")
 
-power = read.table("Data/household_power_consumption.txt", sep=";", header=T, 
-  na.strings=c("?",""), stringsAsFactors=FALSE)
+power = read.table("~/BIWR/Chapter1/Data/household_power_consumption.txt", 
+  sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
   
 # Convert and create date objects
 power$Date = as.Date(power$Date, format="%d/%m/%Y")
