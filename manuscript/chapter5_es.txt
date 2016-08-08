@@ -1,8 +1,8 @@
 # Chapter 5: Effect Sizes
 
 - Overview 
-- Measuring differences between groups
-- Measuring similarities between groups
+- Measuring *differences* between groups
+- Measuring *similarities* between groups
 
 
 ## Overview
