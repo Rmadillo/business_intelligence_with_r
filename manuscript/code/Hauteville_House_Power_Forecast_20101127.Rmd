@@ -131,16 +131,28 @@ energy_use_prediction_widget = dygraph(total_use_forecast,
 energy_use_prediction_widget
 ```
 
-<br>
+<br>  
+<br>  
 
 ***Using the upper 80% prediction interval is a reasonable way to plan conservatively for power costs.***   
 
-```{r forecasttable, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
-require(knitr)
-kable(total_use_fc)
+```{r forecasttable, echo=FALSE, warning=FALSE, message=FALSE}
+require(htmlTable)
+total_use_fc_df = data.frame(total_use_fc)
+colnames(total_use_fc_df) = c("Point Forecast", "Low 80%", "High 80%",
+  "Low 95%", "High 95%")
+
+fc_table = htmlTable(txtRound(total_use_fc_df, 0),
+  col.columns = c(rep("none", 2), rep("#E6E6F0", 1), rep("none", 2)),
+  css.cell = "padding-left: 3.5em; padding-right: 1em;",
+  align.header="rrrrr",
+  align="rrrrr")
+
+fc_table
 ```
 
 <br>  
+
 <hr>
 
 ### Methods and Analytics Details
