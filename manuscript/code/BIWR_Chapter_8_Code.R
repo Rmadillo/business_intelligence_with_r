@@ -62,7 +62,7 @@ stressplot(banks_mds, xaxt="n", yaxt="n")
 
 ### Vector mapping influential variables over the nMDS plot
 
-banks_vectors = envfit(banks_mds, banks[,3:11])
+banks_vectors = envfit(banks_mds, banks[,2:10])
 
 ordiplot(banks_mds, type="n", xaxt="n", yaxt="n", xlab=" ", ylab=" ", display="sites")
 
@@ -393,11 +393,14 @@ banks$mv_md = quiebra_outliers$md
 # Add Euclidean distance results to main data
 banks$mv_euclidean = quiebra_outliers$euclidean
 
-p1 = ggplot(banks, aes(mv_md, text = paste("Bank:", Numero, 
-    "<br>Solvency: ", Output))) +
-    xlab("Mahalanobis Distance") + 
-    geom_histogram() + 
-    facet_wrap(~mv_outlier, ncol=1, scales="free_y") 
+require(ggplot2)
+require(plotly)
+  
+p1 = ggplot(banks, aes(mv_md, text = paste("Bank: ",
+    row.names(banks), "<br>Solvency: ", Output))) +
+  xlab("Mahalanobis Distance") + 
+  geom_histogram() + 
+  facet_wrap(~mv_outlier, ncol=1, scales="free_y") 
 
 ggplotly(p1)
 
@@ -412,10 +415,10 @@ require(DMwR)
 banks$lof = lofactor(banks[,2:10], k=4)
 
 # Plot the lof results interactively
-p_lof = ggplot(banks, aes(lof, text = paste("Bank:", Numero, 
-    "<br>Solvency: ", Output))) +
-    xlab("Local Outlier Factor") + 
-    geom_histogram() 
+p_lof = ggplot(banks, aes(lof, text = paste("Bank: ",
+    row.names(banks), "<br>Solvency: ", Output))) +
+  xlab("Local Outlier Factor") + 
+  geom_histogram() 
 
 ggplotly(p_lof)
 
@@ -471,7 +474,7 @@ hurr_quant = distLquantile(hurricane_cost$total_damage,
 hurr_quant$quant[1:5,]
 
 # Plot the cdf of top five models with their quantiles
-distLplot(hurr_fit, cdf=T, main="Total Annual Hurricane Damages (in billion USD)", 
+distLplot(hurr_quant, cdf=T, main="Total Annual Hurricane Damages (in billion USD)", 
     xlab="Damages ($1B USD)", qlines=TRUE)
 
 # Calcluate return intervals. 
@@ -494,29 +497,28 @@ require(arulesViz)
 basket_url = "http://dmg.org/pmml/pmml_examples/baskets1ntrans.csv"
 
 basket_trans = read.transactions(basket_url, format = "single", sep = ",", 
-    cols = c("cardid", "Product"), rm.duplicates=TRUE)
+  cols = c("cardid", "Product"), rm.duplicates=TRUE)
 
 summary(basket_trans)
 
 itemFrequencyPlot(basket_trans, topN=11, type="absolute") 
 
 basket_rules_custom = apriori(basket_trans, parameter = list(support = 0.01, 
-    confidence = 0.01, target="rules"))
+  confidence = 0.01, target="rules"))
 
 inspect(head(sort(basket_rules_custom, by="lift"), 10))
 
 plot(basket_rules_custom, interactive = T)
 
 beer_rules = apriori(data=basket_trans, parameter=list(supp=0.01, 
-    conf = 0.01, minlen=2), appearance = list(default="rhs", lhs="beer"))
+  conf = 0.01, minlen=2), appearance = list(default="rhs", lhs="beer"))
 
 inspect(head(sort(beer_rules, by="lift"), 10))
 
 plot(beer_rules, method="graph", interactive=T)
 
 write(basket_rules_custom, file = "basket_rules_custom.csv", 
-    sep = ",", row.names=FALSE)
-
+  sep = ",", row.names=FALSE)
 
 
 ##### End of File #####
