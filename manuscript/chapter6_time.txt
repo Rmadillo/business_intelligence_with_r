@@ -2,14 +2,15 @@
 
 - Describing trends in non-temporal data
 - The many flavors of regression
-- Plotting regression results
+- Plotting regression coefficients
 - Working with temporal data
 - Calculate a mean or correlation in circular time (clock time)
 - Plotting time-series data
 - Detecting autocorrelation
 - Plotting monthly patterns
+- Plotting seasonal adjustment on the fly
 - Decomposing time series into components
-- Finding cycles in the noise: Using spectral analysis to identify periodicity
+- Using spectral analysis to identify periodicity
 - Plotting survival curves
 - Evaluating quality with control charts
 - Identifying possible breakpoints in a time series
@@ -149,7 +150,7 @@ The coefficients, of course, are effect sizes.
 \* change `+` to `*` to create interactions  
 
 
-## Plotting regression results
+## Plotting regression coefficients
 
 The `dotwhisker` package has a simple function to graph regression results using `ggplot2`. `dwplot` shows the coefficients and their confidence intervals (95% by default):
 
