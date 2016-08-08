@@ -1,5 +1,6 @@
 # About 
 
+|  |
 
 ### About the Author
 
@@ -39,7 +40,10 @@ Due to page width constraints, some of the code *as printed in the book* have un
 
 {footnotes-off}
 
-#### Contact 
+### Contact 
+
+|  |
+
 
 {icon=github}
 G> [Rmadillo](https://github.com/Rmadillo/)
@@ -55,3 +59,10 @@ G> [@healthstatsdude](https://twitter.com/healthstatsdude)
 
 
 {footnotes-on}
+
+|  |
+|  |
+|  |
+|  |
+|  |
+|  |
