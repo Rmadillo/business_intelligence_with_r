@@ -16,17 +16,18 @@
 - Exploring relationships between time series: cross-correlation
 - Basic forecasting
 
-Dealing with temporal data presents its own set of unique challenges. R lessens that burden considerably—as long as your data are in the right form.
+Trends are of fundamental interest throughout business intelligence, but can be tricky to deal with statistically. And dealing with temporal data presents its own set of unique challenges. R lessens that burden considerably---as long as your data are in the right form.
 
 ## Describing trends in non-temporal data
 
 If you’re in the data exploration phase, and want to get a loose sense of the trend in the data, starting with a loess curve is probably the best first step. Quantile regression provides tools for evaluating trends in data with increasing or decreasing variance, or any data with a monotonic trend regardless of variance. Ordinary least squares is probably the *last* tool you want to use in the exploratory phase, though it can sometimes be what you start with when doing model building.
 
-We’ll continue to use the bike share data, and plot the results of this recipe with `ggplot2`. We’ll also need the `quantreg` package in order to plot the quantile regression trend lines:
+We’ll continue to use the bike share data, and plot the results of this recipe with `ggplot2`. We’ll also need the `quantreg` package in order to plot the quantile regression trend lines, and the `mgcv` package to do the same with GAMs:
 
 ```
 require(ggplot2)
 require(quantreg)
+require(mgcv)
 ```
 
 ### Smoothed trends
@@ -35,11 +36,11 @@ To see a smoothed average trend, use `method="loess"` in the `geom_smooth` funct
 
 ```
 ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
-    xlab("Daily Mean Normalized Air Temperature") +
-    ylab("Number of Total Bike Uses") +
-    geom_point(col="gray50") +
-    geom_smooth(method="loess") +
-    theme_bw()
+  xlab("Daily Mean Normalized Air Temperature") +
+  ylab("Number of Total Bike Uses") +
+  geom_point(col="gray50") +
+  geom_smooth(method="loess") +
+  theme_bw()
 ```
 
 ![](images/biwr_05_loess.png)
@@ -47,14 +48,12 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
 `ggplot2` automatically smooths via a GAM if you have > 1,000 points. If you have fewer, and want to see the trend a GAM can plot, you'll need to change the the `geom_smooth` method *and* include the option, written just like it is here: `formula = y ~ s(x)`. Don't replace the `y` and `x` with the variable names; you'll get an error. Other GAM options can be included in the `geom_smooth` call inside the formula (e.g., `formula = y ~ s(x), k=10`). 
 
 ```
-require(mgcv)
-
 ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
-    xlab("Daily Mean Normalized Air Temperature") +
-    ylab("Number of Total Bike Uses") +
-    geom_point(col="gray50") +
-    geom_smooth(method="gam", formula=y~s(x)) +
-    theme_bw()
+  xlab("Daily Mean Normalized Air Temperature") +
+  ylab("Number of Total Bike Uses") +
+  geom_point(col="gray50") +
+  geom_smooth(method="gam", formula=y~s(x)) +
+  theme_bw()
 ```
 
 ![](images/biwr_05_gam.png)
@@ -66,14 +65,14 @@ To show trends based on quantiles, use the `stat_quantile` option, and choose wh
 
 ```
 ggplot(bike_share_daily, aes(x=temp, y=casual)) +
-    xlab("Daily Mean Normalized Temperature") +
-    ylab("Number of Casual Bike Uses") +
-    geom_point(col="gray50") +
-    stat_quantile(aes(color = ..quantile..), quantiles = c(0.05, 0.1, 0.25,
+  xlab("Daily Mean Normalized Temperature") +
+  ylab("Number of Casual Bike Uses") +
+  geom_point(col="gray50") +
+  stat_quantile(aes(color = ..quantile..), quantiles = c(0.05, 0.1, 0.25,
     0.5, 0.75, 0.9, .95)) +
-    scale_color_gradient2(midpoint=0.5, low="steelblue", mid="brown", 
+  scale_color_gradient2(midpoint=0.5, low="steelblue", mid="brown", 
     high="steelblue ") +
-    theme_bw()
+  theme_bw()
 ```
 
 ![](images/biwr_05_quant.png)
@@ -84,11 +83,11 @@ Finally, to get a simple linear trend, use the `lm` method with `geom_smooth`:
 
 ```
 ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
-    xlab("Daily Mean Normalized Air Temperature") +
-    ylab("Number of Total Bike Uses") +
-    geom_point(col="gray50") +
-    geom_smooth(method="lm") +
-    theme_bw()
+  xlab("Daily Mean Normalized Air Temperature") +
+  ylab("Number of Total Bike Uses") +
+  geom_point(col="gray50") +
+  geom_smooth(method="lm") +
+  theme_bw()
 ```
 
 ![](images/biwr_05_linear.png)
@@ -101,19 +100,22 @@ Sometimes you do want to see a linear trend, but know (or suspect) that there ar
 
 ```
 require(segmented)
+
 bike_segment = segmented(lm(cnt~atemp, data=bike_share_daily), ~atemp, psi=0.6)
+
 bike_segment$psi
 
            Initial     Est.     St.Err
 psi1.atemp     0.6 0.585762 0.01352518
 
 psi = bike_segment$psi[2]
+
 ggplot(bike_share_daily, aes(x=atemp, y=cnt, group = atemp > psi)) +
-    xlab("Daily Mean Normalized Air Temperature") +
-    ylab("Number of Total Bike Uses") +
-    geom_point(col="gray50") +
-    geom_smooth(method="lm") +
-    theme_bw()
+  xlab("Daily Mean Normalized Air Temperature") +
+  ylab("Number of Total Bike Uses") +
+  geom_point(col="gray50") +
+  geom_smooth(method="lm") +
+  theme_bw()
 ```
 
 ![](images/biwr_05_segment.png)
@@ -152,7 +154,7 @@ The coefficients, of course, are effect sizes.
 The `dotwhisker` package has a simple function to graph regression results using `ggplot2`. `dwplot` shows the coefficients and their confidence intervals (95% by default):
 
 ```
-require(dwplot)
+require(dotwhisker)
 
 # Create a model object
 bad_model = lm(cnt ~ atemp * hum * windspeed, data=bike_share_daily)
@@ -187,28 +189,33 @@ Perhaps the most common date conversion is a character to a date. If it’s not 
 ```
 india_natl_holidays = c("Jan 26, 2014", "Apr 13, 2014", "Aug 15, 2014", 
   "Oct 02, 2014", "Dec 25, 2014")
+  
 india_natl_holidays = as.Date(india_natl_holidays, format="%b %d, %Y")
+
 str(india_natl_holidays)
 
-Date[1:5], 
-    format: "2014-01-26" "2014-04-13" "2014-08-15" "2014-10-02" "2014-12-25"
+Date[1:5], format: "2014-01-26" "2014-04-13" "2014-08-15" 
+"2014-10-02" "2014-12-25"
 ```
 
 Another common date conversion need is to calculate age based on today’s date (or any reference date):
 
 ```
 birthdays = c("20000101", "19991201", "19760704", "20140314")
+
 ymd(birthdays)
 
 "2000-01-01 UTC" "1999-12-01 UTC" "1976-07-04 UTC" "2014-03-14 UTC"
 
 age = ymd(today()) - ymd(birthdays)
-round(age/eyears(1), 1) # eyears is a lubridate function, not a typo!
+
+round(age/dyears(1), 1) # dyears is a lubridate function, not a typo!
 
 14.9 15.0 38.4  0.7
 
 age = ymd(20141201) - ymd(birthdays)
-round(age/eyears(1), 0)
+
+round(age/dyears(1), 0)
 
 15 15 38  1
 ```
@@ -254,9 +261,13 @@ Sometimes you want to know the average time at which something happens, or the r
 
 ```
 require(psych)
+
 wake_time = c(7.0, 7.5, 6.5, 6.25, 7.0, 7.25, 7.25)
+
 sleep_time = c(23.5, 0.5, 23.75, 0.25, 23.25, 23.5, 0.75)
+
 wake_sleep = data.frame(wake_time, sleep_time)
+
 circadian.mean(wake_sleep$sleep_time)
 
 23.92808
@@ -272,26 +283,29 @@ sleep_time 0.1524331  1.0000000
 
 While having dates in the dataset can allow easy plotting via `ggplot2`, there are a few plotting functions that provide one-line insight into time series data. They may not be graphically elegant, but they provide a great way to understand your data more thoroughly.
 
-We’ll use a dataset of 10 years of monthly births in the UK (2003-2012), acquired from the EU’s EuroStat.
+We’ll use a dataset of 10 years of monthly births in the UK (2003-2012), acquired from the EU’s *EuroStat* program.
 
 ```
-library(eurostat)
+require(eurostat)
+
 demo_fmonth = get_eurostat('demo_fmonth')
 ```
 
-R can be a little particular about date values, and if your data aren’t in a format it recognizes, it can choke. Case in point is using `ggplot2` to plot this data, which contains a year field and a month field but not a day field—which makes sense, seeing as how the data are monthly values. But you’ll have to tie yourself in knots to make those two work together as time elements in a ggplot, so it’s actually easier if you just gave each month a fake day (i.e., the 1st), mush ‘em together as a character via the `paste` function, and then specify that you want the final result to be in `Date` format.
+R can be a little particular about date values, and if your data aren’t in a format it recognizes, it can choke. Case in point is using `ggplot2` to plot this data, which contains a year field and a month field but not a day field---which makes sense, seeing as how the data are monthly values. But you’ll have to tie yourself in knots to make those two work together as time elements in a ggplot, so it’s actually easier if you just gave each month a fake day (i.e., the 1st), mush ‘em together as a character via the `paste` function, and then specify that you want the final result to be in `Date` format.
 
 ```
 demo_fmonth$date = as.Date(paste(substr(demo_fmonth$time, 1, 4), 
-    substr(demo_fmonth$month, 2, 3), "01", sep="-"))
+  substr(demo_fmonth$month, 2, 3), "01", sep="-"))
 ```
 
 Now we can use `dplyr` to filter and arrange the data...
 
 ```    
-library(dplyr)
+require(dplyr)
+
 UK_births = filter(demo_fmonth, geo == "UK" & month != 'TOTAL' & 
-    month != 'UNK' & date >= '2003-01-01' & date <= '2012-12-01')
+  month != 'UNK' & date >= '2003-01-01' & date <= '2012-12-01')
+
 UK_births = arrange(UK_births, date)
 ```
 
@@ -316,10 +330,11 @@ And we can use `ggplot2` to make it prettier:
 
 ```
 require(ggplot2)
-ggplot(UK_births, aes(x=Date, y=Value)) +
-    geom_line(col="darkblue") +
-    ylab("Count") +
-    theme_minimal()
+
+ggplot(UK_births, aes(x=date, y=values)) +
+  geom_line(col="darkblue") +
+  ylab("Count") +
+  theme_minimal()
 ```
 
 ![](images/biwr_05_ukbirths2.png)
@@ -356,12 +371,36 @@ The `forecast` package contains another useful plot function that shows each yea
 
 ```
 require(forecast)
+
 seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)", 
   col=rainbow(10), year.labels=TRUE, year.labels.left=TRUE, cex=0.7, 
   cex.axis=0.8)
 ```
 
 ![](images/biwr_05_ukbirths4.png)
+
+## Plotting seasonal adjustment on the fly
+
+The `ggseas` package provides an easy way to plot seasonally-adjusted data in `ggplot2`. There are a variety of ways to adjust for seasonality, so review [its Guthub site](https://github.com/ellisp/ggseas) for more details and options that come with this package.
+
+```
+require(ggseas)
+
+# Convert the time series object to a dataframe for stat_seas
+UK_births_ts_df = tsdf(UK_births_ts)
+
+# Plot seasonally-adjusted data
+ggplot(UK_births_ts_df, aes(x=x, y=y)) +
+  ggtitle("Seasonally-Adjusted Monthly Births in the UK (2003-2012)") + 
+  geom_line(color="gray70") +
+  stat_seas(color="darkblue", size=1) +
+  scale_x_continuous(breaks=seq(2003, 2013, 1)) + 
+  ylab("Count") +
+  xlab("") +
+  theme_minimal()
+```
+
+![](images/seasonal_adjust.png)
 
 
 ## Decomposing time series into components
@@ -381,8 +420,6 @@ plot(decompose(UK_births_ts), col="darkblue")
 ![](images/biwr_05_decomp1.png)
 
 
-
-
 ### Decomposing when the variance changes
 
 Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. 
@@ -390,8 +427,10 @@ Of course, simple time series decomposition only works correctly if the variance
 There are two ways to do this: by using `type = "multiplicative"` in the `decompse` function as above, or by using the `BoxCox.lambda` function in the `forecast` package to determine an optimal transformation:
 
 Look at the data to see the change in variance over time:
+
 ```
 data(AirPassengers)
+
 plot(AirPassengers)
 ```
 
@@ -401,8 +440,14 @@ Use the `BoxCox.lambda` function and view the results:
 
 ```
 require(forecast)
+
+# Calculate the Box-Cox transformation
 AirPassengers_lambda = BoxCox.lambda(AirPassengers)
+
+# Plot the Box-Cox transformation results
 plot(BoxCox(AirPassengers, AirPassengers_lambda))
+
+# Plot the transformed decomposition
 plot(decompose(BoxCox(AirPassengers, AirPassengers_lambda)))
 ```
 
@@ -433,6 +478,7 @@ You can also extract the `$freq` and `$spec` values from the spectrum object int
 
 ```
 sunny_df = data.frame(freq = sunny$freq, spec = sunny$spec)
+
 sunny_df[which.max(sunny_df[,2]),]
 
          freq     spec
@@ -451,11 +497,12 @@ require(survminer)
 
 # Get data and add names of cancer type
 data(tongue, package = "KMsurv")
+
 tongue$tumor = ifelse(tongue$type==1, "Aneuploid",  "Diploid")
 
 # Create survival model
 tongue_survival = survfit(Surv(time = time, event = delta) ~ tumor, 
-    data = tongue)
+  data = tongue)
 
 # Plot the curves and table
 ggsurvplot(tongue_survival, risk.table = TRUE, conf.int = TRUE)
@@ -471,10 +518,14 @@ As an example, we’ll create some fake data on hospital-acquired-infections (HA
 
 ```
 require(qcc)
+
 infections = c(6, 2, 5, 1, 3, 4, 2, 6, 3, 2, 4, 7, 1, 1, 4, 4, 1, 5, 2, 3, 5, 
   2, 3, 2, 4)
+  
 patient_days = c(985, 778, 1010, 834, 750, 729, 1002, 639, 985, 578, 976, 540, 
   829, 723, 908, 1017, 1097, 1122, 1234, 1022, 1167, 1098, 1201, 1045, 1141)
+
+# These are just labels for qcc, not real dates
 month_name = month.abb[c(1:12, 1:12, 1:1)]
 ```
 
@@ -489,12 +540,34 @@ infection_control = qcc(infections, sizes=patient_days/1000, type="u",
 
 ![](images/qcc.png)
 
-You can remove the components of the resulting R object for use or plotting elsewhere (e.g., with `ggplot2`):
+The control-chart default plot in `qcc` is fairly ugly. You can remove the components of the resulting R object for use or plotting elsewhere (e.g., with `ggplot2`).
 
 ```
-infection_control_qcc = data.frame(Month = month_name, infection_control$limits, 
-    Rate = (infections / patient_days)*1000)
+# Create a real date and move limits and rate into a data frame
+ic_qcc = data.frame(Month = seq(as.Date("2012-01-01"), 
+  as.Date("2014-01-01"), "months"), infection_control$limits, 
+  Rate = (infections / patient_days)*1000)
+
+# Create a factor for the "special causes" points
+ic_qcc$Violations = factor(ifelse(row.names(ic_qcc) 
+  == infection_control$violations$beyond.limits, "Violation", NA))
+
+# Plot a cleaner control chart
+ggplot(ic_qcc, aes(x=Month, y=Rate)) +
+  geom_line() +
+  geom_point(color="darkblue") +
+  geom_point(data=filter(infection_control_qcc, 
+    Violations=="Violation"), color="red", size=3) +
+  geom_line(aes(y=LCL), linetype="dashed", color="gray50") +
+  geom_line(aes(y=UCL), linetype="dashed", color="gray50") +
+  xlab("Month") +
+  ylab("Rate") +
+  ggtitle("Hospital Acquired Infections Rate per 1,000 Patient Days
+    u-chart for Jan 2012 - Jan 2014") +
+  theme_minimal()
 ```
+
+![](images/qcc_to_ggplot.png)
 
 T> Many people use control charts incorrectly on trending and/or
 T> autocorrelated data. When you need something like a control
@@ -510,9 +583,11 @@ We’ll look at total monthly United States CO{$$}_2{/$$} emissions between Febr
 ```
 require(strucchange)
 US_co2 = read.table("http://www.eia.gov/totalenergy/data/browser/
-    csv.cfm?tbl=T12.01", sep=",", header=T)
+  csv.cfm?tbl=T12.01", sep=",", header=T)
+
 US_co2 = filter(US_co2, Column_Order == 14 & YYYYMM >= 200102 & 
-    substr(YYYYMM, 5, 7) != 13)
+  substr(YYYYMM, 5, 7) != 13)
+
 US_co2_ts = ts(US_co2[,3], freq=12, start=c(2001,2))
 ```
 
@@ -533,16 +608,18 @@ Corresponding to breakdates:
 # Plot the time series
 plot(US_co2_ts, main=expression(paste("Breakpoint in Monthly US"
   ~CO[2]~Emissions)), ylab="Million Metric Tons", col="darkblue", lwd=1.5)
+  
 # Plot the line at the optimal breakpoint
 lines(breakpoints(US_co2_ts ~ 1), col="darkgreen")
+
 # Plot a 90% confidence interval
 lines(confint(breakpoints(US_co2_ts ~ 1), level=0.90), col="darkgreen")
+
 # Add breakpoint location text
 text(2008.8, 555, "Jan 2009", cex=0.75, col="darkgreen", pos=4, font=3)
 ```
 
 ![](images/biwr_05_bps.png)
-
 
 
 ## Exploring relationships between time series: cross-correlation
@@ -557,15 +634,15 @@ require(dplyr)
 
 # Download CPI time series data from US BLS
 CPI_xport = read.table("http://download.bls.gov/pub/time.series/cu/
-    cu.data.14.USTransportation", header=T, sep="\t", strip.white=T)
+  cu.data.14.USTransportation", header=T, sep="\t", strip.white=T)
 
 # CPI for motor fuel, 2000-2014
 fuel = filter(CPI_xport, series_id == "CUUR0000SETB" &
-    year >= 2000 & year <= 2014 & period != "M13")
-              
+  year >= 2000 & year <= 2014 & period != "M13")
+
 # CPI for airline fare, 2000-2014              
 fare = filter(CPI_xport, series_id == "CUUR0000SETG01" &
-    year >= 2000 & year <= 2014 & period != "M13")
+  year >= 2000 & year <= 2014 & period != "M13")
 ```
 
 Since ccf assumes that the time series detrended, we'll do that first. 
@@ -573,11 +650,13 @@ Since ccf assumes that the time series detrended, we'll do that first.
 ```
 # Create time series
 fuel_ts = ts(fuel$value, start=c(2000, 1), freq=12)
+
 fare_ts = ts(fare$value, start=c(2000, 1), freq=12)
 
 # CCF *requires* detrended data
 # Get detrended values of each time series
 fuel_detrend = na.omit(decompose(fuel_ts)$random)
+
 fare_detrend = na.omit(decompose(fare_ts)$random)
 ```
 
@@ -594,6 +673,7 @@ You can combine these views into a single plot with the `ccf` function:
 ```
 # Calculate CCF with +/- 4 year span
 ccfvalues = ccf(fuel_detrend, fare_detrend, lag.max=48)
+
 ccfvalues
 ```
 
@@ -604,14 +684,14 @@ We can see that the maximum occurs just to the left of zero, we can infer that f
 ```
 # Function to find CCF
 Max_CCF = function(a, b) {
-    d = ccf(a, b, plot = FALSE, lag.max = length(a)-5)
-    cor = d$acf[,,1]
-    abscor = abs(d$acf[,,1])
-    lag = d$lag[,,1]
-    res = data.frame(cor,lag)
-    absres = data.frame(abscor,lag)
-    absres_max = res[which.max(absres$abscor),]
-    return(absres_max)
+  d = ccf(a, b, plot = FALSE, lag.max = length(a)-5)
+  cor = d$acf[,,1]
+  abscor = abs(d$acf[,,1])
+  lag = d$lag[,,1]
+  res = data.frame(cor,lag)
+  absres = data.frame(abscor,lag)
+  absres_max = res[which.max(absres$abscor),]
+  return(absres_max)
 }
 
 # Determine maximum CCF value
@@ -634,23 +714,29 @@ require(forecast)
 require(dplyr)
 
 # Download data and load into R
-download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235
-    /household_power_consumption.zip", destfile = 
-    "Data/household_power_consumption.zip")
-unzip("Data/household_power_consumption.zip", exdir="Data")
+download.file("http://archive.ics.uci.edu/ml/machine-learning-databases
+  /00235/household_power_consumption.zip", destfile = 
+  "~/BIWR/Chapter1/Data/household_power_consumption.zip")
+
+unzip("~/BIWR/Chapter1/Data/household_power_consumption.zip", exdir="Data")
+
 power = read.table("Data/household_power_consumption.txt", sep=";", header=T, 
   na.strings=c("?",""), stringsAsFactors=FALSE)
   
 # Convert and create date objects
 power$Date = as.Date(power$Date, format="%d/%m/%Y")
+
 power$Month = format(power$Date,"%Y-%m")
+
 power$Month = as.Date(paste0(power$Month, "-01"))
 
 # Interpolate missing values and summarize monthly total power use
 power$Global_active_power_locf = na.locf(power$Global_active_power)
+
 power_group = group_by(power, Month)
+
 power_monthly = summarise(power_group, 
-    Total_Use_kWh = sum(Global_active_power_locf)/60)
+  Total_Use_kWh = sum(Global_active_power_locf)/60)
 
 # Remove partial months from data frame
 power_monthly = power_monthly[2:47,]
@@ -669,6 +755,7 @@ total_use_fc = forecast(total_use_ts, h=6)
 
 # View the forecast model results
 summary(total_use_fc)
+
 plot(total_use_fc)
 ```
 
