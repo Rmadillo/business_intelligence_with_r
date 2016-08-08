@@ -963,7 +963,7 @@ Outliers are easy enough to explore with standard EDA methds when you have three
 ```
 require(mvoutlier)
 
-quiebra_outliers = uni.plot(banks[,3:11], symb = T)
+quiebra_outliers = uni.plot(banks[,2:10], symb = T)
 ```
 
 ![](images/mvout_quiebra.png)
@@ -984,8 +984,11 @@ banks$mv_euclidean = quiebra_outliers$euclidean
 Interactive plots are useful for multivariate outlier exploration---static plots like the one above show us that there are multivariate outliers, but they don't tell us which observations they are. Tables can, of course, but at the expense of time. We can use the (newly open-sourced) `plotly` library's ability to make a ggplot of the Mahalanobis distance measure interactive, via the `ggplotly` function:
 
 ```
-p1 = ggplot(banks, aes(mv_md, text = paste("Bank:", Numero, 
-  "<br>Solvency: ", Output))) +
+require(ggplot2)
+require(plotly)
+  
+p1 = ggplot(banks, aes(mv_md, text = paste("Bank: ",
+    row.names(banks), "<br>Solvency: ", Output))) +
   xlab("Mahalanobis Distance") + 
   geom_histogram() + 
   facet_wrap(~mv_outlier, ncol=1, scales="free_y") 
@@ -997,7 +1000,7 @@ ggplotly(p1)
 
 The `uni.plot` function allows you to pass through plotting options, but not always easily---for example, you'll have to modify the function to change point colors. You can use point assignment via `pch`, however, to show a factor variable. 
 
-For our second `mvoutlier` example, we'll use the bike sharing data. We can plot the weather-based variables and use the point type to show the weather situation relative to potential outlier observation. The values of the weather situation are mapped to the matching `pch` values, so `pch=1`, a circle, represents observations under clear weather, and so on, while the outlier status is mapped to red (outlier) or green (not an outlier).  
+For our second `mvoutlier` example, we'll use the bike sharing data from previous chapters. We can plot the weather-based variables and use the point type to show the weather situation relative to potential outlier observation. The values of the weather situation are mapped to the matching `pch` values, so `pch=1`, a circle, represents observations under clear weather, and so on, while the outlier status is mapped to red (outlier) or green (not an outlier).  
 
 ```
 uni.plot(bike_share_daily[,10:13], pch=as.numeric(bike_share_daily$weathersit))
@@ -1016,10 +1019,10 @@ require(DMwR)
 banks$lof = lofactor(banks[,2:10], k=4)
 
 # Plot the lof results interactively
-p_lof = ggplot(banks, aes(lof, text = paste("Bank:", Numero, 
- "<br>Solvency: ", Output))) +
- xlab("Local Outlier Factor") + 
- geom_histogram() 
+p_lof = ggplot(banks, aes(lof, text = paste("Bank: ",
+    row.names(banks), "<br>Solvency: ", Output))) +
+  xlab("Local Outlier Factor") + 
+  geom_histogram() 
 
 ggplotly(p_lof)
 ```
@@ -1039,8 +1042,8 @@ data(raw_data)
 
 # Run the algorithm, include expected values and plotting features
 raw_data_anomalies = AnomalyDetectionTs(raw_data, direction='both', 
-   e_value=TRUE, plot=TRUE)
-   
+  e_value=TRUE, plot=TRUE)
+
 # Plot the time series and the anomalies
 raw_data_anomalies$plot
 ```
@@ -1178,7 +1181,7 @@ You can evaluate the quantiles of these models to help determine what "counts" a
 ```
 # Calculate quantiles for different models
 hurr_quant = distLquantile(hurricane_cost$total_damage, 
-    probs=c(0.80, 0.90, 0.95, 0.99), returnlist=TRUE)
+  probs=c(0.80, 0.90, 0.95, 0.99), returnlist=TRUE)
 
 # Look at the top five models only
 hurr_quant$quant[1:5,]
@@ -1191,7 +1194,7 @@ wei 6.639476 13.45379 22.53004 52.15676
 ln3 6.165669 11.94520 20.29897 53.86717
 
 # Plot the cdf of top five models with their quantiles
-distLplot(hurr_fit, cdf=T, main="Total Annual Hurricane Damages
+distLplot(hurr_quant, cdf=T, main="Total Annual Hurricane Damages
   (in billion USD)", xlab="Damages ($1B USD)", qlines=TRUE)
 ```
 
@@ -1234,6 +1237,7 @@ require(arulesViz)
 
 # Download data and convert to a transactions object
 basket_url = "http://dmg.org/pmml/pmml_examples/baskets1ntrans.csv"
+
 basket_trans = read.transactions(basket_url, format = "single", sep = ",", 
   cols = c("cardid", "Product"), rm.duplicates=TRUE)
 ```
@@ -1327,19 +1331,9 @@ We'll look first at the rule sets that generate the greatest lift with the `insp
 
 ```
 inspect(head(sort(basket_rules_custom, by="lift"), 10))
-
-    lhs                                       rhs          support    confidence lift    
-838 {cannedveg,frozenmeal,fruitveg,wine}   => {beer}       0.01171459 1.0000000  3.204778
-802 {beer,cannedmeat,cannedveg,freshmeat}  => {frozenmeal} 0.01171459 1.0000000  3.109272
-807 {beer,cannedveg,fish,freshmeat}        => {frozenmeal} 0.01064963 1.0000000  3.109272
-817 {beer,cannedmeat,cannedveg,fish}       => {frozenmeal} 0.01277955 1.0000000  3.109272
-801 {beer,cannedmeat,freshmeat,frozenmeal} => {cannedveg}  0.01171459 1.0000000  3.099010
-806 {beer,fish,freshmeat,frozenmeal}       => {cannedveg}  0.01064963 1.0000000  3.099010
-816 {beer,cannedmeat,fish,frozenmeal}      => {cannedveg}  0.01277955 1.0000000  3.099010
-821 {beer,cannedmeat,frozenmeal,fruitveg}  => {cannedveg}  0.01064963 1.0000000  3.099010
-609 {beer,freshmeat,frozenmeal}            => {cannedveg}  0.03088392 0.9666667  2.995710
-833 {cannedveg,fish,frozenmeal,wine}       => {beer}       0.01490948 0.9333333  2.991126
 ```
+
+![](images/basket_rules_list.png)
 
 We can also plot the rule set using a variety of graph types; accepting the default gives you a scatterplot of confidence, support, and lift, and setting `interactive` to `TRUE` allows you to explore particular subsets based on the combination of those three values. For example, we can select the rules with relatively high values of all three within the graph, and see those rules in the console once we've clicked `inspect` in the graph: 
 
