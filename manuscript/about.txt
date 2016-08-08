@@ -37,13 +37,21 @@ Due to page width constraints, some of the code *as printed in the book* have un
 | |
 | |
 
+{footnotes-off}
+
 #### Contact 
 
 {icon=github}
-G> [Rmadillo][https://github.com/Rmadillo/]
+G> [Rmadillo](https://github.com/Rmadillo/)
+
 {icon=leanpub}
 G> [Dwight Barry](https://leanpub.com/u/dwightbarry) 
+
 {icon=linkedin}
 G> [Dwight Barry](https://www.linkedin.com/in/dwight-barry-60070417) 
-{icon=twitter} | | 
+
+{icon=twitter}
 G> [@healthstatsdude](https://twitter.com/healthstatsdude)
+
+
+{footnotes-on}
