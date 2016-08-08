@@ -38,13 +38,22 @@ require(vegan)
 
 banks_mds = metaMDS(banks[,3:11], distance="euclidean", autotransform=FALSE, 
   noshare=FALSE, wascores=FALSE)
+ 
+Run 0 stress 0.03123018 
+Run 1 stress 0.03122783 
+... New best solution
+... procrustes: rmse 0.0007384291  max resid 0.004514075 
+*** Solution reached
 ```
 
 The plot that is built from this algorithm is the heart of nMDS analysis. Categorical information can be added as well. Note that axis values are meaningless in nMDS except as x/y coordinates; only spatial pattern matters for interpretation. Much like a map, points that lie close together on the plot are more similar, while points that are further away are more dissimilar:
 
 ```
-par(mar=c(1.5,0,1,0))
+# You may need to mess with par for the margins. Note: Clearing the 
+# plots in RStudio (broom icon) returns par to defaults
+# par(mar=c(1.5,0,1,0))
 
+# Save the stress value for the legend
 banks.stress = round(banks_mds$stress, digits=2)
 
 # Set up color scheme
@@ -59,8 +68,8 @@ orditorp(banks_mds, display="sites", col=groups, air=0.01, cex=0.75)
 
 # Add legend
 legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", 
-  col=c("darkred","blue"), title=paste("Stress: ",banks.stress), pch=21, 
-  pt.bg=c("darkred", "blue"), cex=0.75)
+  col=c("darkred","blue"), title=paste0("Stress: ", banks.stress), 
+  pch=21, pt.bg=c("darkred", "blue"), cex=0.75)
 ```
 
 ![](images/0815OS_05_nmds1.png)
@@ -68,13 +77,14 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n",
 You also can easily explore regions within the plot in more detail by using `xlim` and `ylim` to zoom in on an area of interest, such as the right-side cluster:
 
 ```
+# Zoom in to the cluster
 ordiplot(banks_mds, type="n", xlab=" ", ylab=" ", display="sites", 
   xlim=c(0,0.07), ylim=c(-0.1, 0.095))
   
 orditorp(banks_mds, display="sites", col=groups, air=0.01, cex=0.75)
 
 legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", col=c("darkred",
-  "blue"), title=paste("Stress: ",banks.stress), pch=21, pt.bg=c("darkred", 
+  "blue"), title=paste0("Stress: ",banks.stress), pch=21, pt.bg=c("darkred", 
   "blue"), cex=0.75)
 ```
 
@@ -82,15 +92,19 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", col=c("darkred",
 
 nMDS does not use the absolute values of the variables, but rather their rank orders. While this loses some information contained in the raw data, the use of ranks omits some of the issues associated with using absolute distance (e.g., sensitivity to transformation and linearity), and as a result is a very flexible technique that works well with a variety of types of data. It's also particularly useful when there are a large number of predictors relative to the number of entities, where using actual values could easily lead to overfitting.
 
-If you need to describe it succinctly, say that nMDS creates a map of a similarity matrix. For example, a matrix of European inter-city distance (see `?eurodist`) creates an nMDS plot that closely reflects the actual distance and spatial direction between these cities:
+If you need to describe it succinctly, say that nMDS creates a map of a similarity matrix. For example, a matrix of European inter-city distance (see `?eurodist`) creates an nMDS plot that closely reflects the distances and spatial direction between these cities:
 
 ```
-par(mar=c(1.5,4,1,4))
+# You may need to mess with par for the margins
+# par(mar=c(1.5,4,1,4))
+
 euromap = metaMDS(eurodist, distance="euclidean", autotransform=FALSE, 
-   noshare=FALSE, wascores=FALSE)
+  noshare=FALSE, wascores=FALSE)
+
 euromap$points[,1] = -euromap$points[,1]
+
 ordiplot(euromap, display="sites", xaxt="n", yaxt="n", xlab=" ", ylab=" ", 
-   type="t")
+  type="t")
 ```
 
 ![](images/0815OS_05_nmds4.png)
@@ -101,9 +115,9 @@ ordiplot(euromap, display="sites", xaxt="n", yaxt="n", xlab=" ", ylab=" ",
 Diagnostics for nMDS results are also simple. A Shepard plot (also called a stress plot) shows the relationship between the similarity matrix and how well the nMDS algorithm represented that matrix in the plot. The greater the scatter around the (non-linear) regression line, the higher the stress, which would imply that the matrix similarities are not as well represented in the plot.
 
 ```
-banks.stress = round(banks_mds$stress, digits=2)
+banks_stress = round(banks_mds$stress, digits=2)
 
-banks.stress
+banks_stress
 
 0.03
 
@@ -137,18 +151,20 @@ The final configuration may differ depending on the noise in the data, the initi
 You can add vectors of the variables used to construct the matrix over the nMDS plot to explore how they influenced the final configuration. The length and direction of each vector gives a relative sense of each variable's influence on the "map":
 
 ```
-banks.vectors = envfit(banks_mds, banks[,3:11])
+# par(mar=c(1.5,0,1,0))
+
+banks_vectors = envfit(banks_mds, banks[,3:11])
 
 ordiplot(banks_mds, type="n", xaxt="n", yaxt="n", xlab=" ", ylab=" ", 
   display="sites")
 
 orditorp(banks_mds, display="sites", col=groups, air=0.01, cex=0.75)
 
-plot(banks.vectors, col="gray40", cex=0.75)
+plot(banks_vectors, col="gray40", cex=0.75)
 
 legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", 
-  col=c("darkred","blue"), title=paste("Stress: ",banks.stress), pch=21, 
-  pt.bg=c("darkred", "blue"), cex=0.75)
+  col=c("darkred","blue"), title=paste0("Stress: ", banks.stress), 
+  pch=21, pt.bg=c("darkred", "blue"), cex=0.75)
 ```
 
 ![](images/0815OS_05_nmds5.png)
@@ -159,7 +175,7 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n",
 Since there is a clear left-right gradient, and the R8 variable (the ratio of Cost of Sales to Sales) seems to be one of the major reasons for that, a contour of that variable, in that variable’s scale values---in this case, the ratio---can be mapped in the nMDS plot. Other contours can be mapped as well; this example shows R8 and R4 contours: 
 
 ```
-par(mar=c(1.5,0,1,0))
+# par(mar=c(1.5,0,1,0))
 
 # Empty plot
 ordiplot(banks_mds, type="n", xaxt="n", yaxt="n", xlab=" ", ylab=" ", 
@@ -176,8 +192,8 @@ tmp = ordisurf(banks_mds, banks$R4, add=TRUE, col="gray70")
 orditorp(banks_mds, display="sites", col=groups, air=0.01, cex=0.75)
 
 legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", 
-  col=c("darkred","blue"), title=paste("Stress: ",banks.stress), pch=21, 
-  pt.bg=c("darkred", "blue"), cex=0.75)
+  col=c("darkred","blue"), title=paste0("Stress: ",banks.stress), 
+  pch=21, pt.bg=c("darkred", "blue"), cex=0.75)
 ```
 
 ![](images/0815OS_05_nmds7.png)
@@ -190,7 +206,7 @@ While technically any number of contours can be plotted, in practice more than t
 PCA is often used as an exploratory technique in similar ways to nMDS, and in some cases where your data have similar scales and there are linear combinations between the variables, it can sometimes prove more powerful. If the assumptions can be justified, PCA has the added benefit of being able to provide dimension reduction through linear combinations of the original variables, in which case it can be used as input to other tools, such as regression.
 
 ```
-banks_pca = princomp(banks[,3:11], cor=TRUE)
+banks_pca = princomp(banks[,2:10], cor=TRUE)
 
 summary(banks_pca, loadings=TRUE)
 
@@ -217,27 +233,34 @@ R8 -0.413 -0.109        -0.570        -0.695
 R9  0.424                0.451 -0.430 -0.648                     
 ```
 
-The basic `biplot` function provides the essential details (e.g., `biplot(banks_pca, col=c("black", "gray40"))`) but a function by Vince Vu on Github does the same, only via `ggplot2` for a prettier image:
+The basic `biplot` function provides the essential details (e.g., `biplot(banks_pca, col=c("black", "gray40"))`) but a function in the `ggbiplot` does the same, only via `ggplot2` for a prettier image:
 
 ```
 # devtools::install_github("vqv/ggbiplot")
 
 require(ggbiplot)
 
-ggbiplot(banks_pca, labels =  rownames(banks), ellipse=T, groups=
-  as.factor(banks$Solvente)) + 
+ggbiplot(banks_pca, labels=rownames(banks), ellipse=T, 
+  groups=as.factor(banks$Output)) + 
   theme_bw()
 ```
 
 ![](images/0815OS_05_07.png)
 
-
 Finally, variance plots often accompany PCA work; here's a way to do it with ggplot:
 
 ```
-variances = data.frame(vars = banks_pca$sdev^2, var_exp = vars/sum(vars), 
-  var_cumsum = cumsum(vars), PCs = 1:length(banks_pca$sdev))
+# Get variances
+vars = banks_pca$sdev^2
 
+# Get proportion of variance
+var_exp = vars/sum(vars)
+
+# Get cumulative variance and make into data frame
+variances = data.frame(vars = vars, var_exp = var_exp, 
+  var_cumsum = cumsum(var_exp), PCs = 1:length(banks_pca$sdev))
+
+# Plot variance explained and cumulative variance
 ggplot(variances, aes(PCs, var_cumsum)) +
   scale_x_discrete(limits=c(1:9)) +
   ylab("Var. Explained (bars) and Cumulative (line) by PC") +
@@ -303,7 +326,7 @@ banks_dist = dist(banks[,3:11])
 
 banks_hclust = hclust(banks_dist, method="ward.D")
 
-plot(banks_hclust, hang=-1, labels=paste(banks$Banco, banks$Numero, sep="-"))
+plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, row.names(banks), sep="-"))
 ```
 
 ![](images/0815OS_05_01.png)
@@ -320,10 +343,10 @@ require(NeatMap)
 
 ggplot() +
   draw.dendrogram(banks_hclust) +
-  scale_color_manual(name="Status: ",values=c("darkred", "blue"),
+  scale_color_manual(name="Status: ", values=c("darkred", "blue"),
     labels=c("Bankrupt ", "Solvent ")) +
-  geom_text(aes(x=0.75, y=banks_hclust$order, 
-    label=banks$Numero, color=factor(banks$Solvente)), size=4) +
+  geom_text(aes(x=0.75, y=banks_hclust$order, label=row.names(banks), 
+    color=factor(banks$Output)), size=4) +
   ggtitle("Cluster Dendrogram (Ward's) - Spanish Banking Crisis") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
     panel.border = element_blank(), panel.background = element_blank(),
@@ -359,8 +382,8 @@ require(NeatMap)
 
 banks_pos = banks_mds$points # nMDS results from above
 
-draw.dendrogram3d(banks_hclust, banks_pos, labels=banks$Numero, 
-  label.colors=banks$Solvente+3, label.size=1)
+draw.dendrogram3d(banks_hclust, banks_pos, labels=row.names(banks), 
+  label.colors=banks$Output+3, label.size=1)
 ```
 
 ![](images/0815OS_05_10.png)
@@ -384,14 +407,14 @@ bank_clusters
 62  4
 
 # Show variable medians for each group
-aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
+aggregate(banks[,2:10], by=list(cluster=bank_clusters), median)
 
   cluster      R1      R2      R3     R4      R5      R6      R7      R8       R9
 1       1 0.39265 0.26210 0.40725 0.0203  0.0042  0.1002  0.0044 0.87650  0.00955
 2       2 0.36585 0.23295 0.38455 0.0152 -0.0380 -0.9390 -0.0397 1.30815 -0.01630
 
 # Plot dendrogram
-plot(banks_hclust, hang=-1, labels=paste(banks$Banco, banks$Numero, sep="-"), 
+plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, row.names(banks), sep="-"), 
    cex=0.9)
 
 # Add cluster boxes to dendrogram
@@ -416,7 +439,7 @@ To run either analysis, you start with the number of groups (*k*) in which you w
 To run PAM with *k*=2:
 
 ```
-banks_pam = pam(banks[,3:11], k=2)
+banks_pam = pam(banks[,2:10], k=2)
 
 banks_pam
 
@@ -442,7 +465,7 @@ Available components:
 To run kMeans with *k*=2:
 
 ```
-banks_kmeans = kmeans(banks[,3:11], centers=2, nstart=50)
+banks_kmeans = kmeans(banks[,2:10], centers=2, nstart=50)
 
 banks_kmeans
 
@@ -511,7 +534,7 @@ The `useful` package allows you to plot a kmeans object via a simplified ggplot:
 ```
 require(useful)
 
-plot(banks_kmeans, data=banks, class="Solvente", xlab="", ylab="")
+plot(banks_kmeans, data=banks, class="Output", xlab="", ylab="")
 ```
 
 ![](images/0815OS_05_12.png)
@@ -521,7 +544,7 @@ plot(banks_kmeans, data=banks, class="Solvente", xlab="", ylab="")
 The `clusGap` function in the `cluster` package compares a set of observed cluster sizes with a bootstrapped sample to evaluate the difference between actual and expected for a given number of clusters. That distance is the Gap statistic; the mathematically optimal number of clusters according to this approach is the smallest number within one standard error (`SE.sim`) of the smallest gap’s value (`gap`). You can specify whether to use `kmeans` or `pam` in the `FUNcluster` option. 
 
 ```
-banks_gap = clusGap(banks[,3:11], FUNcluster=pam, K.max=10, B=500)
+banks_gap = clusGap(banks[,2:10], FUNcluster=pam, K.max=10, B=500)
 
 banks_gap_df = as.data.frame(banks_gap$Tab)
 
@@ -654,15 +677,15 @@ We can explore the bivariate density of the original data through this package a
 plot(diabetes_mclust, what="density")
 
 # Bivariate density (perspective plot)
-plot(dens, what = "density", type = "persp", 
-     border = adjustcolor(grey(0.1), alpha.f = 0.25))
+plot(diabetes_mclust, what = "density", type = "persp", 
+  border = adjustcolor(grey(0.01), alpha.f = 0.15))
 ```
 
 ![](images/diabetes_density.png)
 
-![](images/diabetes_persp.png)
+![](images/diabetes_persp_light.png)
 
-Understanding the uncertainty associated with specific observations and their cluster assignment is a useful diagnostic tool as well. 
+Understanding the uncertainty associated with specific observations and their cluster assignment is a useful diagnostic tool as well.
 
 ```
 # Cluster uncertainty plot
@@ -682,8 +705,8 @@ diabetes$mclust_uncertainty = diabetes_mclust$uncertainty
 require(googleVis)
 
 diabetes_histogram = gvisHistogram(data.frame(diabetes$mclust_uncertainty), 
-                     options=list(width=800, height=300, legend="none",
-                     title="Distribution of Mclust Uncertainty Values"))
+  options=list(width=800, height=300, legend="none",
+  title="Distribution of Mclust Uncertainty Values"))
 
 diabetes_table = gvisTable(diabetes, options=list(width=800, height=300))
 
@@ -693,7 +716,6 @@ plot(HT)
 ```
 
 ![](images/diabetes_interactive.png)
-
 
 
 ## Identifying group membership with irregular clusters
@@ -726,7 +748,7 @@ require(dbscan)
 kNNdistplot(multishapes[,1:2], k=3)
 
 # Try an eps value of 0.15
-abline(h=0.15, color="blue", lty=3)
+abline(h=0.15, col="blue", lty=3)
 ```
 
 ![](images/dbscan_knn.png)
@@ -735,6 +757,7 @@ Once you have chosen `eps`, run it through the main `dbscan` function:
 
 ```
 multishapes_dbscan = dbscan(multishapes[,1:2], eps = 0.15, minPts = 3)
+
 multishapes_dbscan
 
 DBSCAN clustering for 1100 objects.
@@ -800,10 +823,12 @@ breast_cancer$Diagnosis = ifelse(breast_cancer$Class==2, "benign",
 
 # Remove incomplete rows, then create data-only object
 bc_wisc = na.omit(breast_cancer[,c(2:10, 12)])
+
 bc_wisc_data = bc_wisc[,1:8]
 
 # Perform variable selection (with parallel processing)
 varsel_fwd = clustvarsel(bc_wisc_data, parallel = TRUE)
+
 varsel_fwd
 ```
 {lang="text"}
