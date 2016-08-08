@@ -32,7 +32,7 @@ Our purpose is to describe past monthly power usage and forecast potential usage
 
 ## Set up
 
-First, we need to set up the working environment—this is generally easiest to do using the file system (see Appendix 1), but for sake of explanation and thoroughness, we'll do the entire process in this chapter within R. To ensure clarity and reproducibility, we need to set up a single directory for each project, with subfolders that contain and separate code, data, results, and so on. 
+First, we need to set up the working environment—this is generally easiest to do using the file system (see *Appendix 1*), but for sake of explanation and thoroughness, we'll do the entire process in this chapter within R. To ensure clarity and reproducibility, we need to set up a single directory for each project, with subfolders that contain and separate code, data, results, and so on. 
 
 Open RStudio. 
 
@@ -327,15 +327,15 @@ Opening the `energy_use_prediction_widget.html` from the Reports folder shows us
 
 ## Documenting the project
 
-I often have a script window (`.R`) and an R Markdown (.`Rmd`) window open at the same time when working on projects. Once I have the code the way I want it, I transfer that code to the `.Rmd` file if I intend to include it in any data/reporting products. When I have steps or results and want to jot down my rationale for the methods I'm using, interpretations and ideas for future use, and so on, I do that in an `.Rmd` file as well. At the end, I aim for an `.Rmd` file that will allow another user to reproduce the entire analysis and have an understanding of why I chose certain methods or came to the conclusions I report. For longer analyses, this may require a "make" file type of setup (see Appendix 1). 
+I often have a script window (`.R`) and an R Markdown (.`Rmd`) window open at the same time when working on projects. Once I have the code the way I want it, I transfer that code to the `.Rmd` file if I intend to include it in any data/reporting products. When I have steps or results and want to jot down my rationale for the methods I'm using, interpretations and ideas for future use, and so on, I do that in an `.Rmd` file as well. At the end, I aim for an `.Rmd` file that will allow another user to reproduce the entire analysis and have an understanding of why I chose certain methods or came to the conclusions I report. For longer analyses, this may require a "make" file type of setup (see *Appendix 1*). 
 
-Even better is when it's a small project—I can make the code, documentation, and report all one file. Since decision makers want the answer first, I include all of the code except for results inside a single code chunk near the top. The results I place in separate code chunks, placed where appropriate. For example, had the forecasting project above required a report, I'd structure it all inside an `.Rmd` like I've shown in Appendix 2.  
+Even better is when it's a small project—I can make the code, documentation, and report all one file. Since decision makers want the answer first, I include all of the code except for results inside a single code chunk near the top. The results I place in separate code chunks, placed where appropriate. For example, had the forecasting project above required a report, I'd structure it all inside an `.Rmd` like I've shown in *Appendix 2*.  
 
 To run that file manually, just load it into RStudio and click the **Knit HTML** button in the *Source* window. A preview window will pop up. In some systems, the HTML file is concurrently saved to the working directory, while in others you may need to **Open in browser** and then **Save as** from there. 
 
 ![](images/biwr_ch1_knitr_ex.png)
 
-To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run it from the console, a command line, or a "make" file (see Appendix 1) via the `render` function:
+To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run it from the console, a command line, or a "make" file (see *Appendix 1*) via the `render` function:
 
 ```
 render("Code/Hauteville_House_Power_Forecast_20101127.Rmd", "html_document")
