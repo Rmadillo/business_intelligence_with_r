@@ -646,7 +646,7 @@ fare = filter(CPI_xport, series_id == "CUUR0000SETG01" &
   year >= 2000 & year <= 2014 & period != "M13")
 ```
 
-Since ccf assumes that the time series detrended, we'll do that first. 
+Since `ccf` assumes that the time series detrended, we'll do that first. 
 
 ```
 # Create time series
