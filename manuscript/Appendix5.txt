@@ -1,7 +1,5 @@
 # Appendix 5: R Markdown Quick Reference
 
-| | 
-
 **Text**
 
 {float="left"}
