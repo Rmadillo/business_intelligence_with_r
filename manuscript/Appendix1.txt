@@ -57,4 +57,4 @@ Because of system and platform nuances with pdf or Word export and slide creatio
 
 The `knitr` package allows you to include R code within chunks, marked by three backticks at the start and end of each chunk, as well inline with text, as marked with a single backtick at the start and end of the portion of the R code to be analyzed. The code so designated is run each time you "knit" the file, so if the data changes, the analysis will repeat as before on the new data. The benefit of this for writing reports or presentations where revisions of the data are inevitable is clear.
 
-Click the **?** or **MD** button in the `.Rmd` script window of RStudio for a quick overview of Rmarkdown syntax, and see Appendix 2 for an example based on the Chapter 1 analysis. 
+Click the **?** or **MD** button in the `.Rmd` script window of RStudio for a quick overview of Rmarkdown syntax, and see *Appendix 2* for an example based on the Chapter 1 analysis. 
