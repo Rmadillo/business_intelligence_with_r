@@ -275,7 +275,7 @@ ggplot(bike_share_daily, aes(mnth, casual, fill=workingday)) +
 
 Violin plots have been considered a more useful alternative to boxplots, as you can see the shape of the distribution, not just its major quantiles. Unfortunately, violin plots can sometimes look like a series of genetalia, which pretty much precludes its use in business settings. 
 
-Fortunately, bean plots allow you to create "half" violin plots, or more accurately, comparitive density histograms. The `side` option allows you to only plot the density on one side of a line; using `side="first"` has the height of each curve going to the left side of the plot. By playing with the `what` options, you can determine what pieces of the bean plot are shown. One of those piece is a reference line, which defaults to the mean; `overallline="median") allows you to use that statistic instead. 
+Fortunately, bean plots allow you to create "half" violin plots, or more accurately, comparitive density histograms. The `side` option allows you to only plot the density on one side of a line; using `side="first"` has the height of each curve going to the left side of the plot. By playing with the `what` options, you can determine what pieces of the bean plot are shown. One of those pieces is a reference line, which defaults to the mean; `overallline="median"` allows you to use that statistic instead. 
 
 ```
 beanplot(casual ~ mnth, data = bike_share_daily, side="first", 
@@ -284,9 +284,10 @@ beanplot(casual ~ mnth, data = bike_share_daily, side="first",
   ylab = "Daily Casual Bike Use Count")
 ```
 
-If you prefer a more traditional look, with the density curves pointing up, you can use `horizontal=TRUE`, change `side` to `"second"`, and flip your axis titles:
-
 ![](images/beanplot1.png)  
+
+
+If you prefer a more traditional look, with the density curves pointing up, you can use `horizontal=TRUE`, change `side` to `"second"`, and flip your axis titles:
 
 ```
 beanplot(casual ~ mnth, data = bike_share_daily, side="second", 
@@ -693,7 +694,8 @@ t.test(bike_share_daily$casual)$conf.int
 798.3192 898.0337
 
 # 95% CI for proportion of casual bike use of all rentals
-binom.test(sum(bike_share_daily$casual), sum(bike_share_daily$cnt))$conf.int
+binom.test(sum(bike_share_daily$casual), 
+  sum(bike_share_daily$cnt))$conf.int
 
 0.1878795 0.1887244
 
@@ -706,7 +708,8 @@ poisson.test(sum(bike_share_winter$casual))$conf.int
 60140.37 61106.52
 
 # 95% CI for count of winter casual bike use per 1000 rentals
-poisson.test(sum(bike_share_winter$casual), sum(bike_share_winter$cnt)/1000)$conf.int
+poisson.test(sum(bike_share_winter$casual), 
+  sum(bike_share_winter$cnt)/1000)$conf.int
 
 127.5923 129.6421
 ```
@@ -756,6 +759,7 @@ boot.ci(q75_boot, type="bca")$bca[4:5]
 
 You can get quick (gg)plots of means/medians and confidence intervals, standard deviations (`mult`, defaults to 2), or quantiles with the `stat_summary` `args` functions:  
 
+{width="90%"}
 | Statistic | Interval Type | Function |
 | --------- | ------------- | -------- |
 | Mean | Bootstrapped CI | `(fun.data = mean_cl_boot, fun.args = list(conf.int = 0.95), ...)` |
