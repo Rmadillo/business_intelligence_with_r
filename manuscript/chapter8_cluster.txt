@@ -14,16 +14,10 @@
 
 Humans like to put things in boxes. "What things are most like each other?" is one of the most common questions you face in the analysis of multivariate data. Technically, we can think of these tasks as dimension reduction---how can we take a mass of data and reduce it to something that provides insight? Techniques to take many variables and cluster observations or detect outliers have been around for decades, though it’s been only recently where desktop computing power was sufficient for more advanced similarity-analysis tool development. 
 
-Non-metric multidimensional scaling (nMDS) is one such tool. It’s similar to Principal Components Analysis (PCA), but does not suffer from the assumption that the multivariate relationships must be linear. As a result, it has already replaced PCA as the primary descriptive and dimension reduction tool for multivariate data in some fields, and is moving rapidly into others. But although nMDS works better for nearly all applied problems and is easier to explain to business clients, PCA is still widely used. 
-
-Cluster analysis has advanced as well, with the development of techniques for clustering irregular groupings by density via DBSCAN and similar tools, and being able to make inferential claims on cluster membership with model-based clustering. Still, the old standbys of kMeans, PAM, and hierarchical clustering all remain excellent first-order descriptive tools for multivariate data. 
-
-On the flip side of the coin of similarity is the exploration of outliers. If anyone has ever asked you for an "automatic outlier detection" data product, you immediately realized that they probably don't understand analytics. What counts as an outlier is completely dependent on context. That said, sometimes you need to explore what might count as an outlier across enough variables that visualization becomes difficult, if not impossible. Other times, you might want to get a head-start on investigating a potential outlier or trend before it wrecks things. Or perhaps you need to understand the probabilities associated with unusual but possible events. Multivariate outlier exploration, extreme value analysis, and anomaly detection are useful exploratory tools for these purposes. 
-
-Finding things that are (really) similar or (really) different is the common theme to the tools in this chapter. Sometimes, you just want to be purely empirical about it, and let the data itself give you information to explore based simply on common co-occurrences. Association analysis---more commonly called "shopping cart analysis"---is a great way to do this. 
-
  
 ## Mapping multivariate relationships
+
+Non-metric multidimensional scaling (nMDS) is one such tool. It’s similar to Principal Components Analysis (PCA), but does not suffer from the assumption that the multivariate relationships must be linear. As a result, it has already replaced PCA as the primary descriptive and dimension reduction tool for multivariate data in some fields, and is moving rapidly into others. But although nMDS works better for nearly all applied problems and is easier to explain to business clients, PCA is still widely used. 
 
 ### Non-metric multidimensional scaling (nMDS)
 
@@ -313,7 +307,11 @@ plot(smoke_ca, arrows=c("F","T"), mass = c(TRUE, TRUE))
 ![](images/0815OS_05_ca.png)
  
 
-## Grouping observations with hierarchical clustering
+## Cluster analysis
+
+Although it's a relatively old tool, cluster analysis has advanced with the development of techniques such as clustering irregular groupings by density via DBSCAN, and being able to make inferential claims on cluster membership with model-based clustering. Still, the old standbys of kMeans, PAM, and hierarchical clustering all remain excellent first-order descriptive tools for multivariate data. 
+
+### Grouping observations with hierarchical clustering
 
 Hierarchical clustering can be a useful way to summarize high-dimensional data, but results can be strongly dependent on the clustering method. Ward’s, average, and centroid methods tend to be the best places to start. 
 
@@ -389,7 +387,7 @@ draw.dendrogram3d(banks_hclust, banks_pos, labels=row.names(banks),
 ![](images/0815OS_05_10.png)
 
 
-## How to partition the results of a hierarchical cluster analysis
+### How to partition the results of a hierarchical cluster analysis
 
 The `cutree` function will cut a hierarchical cluster dendrogram into a user-supplied number of groups, which can be useful when combined with the results of a `clusGap`-based PAM or kMeans analysis (see the recipes later in this chapter). Since we know there are two natural clusters---bankrupt and solvent---we’ll use *k*=2 here. Note that since it is cutting the tree based on the clustering method’s distance values, results from `cutree` may not match the clusters obtained with `pam` or `kmeans`.
 
@@ -424,7 +422,7 @@ rect.hclust(banks_hclust, k=2)
 ![](images/0815OS_05_14.png)
 
 
-## Identifying and describing group membership with kMeans and PAM
+### Identifying and describing group membership with kMeans and PAM
 
 kMeans and Partitioning Around Medoids (PAM) are two methods that will divide your observations into *k* groups. kMeans works with quantitative data only, and can be susceptible to outliers, while PAM works with both quantitative as well as categorical data. As medoids are simply the “most representative” member of a cluster, outliers don’t really affect PAM. As a result, it is a more robust version of kMeans. If you have a really large data set, look at the `clara` package, which performs PAM by iteratively sampling the data to speed up analysis time.
 
@@ -539,7 +537,7 @@ plot(banks_kmeans, data=banks, class="Output", xlab="", ylab="")
 
 ![](images/0815OS_05_12.png)
 
-## How to choose an optimal number of clusters with bootstrapping
+### How to choose an optimal number of clusters with bootstrapping
 
 The `clusGap` function in the `cluster` package compares a set of observed cluster sizes with a bootstrapped sample to evaluate the difference between actual and expected for a given number of clusters. That distance is the Gap statistic; the mathematically optimal number of clusters according to this approach is the smallest number within one standard error (`SE.sim`) of the smallest gap’s value (`gap`). You can specify whether to use `kmeans` or `pam` in the `FUNcluster` option. 
 
@@ -560,7 +558,7 @@ ggplot(banks_gap_df, aes(x=1:nrow(banks_gap_df))) +
 The two cluster solution is clearly the best option.
 
 
-## Determining optimal numbers of clusters with model-based clustering
+### Determining optimal numbers of clusters with model-based clustering
 
 Sometimes you actually need to be able to justify your cluster analysis results with more than verbal arguments and intuition. Model-based clustering lets you do formal inference on cluster grouping results using finite mixture density models. Even better, it can pick up clusters that traditional kmeans or hierarchical clustering fail at, because of the flexibility of its clustering shapes. 
 
@@ -718,7 +716,7 @@ plot(HT)
 ![](images/diabetes_interactive.png)
 
 
-## Identifying group membership with irregular clusters
+### Identifying group membership with irregular clusters
 
 Sometimes the clusters we want to identify have clear patterns but consist of non-linear or irregular groupings---things we can identify readily by eye but cannot cluster with the usual methods. The DBSCAN algorithm was built for this purpose. We'll use a synthetic dataset from the `multishapes` package to demonstrate exactly what this means. 
 
@@ -798,7 +796,7 @@ ggplot(multishapes, aes(x, y)) +
 ![](images/dbscan_results.png)
 
 
-## Variable selection in cluster analysis
+### Variable selection in cluster analysis
 
 We often find that we have many, many variables, and are not sure of the extent to which they add value or noise to the clustering process. The `clustvarsel` package---created by the same folks who created `mclust`---provides a way to assess this.
 
@@ -894,7 +892,7 @@ W>
 W> Some sort of senstitivity analysis of cluster analysis results is *always* warranted.  
 
 
-## Error-checking cluster results with known outcomes 
+### Error-checking cluster results with known outcomes 
 
 When you have known outcomes in your data (e.g., benign, malignant), the `mclust` package has two functions that help you evaluate your results. 
 
@@ -953,6 +951,8 @@ It seems that the use of all of the variables contributes some noise to the clas
 
 
 ## Exploring outliers
+
+On the flip side of the coin of similarity is the exploration of outliers. If anyone has ever asked you for an "automatic outlier detection" data product, you immediately realized that they probably don't understand analytics. What counts as an outlier is completely dependent on context. That said, sometimes you need to explore what might count as an outlier across enough variables that visualization becomes difficult, if not impossible. Other times, you might want to get a head-start on investigating a potential outlier or trend before it wrecks things. Or perhaps you need to understand the probabilities associated with unusual but possible events. Multivariate outlier exploration, extreme value analysis, and anomaly detection are useful exploratory tools for these purposes. 
 
 Outliers are easy enough to explore with standard EDA methds when you have three or fewer dimensions, but after that you need ways to detect and explore multivariate outliers. `mvoutlier` and `lof` are two packages that make it fairly simple. But don't ever forget that what constitutes a *real* outlier is completely contextual; think of these tools as a way to explore, not as a way to define. 
 
@@ -1030,7 +1030,7 @@ ggplotly(p_lof)
 ![](images/lof.png)
 
 
-## Anomaly detection
+### Anomaly detection
 
 Twitter has come up with an anomaly detection algorithm for vectors, or for even things like time series that have cyclical patterns. (It's not on CRAN, so install it from Github: `devtools::install_github("twitter/AnomalyDetection"`.) 
 
@@ -1057,7 +1057,7 @@ You can use the `threshold` option to identify values *above* the median, 95th, 
 Finally, you can extract the data with the expected values by pulling it from the list, e.g., `raw_data_anomalies_df = raw_data_anomalies$anoms`. 
 
 
-## Extreme value analysis
+### Extreme value analysis
 
 Extreme value analysis (EVA) is a different way to explore outliers; by acknowledging that outliers are real and can be incredibly useful for analysis, we can better assess the likelihood of "improbable" events. 
 
@@ -1226,6 +1226,8 @@ distLextremePlot(hurr_returns, main="Total Annual Hurricane Damages
 
 
 ## Finding associations in shopping carts
+
+Finding things that are (really) similar or (really) different is the common theme to the tools in this chapter. Sometimes, you just want to be purely empirical about it, and let the data itself give you information to explore based simply on common co-occurrences. Association analysis---more commonly called "shopping cart analysis"---is a great way to do this. 
 
 We haven't worked with a data set that's really amenable to association rules, so why not explore shopping cart analysis with a groceries dataset?
 
