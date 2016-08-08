@@ -530,7 +530,7 @@ y_pred: predicted distribution for a new datapoint
 The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary (standardized) tool here, although a wide variety of other approaches exist; of particular use is the use of regression coeffients to answer the answer the question: to what extent are two groups related?
 
 
-### Associations between numeric variables (correlation)
+### Correlation
 
 Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho ({$$}r_s{/$$}), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this section.
 
