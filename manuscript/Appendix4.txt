@@ -1,5 +1,5 @@
-# Appendix 4: .Rmd file for the Chapter 9 flexdashboard example
+# Appendix 4: .Rmd file for the *Chapter 9* flexdashboard example
 
 This code creates the `flexdashboard` shown in *Chapter 9*. 
 
-<<(code/Hauteville_House_Flexdashboard.Rmd)
+<<(code/BIWR_Chapter_9_Hauteville_House_Flexdashboard.Rmd)
