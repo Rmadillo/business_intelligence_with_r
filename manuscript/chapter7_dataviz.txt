@@ -23,30 +23,32 @@ We’ll first use `dplyr`'s `group_by` function to group the casual bike use val
 
 ```
 bike_share_grp = group_by(bike_share_daily, weekday, mnth)
+
 bike_share_mean = summarise(bike_share_grp, mean=mean(casual))
 
 ggplot(bike_share_mean, aes(weekday, mnth)) +
-    geom_tile(aes(fill = mean)) +
-    scale_fill_gradient(low = "white", high = "darkgreen") +
-    xlab("Day of the Week") +
-    ylab("Month") +
-    ggtitle("Mean Daily Casual-Use Bike Sharing") +
-    scale_y_discrete(limits = rev(levels(bike_share_mean$mnth))) +
-    theme_bw() +
-    theme(plot.title = element_text(vjust = 1))
+  geom_tile(aes(fill = mean)) +
+  scale_fill_gradient(low = "white", high = "darkgreen") +
+  xlab("Day of the Week") +
+  ylab("Month") +
+  ggtitle("Mean Daily Casual-Use Bike Sharing") +
+  scale_y_discrete(limits = rev(levels(bike_share_mean$mnth))) +
+  theme_bw() +
+  theme(plot.title = element_text(vjust = 1))
 
 bike_share_grp = group_by(bike_share_daily, weekday, mnth)
+
 bike_share_sd = summarise(bike_share_grp, sd=sd(casual))
 
 ggplot(bike_share_sd, aes(weekday, mnth)) +
-    geom_tile(aes(fill = sd)) +
-    scale_fill_gradient(low = "white", high = "darkgreen") +
-    xlab("Day of the Week") +
-    ylab("Month") +
-    ggtitle("Standard Deviation of Daily Casual-Use Bike Sharing") +
-    scale_y_discrete(limits = rev(levels(bike_share_sd$mnth))) +
-    theme_bw() +
-    theme(plot.title = element_text(vjust = 1))
+  geom_tile(aes(fill = sd)) +
+  scale_fill_gradient(low = "white", high = "darkgreen") +
+  xlab("Day of the Week") +
+  ylab("Month") +
+  ggtitle("Standard Deviation of Daily Casual-Use Bike Sharing") +
+  scale_y_discrete(limits = rev(levels(bike_share_sd$mnth))) +
+  theme_bw() +
+  theme(plot.title = element_text(vjust = 1))
 ```
 
 ![](images/0815OS_04_01.png)
@@ -61,8 +63,11 @@ There are three color schemes built into Paul’s script: red to blue (`color=r2
 
 ```
 require(RColorBrewer)
+
 source("http://blog.revolutionanalytics.com/downloads/calendarHeat.R")
+
 green_color_ramp = brewer.pal(9, "Greens")
+
 calendarHeat(bike_share_daily$dteday, bike_share_daily$casual, 
   varname="Casual Daily Bike Use", color="green_color_ramp")
 ```
@@ -78,8 +83,10 @@ require(GGally)
 require(gdata)
 
 qb_url = "http://ciberconta.unizar.es/leccion/multivar/QUIEBRA.XLS"
+
 quiebra_download = read.xls(qb_url, sheet=1, header=TRUE, 
-    stringsAsFactors=FALSE)
+  stringsAsFactors=FALSE)
+
 quiebra = quiebra_download[,2:12]
 ```
 
@@ -103,46 +110,51 @@ ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11,
 
 ### Peeking at multivariate data with dplyr and a bubblechart
 
-In *Chapter 3*, we used `dplyr` to string together commands with the `%>%` ("then") operator to do some grouping and summarization to create a new dataframe from the fake customer service data. The following code performs essentially the same operations as we saw in *Chapter 3*, but outputs a `ggplot2` bubblechart instead of a dataframe:
+In *Chapter 3*, we used `dplyr` to string together commands with the `%>%` ("then") operator to do some grouping and summarization to create a new dataframe from the fake customer service data. The following code uses the bike share data to perform essentially the same operations as we saw in *Chapter 3*, but outputs a `ggplot2` bubblechart instead of a data frame:
 
 ```
-customer_survey %>%
-    filter(customer_purchases >= 500) %>%
-    group_by(state) %>%
-    summarize(mean_purchases = mean(customer_purchases, na.rm=T),
-        sd_purchases = sd(customer_purchases, na.rm=T),
-        sum_est = sum(est)) %>%
-    mutate(cv_purchases = round(sd_purchases / mean_purchases, 2)) %>%
-    ggplot(aes(mean_purchases, sd_purchases, color=cv_purchases, size=sum_est)) +
-        geom_point() +
-        scale_size(range=c(2,6)) +
-        theme_bw()
+bike_share_daily %>%
+  filter(workingday == "Yes" & weathersit != 1) %>%
+  group_by(yr, mnth) %>%
+  summarize(mean_casual = mean(casual, na.rm=T),
+    sd_casual = sd(casual, na.rm=T),
+    sum_casual = sum(casual)) %>%
+  mutate(cv_casual = round(sd_casual / mean_casual, 2)) %>%
+  ggplot(aes(mean_casual, sd_casual, color=cv_casual, size=sum_casual)) +
+    geom_point() +
+    scale_size(range=c(2,6)) +
+    coord_equal() +
+    theme_bw()
 ```
 
-![](images/0815OS_04_04.png)
+![](images/bubblechart_dplyr.png)
 
 
 ## Plotting a table
 
-If you want a pretty table, the combination of `gridExtra` and `ggplot2` can provide an image of a table, which is useful if you want to match the style of `ggplot` graphs. We'll first use the `reshape2` package to cast the data into how we want the table to appear, and then plot it. You'll have to remove all the usual plot elements to make it look like a table, and not like a table inside a graph—the `theme` function below accomplishes this.
+If you want a pretty table, the combination of `gridExtra` and `ggplot2` can provide an *image* of a table, which is useful if you want to match the style of `ggplot` graphs. We'll first use the `reshape2` package to cast the data into how we want the table to appear, and then plot it. You'll have to remove all the usual plot elements to make it look like a table, and not like a table inside a graph. The `theme` function below accomplishes this.
 
 ```
 require(reshape2)
 require(gridExtra)
 
 bike_share_grp = group_by(bike_share_daily, yr, mnth)
+
 bike_share_mean = summarise(bike_share_grp, mean=mean(casual))
+
 bike_share_mean$mean = round(bike_share_mean$mean, 0)
-bike_share_mean_wide = dcast(bike_share_mean, yr~mnth)
+
+bike_share_mean_wide = dcast(bike_share_mean, yr~mnth, value.var="mean")
+
 bike_share_mean_wide = rename(bike_share_mean_wide, Year = yr)
 
 ggplot(bike_share_mean_wide, aes(Year, Jan)) +
-    annotation_custom(tableGrob(bike_share_mean_wide, show.rownames = FALSE)) +
-    ggtitle("Mean Daily Casual Bike Share Use, by Month (2011-2012)") +
-    theme_minimal() +
-    theme(panel.border = element_blank(), panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(), axis.ticks = element_blank(), 
-        axis.text = element_blank(), axis.title = element_blank())
+  annotation_custom(tableGrob(bike_share_mean_wide, rows=NULL)) +
+  ggtitle("Mean Daily Casual Bike Share Use, by Month (2011-2012)") +
+  theme_minimal() +
+  theme(panel.border = element_blank(), panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), axis.ticks = element_blank(), 
+    axis.text = element_blank(), axis.title = element_blank())
 ```
 
 ![](images/0815OS_04_06.png)
@@ -166,10 +178,10 @@ require(taucharts)
 require(dplyr)
 
 bike_share_daily$weather = as.factor(ifelse
-    (bike_share_daily$weathersit == 1, "Clear", 
-    ifelse(bike_share_daily$weathersit == 2, "Cloudy/Rainy",
-    "Stormy")))
-                           
+  (bike_share_daily$weathersit == 1, "Clear", 
+  ifelse(bike_share_daily$weathersit == 2, "Cloudy/Rainy",
+  "Stormy")))
+
 bike_share_count = bike_share_daily %>% 
   group_by(weather) %>%
   summarize(count=n())
@@ -233,9 +245,9 @@ The `pairsD3`package can create interactive scatterplots matrices, with the abil
 require(pairsD3)
 
 pairsD3(bike_share_daily[,11:14], group = bike_share_daily[,3], 
-        opacity = 0.7, tooltip = paste("Season: ", bike_share_daily$season, 
-        "<br/> Casual use count: ", bike_share_daily$casual),
-        col = c("#0571b0", "#92c5de", "#ca0020", "#f4a582"))
+  opacity = 0.7, tooltip = paste("Season: ", bike_share_daily$season, 
+  "<br/> Casual use count: ", bike_share_daily$casual),
+  col = c("#0571b0", "#92c5de", "#ca0020", "#f4a582"))
 ```
 
 ![](images/pairs.png)
@@ -258,10 +270,10 @@ rosling_data = read.csv("https://raw.githubusercontent.com/Rmadillo/UW_HCA/maste
   
 # create the motion plot using larger plot size than default
 plot(gvisMotionChart(rosling_data, 
-     idvar = "Country", 
-     timevar = "Year", 
-     sizevar = "Population", 
-     options=list(width = 700, height = 600)))
+    idvar = "Country", 
+    timevar = "Year", 
+    sizevar = "Population", 
+    options=list(width = 700, height = 600)))
 ```
 
 ![](images/motionplot.png)
@@ -296,6 +308,7 @@ Creating a map with point-location data plotted on it is deceptively simple with
 
 ```
 require(maps)
+
 map("county", xlim=c(min(ozone$x-0.5),max(ozone$x+0.5)), ylim=range(ozone$y),
   col="gray80")
 map("state", xlim=c(min(ozone$x-0.5),max(ozone$x+0.5)), ylim=range(ozone$y),
@@ -323,37 +336,25 @@ A second typical type of map is a choropleth, and again, it can appear deceptive
 ```
 require(choroplethr)
 require(choroplethrMaps)
+
 data(df_pop_county)
+
 county_choropleth(df_pop_county)
 ```
 
 ![](images/0815OS_04_09.png)
 
-You can subset this to states or regions with the zoom option, and display a continuous scale instead of breaks with the buckets=1 option:
+You can subset this to states or counties with the zoom options, and display a continuous scale instead of breaks with the `num_colors=1` option:
 
 ```
-county_choropleth(df_pop_county,
-        legend="County\nPopulation",
-        buckets=1,
-        zoom=c("arizona", "colorado", "new mexico", "utah"))
+county_choropleth(df_pop_county, 
+  legend="County\nPopulation", num_colors=1, 
+  state_zoom=c("arizona", "colorado", "new mexico", "utah"))
 ```
 
 ![](images/0815OS_04_10.png)
 
-Want to map by zipcodes instead of counties?
-
-```
-require(zipcode)
-data(df_pop_zip)
-zip_map(df_pop_zip,
-        legend="Zip Code\nPopulation",
-        buckets=1,
-        zoom=c("arizona", "colorado", "new mexico", "utah"))
-```
-
-![](images/0815OS_04_11.png)
-
-The world map data that `choroplethr` and `choroplethrMaps` includes is up to date. But if you want to subset on Europe? Unfortunately, you'll have to do that manually, either by extracting the countries you need by name or ISO code, since `x`- and `y`-`lim` options don't work in this package (see `?choroplethr_wdi` or `?df_pop_country` for more details on names/ISO codes), or by acquiring map boundaries by different means. We'll explore the latter option below, as it takes considerably less effort.  
+The world map data that `choroplethr` and `choroplethrMaps` includes is fairly up to date. But if you want to subset on Europe? Unfortunately, you'll have to do that manually, either by extracting the countries you need by name or ISO code, since `x`- and `y`-`lim` options don't work in this package (see `?choroplethr_wdi` or `?df_pop_country` for more details on names/ISO codes), or by acquiring map boundaries by different means. We'll explore the latter option below, as it takes considerably less effort.  
 
 As you can see from the first example, for a simple point map all you need is longitude (x), latitude (y), and data values. For choropleths (the second example), all you need are a geographical id and data values.
 
@@ -366,8 +367,7 @@ If you're fortunate enough to need to map American Community Survey (ACS) data, 
 ```
 require(acs)
 api.key.install("YOUR KEY HERE")
-require(choroplethr)
-require(choroplethrMaps)
+
 choroplethr_acs(tableId="B19113", map="county", buckets=4, endyear=2012)
 ```
 
@@ -381,14 +381,19 @@ It says a lot about mapping in R that what we'll explore next is one of the simp
 
 ```
 download.file("http://epp.eurostat.ec.europa.eu/cache/GISCO
-  /geodatafiles/CNTR_2014_03M_SH.zip", destfile="world2014.zip")
+  /geodatafiles/CNTR_2014_03M_SH.zip", destfile="~/world2014.zip")
+  
 unzip("world2014.zip")
+
 require(maptools)
+
 worldmap2014 = readShapeLines("CNTR_2014_03M_SH/Data/CNTR_BN_03M_2014.shp", 
-  proj4string = CRS("+proj=longlat +datum=ETRS89"))
+  proj4string = CRS("+proj=longlat +datum=WGS84"))
+  
+
 plot(worldmap2014, xlim=c(7,16), ylim=c(35,60), col="gray60")
 box(col="gray30")
- # © EuroGeographics for the administrative boundaries
+# © EuroGeographics for the administrative boundaries
 ```
 
 ![](images/0815OS_04_12.png)
