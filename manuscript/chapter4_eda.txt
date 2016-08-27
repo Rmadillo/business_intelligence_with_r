@@ -99,7 +99,7 @@ pairs.panels(bike_share_daily[,sapply(bike_share_daily, is.numeric)],
 
 ### Mosaic plot matrix: "Scatterplot" matrix for categorical data
 
-The `vcd` package can extend the `pairs` function to create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object. The dataset we've used so far in this recipe isn't a great one for mosaic plots, so a better view of the outcome of plotting categorical pairs can be seen with the built-in `Titanic` dataset (`?Titanic`), using the highlighting option to make the categories more clearly distinct:
+The `vcd` package can extend the `pairs` function to create a matrix of mosaic plots, either by using the table function on a dataframe, or by referencing a table object. The dataset we've used so far isn't a great one for mosaic plots, so a better example can be seen with the built-in `Titanic` dataset (`?Titanic`), using the highlighting option to make the categories more clearly distinct:
 
 ```
 require(vcd)
