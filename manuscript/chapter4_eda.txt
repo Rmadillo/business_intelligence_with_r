@@ -105,7 +105,6 @@ The dataset we've used so far in this recipe isn't a great one for mosaic plots 
 
 ```
 require(vcd)
-
 pairs(Titanic, highlighting=2)
 ```
 
