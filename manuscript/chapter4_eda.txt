@@ -37,15 +37,10 @@ bike_share_daily = read.table(unz("Bike-Sharing-Dataset.zip", "day.csv"),
     "integer", "integer", "integer"), sep=",", header=TRUE)
 
 levels(bike_share_daily$season) = c("Winter", "Spring", "Summer", "Fall")
-
 levels(bike_share_daily$workingday) = c("No", "Yes")
-
 levels(bike_share_daily$holiday) = c("No", "Yes")
-
 bike_share_daily$mnth = ordered(bike_share_daily$mnth, 1:12)
-
 levels(bike_share_daily$mnth) = c(month.abb)
-
 levels(bike_share_daily$yr) = c(2011, 2012)
 ```
 
