@@ -97,13 +97,12 @@ If you’re exploring trends, it’s good habit to not start with an OLS/linear 
 
 ### Segmented linear trends
 
-Sometimes you do want to see a linear trend, but know (or suspect) that there are changes in the trend, as seen above in the air temperature-based plots. We’ll explore ways to evaluate change points later, but for now we’ll just quickly plot a segmented linear trend line. We'll allow the `segmented` package to choose the optimal breakpoint for us, after we specify approximately where we think it is with the `psi` option:
+Sometimes you do want to see a linear trend, but know (or suspect) that there are changes in the trend. We’ll explore ways to evaluate change points later, but for now we’ll just quickly plot a segmented linear trend line. We'll allow the `segmented` package to choose the optimal breakpoint for us, after we specify approximately where we think it is with the `psi` option:
 
 ```
 require(segmented)
 
 bike_segment = segmented(lm(cnt~atemp, data=bike_share_daily), ~atemp, psi=0.6)
-
 bike_segment$psi
 
            Initial     Est.     St.Err
