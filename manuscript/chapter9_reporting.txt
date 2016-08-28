@@ -100,10 +100,18 @@ Case Start Time: `r vs$Date_Time_ct[1]`
    
 | *Vital* | *Trend up to current time:* `r curr_time`  | *Distribution* | 
 | ------- | ------- | ------- |
-| Heart Rate | `r sparkline(vs$HR, width=250, height=60)` | `r sparkline(vs$HR, width=100, height=60, type="box")` | 
-| Pulse | `r sparkline(vs$Pulse, width=250, height=60)` | `r sparkline(vs$Pulse, width=100, height=40, type="box")` | 
-| Minute Volume | `r sparkline(vs$Minute.Volume, width=250, height=60, normalRangeMin=5, normalRangeMax=8, drawNormalOnTop=T, normalRangeColor="lightgreen")` | `r sparkline(vs$Minute.Volume, width=100, height=40, type="box")` | 
-| Tidal Volume | `r sparkline(vs$Tidal.Volume, width=250, height=60, normalRangeMin=280, normalRangeMax=400, drawNormalOnTop=T, normalRangeColor="lightgreen", fillColor="transparent")` | `r sparkline(vs$Tidal.Volume, width=100, height=60, type="box")` | 
+| Heart Rate | `r sparkline(vs$HR, width=250, height=60)` | `r sparkline(vs$HR,
+ width=100, height=60, type="box")` | 
+| Pulse | `r sparkline(vs$Pulse, width=250, height=60)` | `r sparkline(vs$Pulse,
+ width=100, height=40, type="box")` | 
+| Minute Volume | `r sparkline(vs$Minute.Volume, width=250, height=60,
+ normalRangeMin=5,normalRangeMax=8, drawNormalOnTop=T,
+  normalRangeColor="lightgreen")` | `r sparkline(vs$Minute.Volume, width=100,
+  height=40, type="box")` | 
+| Tidal Volume | `r sparkline(vs$Tidal.Volume, width=250, height=60,
+ normalRangeMin=280, normalRangeMax=400, drawNormalOnTop=T,
+ normalRangeColor="lightgreen", fillColor="transparent")` | `r 
+ sparkline(vs$Tidal.Volume, width=100, height=60, type="box")` | 
 
 <small>*Green bands show normal ranges.*</small>  
 ~~~~~~~~
