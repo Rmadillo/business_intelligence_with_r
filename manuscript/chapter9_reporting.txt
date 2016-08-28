@@ -80,7 +80,8 @@ require(sparkline)
 require(lubridate)
 
 # 10 minute section of vital signs data from University of Queensland
-vs = read.csv("https://outbox.eait.uq.edu.au/uqdliu3/uqvitalsignsdataset/_uqvitalsignsdata/case20/fulldata/uq_vsd_case20_fulldata_10.csv", header=T)
+vs = read.csv("https://outbox.eait.uq.edu.au/uqdliu3/uqvitalsignsdataset/
+  _uqvitalsignsdata/case20/fulldata/uq_vsd_case20_fulldata_10.csv", header=T)
 
 # convert _ to . in case time and make into date time class 
 # Date just defaults to current day since there's no date field in data
@@ -89,13 +90,13 @@ vs$Case_Time_ct = as.POSIXct(vs$Case_Time, format = "%H:%M:%OS")
 
 # Use start time from data set, create object for latest time
 vs$Date_Time_ct = vs$Case_Time_ct + hours(11) + minutes (28)
-curr_time = substr(as.character(vs$Date_Time_ct[length(vs$Date_Time_ct)]), 12, 21)
+curr_time = substr(as.character(vs$Date_Time_ct[length(vs$Date_Time_ct)]),
+  12, 21)
 ```
 
 #### Patient MRN: **123456789**   
 <br>  
 Case Start Time: `r vs$Date_Time_ct[1]`  
-<br>  
    
 | *Vital* | *Trend up to current time:* `r curr_time`  | *Distribution* | 
 | ------- | ------- | ------- |
