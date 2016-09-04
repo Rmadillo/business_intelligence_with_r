@@ -335,7 +335,6 @@ A second typical type of map is a choropleth, and again, it can appear deceptive
 ```
 require(choroplethr)
 require(choroplethrMaps)
-
 data(df_pop_county)
 
 county_choropleth(df_pop_county)
