@@ -261,11 +261,9 @@ We'll use the `googleVis` package to create a mimic of his famous chart.
 
 ```
 # load the googleVis package
-
 library(googleVis)
 
 # load the data (an excerpt of data from gapminder.org)
-
 rosling_data = read.csv("https://raw.githubusercontent.com/Rmadillo/
   business_intelligence_with_r/master/manuscript/code/rosling_data.csv")
   
