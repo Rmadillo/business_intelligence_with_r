@@ -313,11 +313,9 @@ Although it's a relatively old tool, cluster analysis has advanced with the deve
 
 ### Grouping observations with hierarchical clustering
 
-Hierarchical clustering can be a useful way to summarize high-dimensional data, but results can be strongly dependent on the clustering method. Ward’s, average, and centroid methods tend to be the best places to start. 
+Hierarchical clustering can be a useful way to summarize high-dimensional data, but results can be strongly dependent on the clustering method. Ward’s, average, and centroid methods tend to be the best places to start. Hierarchical cluster analysis tools are built into the `base` installation, so no specific packages are required here. 
 
-Hierarchical cluster analysis tools are built into the `base` installation, so no specific packages are required here. 
-
-Typically, variables to cluster on are scaled (usually to mean 0 and sd 1), a distance matrix is created on the scaled data, and a clustering method is applied to the distance matrix. Since the set of descriptive variables in this data set are all on the same scale (i.e., a set of ratios), we don't need to scale this data. We'll use Ward's clustering method here with the Spanish banks dataset, which aims to create compact clusters by minimizing variance.
+Typically, variables to cluster on are scaled (usually to mean 0 and sd 1), a distance matrix is created on the scaled data, and a clustering method is applied to the distance matrix. Since the set of descriptive variables in this data set are all on the same scale (i.e., a set of ratios), we don't need to scale this data, so we'll start by creating the distance matrix. We'll use Ward's clustering method here, which aims to create compact clusters by minimizing variance.
 
 ```
 banks_dist = dist(banks[,3:11])
