@@ -268,7 +268,7 @@ ggplot(variances, aes(PCs, var_cumsum)) +
 
 ### nMDS for Categories: Correspondence Analysis
 
-Correspondence analysis (CA) is a special case of nMDS, serving essentially the same purpose for categorical variables. It's very useful for visualizing relationships within contingency tables, particularly when mosaic plots are too noisy. There are several packages that can perform CA, but the aptly named `ca` package provides a good, simple way to do it. We'll use the `smoke` dataset built into `ca`, which is a fake dataset on smoking habits (none, light, medium, heavy) among senior managers (SM), junior managers (JM), senior employees (SE), junior employees (JE), and secretaries (SC).
+Correspondence analysis (CA) is a special case of nMDS, serving the same purpose for categorical variables. It's very useful for visualizing relationships within contingency tables, particularly when mosaic plots are too noisy. There are several packages that can perform CA, but the aptly named `ca` package provides a good, simple way to do it. We'll use the `smoke` dataset built into `ca`, which is a fake dataset on smoking habits (none, light, medium, heavy) among senior managers (SM), junior managers (JM), senior employees (SE), junior employees (JE), and secretaries (SC).
 
 ```
 require(ca)
