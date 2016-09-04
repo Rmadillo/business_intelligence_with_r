@@ -1,4 +1,5 @@
 about.txt
+install_packages.txt
 Introduction.txt
 chapter1_fullproj.txt
 chapter2_getdata.txt
