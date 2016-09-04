@@ -272,7 +272,6 @@ Correspondence analysis (CA) is a special case of nMDS, serving essentially the 
 
 ```
 require(ca)
-
 smoke_ca = ca(smoke)
 
 summary(smoke_ca)
