@@ -209,3 +209,8 @@ energy_use_prediction_widget
 
 # Save the widget as a stand-alone html file to Results folder
 saveWidget(energy_use_prediction_widget, "energy_use_prediction_widget.html")
+
+# Set the working directory back to normal
+setwd("~/")
+
+##### End of File #####
