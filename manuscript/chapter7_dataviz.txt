@@ -80,20 +80,16 @@ To demonstrate parallel coordinate plots, we’ll use a dataset on a set of fina
 
 ```
 require(GGally)
-require(gdata)
 
-qb_url = "http://ciberconta.unizar.es/leccion/multivar/QUIEBRA.XLS"
-
-quiebra_download = read.xls(qb_url, sheet=1, header=TRUE, 
-  stringsAsFactors=FALSE)
-
-banks = quiebra_download[,2:12]
+banks = read.csv("https://raw.githubusercontent.com/Rmadillo/
+  business_intelligence_with_r/master/manuscript/code/quiebra.csv",
+  encoding = "UTF-8", stringsAsFactors = FALSE, header = TRUE)
 ```
 
 `GGally` has a parallel coordinates plot function that’s simple to use, albeit difficult to customize. Still, it gets the job done; here are each of the nine dimensions (variables) plotted, colored by whether the bank remained solvent (light blue) or not (dark blue).
 
 ```
-ggparcoord(data=banks, columns=c(2:10), groupColumn=11, 
+ggparcoord(data=banks, columns=c(3:11), groupColumn=12, 
   scale="globalminmax", alphaLines=0.5)
 ```
 
@@ -102,7 +98,7 @@ ggparcoord(data=banks, columns=c(2:10), groupColumn=11,
 A neat feature of `ggparcoord` is the ability to put boxplots on the background of the plot:
 
 ```
-ggparcoord(data=banks, columns=c(2:10), groupColumn=11, 
+ggparcoord(data=banks, columns=c(3:11), groupColumn=12, 
   scale="globalminmax", boxplot=TRUE, alphaLines=0.3)
 ```
 
