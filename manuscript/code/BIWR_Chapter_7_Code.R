@@ -63,11 +63,11 @@ qb_url = "http://ciberconta.unizar.es/leccion/multivar/QUIEBRA.XLS"
 
 quiebra_download = read.xls(qb_url, sheet=1, header=TRUE, stringsAsFactors=FALSE)
 
-quiebra = quiebra_download[,2:12]
+banks = quiebra_download[,2:12]
 
-ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, scale="globalminmax", alphaLines=0.5)
+ggparcoord(data=banks, columns=c(2:10), groupColumn=11, scale="globalminmax", alphaLines=0.5)
 
-ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, scale="globalminmax", boxplot=TRUE, alphaLines=0.3)
+ggparcoord(data=banks, columns=c(2:10), groupColumn=11, scale="globalminmax", boxplot=TRUE, alphaLines=0.3)
 
 
 ### Peeking at multivariate data with `dplyr` and a bubblechart
