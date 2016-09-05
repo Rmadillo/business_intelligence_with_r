@@ -1,3 +1,13 @@
+##############################################################################################################
+# Business Intelligence with R
+# Dwight Barry
+# Chapter 1 Code: Entire project, code only
+#
+# https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_All_Code.R
+#
+##############################################################################################################
+
+
 
 #####################################################################
 # Business Intelligence with R
@@ -3140,7 +3150,7 @@ write(basket_rules_custom, file = "basket_rules_custom.csv", sep = ",", row.name
 
 
 
-# There is no non-.Rmd code in Chpater 9 #
+# There is no non-.Rmd code in Chapter 9 #
 
 
 
