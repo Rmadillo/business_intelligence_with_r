@@ -30,6 +30,10 @@ The nMDS analysis is largely automated in the `vegan` package using the `metaMDS
 ```
 require(vegan)
 
+banks = read.csv("https://raw.githubusercontent.com/Rmadillo/
+ business_intelligence_with_r/master/manuscript/code/quiebra.csv",
+ encoding = "UTF-8", stringsAsFactors = FALSE, header = TRUE)
+
 banks_mds = metaMDS(banks[,3:11], distance="euclidean", autotransform=FALSE, 
   noshare=FALSE, wascores=FALSE)
  
@@ -51,7 +55,7 @@ The plot that is built from this algorithm is the heart of nMDS analysis. Catego
 banks.stress = round(banks_mds$stress, digits=2)
 
 # Set up color scheme
-groups = ifelse(banks$Solvente == 0, "darkred", "blue")
+groups = ifelse(banks$Output == 0, "darkred", "blue")
 
 # Create an empty plot
 ordiplot(banks_mds, type="n", xaxt="n", yaxt="n", xlab=" ", ylab=" ", 
@@ -200,7 +204,7 @@ While technically any number of contours can be plotted, in practice more than t
 PCA is often used as an exploratory technique in similar ways to nMDS, and in some cases where your data have similar scales and there are linear combinations between the variables, it can sometimes prove more powerful. If the assumptions can be justified, PCA has the added benefit of being able to provide dimension reduction through linear combinations of the original variables, in which case it can be used as input to other tools, such as regression.
 
 ```
-banks_pca = princomp(banks[,2:10], cor=TRUE)
+banks_pca = princomp(banks[,3:11], cor=TRUE)
 
 summary(banks_pca, loadings=TRUE)
 
@@ -403,7 +407,7 @@ bank_clusters
 62  4
 
 # Show variable medians for each group
-aggregate(banks[,2:10], by=list(cluster=bank_clusters), median)
+aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
 
   cluster      R1      R2      R3     R4      R5      R6      R7      R8       R9
 1       1 0.39265 0.26210 0.40725 0.0203  0.0042  0.1002  0.0044 0.87650  0.00955
@@ -435,7 +439,7 @@ To run either analysis, you start with the number of groups (*k*) in which you w
 To run PAM with *k*=2:
 
 ```
-banks_pam = pam(banks[,2:10], k=2)
+banks_pam = pam(banks[,3:11], k=2)
 
 banks_pam
 
@@ -461,7 +465,7 @@ Available components:
 To run kMeans with *k*=2:
 
 ```
-banks_kmeans = kmeans(banks[,2:10], centers=2, nstart=50)
+banks_kmeans = kmeans(banks[,3:11], centers=2, nstart=50)
 
 banks_kmeans
 
@@ -540,7 +544,7 @@ plot(banks_kmeans, data=banks, class="Output", xlab="", ylab="")
 The `clusGap` function in the `cluster` package compares a set of observed cluster sizes with a bootstrapped sample to evaluate the difference between actual and expected for a given number of clusters. That distance is the Gap statistic; the mathematically optimal number of clusters according to this approach is the smallest number within one standard error (`SE.sim`) of the smallest gap’s value (`gap`). You can specify whether to use `kmeans` or `pam` in the `FUNcluster` option. 
 
 ```
-banks_gap = clusGap(banks[,2:10], FUNcluster=pam, K.max=10, B=500)
+banks_gap = clusGap(banks[,3:11], FUNcluster=pam, K.max=10, B=500)
 
 banks_gap_df = as.data.frame(banks_gap$Tab)
 
@@ -961,7 +965,7 @@ Outliers are easy enough to explore with standard EDA methds when you have three
 ```
 require(mvoutlier)
 
-quiebra_outliers = uni.plot(banks[,2:10], symb = T)
+quiebra_outliers = uni.plot(banks[,3:11], symb = T)
 ```
 
 ![](images/mvout_quiebra.png)
@@ -1014,7 +1018,7 @@ A more recently-developed outlier algorithm is the local outlier factor (lof), w
 require(DMwR)
 
 # Calculate the local outlier factor values
-banks$lof = lofactor(banks[,2:10], k=4)
+banks$lof = lofactor(banks[,3:11], k=4)
 
 # Plot the lof results interactively
 p_lof = ggplot(banks, aes(lof, text = paste("Bank: ",
