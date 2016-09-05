@@ -57,13 +57,8 @@ calendarHeat(bike_share_daily$dteday, bike_share_daily$casual, varname="Casual D
 ### Parallel coordinates plots
 
 require(GGally)
-require(gdata)
 
-qb_url = "http://ciberconta.unizar.es/leccion/multivar/QUIEBRA.XLS"
-
-quiebra_download = read.xls(qb_url, sheet=1, header=TRUE, stringsAsFactors=FALSE)
-
-banks = quiebra_download[,2:12]
+banks = read.csv("https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/quiebra.csv", encoding = "UTF-8", stringsAsFactors = FALSE, header = TRUE)
 
 ggparcoord(data=banks, columns=c(2:10), groupColumn=11, scale="globalminmax", alphaLines=0.5)
 
