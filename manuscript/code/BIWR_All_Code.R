@@ -2348,17 +2348,12 @@ calendarHeat(bike_share_daily$dteday, bike_share_daily$casual, varname="Casual D
 ### Parallel coordinates plots
 
 require(GGally)
-require(gdata)
 
-qb_url = "http://ciberconta.unizar.es/leccion/multivar/QUIEBRA.XLS"
+banks = read.csv("https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/quiebra.csv", encoding = "UTF-8", stringsAsFactors = FALSE, header = TRUE)
 
-quiebra_download = read.xls(qb_url, sheet=1, header=TRUE, stringsAsFactors=FALSE)
+ggparcoord(data=banks, columns=c(3:11), groupColumn=12, scale="globalminmax", alphaLines=0.5)
 
-quiebra = quiebra_download[,2:12]
-
-ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, scale="globalminmax", alphaLines=0.5)
-
-ggparcoord(data=quiebra, columns=c(2:10), groupColumn=11, scale="globalminmax", boxplot=TRUE, alphaLines=0.3)
+ggparcoord(data=banks, columns=c(3:11), groupColumn=12, scale="globalminmax", boxplot=TRUE, alphaLines=0.3)
 
 
 ### Peeking at multivariate data with `dplyr` and a bubblechart
@@ -2642,7 +2637,9 @@ bike_theft_interactive
 
 require(vegan)
 
-banks_mds = metaMDS(banks[,2:10], distance="euclidean", autotransform=FALSE, noshare=FALSE, wascores=FALSE)
+banks = read.csv("https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/quiebra.csv", encoding = "UTF-8", stringsAsFactors = FALSE, header = TRUE)
+
+banks_mds = metaMDS(banks[,3:11], distance="euclidean", autotransform=FALSE, noshare=FALSE, wascores=FALSE)
 
 # You may need to mess with par for the margins. Note: Clearing the 
 # plots in RStudio (broom icon) returns par to defaults, which is
@@ -2690,7 +2687,7 @@ stressplot(banks_mds, xaxt="n", yaxt="n")
 
 ### Vector mapping influential variables over the nMDS plot
 
-banks_vectors = envfit(banks_mds, banks[,2:10])
+banks_vectors = envfit(banks_mds, banks[,3:11])
 
 ordiplot(banks_mds, type="n", xaxt="n", yaxt="n", xlab=" ", ylab=" ", display="sites")
 
@@ -2722,7 +2719,7 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", col=c("darkred","blu
 
 ### Principal Components Analysis (PCA)
 
-banks_pca = princomp(banks[,2:10], cor=TRUE)
+banks_pca = princomp(banks[,3:11], cor=TRUE)
 
 summary(banks_pca, loadings=TRUE)
 
@@ -2765,11 +2762,11 @@ plot(smoke_ca, arrows=c("F","T"), mass = c(TRUE, TRUE))
 
 ## Grouping observations with hierarchical clustering
 
-banks_dist = dist(banks[,2:10])
+banks_dist = dist(banks[,3:11])
 
 banks_hclust = hclust(banks_dist, method="ward.D")
 
-plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, row.names(banks), sep="-"))
+plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, banks$NUMERO, sep="-"))
 
 
 ### Plotting a cluster dendrogram with ggplot
@@ -2780,7 +2777,7 @@ ggplot() +
     draw.dendrogram(banks_hclust) +
     scale_color_manual(name="Status: ", values=c("darkred", "blue"),
         labels=c("Bankrupt ", "Solvent ")) +
-    geom_text(aes(x=0.75, y=banks_hclust$order, label=row.names(banks), 
+    geom_text(aes(x=0.75, y=banks_hclust$order, label=banks$NUMERO, 
         color=factor(banks$Output)), size=4) +
     ggtitle("Cluster Dendrogram (Ward's) - Spanish Banking Crisis") +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -2788,7 +2785,7 @@ ggplot() +
         axis.title = element_blank(), axis.text = element_blank(),
         axis.ticks = element_blank(), legend.position="top")
 
-banks_scaled = scale(banks[,2:10])
+banks_scaled = scale(banks[,3:11])
 
 banks_dist_sc = dist(banks_scaled)
 
@@ -2799,7 +2796,7 @@ ggplot() +
     draw.dendrogram(banks_hclust_sc) +
     scale_color_manual(name="Status: ", values=c("darkred", "blue"),
         labels=c("Bankrupt ", "Solvent ")) +
-    geom_text(aes(x=0.75, y=banks_hclust$order, label=row.names(banks), 
+    geom_text(aes(x=0.75, y=banks_hclust$order, label=banks$NUMERO, 
         color=factor(banks$Output)), size=4) +
     ggtitle("Cluster Dendrogram (Ward's) - Spanish Banking Crisis") +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -2815,7 +2812,7 @@ require(NeatMap)
 # nMDS results from above
 banks_pos = banks_mds$points 
 
-draw.dendrogram3d(banks_hclust, banks_pos, labels=row.names(banks), label.colors=banks$Solvente+3, label.size=1)
+draw.dendrogram3d(banks_hclust, banks_pos, labels=banks$NUMERO, label.colors=banks$Solvente+3, label.size=1)
 
 
 ## How to partition the results of a hierarchical cluster analysis
@@ -2827,10 +2824,10 @@ bank_clusters = cutree(banks_hclust, k=2)
 table(bank_clusters)
 
 # Show variable medians for each group
-aggregate(banks[,2:10], by=list(cluster=bank_clusters), median)
+aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
 
 # Plot dendrogram
-plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, row.names(banks), sep="-"), cex=0.9)
+plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, banks$NUMERO, sep="-"), cex=0.9)
 
 # Add cluster boxes to dendrogram
 rect.hclust(banks_hclust, k=2)
@@ -2840,11 +2837,11 @@ rect.hclust(banks_hclust, k=2)
 
 require(cluster)
 
-banks_pam = pam(banks[,2:10], k=2)
+banks_pam = pam(banks[,3:11], k=2)
 
 banks_pam
 
-banks_kmeans = kmeans(banks[,2:10], centers=2, nstart=50)
+banks_kmeans = kmeans(banks[,3:11], centers=2, nstart=50)
 
 banks_kmeans
 
@@ -2865,7 +2862,7 @@ plot(banks_kmeans, data=banks, class="Output", xlab="", ylab="")
 
 ## How to choose an optimal number of clusters with bootstrapping
 
-banks_gap = clusGap(banks[,2:10], FUNcluster=pam, K.max=10, B=500)
+banks_gap = clusGap(banks[,3:11], FUNcluster=pam, K.max=10, B=500)
 
 banks_gap_df = as.data.frame(banks_gap$Tab)
 
@@ -3009,7 +3006,7 @@ adjustedRandIndex(bc_wisc$Diagnosis, bc_wisc$mclust_all)
 
 require(mvoutlier)
 
-quiebra_outliers = uni.plot(banks[,2:10], symb = T)
+quiebra_outliers = uni.plot(banks[,3:11], symb = T)
 
 # Assign outlier grouping to main data
 banks$mv_outlier = quiebra_outliers$outliers
@@ -3024,7 +3021,7 @@ require(ggplot2)
 require(plotly)
 
 p1 = ggplot(banks, aes(mv_md, text = paste("Bank: ", 
-        row.names(banks), "<br>Solvency: ", Output))) +
+        banks$NUMERO, "<br>Solvency: ", Output))) +
     xlab("Mahalanobis Distance") + 
     geom_histogram() + 
     facet_wrap(~mv_outlier, ncol=1, scales="free_y") 
@@ -3039,11 +3036,11 @@ uni.plot(bike_share_daily[,10:13], pch=as.numeric(bike_share_daily$weathersit))
 require(DMwR)
 
 # Calculate the local outlier factor values
-banks$lof = lofactor(banks[,2:10], k=4)
+banks$lof = lofactor(banks[,3:11], k=4)
 
 # Plot the lof results interactively
 p_lof = ggplot(banks, aes(lof, text = paste("Bank: ",
-        row.names(banks), "<br>Solvency: ", Output))) +
+        banks$NUMERO, "<br>Solvency: ", Output))) +
     xlab("Local Outlier Factor") + 
     geom_histogram() 
 
