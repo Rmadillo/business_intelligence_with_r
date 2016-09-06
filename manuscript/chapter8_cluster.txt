@@ -88,9 +88,7 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", col=c("darkred",
 
 ![](images/0815OS_05_nmds2.png)
 
-nMDS does not use the absolute values of the variables, but rather their rank orders. While this loses some information contained in the raw data, the use of ranks omits some of the issues associated with using absolute distance (e.g., sensitivity to transformation and linearity), and as a result is a very flexible technique that works well with a variety of types of data. It's also particularly useful when there are a large number of predictors relative to the number of entities, where using actual values could easily lead to overfitting.
-
-If you need to describe it succinctly, say that nMDS creates a map of a similarity matrix. For example, a matrix of European inter-city distance (see `?eurodist`) creates an nMDS plot that closely reflects the distances and spatial direction between these cities:
+nMDS does not use the absolute values of the variables, but rather their rank orders. While this loses some information contained in the raw data, the use of ranks omits some of the issues associated with using absolute distance (e.g., sensitivity to transformation and linearity), and as a result is a very flexible technique that works well with a variety of types of data. It's also particularly useful when there are a large number of predictors relative to the number of entities, where using actual values could easily lead to overfitting. In short, nMDS creates a map of a similarity matrix. For example, a matrix of European inter-city distance (see `?eurodist`) creates an nMDS plot that closely reflects the distances and spatial direction between these cities:
 
 ```
 # You may need to mess with par for the margins
