@@ -35,7 +35,6 @@ Due to page width constraints, some of the code *as printed in the book* have un
 | |
 | |
 | |
-| |
 
 {footnotes-off}
 
