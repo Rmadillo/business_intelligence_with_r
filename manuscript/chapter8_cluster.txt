@@ -31,8 +31,8 @@ The nMDS analysis is largely automated in the `vegan` package using the `metaMDS
 require(vegan)
 
 banks = read.csv("https://raw.githubusercontent.com/Rmadillo/
- business_intelligence_with_r/master/manuscript/code/quiebra.csv",
- encoding = "UTF-8", stringsAsFactors = FALSE, header = TRUE)
+  business_intelligence_with_r/master/manuscript/code/quiebra.csv",
+  encoding = "UTF-8", stringsAsFactors = FALSE, header = TRUE)
 
 banks_mds = metaMDS(banks[,3:11], distance="euclidean", autotransform=FALSE, 
   noshare=FALSE, wascores=FALSE)
@@ -159,7 +159,6 @@ ordiplot(banks_mds, type="n", xaxt="n", yaxt="n", xlab=" ", ylab=" ",
 orditorp(banks_mds, display="sites", col=groups, air=0.01, cex=0.75)
 
 plot(banks_vectors, col="gray40", cex=0.75)
-
 legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n", 
   col=c("darkred","blue"), title=paste0("Stress: ", banks.stress), 
   pch=21, pt.bg=c("darkred", "blue"), cex=0.75)
