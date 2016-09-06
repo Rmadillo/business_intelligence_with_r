@@ -1,6 +1,5 @@
 # About 
 
-|  |
 
 ### About the Author
 
@@ -42,9 +41,6 @@ G> R code to acquire the non-package data used in this book is also available fr
 {footnotes-off}
 
 ### Contact 
-
-|  |
-
 
 {icon=github}
 G> [Rmadillo](https://github.com/Rmadillo/)
