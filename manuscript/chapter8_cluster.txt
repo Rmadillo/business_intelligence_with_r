@@ -323,7 +323,7 @@ banks_dist = dist(banks[,3:11])
 
 banks_hclust = hclust(banks_dist, method="ward.D")
 
-plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, row.names(banks), sep="-"))
+plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, banks$NUMERO, sep="-"))
 ```
 
 ![](images/0815OS_05_01.png)
@@ -342,7 +342,7 @@ ggplot() +
   draw.dendrogram(banks_hclust) +
   scale_color_manual(name="Status: ", values=c("darkred", "blue"),
     labels=c("Bankrupt ", "Solvent ")) +
-  geom_text(aes(x=0.75, y=banks_hclust$order, label=row.names(banks), 
+  geom_text(aes(x=0.75, y=banks_hclust$order, label=banks$NUMERO, 
     color=factor(banks$Output)), size=4) +
   ggtitle("Cluster Dendrogram (Ward's) - Spanish Banking Crisis") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -379,7 +379,7 @@ require(NeatMap)
 
 banks_pos = banks_mds$points # nMDS results from above
 
-draw.dendrogram3d(banks_hclust, banks_pos, labels=row.names(banks), 
+draw.dendrogram3d(banks_hclust, banks_pos, labels=banks$NUMERO, 
   label.colors=banks$Output+3, label.size=1)
 ```
 
@@ -411,7 +411,7 @@ aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
 2       2 0.36585 0.23295 0.38455 0.0152 -0.0380 -0.9390 -0.0397 1.30815 -0.01630
 
 # Plot dendrogram
-plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, row.names(banks), sep="-"), 
+plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, banks$NUMERO, sep="-"), 
    cex=0.9)
 
 # Add cluster boxes to dendrogram
@@ -987,7 +987,7 @@ require(ggplot2)
 require(plotly)
   
 p1 = ggplot(banks, aes(mv_md, text = paste("Bank: ",
-    row.names(banks), "<br>Solvency: ", Output))) +
+    banks$NUMERO, "<br>Solvency: ", Output))) +
   xlab("Mahalanobis Distance") + 
   geom_histogram() + 
   facet_wrap(~mv_outlier, ncol=1, scales="free_y") 
@@ -1019,7 +1019,7 @@ banks$lof = lofactor(banks[,3:11], k=4)
 
 # Plot the lof results interactively
 p_lof = ggplot(banks, aes(lof, text = paste("Bank: ",
-    row.names(banks), "<br>Solvency: ", Output))) +
+    banks$NUMERO, "<br>Solvency: ", Output))) +
   xlab("Local Outlier Factor") + 
   geom_histogram() 
 
