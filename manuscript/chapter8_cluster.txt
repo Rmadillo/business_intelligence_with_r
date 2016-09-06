@@ -1285,7 +1285,7 @@ We can see that there are only 11 distinct items in this data set (must be a ver
 itemFrequencyPlot(basket_trans, topN=11, type="absolute")
 ```
 
-![basket case](images/basket_freq.png)
+![](images/basket_freq.png)
 
 The `apriori` function takes a transaction object and creates a rule set using default confidence and support levels of 0.8 and 0.1, respectively, with no more than 10 items on any one side of a rule. Accepting the defaults makes the call as simple as `basket_rules = apriori(basket_trans)`, but you will likely want to modify those to expand the rule set. To do so requires setting the `parameter` function with the details in a list. The `minlen` default is set at 1, which means that items purchased by themselves will show up---if you want to exclude single-item purchases, set `minlen=2` here. Note that since there are a variety of possible target types (see `?ASparameter-classes`), you need to specify that you are looking for rules. 
 
@@ -1381,7 +1381,7 @@ You can also create graph diagrams of a rule set, and move the nodes around to s
 plot(beer_rules, method="graph", interactive=T)
 ```
 
-![basket graph](images/basket_graph.png)
+![](images/basket_graph.png)
 
 To explore the rules in greater depth, you can write them to a text file to view outside of R using the `write` function. 
 
