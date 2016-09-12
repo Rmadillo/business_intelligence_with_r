@@ -54,7 +54,7 @@ pses2011 = read.table("http://www.tbs-sct.gc.ca/pses-saff/2011/data/
   2011_results-resultats.csv", sep=",", encoding="UTF-8")
 ```
 
-Note: this file has no header; in the next section, we'll download the Excel file with the documentation for this data and use that to create the header.
+Note: this file has no header; in a moment, we'll download the Excel file with the documentation for this data and use that to create the header.
 
 
 ### Reading big files with data.table
@@ -121,7 +121,7 @@ datasets = system.file("extdata/datasets.xlsx", package = "readxl")
 iris_xl = read_excel(datasets, sheet = 1)
 ```
 
-The `XLConnect` package makes it easy to read and write to and from Excel files. For sake of reproducibility and data permanency, you should always save data as plain text, e.g., as a csv, and not in proprietrary or non-text formats like Excel. So if you must write/save *into* Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
+The `XLConnect` package makes it easy to read and write to and from Excel files in Windows. For sake of reproducibility and data permanency, you should always save data as plain text, e.g., as a csv, and not in proprietrary or non-text formats like Excel. So if you must write/save *into* Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
 
 ```
 # Load the package
@@ -183,7 +183,7 @@ A really useful short-cut to get spreadsheet or table data with a header row int
 my_data_frame = read.table("clipboard", sep="\t", header=TRUE)
 ```
 
-For a small amount of data, many R users would make vectors and create a data frame from them, e.g.,:
+For a small amount of data, many R users make vectors and create a data frame from them, e.g.,:
 
 ```
 # Fake data in vectors
@@ -244,7 +244,7 @@ FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list),
 
 ### Reading JSON files 
 
-JSON data can be really useful for nested data, so it is becoming more popular for data visualizations (e.g., in d3-based web apps) and other applications where the usual row *x* column format would make for a large and unweidly data structure. Still, sometimes we need to work with these data structures in R, so reading them into a data frame is required. The `jsonlite` package is probably the best way to do this. 
+JSON data can be really useful for nested data, so it is becoming more popular for data visualizations (e.g., in d3-based web apps) and other applications where the usual tidy, *row x column* format would make for a large and unweidly data structure. Still, sometimes we need to work with these data structures in R, so reading them into a data frame is required. The `jsonlite` package is probably the best way to do this. 
 
 ```
 # Load the jsonlite package
@@ -293,7 +293,7 @@ As above, each variable in the data frame is in `chr` format, so you'll have to 
 
 ### Connecting to a database
 
-While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful—for ongoing and/or automated reporting, for one. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
+While those who work with server-based databases will typically manipulate the data in those environments before importing into R, there are times when having a direct link to the database can be useful---such as for ongoing and/or automated reporting or modeling. This recipe covers the basics of `RODBC`, one of the packages that allows you to use ODBC to connect R to your database. I've found the `sqldf` package (see the next few recipes) easier to use for working with database tables once you've connected, but as usual there are a variety of options in R—choose the one that works best for your workflow.
 
 As there are dozens of database platforms, all with their own system-specific drivers, we won't cover Data Source Name (DSN) setup in this book. Enterprise systems often have those already set up, but if not, your database admin and/or a search on stackoverflow can provide advice on setting up the proper drivers for your particular context for adding user or system DSN connections. As an example, this is how you might set up a user DSN in a Windows Server environment to access a SQL Server database:
 
@@ -411,7 +411,7 @@ require(sqldf)
 ```
 
 
-Creating a new database with sqldf is easy:
+Creating a new database with `sqldf` is easy:
 
 ```
 sqldf("attach 'PSES_database.sqlite' as new")
@@ -427,7 +427,8 @@ And now you can read R data frames into the database using `dbWriteTable`:
 
 ```
 # Write a data frame into a database table
-# options are connection name, name of the table to write, and name of the dataframe
+# options are connection name, name of the table to write,
+# and name of the dataframe
 dbWriteTable(connect, "pses2011", pses2011)
 ```
 
@@ -528,11 +529,11 @@ dbDisconnect(connect)
 
 SQLite was built intentionally to a be "lightweight" database, and being able to set it up and access it from entirely within R makes it perfect for occasional to moderate desktop use. As is the case with the many different flavors of SQL, there are nuances in SQLite (as we saw with the PRAGMA statement, above), but most basic uses remain the same across those different types of SQL.
 
-You can see a list of the SQL statements available with: 
-
-```
-.SQL92Keywords
-```
+K> **You can see a list of the SQL statements available using:** 
+K> 
+K> ```
+K> .SQL92Keywords
+K> ```
 
 More info on the way R interfaces with RDBMSs can be found on the homepage for the [DBI package](https://github.com/rstats-db/DBI), and details on SQLite can be found at its [homepage](http://www.sqlite.org/).  
 
@@ -561,7 +562,7 @@ pses_acr = sqldf("SELECT
   dbname="PSES_database.sqlite")
 ```
 
-You can join tables within the database as well before bringing it into R. For example, this code merges the main data table (`pses2011`) with the agency name/abbreviation table to create a dataframe called `pses2011-agency`:
+You can (and should!) join tables within the database before bringing it into R. For example, this code merges the main data table (`pses2011`) with the agency name/abbreviation table to create a dataframe called `pses2011-agency`:
 
 ```
 pses2011_agency = sqldf("SELECT
@@ -574,7 +575,13 @@ pses2011_agency = sqldf("SELECT
   dbname="PSES_db.sqlite")
 ```
 
-Don't forget to close the connection:  `dbDisconnect(connect)` or `close(connect)`.
+Don't forget to close the connection:  
+
+```
+dbDisconnect(connect)
+# or
+# close(connect)
+```
 
 Basically, `sqldf("SQL QUERY", dbname="NAME OF DATABASE")` is all you need to use SQLite within R, and it works on both databases and dataframes---if the latter, it's just `sqldf("SQL QUERY")`. It is important to note that unlike R, SQLite is not case sensitive, so be careful naming tables and columns---`a` and `A` are identical to SQLite. (SQL functions are in CAPS in the code examples in this book simply to distinguish them from table and column names, which are left in the same case that R sees them.)
 
@@ -625,6 +632,8 @@ set_config(use_proxy(url="YOUR_PROXY_URL", port="YOUR_PORT",
 
 There is a bewildering array of methods to access websites from within R, particularly while having to pass through a proxy, and most of them are obscure to even the most established quants. Thanks to `httr`, all of that complexity has been hidden behind a few simple functions—type `vignette("quickstart", package="httr")` if you want more information.
 
+Sometimes your proxy lets you through for some things but not others; this happens to me most frequently with `https` URLs. In that case, I remove the `s` and use `http`, and the connection is usually fine after that. 
+
 
 ### Scraping data from a web table
 
@@ -665,7 +674,7 @@ What about a case where you need a table that goes over many pages? For example,
 
 Obviously, cutting and pasting that would seriously suck.
 
-Here's how you can do it in R with a few lines of code. First, set up an R object that will iteratively list every one of the 189 web URLs:
+Here's how you can do it in R with a few lines of code. First, set up an R object that will iteratively list every one of the 524 web URLs:
 
 ```
 allpages = paste("http://projects.propublica.org/nursing-homes/findings/
@@ -700,7 +709,7 @@ Many data-oriented sites have APIs that make it easy to pull in data to R. Some 
 
 A good example of a typical API is via the US Census Bureau's American Community Survey (ACS). First, go to their [*Terms of Service* page](http://www.census.gov/data/developers/about/terms-of-service.html), and if you agree with those terms, click the **Request a KEY** button at the bottom of the left side menu bar. A pop-up will ask for your organization and email address (and agreement to the *Terms*, of course), and it will return a key to that email within a few minutes. 
 
-The `acs` R package provides the link between the API and R, and also provides a function to permanently install the key so you don't have to enter it every time you hit the API:
+The `acs` package provides the link between the ACS and R, and also provides a function to permanently install the key so you don't have to enter it every time you hit the API:
 
 ```
 require(acs)
@@ -777,7 +786,7 @@ Table C is just a systematic selection designating a survey response from each c
 
 Finally, Table D takes advantage of R's built-in data from the `datasets` package to generate a lookup table of states and state regions.
 
-I> `wakefield` is a new R package that will generate random datasets for you. In addition to the random data frame generation, it also has a nice function to visualize the distribution of NAs in a data frame. Check out [its GitHub site](https://github.com/trinker/wakefield) for more info.
+I> `wakefield` is a new R package that will generate random datasets for you. In addition to the random data frame generation, it also has a nice function to visualize the distribution of NAs and data types in a data frame (`?table_heat`). Check out [its GitHub site](https://github.com/trinker/wakefield) for more info.
 
 
 ## Writing files to disk
@@ -804,6 +813,12 @@ lapply(1:length(pses2011_split), function(i)
     row.names = FALSE))
 ```
 
+Sometimes, you've made a lot of changes to data you've loaded, particularly via changes in column classes, and you want to preserve that for future analysis within R. The `save` function is what you need:
+
+```
+save(pses2011, file="pses2011.Rdata")
+```
+
 If you want to save a data frame in XML format (at the cost of a larger file size!), use the `write.xml` function in the `kulife` package. 
 
 ```
@@ -819,4 +834,4 @@ iris_json
 sink()
 ```
 
-Note you can save memory by calling a function from a package using the `::` connector, which will run that function without having to load its home package. This can also be useful if you don't want to mask functions in already-loaded packages that have the same name. 
+Note you can save memory by calling a function from a package using the `::` connector, which will run that function without having to load its package. This can also be useful if you don't want to mask functions in already-loaded packages that have the same name. 
