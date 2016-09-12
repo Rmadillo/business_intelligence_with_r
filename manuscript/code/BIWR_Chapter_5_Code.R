@@ -10,7 +10,7 @@
 
 # install JAGS from http://mcmc-jags.sourceforge.net/ 
 
-# install.packages(rjags)
+# install.packages("rjags")
 # devtools::install_github("rasmusab/bayesian_first_aid")
 
 
