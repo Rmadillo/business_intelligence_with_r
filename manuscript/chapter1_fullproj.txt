@@ -34,7 +34,7 @@ Our purpose is to describe past monthly power usage and forecast potential usage
 
 First, we need to set up the working environment—this is generally easiest to do using the file system (see *Appendix 1*), but for sake of explanation and thoroughness, we'll do the entire process in this chapter within R. To ensure clarity and reproducibility, we need to set up a single directory for each project, with subfolders that contain and separate code, data, results, and so on. 
 
-Open RStudio. 
+Open **RStudio**. 
 
 R starts in the default directory, symbolized at the top of the console window as `~/`. 
 
@@ -85,7 +85,7 @@ require(dygraphs)
 Download the data from a zipped flat file (semi-colon delimted .txt format) on the UCI Machine Learning Repository:
 
 ```
-# Download the zip file into the data folder
+# Download the zip file into the data folder (note the line break here!)
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases/00235/
   household_power_consumption.zip", destfile = 
   "Data/household_power_consumption.zip")
@@ -114,7 +114,7 @@ str(power)
 The `Date` and `Time` variables were read in as characters, so we'll convert them to date and time classes, respectively, as well as create a new `DateTime` column:
 
 ```
-# Convert date to an ISO date 
+# Convert character date to an ISO date 
 power$Date = as.Date(power$Date, format="%d/%m/%Y")
 
 # Create a DateTime object
@@ -164,26 +164,23 @@ calendarHeat(power_day_missing$Date, power_day_missing$Count_Missing,
 
 You can view the actual values of missing data on each day by exploring the `power_day_missing` data frame. 
 
-The "recent" 4-5 day spans of missing data may be a little concerning since we want to perform automated forecasting. However, since we're aggregating to months and forecasting into months with very few missing values, we should be ok. But to make automatic forecasting work, we need to fill in those missing values. If we convert each missing value to 0, we'll definitely underestimate usage for those times. 
+The 4-5 day spans of missing data near the end of the time series may be a little concerning since we want to perform automated forecasting. However, since we're aggregating to months and forecasting into months with very few missing values, we should be ok. But to make automatic forecasting work, we need to fill in those missing values. If we convert each missing value to 0, we'll definitely underestimate usage for those times. 
 
-A reasonable first pass is to carry the last value forward, which we can do with the `na.locf` function in the `zoo` package. While other approaches are possible (and perhaps better, e.g., using some sort of mean or median value instead of the last value, or even a seasonal Kalman filter), we'll proceed with this option to keep the example simple. 
+A reasonable approach here is to carry the last value forward, which we can do with the `na.locf` function in the `zoo` package. While other approaches are possible (and perhaps better, e.g., using some sort of mean or median value instead of the last value, or even a seasonal Kalman filter), we'll proceed with this option to keep the example simple. 
 
 ```
 # Use zoo to perform interpolation for missing time series values
 power$Global_active_power_locf = na.locf(power$Global_active_power)
 
-# Compare the original and interpolated distributions
-# Reshape the two variables into long form for ggplot
+# Compare the original and interpolated distributions by
+# reshaping the two variables into long form for ggplot
 power_long = melt(power, id.vars= "DateTime", measure.vars=
   c("Global_active_power", "Global_active_power_locf"))
 
 # Create density plot
-density_plot = ggplot(power_long, aes(value, fill=variable, color=variable)) +
+ggplot(power_long, aes(value, fill=variable, color=variable)) +
   geom_density(alpha=0.75) +
   facet_wrap(~variable)
-
-# Display plot
-density_plot
 
 # Save density plot to Results folder
 # Note that ggave uses "dpi" to set image resolution
@@ -194,7 +191,7 @@ ggsave("Results/density_plot.png", width=6, height=4, dpi=600, units="in")
 
 The overall shape hasn't changed, though we can see a small spike at about 1 kW in the last-observation-carried-forward data. This should be fine for our purposes, as the overall pattern is essentially the same. 
 
-Now that we have a complete time series, we can determine total monthly use (kWh). While we're at it, we can calculate maximum demand for a given month (kW) over the period of record as an example of how to calculate multiple summaries at once. kWh measures use, i.e., how much energy is used, while kW measures demand. We're interested in usage, because that's how power companies charge us.
+Now that we have a complete time series, we can determine total monthly use (kWh). While we're at it, we can calculate maximum demand for a given month (kW) over the period of record as an example of how to calculate multiple summaries at once. kWh measures *use*, i.e., how much energy is used, while kW measures *demand*. We're interested in usage, because that's how power companies charge us.
 
 ```
 # Use dplyr to group by month
@@ -225,11 +222,8 @@ Plotting your data is the single most important part of analytics, so this book 
 
 ```
 # Create plot of total use by month
-total_use_plot = ggplot(power_monthly, aes(Month, Total_Use_kWh)) +
+ggplot(power_monthly, aes(Month, Total_Use_kWh)) +
   geom_line(col="blue", lwd=1) 
-
-# Display plot
-total_use_plot
 
 # Save plot as hi-res png to Results subfolder
 ggsave("Results/total_use_plot.png", width=6, height=4, dpi=600, units="in")
@@ -268,7 +262,7 @@ sink()
 # View the forecast plot
 plot(total_use_fc)
 
-# Save the plot to the Results folder
+# Save the base graphics plot to the Results folder
 # Note that resolution is called 'res' here
 png("Results/total_use_forecast.png", width=6, height=4, res=600, units="in")
 plot(total_use_fc)
@@ -293,8 +287,8 @@ use_df = data.frame(Total_Use = power_monthly$Total_Use_kWh,
 
 # Create a data frame for the forecast details
 # with a placeholder column for the original data
-use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, Upper_80 = 
-  total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
+use_fc = data.frame(Total_Use = NA, Forecast = total_use_fc$mean, 
+  Upper_80 = total_use_fc$upper[,1], Lower_80 = total_use_fc$lower[,1], 
   Upper_95 = total_use_fc$upper[,2], Lower_95 = total_use_fc$lower[,2])
 
 # Union the two data frames into one using rbind
@@ -346,6 +340,6 @@ W> Note: as I prefer to have the `.Rmd` file self-contained, I sometimes include
 
 ## Summary
 
-The entire analytics workflow for this project—from directory set-up through creating a forecast model and developing the final report—took only about 50 lines of code, excluding comments and spaces. We've seen in this chapter how much can be accomplished in just a few lines of R code; there are very few languages in which you really can do this much so succinctly.   
+The entire analytics workflow for this project---from directory set-up through creating a forecast model and developing the final report---took only about 50 lines of code, excluding comments and spacing. We've seen in this chapter how much can be accomplished in just a few lines of R code; there are very few languages in which you really can do this much so succinctly.   
 
 The rest of this book provides code snippets, examples, and full recipes for using R throughout the main portions of the analytics workflow: data acquisition through exploration and reporting. 
