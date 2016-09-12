@@ -6,13 +6,14 @@ install.packages(c("abd", "acs", "arules", "arulesViz", "asympTest", "beanplot",
  "clustvarsel", "data.table", "dbscan", "devtools", "DMwR", "dplyr", "DT",
  "dygraphs", "epitools", "eurostat", "extremeStat", "flexdashboard", "forecast",
  "gamlss.tr", "gdata", "GGally", "ggExtra", "ggplot2", "ggseas", "googleVis",
- "gridExtra", "htmlTable", "htmlwidgets", "httr", "jsonlite", "kulife", "leaflet",
- "likert", "lubridate", "maps", "maptools", "mc2d", "mclust", "mgcv", "mvoutlier",
- "NeatMap", "orddom", "pairsD3", "polycor", "plotly", "pscl", "psych", "qcc",
- "quantreg", "RColorBrewer", "readxl", "reshape2", "rjags", "rmarkdown", "RODBC",
- "scales", "segmented", "shiny", "simpleboot", "sqldf", "strucchange", "survival",
- "survminer", "tidyr", "tolerance", "useful", "vcd", "vegan", "VIM", "XLConnect",
- "XML", "xtable", "zipcode", "zoo"), dependencies = TRUE)
+ "gridExtra", "htmlTable", "htmlwidgets", "httr", "jsonlite", "kulife",
+ "leaflet", "likert", "lubridate", "maps", "maptools", "mc2d", "mclust", "mgcv",
+ "mvoutlier", "NeatMap", "orddom", "pairsD3", "polycor", "plotly", "pscl",
+ "psych", "qcc", "quantreg", "RColorBrewer", "readxl", "reshape2", "rjags",
+ "rmarkdown", "RODBC", "scales", "segmented", "shiny", "simpleboot", "sqldf",
+ "strucchange", "survival", "survminer", "tidyr", "tolerance", "useful", "vcd",
+ "vegan", "VIM", "XLConnect", "XML", "xtable", "zipcode", "zoo"), 
+ dependencies = TRUE)
 
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("graph", "Rgraphviz", "GenomicRanges", "BiocInstaller")) 
