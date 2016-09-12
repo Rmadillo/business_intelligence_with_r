@@ -1,1 +1,2 @@
+install_packages.txt
 chapter1_fullproj.txt
