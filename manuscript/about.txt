@@ -24,19 +24,20 @@ locale:
 
 Version 0.9.9 for final review, September 2016
 
+{footnotes-off}
 
 ### Code and Data
 
 {icon=download}
-G> The code is available from the book's [GitHub site](https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code).
+G> The code is available from the book's GitHub site: https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code.
 
 Due to page width constraints, some lines of code *as printed in the book* have unnecessary line breaks, primarily in long URLs to acquire data or code from the web. The book's code on Github does not contain these line breaks, so it should work as-is. So, **if you cut & paste from the book, note that long URLs may require that you remove a line break for the code to function correctly**.  
 
-| |
-| |
-| |
+### Cover Image
 
-{footnotes-off}
+The [cover photo](https://pixabay.com/en/toronto-ontario-canada-road-1439133/) was taken by [Gerd Altmann](https://pixabay.com/en/users/geralt-9301/), and was released as [CC0](https://pixabay.com/en/service/terms/#usage). 
+
+| |  
 
 ### Contact 
 
