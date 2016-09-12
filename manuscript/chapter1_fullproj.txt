@@ -325,6 +325,8 @@ R markdown is a brilliant way to create documentation and reports in one shot. F
 
 ![](images/biwr_ch1_knitr_ex.png)
 
+|  |  
+
 To run an `.Rmd` file programatically, the `rmarkdown` package allows you to run it from the console, a command line, or a "make" file (see *Appendix 1*) via the `render` function:
 
 ```
