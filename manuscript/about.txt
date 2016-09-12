@@ -29,7 +29,8 @@ Version 0.9.9 for final review, September 2016
 ### Code and Data
 
 {icon=download}
-G> The code is available from the book's GitHub site: https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code.
+G> The code is available from the book's GitHub site: 
+G> https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code
 
 Due to page width constraints, some lines of code *as printed in the book* have unnecessary line breaks, primarily in long URLs to acquire data or code from the web. The book's code on Github does not contain these line breaks, so it should work as-is. So, **if you cut & paste from the book, note that long URLs may require that you remove a line break for the code to function correctly**.  
 
