@@ -19,7 +19,7 @@ Factors, characters, dates, values that are out-of-range for the measurement, in
 
 We saw the frequent use of `str` in the *Chapter 1* example to understand our dataset and to ensure our changes worked as expected. `head` (and `tail`), `summary`, and `complete.cases` are a few other important functions that help you understand your data set as seen by R. 
 
-Using Table A from the fake customer data created in Chapter 2, we might explore our data one or more times a session with the following functions
+Using Table A from the fake customer data created in Chapter 2, we might explore our data one or more times a session with the following functions:  
 
 ```
 # View the structure of the dataset, particularly data types
@@ -54,7 +54,7 @@ levels(customers$customer_gender)
 "F"       "M"       "Unknown"
 ```
 
-If you do need to change the order for example, if you want them to display in plots in a different order, you can use the `ordered` function:
+If you do need to change the order---for example, if you want them to display in plots in a different order---you can use the `ordered` function:
 
 ```
 customers$customer_gender = ordered(customers$customer_gender, 
@@ -77,7 +77,7 @@ unique(customers$customer_age)
 [49] 30
 ```
 
-You can use the `sort` function to see the unique values in order:
+You can use the `sort` function to see the unique values in order (excluding NAs):
 
 ```
 sort(unique(customers$customer_age))
@@ -141,6 +141,30 @@ customers = arrange(customers, customer_age, desc(customer_purchases))
 
 ## Cleaning up
 
+### Converting between data types
+
+In the previous chapter, we saw a JSON import that turned all of the variables into character data types. While this result is relatively rare, there is almost *always* a need to convert a column from one data type to another. After you've used `str` to figure out what type(s) of data you have, you can use conversion functions to change them as you need. The following are the primary conversion functions:
+
+| Data type you want | Function |
+| ------------------ | -------- |
+| Character / String | `as.character(OBJECT, ...)` |
+| Factor / Category | `as.factor(OBJECT, ...)` |
+| Numeric / Double | `as.numeric(OBJECT, ...)` |
+| Integer | `as.integer(OBJECT, ...)` |
+| Date | `as.Date(OBJECT, format="yyyy-mm-dd", ...)` |
+| Datetime | `as.POSIXct(OBJECT, tz="CURRENT TIME ZONE", ...)` |
+
+Sometimes you may need to reduce your data set to only a certain type of variable, say all numeric and none of the other variable types. Use the `sapply` function as follows:
+
+```
+customers_numeric = customers[sapply(customers,is.numeric)]
+```
+
+W> #### Dates and Times
+W> 
+W> Note that conversion to and between dates and times can be tricky, depending on the structure of the existing date/time variable. If it's already in standard ISO format (e.g., `yyyy-mm-dd`), these basic conversions will work fine. If not, you'll have to mess with the `format` option and/or use other techniques. See *Chapter 6: Trends and Time* for lots of details on working with and converting date and time values. 
+
+
 ### Cleaning up a web-scraped table: Regular expressions and more
 
 In many cases the data frame will require a little clean up after it's loaded. Clarifying messy or unclear column names, pattern replacement, converting between data types, and concatenating or extracting portions of variables' results are all common cleaning needs before analysis. 
@@ -189,7 +213,7 @@ nursing_home_deficiencies$Date = as.Date(nursing_home_deficiencies$Date,
 
 The use of `fixed = TRUE` option above tells `gsub` to use exact matching; the default is `false`, which uses [POSIX 1003.2 extended regular expressions](http://www.cheatography.com/davechild/cheat-sheets/regular-expressions/). 
 
-A> #### Changing column names
+A> #### Changing a single column's name
 A> 
 A> The `colnames` function works in the above example to specify the names for all columns at once. If you just want to change a single column's name, the pattern is slightly different:
 A> 
@@ -224,30 +248,6 @@ NA
 mean(customers$customer_age, na.rm=TRUE)
 53.42279
 ```
-
-
-### Converting between data types
-
-In the previous chapter, we saw a JSON import that turned all of the variables into character data types. While this result is relatively rare, there is almost *always* a need to convert a column from one data type to another. After you've used `str` to figure out what type(s) of data you have, you can use conversion functions to change them as you need. The following are the primary conversion functions:
-
-| Data type you want | Function |
-| ------------------ | -------- |
-| Character / String | `as.character(OBJECT, ...)` |
-| Factor / Category | `as.factor(OBJECT, ...)` |
-| Numeric / Double | `as.numeric(OBJECT, ...)` |
-| Integer | `as.integer(OBJECT, ...)` |
-| Date | `as.Date(OBJECT, format="yyyy-mm-dd", ...)` |
-| Datetime | `as.POSIXct(OBJECT, tz="CURRENT TIME ZONE", ...)` |
-
-Sometimes you may need to reduce your data set to only a certain type of variable, say all numeric and none of the other variable types. Use the `sapply` function as follows:
-
-```
-customers_numeric = customers[sapply(customers,is.numeric)]
-```
-
-W> #### Dates and Times
-W> 
-W> Note that conversion to and between dates and times can be tricky, depending on the structure of the existing date/time variable. If it's already in standard ISO format (e.g., `yyyy-mm-dd`), these basic conversions will work fine. If not, you'll have to mess with the `format` option and/or use other techniques. See Chapter 6 (*Trends and Time*) for lots of details on working with and converting date and time values. 
 
 ### Rounding
 
@@ -304,7 +304,7 @@ A> ```
 
 We've already touched on merging tables inside a SQLite database to create a dataframe in Chapter 2, but more often you usually need to merge two dataframes inside R.
 
-Perhaps the best package to do this in R is `dplyr`, and part of its greatness is that it works on dataframes in the same way as it does on databases. However, SQL jockies may still prefer to use `sqldf`. I tend to use the former in R-heavy projects and the latter in projects where I need to work from a database or want to streamline the join results. 
+The best package to do this in R is `dplyr`, and part of its greatness is that it works on dataframes in the same way as it does on databases. However, SQL jockies may still prefer to use `sqldf`. I tend to use the former in R-heavy projects and the latter in projects where I need to work from a database or want to streamline the join results. 
 
 Of course, `base` R has native joining abilities as well via the `merge` function, but it tends to be somewhat clunkier than `dplyr` or `sqldf`. 
 
@@ -321,7 +321,7 @@ require(sqldf)
 
 We'll use the fake customer data we created in the previous chapter to illustrate these methods.
 
-Our objective is to merge the four tables so that we have the customer data alongside an expanded view of their location and their answer from the survey.
+Our objective is to merge the four tables so that we have the customer data alongside an expanded view of their location and their answer from the survey. Using `dplyr`:  
 
 ```
 customer_locations = left_join(customers, zipcodes, by = 
@@ -375,7 +375,7 @@ customer_survey = sqldf("
   , stringsAsFactors=FALSE)
 ```
 
-If you're coming to R with some SQL in your background, you might wonder why this wasn't the method to start with---after all, we can do it all in one step, and we get exactly what we want, and we can sort (`ORDER BY`) or add any other SQL statement here to get what we need. The reason is that showing each join/merge in a single step allows other R coders to see exactly what was done more clearly. SQL merge code can get ugly fast, so it's useful to consider whether the project (=code) is going to be passed on to others in the future and whether they are familiar with SQL, and code accordingly.
+If you're coming to R with some SQL in your background, you might wonder why this wasn't the method to start with---after all, we can do it all in one step, we get exactly what we want, and we can sort (`ORDER BY`) or add any other SQL statement here to get whatever else we need. The reason is that showing each join/merge in a single step allows other R coders to see exactly what was done more clearly. SQL merge code can get ugly fast, so it's useful to consider whether the project (=code) is going to be passed on to others in the future and whether they are familiar with SQL, and code accordingly.
 
 That said, I love using this approach; SQL provides you many more options and ability to customize your output to be exactly what you need. As long as your downstream dependencies are fine with SQL, you might consider this as your *primary* approach to joining.
 
@@ -389,10 +389,10 @@ Obviously, there's more to life than left joins. The following table lays out th
 | Full (Outer) | ![Full join](images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | *Not yet implemented* | 
 | Semi | ![Semi join](images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
 | Anti | ![Anti join](images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | *Not yet implemented* | 
-| Right* | ![Right join](images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM B LEFT JOIN A ON B.key = A.key` |
-| Right Anti* | ![Right anti join](images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM B LEFT JOIN A ON B.key = A.key WHERE A.key iS NULL` |
+| Right** | ![Right join](images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM B LEFT JOIN A ON B.key = A.key` |
+| Right Anti** | ![Right anti join](images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM B LEFT JOIN A ON B.key = A.key WHERE A.key iS NULL` |
 
-\* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me---right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
+\*\* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me---right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
 You can merge large files with `data.tables`, but the way you specify the joins is opaque---e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time---so for now it's probably best employed for single-user/casual use and not for production code unless speed needs to trump clarity.
 
@@ -485,11 +485,11 @@ As in the last recipe, here's a visualization and function summary for unions an
 | Type of Join | Visualization | r/cbind | sqldf |
 | ------------ | ------------- | ------- | ----- |
 | Union | ![union](images/rbind_union.png) | `rbind(A, B)` | `SELECT * FROM A UNION SELECT * FROM B` |
-| Semi-union | ![semi union](images/rbind_semi_union.png) | *see above* | *see below*\* |
+| Semi-union | ![semi union](images/rbind_semi_union.png) | *see above* | *see below*\*\* |
 | Concatenate | ![concat](images/cbind.png) | `data.frame(A, B)` | `SELECT * FROM A JOIN B ON A.key = B.key` |
 | | | `cbind(A, B)`|  |
 
-\* Use `UNION` to bind the two tables, but you'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
+\*\* Use `UNION` to bind the two tables, but you'll need to cast columns as null in the tables where they don't already occur, and ensure the column names match in both places, e.g., `CAST(NULL as numeric(8)) AS Forecast` could be used as one line in the table with the actual data so it would read NA when unioned with the forecast values. 
 
 
 ## Subsetting: filter and select from a dataframe
@@ -521,7 +521,7 @@ You can use regular expressions in filtering with the `grepl` function:
 customers_in_lake_cities = filter(customer_survey, grepl('lake', tolower(city)))
 ```
 
-Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some built-in "regular expression" type of access to make selection of columns from a large dataset more managable:
+Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some built-in SQL "like" type of access to make selection of columns from a large dataset more managable:
 
 ```
 # Subset the data to only columns with names that start with "customer"
@@ -550,8 +550,9 @@ You can create a new column based on other columns using either `dplyr`'s `mutat
 Both of these commands create a new column that combine city and the state names. 
 
 ```
-customer_survey$Location = paste(customer_survey$city, customer_survey$stabbr, sep=", ")
-# vs
+customer_survey$Location = paste(customer_survey$city, customer_survey$stabbr, 
+    sep=", ")
+# or
 customer_survey = mutate(customer_survey, Location=paste(city, stabbr, sep=", "))
 ```
 
@@ -560,7 +561,7 @@ Of course, math operations work with both methods, e.g., to get the proportion a
 ```
 customer_survey$proportion = customer_survey$customer_purchases / 
   sum(customer_survey$customer_purchases)
-# vs
+# or
 customer_survey = mutate(customer_survey, proportion2 = customer_purchases / 
   sum(customer_purchases))
 ```
@@ -597,7 +598,7 @@ A lot of analysis and plotting functions require that data be organized in *long
 
 ### Reshaping: melt and cast
 
-We'll use a small dataset to illustrate some of the possibilities `reshape2` offers—this shows the verbal and nonverbal IQ test scores for children before and after neurosurgery (and in which hemisphere, i.e. "Side" of the brain). Load the package and the data:
+We'll use a small dataset to illustrate some of the possibilities `reshape2` offers—this shows the verbal and nonverbal IQ test scores for children before and after neurosurgery (and in which hemisphere, i.e. "Side" of the brain; data from *Table 2* in [this paper](http://thejns.org/doi/10.3171/2015.3.PEDS14359)). Load the package and the data:
 
 ```
 require(reshape2)
@@ -634,7 +635,7 @@ row  ID  Side   Phase  Test_type  IQ_score
 
 We now have a completely long form data set, as we have the primary variable of analytic interest contained in a single column. 
 
-Any data in long form can be `cast` into a variety of wide forms, with a `d` or an `a` tacked on to the front depending on whether you need a dataframe (`d`) or vector, matrix, or array (`a`). To put this data back into the wide/long shape it started as, use `dcast`:
+Any data in long form can be `cast` into a variety of wide forms, with a `d` or an `a` tacked on to the front depending on whether you need a dataframe (`d`), or a vector, matrix, or array (`a`). To put this data back into the wide/long shape it started as, use `dcast`:
 
 ```
 surgery_outcomes_original = dcast(surgery_outcomes_melted, 
@@ -649,7 +650,7 @@ row  ID  Side   Phase  Verbal  Nonverbal
 4    2   Right  Pre    138     115
 ```
 
-Being able to move back and forth between data shapes makes meeting the needs of the R packages you're working with considerably easier, especially if you're moving between some that work best with long form structures and others that work well with short.
+Being able to move back and forth between data shapes makes meeting the needs of the R packages you're working with considerably easier, especially if you're moving between some that work best with long form structures and others that work well with wide.
 
 The important part to remember in melting data is to ensure you've designated the id and measurement variables appropriately. While `melt` can operate with neither or only one of these designated, proper coding etiquette requires that you designate each specifically to avoid ambiguity.
 
@@ -671,7 +672,7 @@ head(dcast(surgery_outcomes_melted, ID ~ Test_type + Phase,
 4    4   104          NA          106             NA
 ```
 
-We could also return the `Side` variable to the same shape:
+We could also bring back the `Side` variable into the same wide shape:
 
 ```
 head(dcast(surgery_outcomes_melted, ID + Side ~ Test_type + Phase, 
