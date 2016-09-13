@@ -9,11 +9,11 @@ install.packages(c("abd", "acs", "arules", "arulesViz", "asympTest", "beanplot",
  "gridExtra", "htmlTable", "htmlwidgets", "httr", "jsonlite", "kulife",
  "leaflet", "likert", "lubridate", "maps", "maptools", "mc2d", "mclust", "mgcv",
  "mvoutlier", "NeatMap", "orddom", "pairsD3", "polycor", "plotly", "pscl",
- "psych", "qcc", "quantreg", "RColorBrewer", "readxl", "reshape2", "rjags",
- "rmarkdown", "RODBC", "scales", "segmented", "shiny", "simpleboot", "sqldf",
- "strucchange", "survival", "survminer", "tidyr", "tolerance", "useful", "vcd",
- "vegan", "VIM", "XLConnect", "XML", "xtable", "zipcode", "zoo"), 
- dependencies = TRUE)
+ "psych", "qcc", "quantreg", "RColorBrewer", "RCurl", "readxl", "reshape2", 
+ "rjags", "rmarkdown", "RODBC", "scales", "segmented", "shiny", "simpleboot", 
+ "sqldf", "strucchange", "survival", "survminer", "tidyr", "tolerance", 
+ "useful", "vcd", "vegan", "VIM", "XLConnect", "XML", "xtable", "zipcode", 
+ "zoo"), dependencies = TRUE)
 
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("graph", "Rgraphviz", "GenomicRanges", "BiocInstaller")) 
