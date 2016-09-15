@@ -786,6 +786,8 @@ Table C is just a systematic selection designating a survey response from each c
 
 Finally, Table D takes advantage of R's built-in data from the `datasets` package to generate a lookup table of states and state regions.
 
+Note: if you don't have curl on your system, the one-line ftp call for the zipcode data won't work. You can either [install curl](https://curl.haxx.se/download.html) (and restart R), or use the `download.file` and `unzip` approach as shown in *Chapter 1* within the *Acquire data* section.  
+
 I> `wakefield` is a new R package that will generate random datasets for you. In addition to the random data frame generation, it also has a nice function to visualize the distribution of NAs and data types in a data frame (`?table_heat`). Check out [its GitHub site](https://github.com/trinker/wakefield) for more info.
 
 
