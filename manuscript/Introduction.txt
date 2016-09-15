@@ -68,7 +68,7 @@ You can find the installation list for the packages used at the start this book 
 
 I originally started this book as a way to organize the code snippets I had cluttering up a variety of computers, servers, and repos... and as I started to organize those snippets, I also started getting more and more requests from colleagues who wanted to learn R. So this book is the culmination of both efforts. 
 
-Several people generously donated their time to review this book and test its code, including John Tilelli, Matt Sandgren, Howard Rosenfeld, Seth Terrell, Maria Brumm, Robert Samohyl, Deb Curley, and Alexis Gaevsky. Remaining errors are, of course, my own---so if you find any, please submit a pull request or otherwise let me know so that I can correct and update the book.  
+Several people generously donated their time to review this book and test its code, including John Tilelli, Matt Sandgren, Howard Rosenfeld, Seth Terrell, Maria Brumm, Sherif Bates, Robert Samohyl, Deb Curley, and Alexis Gaevsky. Remaining errors are, of course, my own---so if you find any, please submit a pull request or otherwise let me know so that I can correct and update the book.  
 
 I've been using R for about a decade, and along the way, I have taken ideas from across the web wherever I could find them. If you see some of *your* code here and I have not given you or the source proper attribution, please let me know! I will fix that immediately.
 
