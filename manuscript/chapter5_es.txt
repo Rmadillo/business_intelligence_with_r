@@ -109,7 +109,20 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 
 Perhaps the most common question an analyst will get from a business decision maker is whether or not there is a difference between groupings. There are a lot of ways to answer that, of course, but the bread-and-butter answer should always be based on effect sizes.
 
-In this section, we'll go through all the major effect size metrics for differences; the following section will explore effect sizes for comparisons of agreement between between groups.
+A> **Why not use *p*-values?**
+A> 
+A> If I had a dollar for every time a clinician or manager asked for "statistical significance," I'd be rich. No doubt you have had this same request numerous times as well. But even when properly used---which almost never happens---*p*-values give a trivial answer to a question they don't care about. [Aschwanden 2015](http://fivethirtyeight.com/features/science-isnt-broken/) provides a nice general-audience overview of this problem, while Intel engineer Charles Lambdin wrote a scathing yet entertaining take-down of the details of typical mindests around *p*-values in a 2012 article called [*Significance tests as sorcery: Science is empirical--significance tests are not*](http://psychology.okstate.edu/faculty/jgrice/psyc5314/SignificanceSorceryLambdin2012.pdf). 
+A> 
+A> Effect sizes (and confidence intervals) get at what decision-makers really need to know. The following table shows why these, and not *p*-values, provide that knowledge:
+A> | Experiment | Prefer A (*n*) | Prefer B (*n*) | *p*-value | Effect size (for A) | 95% CI |
+A> | ---------- | --------------:| --------------:|----------:|:-------------------:|:------:|
+A> | 1 | 15 | 5 | 0.04 | 75% | (50%, 90%) |
+A> | 2 | 114 | 86 | 0.04 | 57% | (50%, 64%) |
+A> | 3 | 1,046 | 954 | 0.04 | 52% | (50%, 55%) |
+A> | 4 | 1,001,455 | 998,555 | 0.04 | 50% | (50%, 50%) | 
+
+
+In the first half of this chapter, we'll go through all the major effect size metrics for differences; the remainder will explore effect sizes for comparisons of agreement between between groups.
 
 Effect size measures that estimate a population value should be accompanied by an appropriate confidence or credible interval whenever possible. This is usually best done by bootstrap unless you can meet distributional assumptions, although at larger sample sizes the differences will be trivial. We'll look at several ways to obtains CIs in this section.
 
@@ -161,7 +174,7 @@ round(workday_diff$conf.int, 2)
 
 #### Means
 
-When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average (or median) casual bike use between Spring and Fall non-working days, we can use `t.test` (or `two.boot`):
+When we wish to describe differences in central tendency, we'll want to know whether two means or medians are different from each other. For example, to see if there's a difference in average casual bike use between Spring and Fall non-working days, we can use `t.test`:
 
 ```
 # Difference in means, t-test version
@@ -375,7 +388,7 @@ The rapid increase in computing power in recent years has put previously-intract
 
 You'll need to install [JAGS](http://mcmc-jags.sourceforge.net/) to your system before starting, and also install the R package `rjags` to allow R to converse with JAGS.
 
-`BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from Github:
+`BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from Github if you haven't already done so:
 
 ```
 devtools::install_github("rasmusab/bayesian_first_aid")
@@ -476,7 +489,7 @@ y_pred     -309.647  721.162 1225.480 1743.096 2781.779
 Evaluations of the difference in median and variance contrasts (among others) are planned but not yet implemented. Follow it on [GitHub](https://github.com/rasmusab/bayesian_first_aid) to check for updates. 
 
 
-Finally, you can review the MCMC diagnostics for any of these functions by using diagnostics:
+Finally, you can review the MCMC diagnostics for any of these functions by using `diagnostics`:
 
 {lang="text"}
 ```
