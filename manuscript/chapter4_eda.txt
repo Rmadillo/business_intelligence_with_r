@@ -10,7 +10,7 @@
 
 Exploration and evaluation is the heart of analytics; this chapter covers a wide variety of ways to understand, display, and summarize your data. 
 
-The `ggplot2` is perhaps the most useful (and logical) graphics package for R, and we'll use it extensively in this book. The `scales` package is often loaded with it, to provide support for things like date and time axes. 
+`ggplot2` is perhaps the most useful (and logical) graphics package for R, and we'll use it extensively in this book. The `scales` package is often loaded with it, to provide support for more specialized axes, such as for dates and times. 
 
 ```
 require(ggplot2)
@@ -46,9 +46,9 @@ levels(bike_share_daily$yr) = c(2011, 2012)
 
 ## Creating summary plots
 
-If you were to poll data scientists on the "Three Most Important Steps in Any Analysis," ***Plot Thy Data*** should account for all three. Far too many business professionals rely on tables and simple summary statistics to make decisions, which are useful but can never provide the richness of information that graphs can. Further, decisions based on single statistic (usually the mean) are made much too often, usually with either good results reached by luck or accident, or—more often—you end up with (predictably) poor results. 
+If you were to poll data scientists on the "Three Most Important Steps in Any Analysis," ***Plot Thy Data*** should account for all three. Far too many business professionals rely on tables and simple summary statistics to make decisions, which are useful but can never provide the richness of information that graphs can. Further, decisions based on single statistic (usually the mean) are made much too often, usually with either good results reached by luck or accident, or---more often---they end up with (predictably) poor results. 
 
-The recipes below are aimed at giving you a quick visual summary of the data, not to produce final plots—and so they're rough and use functions that can be difficult to modify. We'll see recipes for production plots later in this chapter and throughout the book, but we often just need to see the data before doing anything else.
+The recipes immediately below are aimed at giving you a quick visual summary of the data, not to produce final plots—and so they're rough and use functions that can be difficult to modify. We'll see recipes for production plots later in this chapter and throughout the book, but we often just need to see the data before doing anything else.
 
 ### Everything at once: ggpairs
 
@@ -58,7 +58,7 @@ The `ggpairs` function in the `GGally` package has a relatively slow but visuall
 require(GGally)
 ```
 
-GGally is built over `ggplot2` (which we'll use often in this book), and its syntax works in more or less the same manner as `qplot`. You can create the summary plot of a subset of the bike share data for an at-a-glance overview:
+`GGally` is built over `ggplot2`, and its syntax works in more or less the same manner as `qplot`. You can create a summary plot of a subset of the bike share data for an at-a-glance overview like this:
 
 ```
 ggpairs(data=bike_share_daily, columns=c(14:15, 10, 13, 3, 7), 
@@ -148,7 +148,7 @@ ggplot(bike_share_daily, aes(casual)) +
 
 When asked, I’ve usually explained density plots as “more objective histograms,” which, while not quite true, is accurate enough for business users. See `?density` for more details on the methods and useful additional references; `?stat_density` provides an overview of calculation methods used in `ggplot2`, while `?geom_density` provides information on graphical options. 
 
-I> That pattern carries over to many `ggplot2` options—find details of the method by adding the particular stat or geom in `?stat_` and `?geom_` for calculation and plotting information, respectively.
+I> That pattern carries over to many `ggplot2` options—find details of the method by adding the particular stat or geom in `?stat_*` and `?geom_*` for calculation and plotting information, respectively.
 
 ### Bar and dot plots
 
@@ -177,7 +177,7 @@ ggplot(bike_share_daily, aes(x=weathersit, y=..count..)) +
 
 ### Plotting multiple univariate distributions with faceting
 
-We saw the quick-and-dirty way to plot multiple histograms with `multi.hist` a few recipes ago; here's how to use ggplot2 to create the same thing more elegantly:
+We saw the quick-and-dirty way to plot multiple histograms with `multi.hist` a few recipes ago; here's how to use `ggplot2` to create the same thing more elegantly:
 
 ```
 ggplot(bike_share_daily, aes(casual, fill=season)) +
@@ -315,7 +315,7 @@ bike_air_temp_mh
 
 ![](images/scatter_marginal_hist.png)
 
-Sometimes density plots can be useful, or perhaps you want to keep it simple and show a boxplot. Just change the `type` option:
+Sometimes density plots (the default) can be useful, or perhaps you want to keep it simple and show a boxplot. Just change the `type` option:
 
 ```
 bike_air_temp_md = ggMarginal(bike_air_temp, type="density")
@@ -342,7 +342,7 @@ The `vcd` package has a nice implementation of mosaic plots for exploring catego
 mosaic(~ weathersit + season, data=bike_share_daily, shade=T, 
   legend=F, labeling_args = list(set_varnames = c(season = "Season", 
   weathersit = "Primary Weather Pattern"), set_labels = list(weathersit = 
-  c("Clear", "Cloudy/Rainy",  "Stormy"))))
+  c("Clear", "Cloudy/Rainy", "Stormy"))))
 ```
 
 ![](images/0815OS_02_11.png)
@@ -362,12 +362,12 @@ A> | Clear | 111 | 113 | 136 | 103 |
 A> | Cloudy/Rainy | 66 | 68 | 48 | 65 |
 A> | Stormy | 4 | 3 | 4 | 10 |
 A> 
-A> Sure, a table can be more compact, but the mosaic gives you the pattern at a glance; either is an option depending on what you need to get across.
+A> For two dimensions, a table can be more compact, but the mosaic gives you the pattern at a glance; either is an option depending on what you need to get across. Three or four dimensions is best presented as a mosaic plot. More than that requires tools found in Chapters 7 and 8.
 
 
 ### Multiple bivariate comparisons with faceting
 
-As with univariate plots, we can facet on another variable for comparison’s sake; for example, if we take the bike share data shown above and facet by season:
+As with univariate plots, we can facet on another variable for comparison’s sake; for example, we can take the bike share data shown above and facet by season:
 
 ```
 ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
@@ -389,10 +389,10 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
 
 Pareto charts are a mainstay of BI work, though the effort to create them can often outweigh the time a decision-maker spends with the result. The `qcc` library makes their creation simple. 
 
-The bike share data doesn't lend itself to pareto chart use, so we'll use data from unplanned hospital readmissions in Hong Kong (Table 2 in [Wong et al. 2011](http://bmchealthservres.biomedcentral.com/articles/10.1186/1472-6963-11-149)).
+The bike share data doesn't lend itself to pareto chart use, so we'll use data from unplanned hospital readmissions in Hong Kong (Table 2 in [Wong et al. 2011](http://bmchealthservres.biomedcentral.com/articles/10.1186/1472-6963-11-149)). 
 
 ```
-library(qcc)
+require(qcc)
 
 Readmits = c(148, 685, 16, 679, 192, 8, 1601, 37, 269, 48)
 Dx = c('Septicemia', 'Cancer', 'Diabetes', 'Heart disease', 
@@ -400,6 +400,7 @@ Dx = c('Septicemia', 'Cancer', 'Diabetes', 'Heart disease',
        'Chronic liver disease', 'Nephritis/nephrosis',
        'Injury/poisoning') 
 
+# the xtabs function creates a table
 pareto.chart(xtabs(Readmits ~ Dx), main='Pareto Chart 
   for Unplanned Readmissions')
 
@@ -522,7 +523,7 @@ describeBy(bike_share_daily$casual, bike_share_daily$windspeed >
 I> Although `describeBy` gives you more versatility, you can also use `sum` for a quick-and-dirty conditional count, e.g., 
 I> 
 I> ```
-I> sum(bike_share_daily$cnt > 2500, na.rm=T)  
+I> sum(bike_share_daily$cnt > 2500)  
 I> 
 I> 587
 I> 
@@ -697,11 +698,6 @@ binom.test(sum(bike_share_daily$casual),
 # Subset data to winter only
 bike_share_winter = filter(bike_share_daily, season == "Winter")
 
-# 95% CI for count of winter casual bike use
-poisson.test(sum(bike_share_winter$casual))$conf.int
-
-60140.37 61106.52
-
 # 95% CI for count of winter casual bike use per 1000 rentals
 poisson.test(sum(bike_share_winter$casual), 
   sum(bike_share_winter$cnt)/1000)$conf.int
@@ -710,7 +706,7 @@ poisson.test(sum(bike_share_winter$casual),
 ```
 
 
-Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, so R doesn’t have a built-in function for it. 
+Sometimes there isn’t a `base` function for the confidence interval we need, or our data depart considerably from one of the typical distributions. For example, the confidence interval of a standard deviation is very sensitive to departures from normality, and R doesn’t have a built-in function for it. 
 
 Non-parametric bootstrapping is the way to get these intervals; the `boot` package provides the most options but can be a pain to work with since its syntax is fairly different from most everything else in R. Still, it does what we need it to with a relative minimum of code for most cases. In this example we’ll use the `PlantGrowth` dataset that comes with R for simplicity’s sake:
 
@@ -734,7 +730,7 @@ boot.ci(sd_boot, type="bca")$bca[4:5]
 0.5741555 0.8772850
 ```
 
-The BCa method is generally the appropriate calculation unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use `type="norm"`, i.e., use the normal approximation for very small samples that you expect are “normal enough,” realizing that due to sampling error you could be estimating intervals that are wildly incorrect.   
+The bias-corrected and accelerated (BCa) method is generally the appropriate calculation to use unless you have strong reason to believe that another method is best in the particular context. For example, you might want to use `type="norm"`, i.e., use the normal approximation for very small samples that you expect are “normal enough,” realizing that due to sampling error you could be estimating intervals that are wildly incorrect.   
 
 We can also bootstrap confidence intervals for any summary statistic. For example, to get the bootstrapped 75th percentile, run the following:
 
@@ -796,7 +792,7 @@ While confidence or Bayesian credible intervals tend to be more often used in da
 
 Essentially, a good way to remember the difference is that as the sample size approaches the population size, the confidence interval will approach zero, while a tolerance interval will approach the population percentiles.
 
-The `tolerance` package contains functions for estimating tolerance intervals for distributions typically used in most engineering or industrial processes. As an example, assume you have data on commuting time for 40 randomly chosen workdays. The distribution is oddly-shaped, so we’ll use non-parametric tolerance intervals to estimate (at a 95% confidence level) the number of minutes that 75% of commutes will take:
+The `tolerance` package contains functions for estimating tolerance intervals for distributions typically used in most engineering or industrial processes. As an example, assume you have data on commuting time for 40 randomly chosen workdays. The distribution is oddly-shaped, so we’ll use non-parametric tolerance intervals (via the `nptol.int` function) to estimate (at a 95% confidence level) the number of minutes that 75% of commutes will take:
 
 ```
 require(tolerance)
@@ -821,7 +817,7 @@ plottol(commute_time_npti, commute_time, side="two", plot.type="both")
 
 ![](images/0815OS_02_05.png)
 
-If you plotted both tolerance graphs (`plot.type="both"`), you'll need to return par to normal manually: 
+If you plotted both tolerance graphs (`plot.type="both"`), you may need to return `par` to normal manually: 
 
 ```
 par(mfrow=c(1,1))
@@ -913,7 +909,7 @@ marginplot(tao[5:6])
 
 ![](images/tao_marginplot.png)
 
-This can be expanded to pairwise visual comparisons with the `marginmatrix` function:
+This can be expanded to visualizing pairwise comparisons with the `marginmatrix` function:
 
 ```
 marginmatrix(tao[4:6])
@@ -944,7 +940,7 @@ marginplot(tao_knn[c(5:6, 13:14)], delimiter="_imp")
 
 ![](images/tao_marginplot_imputed.png)
 
-Light and dark orange show results imputed for the variable on that axis; black points show observations for which both were imputed. Blue continues to show the distribution of the non-imputed values. 
+Light and dark orange show results imputed for the variable on that axis; black shows observations for which both were imputed. Blue continues to show the distribution of the non-imputed values. 
 
 Viewing a matrix works here as well:
 
@@ -993,7 +989,7 @@ ggplot(tao_compare_melt, aes(Air.Temp, color=variable)) +
 
 I> #### More imputation in R: other packages
 I> 
-I> Since imputation is a complex subject, there are of course a lot of different R packages to do it; explore the *Imputation* section of the CRAN Task View [Official Statistics & Survey Methodology](http://cran.r-project.org/web/views/OfficialStatistics.html) for a short overview of those packages and their methods.
+I> Since imputation is a complex subject, there are a lot of different R packages to do it; explore the *Imputation* section of the CRAN Task View [Official Statistics & Survey Methodology](http://cran.r-project.org/web/views/OfficialStatistics.html) for a short overview of those packages and their methods.
 
 | |
 | | 
