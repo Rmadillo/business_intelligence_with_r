@@ -114,12 +114,14 @@ A>
 A> If I had a dollar for every time a clinician or manager asked for "statistical significance," I'd be rich. No doubt you have had this same request numerous times as well. But even when properly used---which almost never happens---*p*-values give a trivial answer to a question they don't care about. [Aschwanden 2015](http://fivethirtyeight.com/features/science-isnt-broken/) provides a nice general-audience overview of this problem, while Intel engineer Charles Lambdin wrote a scathing yet entertaining take-down of the details of typical mindests around *p*-values in a 2012 article called [*Significance tests as sorcery: Science is empirical--significance tests are not*](http://psychology.okstate.edu/faculty/jgrice/psyc5314/SignificanceSorceryLambdin2012.pdf). 
 A> 
 A> Effect sizes (and confidence intervals) get at what decision-makers really need to know. The following table shows why these, and not *p*-values, provide that knowledge:
+A> 
 A> | Experiment | Prefer A (*n*) | Prefer B (*n*) | *p*-value | Effect size (for A) | 95% CI |
 A> | ---------- | --------------:| --------------:|----------:|:-------------------:|:------:|
 A> | 1 | 15 | 5 | 0.04 | 75% | (50%, 90%) |
 A> | 2 | 114 | 86 | 0.04 | 57% | (50%, 64%) |
 A> | 3 | 1,046 | 954 | 0.04 | 52% | (50%, 55%) |
 A> | 4 | 1,001,455 | 998,555 | 0.04 | 50% | (50%, 50%) | 
+A> 
 
 
 In the first half of this chapter, we'll go through all the major effect size metrics for differences; the remainder will explore effect sizes for comparisons of agreement between between groups.
