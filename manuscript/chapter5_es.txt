@@ -11,8 +11,6 @@ The use of effect sizes has been gaining in popularity in research for the last 
 
 The following tables summarize major effect size statistics (ESSs) by type of effect size (differences in tendency, differences in variation, and relationships), and some packages and functions I've found useful to calculate them. After the tables are recipes and examples of these ESSs. There are a variety of options inside R, of course, but the functions in this chapter should provide most of the essential values you'll need. 
 
---------
-
 ***Differences in tendency*** 
 
 {width="wide"}
@@ -115,6 +113,7 @@ A> If I had a dollar for every time a clinician or manager asked for "statistica
 A> 
 A> Effect sizes (and confidence intervals) get at what decision-makers really need to know. The following table shows why these, and not *p*-values, provide that knowledge:
 A> 
+A> {width="wide"}
 A> | Experiment | Prefer A (*n*) | Prefer B (*n*) | *p*-value | Effect size (for A) | 95% CI |
 A> | ---------- | --------------:| --------------:|----------:|:-------------------:|:------:|
 A> | 1 | 15 | 5 | 0.04 | 75% | (50%, 90%) |
