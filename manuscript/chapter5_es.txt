@@ -105,6 +105,8 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 
 --------
 
+|  |  
+
 ## Effect sizes: Measuring *differences* between groups
 
 Perhaps the most common question an analyst will get from a business decision maker is whether or not there is a difference between groupings. There are a lot of ways to answer that, of course, but the bread-and-butter answer should always be based on effect sizes.
