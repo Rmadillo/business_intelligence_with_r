@@ -705,7 +705,9 @@ The maximum cross-correlation value is 0.51, which occurs between airline fares 
 
 ### Basic forecasting
 
-We saw forecasting as a section within the *Chapter 1* example. For the sake of keeping ideas together, we'll replay that forecasting example here. An excellent companion to *doing* forecasting is *understanding* it: for that, I recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
+We saw forecasting as a section within the *Chapter 1* example. For the sake of keeping ideas together, we'll replay that forecasting example here. 
+
+An excellent companion to *doing* forecasting is *understanding* it: for that, I recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
 
 ```
 require(forecast)
