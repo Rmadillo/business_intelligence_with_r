@@ -191,6 +191,7 @@ It’s useful to have a cheat-sheet of the major date and time formats; you can 
 | Weekyear (ISO) | `%V` | Sunday start (0-53) | `%U`, `%W` | Sunday start (USA), Monday start (UK) | 
 | Day of the year | `%j` | Decimal day of the year (1-366) |  |  | 
 
+|  |  
 
 ***Major time formats***
 
