@@ -345,9 +345,7 @@ mosaic(~ weathersit + season, data=bike_share_daily, shade=T,
 
 A> #### Um. What's a mosaic plot?
 A> 
-A> If you're not already familiar with them, think of mosaic plots as contingency tables made with shapes---the larger the shape, the higher the cell count.
-A> 
-A> For comparison, here's the table that the mosaic plot represents:  
+A> If you're not already familiar with them, think of mosaic plots as contingency tables made with shapes---the larger the shape, the higher the cell count. For comparison, here's the table that the mosaic plot represents:  
 A> 
 A> | | Winter | Spring | Summer | Fall |
 A> |:-|------:|------:|------:|----:|
