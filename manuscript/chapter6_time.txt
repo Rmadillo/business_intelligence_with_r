@@ -176,6 +176,8 @@ The informal consensus is that in R, `as.Date` is best for dates and `as.POSIXct
 
 It’s useful to have a cheat-sheet of the major date and time formats; you can get a complete list with `?strptime` but the major ones are as follows:
 
+|  |  
+
 ***Major date formats***  
 
 {width="90%"}
