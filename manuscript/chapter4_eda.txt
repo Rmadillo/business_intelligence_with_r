@@ -381,6 +381,7 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
 
 ![](images/bike_facet_densities.png)
 
+|  |  
 
 ## Pareto charts
 
@@ -392,12 +393,13 @@ The bike share data doesn't lend itself to pareto chart use, so we'll use data f
 require(qcc)
 
 Readmits = c(148, 685, 16, 679, 192, 8, 1601, 37, 269, 48)
+
 Dx = c('Septicemia', 'Cancer', 'Diabetes', 'Heart disease', 
        'Stroke', 'Aortic aneurysm', 'Pneumonia', 
        'Chronic liver disease', 'Nephritis/nephrosis',
        'Injury/poisoning') 
 
-# the xtabs function creates a table
+# the xtabs function creates a crosstab table
 pareto.chart(xtabs(Readmits ~ Dx), main='Pareto Chart 
   for Unplanned Readmissions')
 
@@ -414,6 +416,8 @@ Pareto chart analysis for xtabs(Readmits ~ Dx)
   Diabetes                     16      3675  0.4344285     99.78279
   Aortic aneurysm               8      3683  0.2172142    100.00000
 ```
+
+|  |  
 
 ![](images/pareto_chart.png)
 
