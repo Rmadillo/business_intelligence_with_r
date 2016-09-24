@@ -17,13 +17,13 @@
 - Exploring relationships between time series: cross-correlation
 - Basic forecasting
 
-Trends are of fundamental interest throughout business intelligence, but can be tricky to deal with statistically. And dealing with temporal data presents its own set of unique challenges. R lessens that burden considerably---as long as your data are in the right form.
+Trends are of fundamental interest throughout business intelligence work, but can be tricky to deal with statistically. And dealing with temporal data presents its own set of unique challenges. R lessens that burden considerably---as long as your data are in the right form.
 
 ## Describing trends in non-temporal data
 
 If you’re in the data exploration phase, and want to get a loose sense of the trend in the data, starting with a loess curve is probably the best first step. Quantile regression provides tools for evaluating trends in data with increasing or decreasing variance, or any data with a monotonic trend regardless of variance. Ordinary least squares is probably the *last* tool you want to use in the exploratory phase, though it can sometimes be what you start with when doing model building.
 
-We’ll continue to use the bike share data, and plot the results of this recipe with `ggplot2`. We’ll also need the `quantreg` package in order to plot the quantile regression trend lines, and the `mgcv` package to do the same with GAMs:
+We’ll continue to use the bike share data, and plot the results with `ggplot2`. We’ll also need the `quantreg` package in order to plot the quantile regression trend lines, and the `mgcv` package to do the same with GAMs:
 
 ```
 require(ggplot2)
@@ -93,11 +93,11 @@ ggplot(bike_share_daily, aes(x=atemp, y=cnt)) +
 
 ![](images/biwr_05_linear.png)
 
-If you’re exploring trends, it’s good habit to not start with an OLS/linear trend, as in real data exploration you usually don’t have any *a priori* knowledge about the functional relationship or trend. Only using this approach after you’ve tried the others helps prevent starting your thinking into a (linear) rut.
+If you’re exploring trends, it’s good habit to *not* start with an OLS/linear trend, as in real data exploration you usually don’t have any *a priori* knowledge about the functional relationship or trend. Only using this approach after you’ve tried the others helps prevent starting your thinking into a (linear) rut.
 
 ### Segmented linear trends
 
-Sometimes you do want to see a linear trend, but know (or suspect) that there are changes in the trend. We’ll explore ways to evaluate change points later, but for now we’ll just quickly plot a segmented linear trend line. We'll allow the `segmented` package to choose the optimal breakpoint for us, after we specify approximately where we think it is with the `psi` option:
+Sometimes you do want to see a linear trend, but know (or suspect) that there are changes in the trend. We’ll explore ways to evaluate changepoints later, but for now we’ll just quickly plot a segmented linear trend line. We'll allow the `segmented` package to choose the optimal breakpoint for us, after we specify approximately where we think it is with the `psi` option:
 
 ```
 require(segmented)
@@ -130,7 +130,7 @@ There are many ways to model trends in data, but the majority of cases can be ad
 The coefficients, of course, are effect sizes. 
 
 {width="wide"}
-| Response type | Response error distribution | Predictor type | Model type | Code\* |
+| Response type | Response error distribution | Predictor type | Model type | Code\*\* |
 | ------------- | --------------------------- | -------------- | ---------- | ----- |
 | Continuous | Normal | Continuous | Regression | `lm(y ~ x1 + x2 ... + xn)` |
 | Continuous | Normal | Categorical | ANOVA | `lm(y ~ x1 + x2 ... + xn)` |
@@ -144,9 +144,9 @@ The coefficients, of course, are effect sizes.
 |  | Overdispersed Poisson | Mixed | Negative binomial regression | `glm.nb(y ~ x1 + x2 ... + xn, offset=log(t))` | 
 | Counts with lots of 0s | Overdispersed Poisson | Mixed | Zero-inflated Poisson regression | `require (pscl);  zeroinfl(y ~ x1 + x2 ... + xn, dist="poisson")` | 
 | Counts where 0 is not possible and mean < 5 | Overdispersed Poisson | Mixed | Zero-truncated Poisson regression | `require (gamlss.tr); gamlss(y ~ x1 + x2 ... + xn, family=PO)` | 
-| n/a | Same as `glm` | Smoothed | GAM | `library(mgcv); gam(y ~ x1 + x2 ... + xn, family=...) | 
+| Any | Same as `glm` | Smoothed | GAM | `library(mgcv); gam(y ~ x1 + x2 ... + xn, family=...) | 
 
-\* change `+` to `*` to create interactions  
+\*\* change `+` to `*` to create interactions  
 
 
 ### Plotting regression coefficients
@@ -172,7 +172,39 @@ Date and time formats are the bane of coders everywhere. No matter which coding 
 
 Time series analysis requires specific data types or structures—we’ll explore different types of those structures below, and the [CRAN Time Series task view](http://cran.r-project.org/web/views/TimeSeries.html) is worth spending time exploring if you need to evaluate time series in any depth.
 
-The informal consensus is that in R, `as.Date` is best for dates and `as.POSIXct` is best for times because these are the simplest ways to work with each data type. The `lubridate` package provides a more intuitive wrapper to `as.POSIXct` and can be very useful for date conversions between types. 
+The informal consensus is that in R, `as.Date` is best for dates and `as.POSIXct` is best for times because these are the simplest ways to work with each data type. The `lubridate` package provides a more intuitive wrapper to `as.POSIXct` and is very useful for date conversions between types. 
+
+It’s useful to have a cheat-sheet of the major date and time formats; you can get a complete list with `?strptime` but the major ones are as follows:
+
+***Major date formats***  
+
+{width="90%"}
+| Date step | Symbol | Format | Alternate symbols | Alternate format |
+| --------- | ------ | ------ | ----------------- | ---------------- |
+| Format Date (ISO) | `%F` | Y-m-d | `%x`, `%D` | y/m/d, m/d/y |
+| Year | `%Y` | 4-digit year (2014) | `%y` | 2-digit year (14) |
+| Month | `%m` | Decimal month (10) | `%b`, `%B` | Abbreviated month (Oct.), Full month (October) |
+| Day | `%d` | Decimal date (1-31) | `%e` | Decimal date (01-31) | 
+| Weekday | `%w` | Decimal weekday (0-6, starts with Sunday) | `%a`, `%A`, `%u` | Abbreviated weekday (Sun), Full weekday (Sunday), Decimal with Monday start (7) |
+| Weekyear (ISO) | `%V` | Sunday start (0-53) | `%U`, `%W` | Sunday start (USA), Monday start (UK) | 
+| Day of the year | `%j` | Decimal day of the year (1-366) |  |  | 
+
+
+***Major time formats***
+
+{width="90%"}
+| Time step | Symbol | Format |
+| --------- | ------ | ------ |
+| Date and time | `%c` | a b e H:M:S Y |
+| Time | `%T`| H:M:S |
+| Time (short) | `%R` | H:M |
+| Hours (24 hour clock) | `%H` |  |
+| Hours (12 hour clock) | `%I` |  |
+| Minutes | `%M` |  |
+| Seconds | `%S` |  | 
+| AM or PM | `%p` |  |
+| Offset from GMT | `%z` |  | 
+| Time zone | `%Z` |  |
 
 There just isn’t the space to cover all (or even a small subset) of date/time conversions and temporal math, so we’ll just illustrate a few very common date conversion needs in this recipe.
 
@@ -184,7 +216,7 @@ require(lubridate)
 
 The ISO standard for a date format is 4-digit year, 2-digit month, and 2-digit day, separated by hyphens. We’ll often aim to convert to that format, but as we’ll see, it’s not always necessary as long as you specify the format type in the conversion process.  
 
-Perhaps the most common date conversion is a character to a date. If it’s not in a clear year-month-day format, you’ll need to specify the format it’s in so that R can properly convert it to a date (a table of the major formats appears below).
+Perhaps the most common date conversion is a character to a date. If it’s not in a clear *year-month-day* format, you’ll need to specify the format it’s in so that R can properly convert it to a date (a table of the major formats appears below).
 
 ```
 india_natl_holidays = c("Jan 26, 2014", "Apr 13, 2014", "Aug 15, 2014", 
@@ -221,38 +253,6 @@ round(age/dyears(1), 0)
 ```
 
 The basic thing to remember is that even when you don’t have a real day value (e.g., your data is binned into months), many functions in R generally expect one if you want to use date functions. See the next recipe for an example of this issue in action.
-
-It’s useful to have a cheat-sheet of the major date and time formats; you can get a complete list with `?strptime` but the major ones are as follows:
-
-***Major date formats***  
-
-{width="90%"}
-| Date step | Symbol | Format | Alternate symbols | Alternate format |
-| --------- | ------ | ------ | ----------------- | ---------------- |
-| Format Date (ISO) | `%F` | Y-m-d | `%x`, `%D` | y/m/d, m/d/y |
-| Year | `%Y` | 4-digit year (2014) | `%y` | 2-digit year (14) |
-| Month | `%m` | Decimal month (10) | `%b`, `%B` | Abbreviated month (Oct.), Full month (October) |
-| Day | `%d` | Decimal date (1-31) | `%e` | Decimal date (01-31) | 
-| Weekday | `%w` | Decimal weekday (0-6, starts with Sunday) | `%a`, `%A`, `%u` | Abbreviated weekday (Sun), Full weekday (Sunday), Decimal with Monday start (7) |
-| Weekyear (ISO) | `%V` | Sunday start (0-53) | `%U`, `%W` | Sunday start (USA), Monday start (UK) | 
-| Day of the year | `%j` | Decimal day of the year (1-366) |  |  | 
-
-
-***Major time formats***
-
-{width="90%"}
-| Time step | Symbol | Format |
-| --------- | ------ | ------ |
-| Date and time | `%c` | a b e H:M:S Y |
-| Time | `%T`| H:M:S |
-| Time (short) | `%R` | H:M |
-| Hours (24 hour clock) | `%H` |  |
-| Hours (12 hour clock) | `%I` |  |
-| Minutes | `%M` |  |
-| Seconds | `%S` |  | 
-| AM or PM | `%p` |  |
-| Offset from GMT | `%z` |  | 
-| Time zone | `%Z` |  |
 
 
 ### Calculate a mean or correlation in circular time (clock time)
@@ -348,12 +348,12 @@ acf(UK_births_ts)
 
 ![](images/autocorrelation.png)
 
-What's often underappreciated is that autocorrelated data, temporal or not, will make standard confidence intervals *too small*. In other words, if you want to plot a trend and use the default confidence intervals, you'll underestimate the actual uncertainty associated with a trend line or data points across time. 
+What's often underappreciated is that autocorrelated data, temporal or not, will make standard confidence intervals *too small*. In other words, if you want to plot a trend from autocorrelated data and use the default confidence intervals, you'll underestimate the actual uncertainty associated with that trend. 
 
 
 ### Plotting monthly and seasonal patterns
 
-If your data are monthly (or if you aggregate them to months), the `monthplot` function in the `base` installation breaks out each month’s data and plots them separately, along with a horizontal line for each month’s mean (the default) or median (`base = median`) value over the time span. A few manual tweaks helps show the information in this plot more clearly:
+If your data are monthly (or if you aggregate them to months), the `monthplot` function in the `base` installation breaks out each month’s data and plots them separately, along with a horizontal line for each month’s mean (the default) or median (`base = median`) value over the time span. A few manual tweaks help show the information in this plot more clearly:
 
 ```
 monthplot(UK_births_ts, main="Monthly Patterns in UK Births (2003-2012)", 
@@ -387,7 +387,7 @@ require(ggseas)
 # Convert the time series object to a dataframe for stat_seas
 UK_births_ts_df = tsdf(UK_births_ts)
 
-# Plot seasonally-adjusted data
+# Plot seasonally-adjusted data over actual data
 ggplot(UK_births_ts_df, aes(x=x, y=y)) +
   ggtitle("Seasonally-Adjusted Monthly Births in the UK (2003-2012)") + 
   geom_line(color="gray70") +
@@ -422,7 +422,7 @@ plot(decompose(UK_births_ts), col="darkblue")
 
 Of course, simple time series decomposition only works correctly if the variance is more or less stable. When it’s not—as in the `AirPassengers` dataset, below—you have to transform the values before you decompose the series into its components. 
 
-There are two ways to do this: by using `type = "multiplicative"` in the `decompse` function as above, or by using the `BoxCox.lambda` function in the `forecast` package to determine an optimal transformation:
+There are two ways to do this: by using `type = "multiplicative"` in the `decompse` function as above, or by using the `BoxCox.lambda` function in the `forecast` package to determine an optimal transformation.
 
 Look at the data to see the change in variance over time:
 
@@ -458,7 +458,7 @@ plot(decompose(BoxCox(AirPassengers, AirPassengers_lambda)))
 
 Spectral analysis provides a simple way to evaluate whether there are any cyclical patterns in your time series. The `TSA` package's `periodogram` function creates a periodogram, where the highest peak(s) in the plot represent(s) possible cycling times. To do spectral analysis, you need to ensure the data are detrended first. 
 
-We’ll use the built-in annual sunspot dataset in this recipe.
+We’ll use the built-in annual sunspot dataset in this recipe, as sunspots have a well-known 11-year cycle.
 
 ```
 data(sunspot.year)
@@ -472,7 +472,7 @@ sunny = TSA::periodogram(diff(sunspot.year))
 
 ![](images/sunny_periodogram.png)
 
-You can also extract the `$freq` and `$spec` values from the spectrum object into a data frame as x and y, respectively, to get the exact frequency where the spectrum is maximized (or if you want to create a pretty plot with `ggplot2`).
+You can also extract the `$freq` and `$spec` values from the spectrum object into a data frame as x and y, respectively, to get the exact frequency where the spectrum is maximized, or if you want to create a prettier plot with `ggplot2`.
 
 ```
 sunny_df = data.frame(freq = sunny$freq, spec = sunny$spec)
@@ -538,7 +538,7 @@ infection_control = qcc(infections, sizes=patient_days/1000, type="u",
 
 ![](images/qcc.png)
 
-The control-chart default plot in `qcc` is fairly ugly. You can remove the components of the resulting R object for use or plotting elsewhere (e.g., with `ggplot2`).
+The control-chart default plot in `qcc` is fairly ugly. You can remove the components of the resulting R object for use elsewhere, such as with `ggplot2`:
 
 ```
 # Create a real date and move limits and rate into a data frame
@@ -552,10 +552,11 @@ ic_qcc$Violations = factor(ifelse(row.names(ic_qcc)
 
 # Plot a cleaner control chart
 ggplot(ic_qcc, aes(x=Month, y=Rate)) +
+  geom_line(aes(y=mean(ic_qcc$Rate)), color="gray50") +
   geom_line() +
   geom_point(color="darkblue") +
-  geom_point(data=filter(infection_control_qcc, 
-    Violations=="Violation"), color="red", size=3) +
+  geom_point(data=filter(ic_qcc, Violations=="Violation"),
+    color="red", size=3) +
   geom_line(aes(y=LCL), linetype="dashed", color="gray50") +
   geom_line(aes(y=UCL), linetype="dashed", color="gray50") +
   xlab("Month") +
@@ -572,7 +573,7 @@ T> Many people use control charts incorrectly on trending and/or autocorrelated 
 
 ### Identifying possible breakpoints in a time series
 
-We’ll explore intervention analysis in more detail in Part 2 of this book, but this is a useful place to demonstrate a simple way to identify changes in the statistical structure of a time series using the `strucchange` package.
+The `strucchange` package provides a simple way to identify changes in the statistical structure of a time series. 
 
 We’ll look at total monthly United States CO{$$}_2{/$$} emissions between February 2001 and June 2015 ([data from the US Energy Information Administration](http://www.eia.gov/beta/MER/index.cfm?tbl=T12.01#/?f=M&start=200101&end=201506&charted=0-1-13)). Load the `strucchange` package, download and filter the data, and convert the data to a time series object:
 
@@ -587,7 +588,7 @@ US_co2 = filter(US_co2, Column_Order == 14 & YYYYMM >= 200102 &
 US_co2_ts = ts(US_co2[,3], freq=12, start=c(2001,2))
 ```
 
-`strucchange` will pick the optimal number of breakpoints as determined by BIC, which can be subsequently plotted over the time series. As there does not seem to be a clear indication of general rises or declines in mean tendency, we can use `~ 1` in the formula in place of a dependent variable to assess whether there is a step change (or changes) in the time series:
+`strucchange` will pick the optimal number of breakpoints as determined by BIC, which can be subsequently plotted over the time series. As there does not seem to be a clear indication of generally trending rises or declines in mean tendency, we can use `~ 1` in the formula in place of a dependent variable to assess whether there is a step change (or changes) in the time series:
 
 ```
 # Obtain breakpoints estimate
@@ -641,7 +642,7 @@ fare = filter(CPI_xport, series_id == "CUUR0000SETG01" &
   year >= 2000 & year <= 2014 & period != "M13")
 ```
 
-Since `ccf` assumes that the time series detrended, we'll do that first. 
+Since `ccf` assumes that the time series is already detrended, we'll do that first. 
 
 ```
 # Create time series
@@ -656,7 +657,7 @@ fuel_detrend = na.omit(decompose(fuel_ts)$random)
 fare_detrend = na.omit(decompose(fare_ts)$random)
 ```
 
-An ACF plot shows pattern of each and both combinations for 18 months
+An ACF plot shows the pattern of each variable separately and together for an 18 month time span:
 
 ```
 acf(ts.union(fuel_detrend, fare_detrend))
@@ -675,7 +676,7 @@ ccfvalues
 
 ![](images/ccf_plot.png)
 
-We can see that the maximum occurs just to the left of zero, we can infer that fuel costs lead airline fares slightly. Since it's hard to read values off a plot, we can use a small function can find the maximum correlation value:
+We can see that the maximum occurs just to the left of zero, we can infer that fuel costs lead airline fares slightly. Since it's hard to read values off a plot, we can use a small function from [nvogen on Stack Overflow](http://stackoverflow.com/a/20133091) that can find the maximum correlation value:
 
 ```
 # Function to find CCF
@@ -701,9 +702,7 @@ The maximum cross-correlation value is 0.51, which occurs between airline fares 
 
 ### Basic forecasting
 
-We saw a forecasting as a portion of the *Chapter 1* example. We’ll explore the `forecast` package more detail in Part 2 of this book, but for sake of keeping ideas together, we'll replay that forecasting example here. An excellent companion to doing forecasting is understanding it: for that, we recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
-
-While this code is the same as in *Chapter 1*, to keep this chapter self-contained, here's the essential code to get the data and prep it for forecasting:
+We saw forecasting as a section within the *Chapter 1* example. For the sake of keeping ideas together, we'll replay that forecasting example here. An excellent companion to *doing* forecasting is *understanding* it: for that, I recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
 
 ```
 require(forecast)
@@ -741,7 +740,7 @@ power_monthly = power_monthly[2:47,]
 total_use_ts = ts(power_monthly$Total_Use_kWh, start=c(2007,1), frequency=12)
 ```
 
-The main functinon of the `forecast` package is `forecast`; you can also be more specific by calling `forecast.ets` or `auto,arima` for explicitly forecasting the time series based on the expontential smoothing model family or ARMIA models, respectively.
+The main function of the `forecast` package is `forecast`; you can also be more specific by calling `forecast.ets` or `auto,arima` for explicitly forecasting the time series based on the expontential smoothing model family or ARMIA models, respectively.
 
 Once you have a time series object, forecasting is a breeze:
 
