@@ -1,13 +1,13 @@
 # Chapter 8: Pattern Discovery and Dimension Reduction
 
-- Mapping multivariate relationships with non-metric multidimensional scaling (nMDS), Principal Components Analysis (PCA), and Correspondence Analysis (CA)
+- Mapping multivariate relationships with non-metric multidimensional scaling (nMDS), principal components analysis (PCA), and correspondence analysis (CA)
 - Grouping observations with hierarchical clustering 
 - How to partition the results of a hierarchical cluster analysis
 - Identifying and describing group membership with kMeans and PAM
 - Determining optimal numbers of groups with model-based clustering
 - Identifying group membership with irregular clusters
 - Variable selection in cluster analysis
-- Error checking cluster results with known outcomes 
+- Error checking cluster results when you have known outcomes 
 - Exploring outliers
 - Finding associations in shopping carts
 
@@ -17,13 +17,13 @@ Humans like to put things in boxes. "What things are most like each other?" is o
  
 ## Mapping multivariate relationships
 
-Non-metric multidimensional scaling (nMDS) is one such tool. It’s similar to Principal Components Analysis (PCA), but does not suffer from the assumption that the multivariate relationships must be linear. As a result, it has already replaced PCA as the primary descriptive and dimension reduction tool for multivariate data in some fields, and is moving rapidly into others. But although nMDS works better for nearly all applied problems and is easier to explain to business clients, PCA is still widely used. 
-
 ### Non-metric multidimensional scaling (nMDS)
+
+Non-metric multidimensional scaling (nMDS) is one such tool. It’s similar to principal components analysis (PCA), but does not suffer from the assumption that the multivariate relationships must be linear. As a result, it has already replaced PCA as the primary descriptive and dimension reduction tool for multivariate data in some fields, and is moving rapidly into others. But although nMDS works better for nearly all applied problems and is easier to explain to business clients, PCA is still widely used. 
 
 Non-metric multidimensional scaling (nMDS) is a useful way to identify groups, outliers, and influential variables in multivariate space. In essence, nMDS collapses multiple dimensions into two or three so that relationships based on multivariate proximity can be visualized. nMDS models a similarity matrix in low dimensional space in much the same way as a map can be created from scattered GPS coordinates.
 
-The data in this example we first saw in Chapter 7---nine financial ratios for 66 Spanish banks, 29 of which failed during the Spanish banking crisis ([Serrano-Cinca 2001](http://www.tandfonline.com/doi/abs/10.1080/13518470122202)). 
+The data in this example we first saw in *Chapter 7*---nine financial ratios for 66 Spanish banks, 29 of which failed during the Spanish banking crisis ([Serrano-Cinca 2001](http://www.tandfonline.com/doi/abs/10.1080/13518470122202)). 
 
 The nMDS analysis is largely automated in the `vegan` package using the `metaMDS` function (see `?metaMDS` for all the details). This function defaults to expecting count data; for continuous data, setting the distance metric to euclidean is more appropriate. There are dozens of distance metrics (see `?vegdist` for the options available in `vegan`), but only two are really needed for most applications: Bray-Curtis for count data (the default) and Euclidean for continuous data. `metaMDS` automatically performs transformations when given count data. Manual transformations are sometimes needed if the variables are continuous and have considerably different scales (e.g., scale to mean 0/sd 1, see `?scale`).
 
@@ -44,7 +44,9 @@ Run 1 stress 0.03122783
 *** Solution reached
 ```
 
-The plot that is built from this algorithm is the heart of nMDS analysis. Categorical information can be added as well. Note that axis values are meaningless in nMDS except as x/y coordinates; only spatial pattern matters for interpretation. Much like a map, points that lie close together on the plot are more similar, while points that are further away are more dissimilar:
+The plot that is built from this algorithm is the heart of nMDS analysis. Categorical information can be added as well. 
+
+Axis values are meaningless in nMDS except as x/y coordinates; only spatial pattern matters for interpretation. Much like a map, points that lie close together on the plot are more similar, while points that are further away are more dissimilar:
 
 ```
 # You may need to mess with par for the margins. Note: Clearing the 
@@ -72,7 +74,7 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n",
 
 ![](images/0815OS_05_nmds1.png)
 
-You also can easily explore regions within the plot in more detail by using `xlim` and `ylim` to zoom in on an area of interest, such as the right-side cluster:
+You also can easily explore regions within the plot in more detail by using `xlim` and `ylim` to zoom in on an area of interest, such as the right-side cluster (axes included here to show how to set zoom limits):
 
 ```
 # Zoom in to the cluster
@@ -110,7 +112,7 @@ ordiplot(euromap, display="sites", xaxt="n", yaxt="n", xlab=" ", ylab=" ",
 
 ### Diagnostics for nMDS results
 
-Diagnostics for nMDS results are also simple. A Shepard plot (also called a stress plot) shows the relationship between the similarity matrix and how well the nMDS algorithm represented that matrix in the plot. The greater the scatter around the (non-linear) regression line, the higher the stress, which would imply that the matrix similarities are not as well represented in the plot.
+Diagnostics for nMDS results are also simple. A Shepard plot (also called a stress plot) shows the relationship between the similarity matrix and how well the nMDS algorithm represented that matrix in the plot. The greater the scatter around the line, the higher the stress, which would imply that the matrix similarities are not as well represented in the plot.
 
 ```
 banks_stress = round(banks_mds$stress, digits=2)
@@ -124,7 +126,7 @@ stressplot(banks_mds, xaxt="n", yaxt="n")
 
 ![](images/0815OS_05_nmds3.png)
 
-The stress value itself is a single value that represents how well the plot represents the underlying similarity matrix. It can be roughly interpreted as follows:
+The stress value itself is a single value that shows how well the plot represents the underlying similarity matrix. It can be roughly interpreted as follows:
 
 {width="narrow"}
 | Stress Score | How well the plot represents the matrix |
@@ -139,7 +141,7 @@ The stress value itself is a single value that represents how well the plot repr
 
 Based on the diagnostics, this plot represents the similarity matrix quite well, so we can be confident in the nMDS representation of this dataset.
 
-Note: in general, stress values rise with the size of the dataset. Thus, interpreting the final stress score requires considering the size of the dataset in addition to considering the Shepard plot and the patterns revealed in the nMDS plot. When stress is high, sometimes it can be brought down by `metaMDS` options `k` and `trymax`, but the guidelines above should not be considered definitive—sometimes clear patterns can be seen even with relatively higher levels of stress.
+Note: in general, stress values rise with the size of the dataset. Thus, interpreting the final stress score requires considering the size of the dataset in addition to considering the scatter in the Shepard plot and the patterns revealed in the nMDS plot. When stress is high, sometimes it can be brought down by `metaMDS` options `k` and `trymax`, but the guidelines above should not be considered definitive—sometimes clear patterns can be seen even with relatively higher levels of stress.
 
 The final configuration may differ depending on the noise in the data, the initial configuration, and the number of iterations, so running the nMDS multiple times and comparing the interpretations from the lowest stress results is a good practice. `metaMDS` does this automatically, however, so multiple restarts are only necessary when running nMDS manually.
 
@@ -167,7 +169,7 @@ legend("topleft", legend=c("Bankrupt", "Solvent"), bty="n",
 
 ### Contour mapping influential variables over the nMDS plot
 
-Since there is a clear left-right gradient, and the R8 variable (the ratio of Cost of Sales to Sales) seems to be one of the major reasons for that, a contour of that variable, in that variable’s scale values---in this case, the ratio---can be mapped in the nMDS plot. Other contours can be mapped as well; this example shows R8 and R4 contours: 
+Since there is a clear left-right gradient, and the R8 variable (the ratio of Cost of Sales to Sales) seems to be one of the major reasons for that. A contour of that variable can be mapped in the nMDS plot; contours are plotted in each variable's original scale. Other contours can be mapped as well; this example shows R8 and R4 contours: 
 
 ```
 # par(mar=c(1.5,0,1,0))
@@ -242,7 +244,7 @@ ggbiplot(banks_pca, labels=rownames(banks), ellipse=T,
 
 ![](images/0815OS_05_07.png)
 
-Finally, variance plots often accompany PCA work; here's a way to do it with ggplot:
+Variance plots usually accompany PCA work; here's a way to do it with ggplot:
 
 ```
 # Get variances
@@ -316,7 +318,7 @@ Although it's a relatively old tool, cluster analysis has advanced with the deve
 
 Hierarchical clustering can be a useful way to summarize high-dimensional data, but results can be strongly dependent on the clustering method. Ward’s, average, and centroid methods tend to be the best places to start. Hierarchical cluster analysis tools are built into the `base` installation, so no specific packages are required here. 
 
-Typically, variables to cluster on are scaled (usually to mean 0 and sd 1), a distance matrix is created on the scaled data, and a clustering method is applied to the distance matrix. Since the set of descriptive variables in this data set are all on the same scale (i.e., a set of ratios), we don't need to scale this data, so we'll start by creating the distance matrix. We'll use Ward's clustering method here, which aims to create compact clusters by minimizing variance.
+Typically, variables to cluster on are scaled (usually to mean 0 and sd 1), a distance matrix is created on the scaled data, and a clustering method is applied to the distance matrix. Since the set of descriptive variables in the Spanish banks data set are all on the same scale (i.e., a set of ratios), we don't need to scale this data, so we'll start by creating the distance matrix. We'll use Ward's clustering method here, which aims to create compact clusters by minimizing variance.
 
 ```
 banks_dist = dist(banks[,3:11])
@@ -516,9 +518,9 @@ table(banks$Output, banks$km2)
   1 37  0
 ```
 
-Both `pam` and `kmeans` objects have ready-to-use plotting functions that allow you to compare the results of the cluster with actual values on an nMDS plot. If you’re looking for a production plot, you’re probably better off doing it manually in `ggplot2`, but both of these functions work fine for quick validation work. 
+Both `pam` and `kmeans` objects have ready-to-use plotting functions that allow you to compare the results of the cluster with actual values on an nMDS plot. If for some reason you’re looking for a production plot, you’re probably better off doing it manually in `ggplot2`, but both of these functions work fine for quick validation work. 
 
-For `pam` results, the `plot` function provides two plots, the first of which has what we’re looking for. Note that the y-axis is reversed as compared to the other nMDS plots we’ve seen:
+For `pam` results, the `plot` function provides two plots, the first of which has what we’re looking for. Note that the scale along the y-axis is reversed as compared to the other nMDS plots we’ve seen, but that doesn't change the interpretation:
 
 ```
 plot(banks_pam, which.plot=1, xlab="", ylab="")
@@ -526,7 +528,7 @@ plot(banks_pam, which.plot=1, xlab="", ylab="")
 
 ![](images/0815OS_05_11.png)
 
-The `useful` package allows you to plot a kmeans object via a simplified ggplot:
+The `useful` package allows you to plot a `kmeans` object via a simplified ggplot:
 
 ```
 require(useful)
@@ -539,6 +541,8 @@ plot(banks_kmeans, data=banks, class="Output", xlab="", ylab="")
 ### How to choose an optimal number of clusters with bootstrapping
 
 The `clusGap` function in the `cluster` package compares a set of observed cluster sizes with a bootstrapped sample to evaluate the difference between actual and expected for a given number of clusters. That distance is the Gap statistic; the mathematically optimal number of clusters according to this approach is the smallest number within one standard error (`SE.sim`) of the smallest gap’s value (`gap`). You can specify whether to use `kmeans` or `pam` in the `FUNcluster` option. 
+
+From these results, we can see that the two cluster solution is clearly the best option.
 
 ```
 banks_gap = clusGap(banks[,3:11], FUNcluster=pam, K.max=10, B=500)
@@ -553,8 +557,6 @@ ggplot(banks_gap_df, aes(x=1:nrow(banks_gap_df))) +
 ```
 
 ![](images/0815OS_05_13.png)
-
-The two cluster solution is clearly the best option.
 
 
 ### Determining optimal numbers of clusters with model-based clustering
@@ -617,8 +619,9 @@ Running the main function, `Mclust`, is easy. Interpreting the results takes mor
 | "XXI"	|	diagonal multivariate normal |
 | "XXX"	|	ellipsoidal multivariate normal |
 
+Note: the `mclust` package reverses the typical BIC value scale/sign relationship where lowest is better; here, the higher value suggests the better model(s). 
 
-By looking at the BIC table as well as plotting the modeling results, we can see why the algorithm chose the **VVV** model type:
+By looking at the BIC table as well as plotting the modeling results, we can see why the algorithm chose the **VVV** model type---the BIC value of -4760 under VVV for 3 clusters is the best value in the table.
 
 ```
 diabetes_mclust$BIC
@@ -634,6 +637,7 @@ Bayesian Information Criterion (BIC):
 7 -5128.736 -5129.460 -4857.097        NA -4849.023        NA -4805.518
 8 -5135.787 -5135.053 -4858.904        NA -4873.450        NA -4820.155
 9 -5150.374 -5112.616 -4878.786        NA -4865.166        NA -4840.039
+
         EVE       VEE       VVE       EEV       VEV       EVV       VVV
 1 -5136.446 -5136.446 -5136.446 -5136.446 -5136.446 -5136.446 -5136.446
 2 -4875.633 -4920.301 -4877.086 -4918.500 -4834.727 -4823.779 -4825.027
@@ -667,7 +671,7 @@ plot(diabetes_mclust, what="classification")
 ![](images/diabetes_class.png)
 
 
-We can explore the bivariate density of the original data through this package as well, with some simple code:
+We can also explore the bivariate density of the original data through this package in both 2- and 3-dimensions:
 
 ```
 # Bivariate density (basic contour plot)
@@ -745,7 +749,7 @@ require(dbscan)
 kNNdistplot(multishapes[,1:2], k=3)
 
 # Try an eps value of 0.15
-abline(h=0.15, col="blue", lty=3)
+abline(h=0.15, lty=3)
 ```
 
 ![](images/dbscan_knn.png)
@@ -953,7 +957,7 @@ It seems that the use of all of the variables contributes some noise to the clas
 
 On the flip side of the coin of similarity is the exploration of outliers. If anyone has ever asked you for an "automatic outlier detection" data product, you immediately realized that they probably don't understand analytics. What counts as an outlier is completely dependent on context. That said, sometimes you need to explore what might count as an outlier across enough variables that visualization becomes difficult, if not impossible. Other times, you might want to get a head-start on investigating a potential outlier or trend before it wrecks things. Or perhaps you need to understand the probabilities associated with unusual but possible events. Multivariate outlier exploration, extreme value analysis, and anomaly detection are useful exploratory tools for these purposes. 
 
-Outliers are easy enough to explore with standard EDA methds when you have three or fewer dimensions, but after that you need ways to detect and explore multivariate outliers. `mvoutlier` and `lof` are two packages that make it fairly simple. But don't ever forget that what constitutes a *real* outlier is completely contextual; think of these tools as a way to explore, not as a way to define. 
+Outliers are easy enough to explore with standard EDA methds when you have three or fewer dimensions, but after that you need ways to detect and explore multivariate outliers. `mvoutlier` and `lof` are two packages that make it fairly simple. But don't ever forget that what constitutes a *real* outlier is completely contextual---think of these tools as a way to explore, not as a way to define. 
 
 ### Identifying outliers with distance functions
 
@@ -997,7 +1001,7 @@ ggplotly(p1)
 
 ![](images/mvout_ly.png)
 
-The `uni.plot` function allows you to pass through plotting options, but not always easily---for example, you'll have to modify the function to change point colors. You can use point assignment via `pch`, however, to show a factor variable. 
+The `uni.plot` function allows you to pass through plotting options, but not always easily---for example, you'll have to modify the function itself to change point colors. You can use point assignment via `pch`, however, to show a factor variable. 
 
 For our second `mvoutlier` example, we'll use the bike sharing data from previous chapters. We can plot the weather-based variables and use the point type to show the weather situation relative to potential outlier observation. The values of the weather situation are mapped to the matching `pch` values, so `pch=1`, a circle, represents observations under clear weather, and so on, while the outlier status is mapped to red (outlier) or green (not an outlier).  
 
@@ -1031,11 +1035,12 @@ ggplotly(p_lof)
 
 ### Anomaly detection
 
-Twitter has come up with an anomaly detection algorithm for vectors, or for even things like time series that have cyclical patterns. (It's not on CRAN, so install it from Github: `devtools::install_github("twitter/AnomalyDetection"`.) 
+Twitter has come up with an anomaly detection algorithm for vectors, or for even things like time series that have cyclical patterns.
 
 The vignette has a great built-in demo dataset---presumably tweets per minute---so we'll use that here. 
 
 ```
+#devtools::install_github("twitter/AnomalyDetection
 require(AnomalyDetection)
 data(raw_data)
 
@@ -1053,12 +1058,14 @@ The algorithm defaults to determining no more than 10% of the data will be class
 
 You can use the `threshold` option to identify values *above* the median, 95th, or 99th percentiles of daily maximums. There's no equivalent option for values *below* a threshold, unfortunately---using it on this data misses the low end anomalies. 
 
-Finally, you can extract the data with the expected values by pulling it from the list, e.g., `raw_data_anomalies_df = raw_data_anomalies$anoms`. 
+Finally, you can extract the data with the expected values by pulling it from the list, e.g., 
+
+`raw_data_anomalies_df = raw_data_anomalies$anoms`
 
 
 ### Extreme value analysis
 
-Extreme value analysis (EVA) is a different way to explore outliers; by acknowledging that outliers are real and can be incredibly useful for analysis, we can better assess the likelihood of "improbable" events. 
+Extreme value analysis (EVA) is a different way to explore outliers; by acknowledging that outliers can be real data and can be incredibly useful for analysis, we can better assess the likelihood of "improbable" events. 
 
 There are a lot of packages in R that can do EVA, though some remain pretty technical in their documentation, when they have documentation at all. A great entry point for EVA in R is through the `extremeStat` package, which wraps around other R packages to allow for semi-automated distribution fitting and return-interval analysis. 
 
@@ -1324,11 +1331,11 @@ I> *Confidence* is the probability that a transaction including the items on one
 I> side of the rule also contains the items on the other side. 
 I> 
 I> *Support* is the proportion of transactions that contain that item or item set. 
-I> Higher support = relevant to large proportion of transactions.  
+I> Higher support means the rule is relevant to larger proportion of transactions.  
 
-Now we can look at the rules. A key concept for rule usefulness is *lift*. A lift value at or close to one suggests that the items or either side of the rule are independent, so are usually of little further interest. Lift values above 1 suggest that the presence of the items on one side of the rule set increase the chances of seeing items on the other side. Where items are all purchased or occur at once (e.g., as in a supermarket), the direction of the rule set is irrelevant. Where items are purchased or occur in a series (e.g., as in a web store, where orders for specific items are placed in order), the rule set is ordered from the first purchased (the `{lhs}`, left hand side), to those placed in the cart later (the `{rhs}`, right hand side). 
+Now we can look at the rules. A key concept for rule usefulness is *lift*. A lift value at or close to one suggests that the items or either side of the rule are independent, so are usually of little further interest. Lift values above 1 suggest that the presence of the items on one side of the rule set increase the chances of seeing items on the other side. Where items are all purchased or occur at once (e.g., as in a supermarket), the direction of the rule set is irrelevant. Where items are purchased or occur in a series (e.g., as in a web store, where selections of specific items might be placed in a meaningful order), the rule set is ordered from the first purchased (the `{lhs}`, left hand side), to those placed in the cart later (the `{rhs}`, right hand side). 
 
-We'll look first at the rule sets that generate the greatest lift with the `inspect` function:
+We'll look first at the top 10 rule sets by greatest lift with the `inspect` function:
 
 ```
 inspect(head(sort(basket_rules_custom, by="lift"), 10))
