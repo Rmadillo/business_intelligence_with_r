@@ -111,7 +111,7 @@ The following tables summarize major effect size statistics (ESSs) by type of ef
 
 Perhaps the most common question an analyst will get from a business decision maker is whether or not there is a difference between groupings. There are a lot of ways to answer that, of course, but the bread-and-butter answer should always be based on effect sizes.
 
-A> **Why not use *p*-values?**
+A> #### Why not use *p*-values?
 A> 
 A> If I had a dollar for every time a clinician or manager asked for "statistical significance," I'd be rich. No doubt you have had this same request numerous times as well. But even when properly used---which almost never happens---*p*-values give a trivial answer to a question they don't care about. [Aschwanden 2015](http://fivethirtyeight.com/features/science-isnt-broken/) provides a nice general-audience overview of this problem, while Intel engineer Charles Lambdin wrote a scathing yet entertaining take-down of the details of typical mindests around *p*-values in a 2012 article called [*Significance tests as sorcery: Science is empirical--significance tests are not*](http://psychology.okstate.edu/faculty/jgrice/psyc5314/SignificanceSorceryLambdin2012.pdf). 
 A> 
@@ -545,16 +545,18 @@ y_pred: predicted distribution for a new datapoint
 
 ## Effect sizes: Measuring *similarities* between groups
 
-The other basic analytics question aims to understand similarities between groups: how similar are two groups? Correlation is the primary (standardized) tool here, although a wide variety of other approaches exist; of particular use is the use of regression coeffients to answer the answer the question: to what extent are two groups related?
+The other basic analytics question aims to understand relationships: how similar are two groups? Correlation is the primary (standardized) tool here, although a wide variety of other approaches exist; of particular use are regression coeffients to answer the question: what's the incremental effect of one variable on another?
 
 
 ### Correlation
 
-Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho ({$$}r_s{/$$}), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. And, when you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this section.
+Correlation is one of the oldest and most well-known statistical tools, and for good reason: it provides a lot of detail in a single metric. While Pearson’s correlation (*r*) is often the default approach by many analysts, it’s not always the best—in many cases, Spearman’s rho ({$$}r_s{/$$}), Kendall’s tau-b (&tau;-b), or polyserial/polychoric approaches are better choices. 
+
+When you have categorical data, using association coefficients like the odds ratio, Yule’s Q, or Cohen’s kappa (&kappa;) are appropriate tools, and are just as useful (and old) as correlation. We’ll explore how you can acquire each of these values with R in this section.
 
 As before, every effect size measure should be accompanied by an appropriate credible or confidence interval whenever possible, which is usually best done by bootstrap unless you can meet the method’s assumptions.
 
-Although correlation coefficients are easy to acquire with R’s `base` installation, anything other than confidence/credible intervals are not, so we’ll use the `psych` package for the non-parametric correlation part of this recipe and `boot`/`boot.ci`/`bootES` and `BayesianFirstAid` for those intervals. We’ll also use a piece of the bike share dataset to illustrate the methods.
+Although correlation coefficients are easy to acquire with R’s `base` installation, anything other than confidence/credible intervals are not, so we’ll use the `psych` package for the non-parametric correlation part of this recipe and `boot`/`boot.ci`/`bootES` and `BayesianFirstAid` for those intervals. We’ll use a different piece of the bike share dataset to illustrate these methods.
 
 ```
 require(psych)
@@ -587,7 +589,7 @@ Stat        CI (Low)    CI (High)   bias        SE
 0.650       0.633       0.667       -0.000      0.009      
 ```
 
-However, it’s pretty clear that this relationship isn’t truly linear if you plot it. Kendall’s and Spearman’s can be acquired with the `cor.ci` function as follows (use the *x*`.emp`—empirical—CI values to obtain the percentile confidence interval values, although the differences will be trivial with large sample sizes):
+However, it’s pretty clear that this relationship isn’t truly linear if you plot it. Kendall’s and Spearman’s can be acquired with the `cor.ci` function; use the `*.emp`—empirical—CI values to obtain the percentile confidence interval values, although the differences will be trivial with large sample sizes:
 
 ```
 # Kendall's (which should generally be preferred)
@@ -704,7 +706,7 @@ cnt        0.43200921  1.0000000 -0.14711015
 windspeed -0.09511844 -0.1471101  1.00000000
 ```
 
-Once we have a matrix, we can plug it into the `partial.r` function, specifying that the first two variables of the matrix are the correlation of interest and the third is the variable we wish to control for (the second and third inputs, respectively):
+Once we have a matrix, we can plug it into the `partial.r` function, specifying that the first two variables of the matrix are the correlation of interest, and the third is the variable we wish to control for (the second and third inputs, respectively):
 
 ```
 # Obtain partial r
@@ -761,7 +763,7 @@ polycor::polyserial(math_score, poly_math$enjoy)
 
 ### Associations between categorical variables
 
-Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users: it provides the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Cohen’s &kappa; is probably the best tool when you want to compare agreement instead of association.
+Perhaps the most famous association metric is the odds ratio, which is really useful but can be misleading for those not used to its mathematical properties. Yule’s Q has more desirable properties in many cases, especially in explaining results to business users: it provides the same type of information as correlation does for quantitative data, that is, a value scaled to [-1,1]. Cohen’s &kappa; is probably the best tool when you want to compare *agreement* instead of *association*.
 
 Since the bike share data doesn’t lend itself well to exploring the association of categorical variables, we’ll explore "categorical correlation" with the `Aspirin` data from the `abd` package. The functions we’ll use include the `oddsratio` function from the `epitools` package, and the `Yule` (Yule’s Q) function from `psych`:
 
