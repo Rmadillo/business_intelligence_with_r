@@ -318,17 +318,13 @@ bike_air_temp_mh
 Sometimes density plots (the default) can be useful, or perhaps you want to keep it simple and show a boxplot. Just change the `type` option:
 
 ```
-bike_air_temp_md = ggMarginal(bike_air_temp, type="density")
-
-bike_air_temp_md
+ggMarginal(bike_air_temp, type="density")
 ```
 
 ![](images/scatter_marginal_density.png)  
 
 ```
-bike_air_temp_mb = ggMarginal(bike_air_temp, type="boxplot")
-
-bike_air_temp_mb
+ggMarginal(bike_air_temp, type="boxplot")
 ```
 
 ![](images/scatter_marginal_boxplot.png)  
