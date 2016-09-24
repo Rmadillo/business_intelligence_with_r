@@ -375,8 +375,6 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
 
 ![](images/bike_facet_densities.png)
 
-|  |  
-
 ## Pareto charts
 
 Pareto charts are a mainstay of BI work, though the effort to create them can often outweigh the time a decision-maker spends with the result. The `qcc` library makes their creation simple. 
