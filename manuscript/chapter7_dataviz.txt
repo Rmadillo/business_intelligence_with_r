@@ -26,6 +26,7 @@ We’ll first use `dplyr`'s `group_by` function to group the casual bike use val
 bike_share_grp = group_by(bike_share_daily, weekday, mnth)
 
 bike_share_mean = summarize(bike_share_grp, mean=mean(casual))
+
 bike_share_sd = summarize(bike_share_grp, sd=sd(casual))
 
 p1 = ggplot(bike_share_mean, aes(weekday, mnth)) +
