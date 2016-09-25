@@ -1021,7 +1021,8 @@ require(DMwR)
 
 # Calculate the local outlier factor values
 banks$lof = lofactor(banks[,3:11], k=4)
-
+```
+```
 # Plot the lof results interactively
 p_lof = ggplot(banks, aes(lof, text = paste("Bank: ",
     banks$NUMERO, "<br>Solvency: ", Output))) +
