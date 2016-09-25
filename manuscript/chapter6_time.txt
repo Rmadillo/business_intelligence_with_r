@@ -741,7 +741,8 @@ Once you have a time series object, forecasting is a breeze:
 ```
 # Automatically obtain the forecast for the next 6 months
 total_use_fc = forecast(total_use_ts, h=6)
-
+```
+```
 # View the forecast model results
 summary(total_use_fc)
 plot(total_use_fc)
