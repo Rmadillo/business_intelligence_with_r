@@ -7,7 +7,7 @@
 
 ## Overview
 
-The use of effect sizes has been gaining in popularity in research for the last decade or so, but unfortunately have made little headway into business. But effect sizes provide the results that business users *really* want to know—not just whether two groups are different or the same, but ***how*** different or similar are they? 
+The use of effect sizes has been gaining in popularity in research for the last decade or so, but unfortunately has made little headway into business. But effect sizes provide the results that business users *really* want to know—not just whether two groups are different or the same, but ***how*** different or similar are they? 
 
 The following tables summarize major effect size statistics (ESSs) by type of effect size (differences in tendency, differences in variation, and relationships), and some packages and functions I've found useful to calculate them. After the tables are recipes and examples of these ESSs. There are a variety of options inside R, of course, but the functions in this chapter should provide most of the essential values you'll need. 
 
