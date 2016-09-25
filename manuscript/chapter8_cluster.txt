@@ -947,7 +947,6 @@ $misclassified
 $errorRate
 [1] 0.2152269
 
-
 adjustedRandIndex(bc_wisc$Diagnosis, bc_wisc$mclust_all)
 
 [1] 0.3827008
