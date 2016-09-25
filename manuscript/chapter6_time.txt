@@ -705,9 +705,7 @@ The maximum cross-correlation value is 0.51, which occurs between airline fares 
 
 ### Basic forecasting
 
-We saw forecasting as a section within the *Chapter 1* example. For the sake of keeping ideas together, we'll replay that forecasting example here. 
-
-An excellent companion to *doing* forecasting is *understanding* it: for that, I recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
+We saw forecasting as a section within the *Chapter 1* example. For the sake of keeping ideas together, we'll replay that forecasting example here. An excellent companion to *doing* forecasting is *understanding* it: for that, I recommend Rob Hyndman’s excellent online text, *[Forecasting: Principles and Practice](https://www.otexts.org/fpp)*.
 
 ```
 require(forecast)
@@ -730,6 +728,8 @@ power_group = group_by(power, Month)
 power_monthly = summarise(power_group, 
   Total_Use_kWh = sum(Global_active_power_locf)/60)
 power_monthly = power_monthly[2:47,]
+
+total_use_ts = ts(power_monthly$Total_Use_kWh, start=c(2007,1), frequency=12)
 ```
 
 The main function of the `forecast` package is `forecast`; you can also be more specific by calling `forecast.ets` or `auto,arima` for explicitly forecasting the time series based on the expontential smoothing model family or ARMIA models, respectively.
@@ -737,8 +737,6 @@ The main function of the `forecast` package is `forecast`; you can also be more 
 Once you have a time series object, forecasting is a breeze:
 
 ```
-total_use_ts = ts(power_monthly$Total_Use_kWh, start=c(2007,1), frequency=12)
-
 # Automatically obtain the forecast for the next 6 months
 total_use_fc = forecast(total_use_ts, h=6)
 
