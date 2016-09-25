@@ -113,7 +113,9 @@ Perhaps the most common question an analyst will get from a business decision ma
 
 A> #### Why not use *p*-values?
 A> 
-A> If I had a dollar for every time a clinician or manager asked for "statistical significance," I'd be rich. No doubt you have had this same request numerous times as well. But even when properly used---which almost never happens---*p*-values give a trivial answer to a question they don't care about. [Aschwanden 2015](http://fivethirtyeight.com/features/science-isnt-broken/) provides a nice general-audience overview of this problem, while Intel engineer Charles Lambdin wrote a scathing yet entertaining take-down of the details of typical mindests around *p*-values in a 2012 article called [*Significance tests as sorcery: Science is empirical--significance tests are not*](http://psychology.okstate.edu/faculty/jgrice/psyc5314/SignificanceSorceryLambdin2012.pdf). 
+A> If I had a dollar for every time a clinician or manager asked for "statistical significance," I'd be rich. No doubt you have had this same request numerous times as well. But even when properly used---which almost never happens---*p*-values give a trivial answer to a question they don't care about. 
+A> 
+A> [Aschwanden 2015](http://fivethirtyeight.com/features/science-isnt-broken/) provides a nice general-audience overview of this problem, while Intel engineer Charles Lambdin wrote a scathing yet entertaining take-down of the details of typical mindests around *p*-values in a 2012 article called [*Significance tests as sorcery: Science is empirical--significance tests are not*](http://psychology.okstate.edu/faculty/jgrice/psyc5314/SignificanceSorceryLambdin2012.pdf). Both are well worth the read, as are many of the the references in the latter. 
 A> 
 A> Effect sizes (and confidence intervals) get at what decision-makers really need to know. The following table shows why these, and not *p*-values, provide that knowledge:
 A> 
