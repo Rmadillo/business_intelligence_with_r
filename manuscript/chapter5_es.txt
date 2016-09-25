@@ -402,13 +402,20 @@ devtools::install_github("rasmusab/bayesian_first_aid")
 require(BayesianFirstAid)
 ```
 
-Using the earlier example above for the differences in proportions, we get the same sort of results (i.e., the effect size and CIs), as well as a plot of the posterior distributions:
+Using the earlier example above for the differences in proportions, we get the same sort of results (i.e., the effect size and CIs), as well as---most importantly---a plot of the posterior distributions:
 
 {lang="text"}
 ```
 workday_diff_bayes = bayes.prop.test(casual_workingday_use$Yes, 
   casual_workingday_use$sum)
   
+plot(workday_diff_bayes)
+```
+
+![](images/0815OS_02_16.png)
+
+{lang="text"}
+```
 workday_diff_bayes
 
     Bayesian First Aid propotion test
@@ -435,6 +442,14 @@ To look at the difference between means of two groups, we can use the `bayes.t.t
 ```
 casual_notworkingday_mean_bayes = bayes.t.test(casual~season, 
   data=casual_notworkingday)
+
+plot(casual_notworkingday_mean_bayes)
+```
+
+![](images/0815OS_02_17.png)
+
+{lang="text"}
+```
 casual_notworkingday_mean_bayes
 
     Bayesian estimation supersedes the t test (BEST) - two sample
@@ -450,11 +465,7 @@ sd of group Fall: 742 [609, 904]
 
 The difference of the means is greater than 0 by a probability of >0.999
 and less than 0 by a probability of <0.001
-
-plot(casual_notworkingday_mean_bayes)
 ```
-
-![](images/0815OS_02_17.png)
 
 The package allows the use of `summary` for its output; with it we can see the CIs for each statistic as well as the standardized effect size (`eff_size`, *d*) on this contrast:
 
