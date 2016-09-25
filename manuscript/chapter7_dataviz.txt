@@ -275,6 +275,22 @@ plot(gvisMotionChart(rosling_data,
 ![](images/motionplot.png)
 
 
+### Interactive parallel coordinates
+
+Parallel coordinates plots aren't always useful when you have lots of dimensions or if you want to explore outcomes relative to variables. That's where interactivity becomes essential. Using the `parcoords` `htmlwidget` on the Spanish banks data set, we can set colors based on whether the bank remain solvent, and use interactivity to explore the associated patterns within the 9 financial ratio variables. 
+
+```
+# devtools::install_github("timelyportfolio/parcoords")
+
+require(parcoords)
+
+parcoords(banks[2:12], reorderable = T, color = list(colorScale=
+  htmlwidgets::JS('d3.scale.category10()' ), colorBy="Output") , 
+  brushMode = "1D-axes-multi")
+```
+
+![](images/interactive_pcp.png)
+
 ### Interactive tables with DT
 
 Interactive tables, courtesy of the `DT` package, are made with a single line of code:
