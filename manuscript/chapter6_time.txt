@@ -713,36 +713,23 @@ An excellent companion to *doing* forecasting is *understanding* it: for that, I
 require(forecast)
 require(dplyr)
 
-# Download data and load into R
+### Data download and prep, same as in Chapter 1 ###
 download.file("http://archive.ics.uci.edu/ml/machine-learning-databases
   /00235/household_power_consumption.zip", destfile = 
   "~/BIWR/Chapter1/Data/household_power_consumption.zip")
-
 unzip("~/BIWR/Chapter1/Data/household_power_consumption.zip", exdir="Data")
-
 power = read.table("~/BIWR/Chapter1/Data/household_power_consumption.txt", 
   sep=";", header=T, na.strings=c("?",""), stringsAsFactors=FALSE)
   
-# Convert and create date objects
 power$Date = as.Date(power$Date, format="%d/%m/%Y")
-
 power$Month = format(power$Date,"%Y-%m")
-
 power$Month = as.Date(paste0(power$Month, "-01"))
-
-# Interpolate missing values and summarize monthly total power use
 power$Global_active_power_locf = na.locf(power$Global_active_power)
 
 power_group = group_by(power, Month)
-
 power_monthly = summarise(power_group, 
   Total_Use_kWh = sum(Global_active_power_locf)/60)
-
-# Remove partial months from data frame
 power_monthly = power_monthly[2:47,]
-
-# Create a time series object of Total Usage
-total_use_ts = ts(power_monthly$Total_Use_kWh, start=c(2007,1), frequency=12)
 ```
 
 The main function of the `forecast` package is `forecast`; you can also be more specific by calling `forecast.ets` or `auto,arima` for explicitly forecasting the time series based on the expontential smoothing model family or ARMIA models, respectively.
@@ -750,15 +737,19 @@ The main function of the `forecast` package is `forecast`; you can also be more 
 Once you have a time series object, forecasting is a breeze:
 
 ```
+total_use_ts = ts(power_monthly$Total_Use_kWh, start=c(2007,1), frequency=12)
+
 # Automatically obtain the forecast for the next 6 months
 total_use_fc = forecast(total_use_ts, h=6)
 
 # View the forecast model results
 summary(total_use_fc)
-
-plot(total_use_fc)
 ```
 
 ![](images/forecast_model_output.png)
+
+```
+plot(total_use_fc)
+```
 
 ![](images/total_use_forecast.png)
