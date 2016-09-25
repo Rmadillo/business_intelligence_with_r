@@ -404,7 +404,6 @@ require(BayesianFirstAid)
 
 Using the earlier example above for the differences in proportions, we get the same sort of results (i.e., the effect size and CIs), as well as---most importantly---a plot of the posterior distributions:
 
-{lang="text"}
 ```
 workday_diff_bayes = bayes.prop.test(casual_workingday_use$Yes, 
   casual_workingday_use$sum)
@@ -434,7 +433,6 @@ of <0.001 and larger for Group 2 by a probability of >0.999 .
 
 To look at the difference between means of two groups, we can use the `bayes.t.test` function:
 
-{lang="text"}
 ```
 casual_notworkingday_mean_bayes = bayes.t.test(casual~season, 
   data=casual_notworkingday)
@@ -501,7 +499,6 @@ y_pred     -309.647  721.162 1225.480 1743.096 2781.779
 ```
 
 Evaluations of the difference in median and variance contrasts (among others) are planned but not yet implemented. Follow it on [GitHub](https://github.com/rasmusab/bayesian_first_aid) to check for updates. 
-
 
 Finally, you can review the MCMC diagnostics for any of these functions by using `diagnostics`:
 
@@ -669,13 +666,19 @@ boot.ci(rs_boot, type="bca")$bca[4:5]
 
 We saw the Bayesian approach to difference-based effect size calculations earlier in this chapter; here's the approach for correlation:
 
-{lang="text"}
 ```
 require(BayesianFirstAid)
 
 atemp_bike_cor_bayes = bayes.cor.test(bike_use_atemp$air_temp, 
   bike_use_atemp$count)
 
+plot(atemp_bike_cor_bayes)
+```
+
+![](images/0815OS_02_18.png)
+
+{lang="text"}
+```
 atemp_bike_cor_bayes
 
     Bayesian First Aid Pearson's Correlation Coefficient Test
@@ -687,11 +690,7 @@ Estimated correlation:
   0.59 0.68
 The correlation is more than 0 by a probability of >0.999
 and less than 0 by a probability of <0.001
-
-plot(atemp_bike_cor_bayes)
 ```
-
-![](images/0815OS_02_18.png)
 
 
 ### Partial correlations
