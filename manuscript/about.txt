@@ -8,7 +8,7 @@ Dwight Barry is a Lead Data Scientist at Seattle Children's Hospital, in Seattle
 
 ### Session Info  
 
-The code in this book was run on:
+The code in this book was tested on:
 
 ```
 R version 3.3.1 (2016-06-21)
@@ -39,6 +39,11 @@ Due to page width constraints, some lines of code *as printed in the book* have 
 The [cover photo](https://pixabay.com/en/toronto-ontario-canada-road-1439133/) was taken by [Gerd Altmann](https://pixabay.com/en/users/geralt-9301/), and was released as [CC0](https://pixabay.com/en/service/terms/#usage). 
 
 | |  
+
+A> ![](images/mito_cure_720.jpg)
+A> 
+A> **All proceeds will benefit the *Agape Girls Junior Guild*, supporting mitochondrial disorder research at Seattle Children's Research Institute and Seattle Children's Hospital.** 
+
 
 ### Contact 
 
