@@ -230,6 +230,8 @@ R8 -0.413 -0.109        -0.570        -0.695
 R9  0.424                0.451 -0.430 -0.648                     
 ```
 
+|  |  
+
 The basic `biplot` function provides the essential details (e.g., `biplot(banks_pca, col=c("black", "gray40"))`) but a function in the `ggbiplot` does the same, only via `ggplot2` for a prettier image:
 
 ```
