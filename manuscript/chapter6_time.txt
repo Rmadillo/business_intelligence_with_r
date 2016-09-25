@@ -724,6 +724,7 @@ power = read.table("~/BIWR/Chapter1/Data/household_power_consumption.txt",
 power$Date = as.Date(power$Date, format="%d/%m/%Y")
 power$Month = format(power$Date,"%Y-%m")
 power$Month = as.Date(paste0(power$Month, "-01"))
+
 power$Global_active_power_locf = na.locf(power$Global_active_power)
 
 power_group = group_by(power, Month)
