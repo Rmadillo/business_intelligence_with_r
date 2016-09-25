@@ -430,11 +430,7 @@ Estimated group difference (Group 1 - Group 2):
   -0.02 [-0.02, -0.015]
 The relative frequency of success is larger for Group 1 by a probability
 of <0.001 and larger for Group 2 by a probability of >0.999 .
-
-plot(workday_diff_bayes)
 ```
-
-![](images/0815OS_02_16.png)
 
 To look at the difference between means of two groups, we can use the `bayes.t.test` function:
 
