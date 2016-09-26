@@ -69,9 +69,9 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 # see documentation at https://github.com/htmlwidgets/sparkline
 require(sparkline)
 require(lubridate)
-```
+~~~~~~~~
 
-```
+~~~~~~~~
 # 10 minute section of vital signs data from University of Queensland
 vs = read.csv("https://outbox.eait.uq.edu.au/uqdliu3/uqvitalsignsdataset/
   _uqvitalsignsdata/case20/fulldata/uq_vsd_case20_fulldata_10.csv", header=T)
