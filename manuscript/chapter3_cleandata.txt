@@ -27,9 +27,9 @@ str(customers)
 
 # Look at the first (or last) 6 lines of the data frame
 head(customers)
-
 tail(customers)
 ```
+
 ```
 # Obtain basic summary stats
 summary(customers)
