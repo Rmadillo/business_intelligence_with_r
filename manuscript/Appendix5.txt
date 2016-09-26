@@ -12,10 +12,7 @@
 | en dash -- | `--` |
 | em dash --- | `---` |
 | equation {$$}E = mc^2{/$$} | `$E = mc^{2}$` |
-
-`> block quote`  
-
-> block quote  
+| block quote (indented) | `> text for quote` |     
 
 **Links and Images**
 
@@ -35,6 +32,8 @@ block code
     code
     here
     ```
+
+|  | 
 
 **Lists**  
 
