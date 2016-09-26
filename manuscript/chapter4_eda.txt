@@ -528,57 +528,28 @@ I> ```
 
 You can create two- , three-, or *n*-way tables by adding variables to the table call, and use `addmargins` to get marginal sums. 
 
-A three-way table:
+{width="wide"}
+| A three-way table | A three-way table with marginals | 
+| ----------------- | -------------------------------- |
+| `table(bike_share_daily[c(3,6:7)])` | `addmargins(table(bike_share_daily[c(3,6:7)]))` | 
+| `, , weekday = 0`  | `, , weekday = 0` | 
+| `        holiday`  | `        holiday` |
+| `season   No Yes`  | `season    No Yes Sum` | 
+| `  Winter 27   0`  | `  Winter  27   0  27` |
+| `  Spring 26   0`  | `  Spring  26   0  26` |
+| `  Summer 26   0`  | `  Summer  26   0  26` |
+| `  Fall   26   0`  | `  Fall    26   0  26` |
+|                    | `  Sum    105   0 105` |
+|  |  |  
+| `, , weekday = 1`  | `, , weekday = 1` |
+| `        holiday`  | `        holiday` |
+| `season   No Yes`  | `season    No Yes Sum` | 
+| `  Winter 20   6`  | `  Winter  20   6  26` |
+| `  Spring 24   3`  | `  Spring  24   3  27` |
+| `  Summer 23   3`  | `  Summer  23   3  26` |
+| `  Fall   23   3`  | `  Fall    23   3  26` |
+|                    | `  Sum     90  15 105` |
 
-```
-table(bike_share_daily[c(3,6:7)]) 
-
-, , weekday = 0
-
-        holiday
-season   No Yes
-  Winter 27   0
-  Spring 26   0
-  Summer 26   0
-  Fall   26   0
-
-, , weekday = 1
-
-        holiday
-season   No Yes
-  Winter 20   6
-  Spring 24   3
-  Summer 23   3
-  Fall   23   3
-…
-```
-
-A three-way table with marginals:
-
-```
-addmargins(table(bike_share_daily[c(3,6:7)]))
-
-, , weekday = 0
-
-        holiday
-season    No Yes Sum
-  Winter  27   0  27
-  Spring  26   0  26
-  Summer  26   0  26
-  Fall    26   0  26
-  Sum    105   0 105
-
-, , weekday = 1
-
-        holiday
-season    No Yes Sum
-  Winter  20   6  26
-  Spring  24   3  27
-  Summer  23   3  26
-  Fall    23   3  26
-  Sum     90  15 105
-…
-```
 
 A table of proportions:
 
