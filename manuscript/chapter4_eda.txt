@@ -536,8 +536,8 @@ You can create two- , three-, or *n*-way tables by adding variables to the table
 | `, , weekday = 0` | `, , weekday = 0` | 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`holiday` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`holiday` |
 | `season   No Yes` | `season    No Yes Sum` | 
-| &nbsp;&nbsp;`Winter 27   0` | &nbsp;&nbsp;`Winter  27   0  27` |
-| &nbsp;&nbsp;`Spring 26   0` | &nbsp;&nbsp;`Spring  26   0  26` |
+|     Winter 27   0 | &nbsp;&nbsp;`Winter  27   0  27` |
+|     Spring 26   0 | &nbsp;&nbsp;`Spring  26   0  26` |
 | &nbsp;&nbsp;`Summer 26   0` | &nbsp;&nbsp;`Summer  26   0  26` |
 | &nbsp;&nbsp;`Fall   26   0` | &nbsp;&nbsp;`Fall    26   0  26` |
 |                             | &nbsp;&nbsp;`Sum    105   0 105` |
