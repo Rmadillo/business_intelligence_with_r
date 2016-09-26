@@ -29,7 +29,8 @@ str(customers)
 head(customers)
 
 tail(customers)
-
+```
+```
 # Obtain basic summary stats
 summary(customers)
 
