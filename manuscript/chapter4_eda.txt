@@ -680,12 +680,12 @@ require(boot)
 
 # Create the boot function
 sd_boot_function = function(x,i){sd(x[i])}
+```
 
+```
 # Run the bootstrapping
 sd_boot = boot(PlantGrowth$weight, sd_boot_function, R=10000)
-```
 
-```
 # Bootstrapped sd
 sd(PlantGrowth$weight)
 
