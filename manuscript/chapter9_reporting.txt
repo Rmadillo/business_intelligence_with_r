@@ -223,7 +223,7 @@ The YAML header provides you with a way to customize the output of R Markdown fi
 The header can include R code and HTML. For example, if you have an ioslides file and want to have the date automatically show up when run, use single quotes with back ticks to contain the R Markdown text:
 
 {lang="text"}
-~~~~~~~~
+```
 ---
 title: This title doesn't have a short title 
 subtitle: Dude, where's my banana?
@@ -231,7 +231,7 @@ author: Dr. Nefario, Gru, and Kevin
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
 output: ioslides_presentation
 ---
-~~~~~~~~
+```
 
 ![](images/ioslide_r.png)
 
