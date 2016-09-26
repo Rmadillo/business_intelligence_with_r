@@ -9,9 +9,9 @@
 
 It's fine to create reports in word processing or slide show software, but it can be smarter to create data products entirely inside R. There are a number of benefits to doing this: you have the code embedded in your data product, so that final product automatically updates when you change the data or code the next time you 'knit' it; you can share documents that others can use for both the product and the code, which is great for reproducibility as well as documentation; and you can include interactive content, something impossible to do in static documents. 
 
-If you haven't created data products using R Markdown yet, you're in for a treat. To get started, just open a new R Markdown document, choose Document (keeping the HTML output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that really impress decision makers used to PDFs and static slide decks. 
+If you haven't created data products using R Markdown yet, you're in for a treat. To get started, just open a new R Markdown document from within RStudio , choose Document (keeping the HTML output default), and hit OK. A default template will open in the Source window, from which you can modify it as needed. Just click **Knit HTML** and provide a file name and your product is saved to your working directory as a stand-alone `.html` file. It also opens in a pop-up for immediate viewing. It is that simple to create data products that really impress decision makers used to PDFs and static slide decks. 
 
-Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into HTML or other output types via R Markdown, a flavor of the Markdown language that provides simple shortcuts to convert the raw text into formatted HTML. You can also use regular HTML as well, such as `<br>` for line breaks, and so on. See *Appendix 5* for a cheatsheet of R Markdown symbols and usage, and RStudio's [R Markdown page](http://rmarkdown.rstudio.com/) for detailed information and appropaches. 
+Code occurs in "chunks", sections in which you place the code you want R to execute. Free text outside those chunks is converted into HTML or other output types via R Markdown, a flavor of the Markdown language that provides simple shortcuts to convert raw text into formatted HTML. You can also use regular HTML as well, such as `<br>` for line breaks, and so on. See *Appendix 5* for a cheatsheet of R Markdown symbols and usage, and RStudio's [R Markdown page](http://rmarkdown.rstudio.com/) for more detailed information. 
 
 The single biggest "oops" in using R Markdown---that you will immediately easily fix the first time it happens, but you will *also* inevitably forget to do this later---is ensuring you have put *two spaces* at the end of each line where you want a line break after text. I've used R Markdown for years, but even creating one of the examples below, I forgot to do this on a few lines and got a jumbled mess as a result. So, yeah, it's gonna happen. 
 
@@ -19,18 +19,9 @@ Ultimately, there is rapidly increasing emphasis on reproducible research in res
 
 The examples in this chapter are just simple examples; there are many, many possibilities with all of these output options, and exploring the tutorials, galleries, and example pages are well worth the effort to find ready-to-go and ready-to-customize templates and apps you can use and modify for your own ends. 
 
-
-## Reports and technical memos
-
-Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. The vast majority of analytics in modern BI tend to be report-oriented. Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
-
-We saw an example of a data product that could be considered either a report or a memo in Chapter 1, in the exploration and forecasting of the Hauteville House's power consumption (full code in *Appendix 2*): 
-
-![](images/biwr_ch1_knitr_ex.png)
-
 ### Output formats for .Rmd documents
 
-Web (HTML) reports are ready to create out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office:
+Web (HTML) reports are ready to create in RStudio out-of-the-box. To create PDF or Word documents, you need to install programs on your machine that do not come with R. For PDF, you need a TeX program, and for Word docs you need either Word or Libre/Open Office:
 
 {width="narrow"}
 | OS | PDF | Word |
@@ -52,7 +43,7 @@ Since `.Rmd` files can be exported as HTML, you can create simple dashboards eas
 
 Using data from the [University of Queensland Vital Signs Dataset](http://dx.doi.org/102.100.100/6914), and the `htmlwidgets`-based package `sparkline`, we can create a simple example dashboard in an `.Rmd` file that shows vital signs for a surgery case (imagine it as streaming, rather than static data!). 
 
-Because the `sparkline` package was never fully completed, you need to add a small `<style>` hack to the CSS to get the tooltips to work properly. That hack is included at the top of the R Markdown file, just after the YAML header. 
+Because the `sparkline` package is not yet fully developed, you need to add a small `<style>` hack to the CSS to get the tooltips to work properly. That hack is included at the top of the R Markdown file, just after the YAML header. 
 
 To explore this dashboard, open a new R Markdown file and replace the template text with the text below, then press the **Knit HTML** button. 
 
@@ -123,7 +114,7 @@ Note that the green bands are *not* the proper normal ranges for those vital sig
 
 ### Dashboarding and reporting with flexdashboard
 
-Yet another brilliant product from the RStudio folks is an easy-to-use dashboard template package called [`flexdashboard`](http://rmarkdown.rstudio.com/flexdashboard/). It's built on top of the not-nearly-as-easy-to-use [Shiny dashboard](https://rstudio.github.io/shinydashboard/) approach, which hides the complexity of the Shiny system for users who just want to make highly customizable dashboards using (mostly) R Markdown instead. That said, you can still use Shiny inside a flexdashboard, making it the best of both worlds. 
+Yet another brilliant product from the RStudio folks is an easy-to-use dashboard template package called [`flexdashboard`](http://rmarkdown.rstudio.com/flexdashboard/). It's built on top of the not-nearly-as-easy-to-use [Shiny dashboard](https://rstudio.github.io/shinydashboard/) approach, and it hides the complexity of the Shiny system for users who just want to make highly customizable dashboards using (mostly) R Markdown instead. That said, you can still use Shiny inside a flexdashboard, making it the best of both worlds. 
 
 View the [layouts](http://rmarkdown.rstudio.com/flexdashboard/layouts.html) and [examples](http://rmarkdown.rstudio.com/flexdashboard/examples.html) before diving in; there's probably a combination of those already out there that will meet a good proportion of your initial design needs.
 
@@ -131,9 +122,18 @@ After you've installed `flexdashboard`, the creating a **New R Markdown** docume
 
 ![](images/flexdashboard_template.png)
 
-To show a simple example, we can use the same data and approach we used in Chapter 1, exploring and forecasting the power usage at the Hauteville House, only putting it into a dashboard-like format instead of a report. The code that creates this dashboard is contained in *Appendix 4*. 
+To show a simple example, we can use the same data and approach we used in *Chapter 1*, exploring and forecasting the power usage at the Hauteville House, only putting it into a dashboard-like format instead of a report. The code that creates this dashboard is contained in *Appendix 4*. 
 
 ![](images/flexdashboard.png)
+
+
+## Reports and technical memos
+
+The vast majority of analytics in modern BI tend to be report-oriented. Reports are typically look-back affairs, and can range from a simple dataset or table, to a set of KPI graphs on a single webpage, to a full-blown, multi-tab overview of a group of activities. Technical memos are usually one-off analytic products that answer a specific question, but can also provide guidance on next steps. 
+
+We saw an example of a data product that could be considered either a report or a memo in *Chapter 1*, in the exploration and forecasting of the Hauteville House's power consumption (full code in *Appendix 2*): 
+
+![](images/biwr_ch1_knitr_ex.png)
 
 
 ## Slide decks
@@ -155,7 +155,7 @@ output: ioslides_presentation
 
 ![](images/default_css_slide.png)
 
-`ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the grey text. As an example of how to change this, get the latest ioslides style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
+`ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the grey text. As an example of how to change this, get the latest `ioslides` style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
 
 | Line | Style block | Original setting | Change to: |
 | ---- | ----------- | ---------------- | ---------- |
