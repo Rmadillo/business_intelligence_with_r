@@ -408,7 +408,6 @@ We'll split the `customer_survey` data frame in half row-wise to illustrate unio
 
 ```
 customers_first_half = customer_survey[1:5000,]
-
 customers_second_half = customer_survey[5001:10000,]
 ```
 
