@@ -395,14 +395,12 @@ Obviously, there's more to life than left joins. The following table lays out th
 
 \*\* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me---right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
-You can merge large files with `data.tables`, but the way you specify the joins is opaque---e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time---so for now it's probably best employed for single-user/casual use and not for production code unless speed needs to trump clarity.
+You can merge large files with `data.tables`, but the way you specify the joins is opaque---e.g., `datatable_AB = datatable_A[datatable_B]` is a left join, given you've specified the keys ahead of time---so for now it's probably best employed for single-user/casual use and not for production code unless speed is more important than clarity.
 
 
 ### Unions and bindings
 
-Concatenating two tables can be handled two ways: via `sqldf` or through R's native binding functions. 
-
-It's often easier just to use the native R functions if you already have the two tables ready to concatenate: `rbind` for stacking and `cbind` for concatenating sideways. "Being ready" means that the columns are identically named, and that there are the same number of columns in each table. The `sqldf` approach is best when you're pulling specific columns from each table to stack into a single data frame.  
+Concatenating two tables can be handled two ways: via `sqldf` or through R's native binding functions. It's often easier just to use the native R functions if you already have the two tables ready to concatenate: `rbind` for stacking and `cbind` for concatenating sideways. "Being ready" means that the columns are identically named, and that there are the same number of columns in each table. The `sqldf` approach is best when you're pulling specific columns from each table to stack into a single data frame.  
 
 We'll split the `customer_survey` data frame in half row-wise to illustrate unions:
 
