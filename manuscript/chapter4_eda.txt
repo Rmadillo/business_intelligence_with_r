@@ -539,8 +539,8 @@ You can create two- , three-, or *n*-way tables by adding variables to the table
 | &nbsp;&nbsp;`Winter 27`&nbsp;&nbsp;&nbsp;`0` | &nbsp;&nbsp;`Winter  27 0 27` |
 | &nbsp;&nbsp;`Spring 26`&nbsp;&nbsp;&nbsp;`0` | &nbsp;&nbsp;`Spring  26 0 26` |
 | &nbsp;&nbsp;`Summer 26`&nbsp;&nbsp;&nbsp;`0` | &nbsp;&nbsp;`Summer  26 0 26` |
-| &nbsp;&nbsp;`Fall`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`26 0` | &nbsp;&nbsp;`Fall`&nbsp;&nbsp;`26 0 26` |
-|                             | &nbsp;&nbsp;`Sum`&nbsp;`105`&nbsp;`0 105` |
+| &nbsp;&nbsp;`Fall`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`26`&nbsp;&nbsp;&nbsp;`0` | &nbsp;&nbsp;`Fall`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`26 0 26` |
+|                             | &nbsp;&nbsp;`Sum`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`105`&nbsp;`0 105` |
 |                |                |  
 | `, , weekday = 1` | `, , weekday = 1` |
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`holiday` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`holiday` |
@@ -548,8 +548,8 @@ You can create two- , three-, or *n*-way tables by adding variables to the table
 | &nbsp;&nbsp;`Winter 20 6` | &nbsp;&nbsp;`Winter 20 6 26` |
 | &nbsp;&nbsp;`Spring 24 3` | &nbsp;&nbsp;`Spring 24 3 27` |
 | &nbsp;&nbsp;`Summer 23 3` | &nbsp;&nbsp;`Summer 23 3 26` |
-| &nbsp;&nbsp;`Fall`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`23 3` | &nbsp;&nbsp;`Fall`&nbsp;&nbsp;`23 3 26` |
-|                             | &nbsp;&nbsp;`Sum`&nbsp;`90 15 105` |
+| &nbsp;&nbsp;`Fall`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`23`&nbsp;&nbsp;&nbsp;`3` | &nbsp;&nbsp;`Fall`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`23 3 26` |
+|                             | &nbsp;&nbsp;`Sum`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`90 15 105` |
 | ... | ... | 
 
 A table of proportions:
