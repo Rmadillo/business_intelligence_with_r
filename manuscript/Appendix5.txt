@@ -82,6 +82,7 @@ Create a horizontal rule: `***`  or `<hr>`
 ***
 
 ***Useful `knitr` Chunk Options***  
+
 Use `?opts_chunk` or see the [knitr options page](http://yihui.name/knitr/options/) for more options and details.  
 
 {width="90%"}
