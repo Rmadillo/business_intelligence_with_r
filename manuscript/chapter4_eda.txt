@@ -531,13 +531,13 @@ You can create two- , three-, or *n*-way tables by adding variables to the table
 {width="wide"}
 | A three-way table | A three-way table with marginals | 
 | ----------------- | -------------------------------- |
-| <code>`table(bike_share_daily[c(3,6:7)])` | `addmargins(table(bike_share_daily[c(3,6:7)]))` | 
+| `table(bike_share_daily[c(3,6:7)])` | `addmargins(table(bike_share_daily[c(3,6:7)]))` | 
 |                |                |  
 | `, , weekday = 0` | `, , weekday = 0` | 
 | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`holiday` | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`holiday` |
 | `season   No Yes` | `season    No Yes Sum` | 
-|     Winter 27   0 | &nbsp;&nbsp;`Winter  27   0  27` |
-|     Spring 26   0 | &nbsp;&nbsp;`Spring  26   0  26` |
+|     <code>  Winter 27   0</code> | &nbsp;&nbsp;`Winter  27   0  27` |
+|     <code>Spring 26   0</code> | &nbsp;&nbsp;`Spring  26   0  26` |
 | &nbsp;&nbsp;`Summer 26   0` | &nbsp;&nbsp;`Summer  26   0  26` |
 | &nbsp;&nbsp;`Fall   26   0` | &nbsp;&nbsp;`Fall    26   0  26` |
 |                             | &nbsp;&nbsp;`Sum    105   0 105` |
@@ -550,7 +550,7 @@ You can create two- , three-, or *n*-way tables by adding variables to the table
 | &nbsp;&nbsp;`Summer 23   3` | &nbsp;&nbsp;`Summer  23   3  26` |
 | &nbsp;&nbsp;`Fall   23   3` | &nbsp;&nbsp;`Fall    23   3  26` |
 |                             | &nbsp;&nbsp;`Sum     90  15 105` |
-| ... | ... </code> | 
+| ... | ... | 
 
 A table of proportions:
 
