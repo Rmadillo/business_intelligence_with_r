@@ -353,7 +353,7 @@ A> | Clear | 111 | 113 | 136 | 103 |
 A> | Cloudy/Rainy | 66 | 68 | 48 | 65 |
 A> | Stormy | 4 | 3 | 4 | 10 |
 A> 
-A> For two dimensions, a table can be more compact, but the mosaic gives you the pattern at a glance; either is an option depending on what you need to get across. Three or four dimensions is best presented as a mosaic plot. More than that requires tools found in Chapters 7 and 8.
+A> For two dimensions, a table can be more compact, but the mosaic gives you the pattern at a glance; either is an option depending on what you need to get across. Three or four dimensions is best presented as a mosaic plot. 
 
 
 ### Multiple bivariate comparisons with faceting
@@ -485,7 +485,7 @@ prop.table(table(bike_share_daily$holiday))
 0.97127223 0.02872777
 ```
 
-There are a variety of approaches and options using these functions to acquire summary statistics. For example, you can subset the quantitative stats based on factors or conditions. 
+You can also subset the stats based on factors or conditions. 
 
 Summary stats for bike use during the winter season:
 
