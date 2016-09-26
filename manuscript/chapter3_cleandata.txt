@@ -604,7 +604,9 @@ require(reshape2)
 surgery_outcomes = read.table("https://raw.githubusercontent.com/Rmadillo/
   business_intelligence_with_r/master/manuscript/code/surgery_outcomes.tsv", 
   header=T, sep="\t")
+```
 
+```
 head(surgery_outcomes, 4)
 
 row  ID  Side   Phase  Verbal  Nonverbal
