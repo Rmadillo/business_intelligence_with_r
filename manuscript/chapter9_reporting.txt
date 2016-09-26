@@ -243,9 +243,9 @@ You can use HTML to customize the text. For example:
 title: This title <br>doesn't have<br> a short title 
 subtitle: Dude, <em>where's</em> <del>my</del> <b>&beta;anana</b>?
 author: Dr. Nefario, Gru, and Kevin
-~~~~~~~~
-~~~~~~~~
 date: '`r format(Sys.Date(), "%B %d, %Y")`'
+~~~~~~~~
+~~~~~~~~
 output: ioslides_presentation
 ---
 ~~~~~~~~
