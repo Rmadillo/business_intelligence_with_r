@@ -20,7 +20,7 @@ The best way to organize a project within R and put it under version control is 
 
 Select Git from the Version control system: button, then click yes, and yes again. RStudio will reboot, and your project is now under local version control. The directory will now look like this (including hidden files):
 
-![](images/Apx1_02.png)
+![](images/Apx1_03.png)
 
 Making a habit of setting up folders like this in a systematic way makes it easy for others to understand and replicate your work. Adding version control gives you the ability review every change you made since the start of the project, to roll back to a previous state if a path of coding turns out to be a dead end or if something is accidentally deleted, and also allows for more efficient and safe collaboration with others.
 
