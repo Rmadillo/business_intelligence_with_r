@@ -21,5 +21,6 @@ biocLite(c("graph", "Rgraphviz", "GenomicRanges", "BiocInstaller"))
 devtools::install_github("vqv/ggbiplot")
 devtools::install_github("twitter/AnomalyDetection")
 devtools::install_github("hrbrmstr/taucharts")
+devtools::install_github("timelyportfolio/parcoords")
 devtools::install_github("rasmusab/bayesian_first_aid")
 ~~~~~~~~
