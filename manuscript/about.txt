@@ -17,6 +17,9 @@ Running under: OS X 10.10.5 (Yosemite)
 
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 14.04.5 LTS
+
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows Server 2008 R2 x64 (build 7601) Service Pack 1
 ```
 
 
@@ -46,8 +49,7 @@ The [cover photo](https://pixabay.com/en/toronto-ontario-canada-road-1439133/) w
 **All proceeds will benefit the *Agape Girls Junior Guild*, supporting mitochondrial disorder research at *Seattle Children's Research Institute* and *Seattle Children's Hospital*.** 
 
 ![](images/mito_cure_720.jpg)
-  
-| |  
+
 
 ### Contact 
 
