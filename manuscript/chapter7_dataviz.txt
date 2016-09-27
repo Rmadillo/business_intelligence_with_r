@@ -8,7 +8,7 @@
 
 We’ve already explored summary plots of a set of variables earlier in this chapter, but sometimes you want to consider a set of variables all at once in a consistent way. Heatmaps and parallel coordinate plots (PCPs) are two common ways to do this (in the next chapter we’ll explore a few others, such as cluster dendrograms); heatmaps do a good job of showing three dimensions clearly, while PCPs can work for a large number of variables, as long as there aren’t too many observations in the data.
 
-Visualizing multidimensional data is difficult to do in two dimensions. Heatmaps can provide an extra dimension or two via color scale and/or intensity, while parallel coordinates lays out all of your variables as a series of 1-dimensional axes. Bubbleplots provide you the ability to use color and point size to include additional dimensions. These approaches shouldn’t substitute for a set of univariate displayes of the data (e.g., as a set of density plots presented in facets, as seen in the *Plotting univariate data* recipe in *Chapter 4*), but they’re an essential additional tool you can use when exploring the dimensions of your data. Further, interactive versions of these plots (later this chapter) can be great tools for decision makers, and exploring layout and design with static versions before creating interactive ones can save time later.
+Visualizing multidimensional data is difficult to do in two dimensions. Heatmaps can provide an extra dimension or two via color scale and/or intensity, while parallel coordinates lays out all of your variables as a series of 1-dimensional axes. Bubbleplots provide you the ability to use color and point size to include additional dimensions. These approaches shouldn’t substitute for a set of univariate displays of the data (e.g., as a set of density plots presented in facets, as seen in the *Plotting univariate data* recipe in *Chapter 4*), but they’re an essential additional tool you can use when exploring the dimensions of your data. Further, interactive versions of these plots (later this chapter) can be great tools for decision makers, and exploring layout and design with static versions before creating interactive ones can save time later.
 
 ### Heatmaps
 
@@ -137,7 +137,7 @@ require(gridExtra)
 
 bike_share_grp = group_by(bike_share_daily, yr, mnth)
 
-bike_share_mean = summarise(bike_share_grp, mean=mean(casual))
+bike_share_mean = summarize(bike_share_grp, mean=mean(casual))
 
 bike_share_mean$mean = round(bike_share_mean$mean, 0)
 
@@ -308,7 +308,7 @@ datatable(rosling_data, filter = "top")
 
 If you need to do real map work, you shouldn't use R, it's just not very good at it. That being said, sometimes all you need is a quick view of a spatial distribution, or perhaps you just need a simple map and you're already in R.
 
-There are several packages that do or support map work, many of which show promise for future use, such as ggmap, a mapping package built to fit over ggplot2 and its coherent graphics approach. But most are still too clunky or buggy when compared against other open source options like QGIS, Leaflet, and others. In addition, Python is the lingua franca language among professional GISers, not R. 
+There are several packages that do or support map work, many of which show promise for future use, such as `ggmap`, a mapping package built to fit over ggplot2 and its coherent graphics approach. But most are still too clunky or buggy when compared against other open source options like QGIS, Leaflet, and others. In addition, Python is the lingua franca language among professional GISers, not R. 
 
 Probably the hardest part of making simple maps in R can just be getting set up. There are a variety of mapping and map-support packages, as a tour of the [CRAN spatial task view](http://cran.r-project.org/web/views/Spatial.html) shows. Many of them access different APIs as well, some of which require keys. Later in this recipe we'll explore a few more detailed examples, but for now we'll just stick with mapping simple point and area attributes within an R work session.
 
@@ -411,7 +411,7 @@ box(col="gray30")
 
 ![](images/0815OS_04_12.png)
 
-We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this book's github repo (subset to ozone pollution data and linked to each station's geographic coordinates; code to do so yourself is [here](https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/eu_o3.R)). We'll plot the annual daily median ozone values with the modern EU boundaries obtained above:
+We plotted ground level ozone from the `maps` example data pretty easily—but what does it take to create a real one? The EU air quality database requires human intervention to [download the data](http://www.eea.europa.eu/data-and-maps/data/airbase-the-european-air-quality-database-8), so for convenience it's already available in this book's GitHub repo (subset to ozone pollution data and linked to each station's geographic coordinates; code to do so yourself is [here](https://raw.githubusercontent.com/Rmadillo/business_intelligence_with_r/master/manuscript/code/eu_o3.R)). We'll plot the annual daily median ozone values with the modern EU boundaries obtained above:
 
 ```
 eu_o3 = read.table("https://raw.githubusercontent.com/Rmadillo/
