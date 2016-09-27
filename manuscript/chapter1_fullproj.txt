@@ -321,7 +321,7 @@ Opening the `energy_use_prediction_widget.html` from the Reports folder shows us
 
 ## Documenting the project
 
-R markdown is a brilliant way to create documentation and reports in one shot. For example, had this forecasting project actually required a report, I'd structure it all inside an `.Rmd` like I've shown in *Appendix 2*. To run that file manually, just load it into RStudio and click the **Knit HTML** button in the *Source* window. A preview window will pop up. In some systems, the HTML file is concurrently saved to the working directory, while in others you may need to **Open in browser** and then **Save as** from there. 
+R Markdown is a brilliant way to create documentation and reports in one shot (see *Chapter 9*). For example, had this forecasting project actually required a report, I'd structure it all inside an `.Rmd` like I've shown in *Appendix 2*. To run that file manually, just load it into RStudio and click the **Knit HTML** button in the *Source* window. A preview window will pop up. In some systems, the HTML file is concurrently saved to the working directory, while in others you may need to **Open in browser** and then **Save as** from there. 
 
 ![](images/biwr_ch1_knitr_ex.png)
 
