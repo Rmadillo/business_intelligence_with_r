@@ -218,7 +218,7 @@ str(power_monthly)
 
 ### Explore the data
 
-Plotting your data is the single most important part of analytics, so this book spends a lot of space on graphical representation. Here, as we're focused on power use over time, we'll plot the monthy summary we've calculated above. 
+Plotting your data is the single most important part of analytics, so this book spends a lot of space on graphical representation. Here, as we're focused on power use over time, we'll plot the monthly summary we've calculated above. 
 
 ```
 # Create plot of total use by month
@@ -299,7 +299,7 @@ total_use_forecast = ts(use_ts_fc, start=c(2007, 1), freq=12)
 
 # Create the widget
 energy_use_prediction_widget = dygraph(total_use_forecast, 
-  main = "Predicted Monthly Electricty Use (kWh)",
+  main = "Predicted Monthly Electricity Use (kWh)",
   ylab = "Total kWh", width=900, height=500) %>% 
   dySeries(c("Total_Use"), label = "Actual kWh Usage") %>%
   dyEvent(x = "2008-08-01", "Went on vacation", labelLoc = "top") %>%
@@ -310,7 +310,7 @@ energy_use_prediction_widget = dygraph(total_use_forecast,
 # Hit the Zoom button for a pop-out 
 energy_use_prediction_widget
 
-# Save the widget as a stand-alone html file to Results folder
+# Save the widget as a stand-alone HTML file to Results folder
 saveWidget(energy_use_prediction_widget, "energy_use_prediction_widget.html")
 ```
 
