@@ -115,7 +115,7 @@ A> #### Why not use *p*-values?
 A> 
 A> If I had a dollar for every time a clinician or manager asked for "statistical significance," I'd be rich. No doubt you have had this same request numerous times as well. But even when properly used---which almost never happens---*p*-values give a trivial answer to a question they don't care about. 
 A> 
-A> [Aschwanden 2015](http://fivethirtyeight.com/features/science-isnt-broken/) provides a nice general-audience overview of this problem, while Intel engineer Charles Lambdin wrote a scathing yet entertaining take-down of the details of typical mindests around *p*-values in a 2012 article called [*Significance tests as sorcery: Science is empirical--significance tests are not*](http://psychology.okstate.edu/faculty/jgrice/psyc5314/SignificanceSorceryLambdin2012.pdf). Both are well worth the read, as are many of the the references in the latter. 
+A> [Aschwanden 2015](http://fivethirtyeight.com/features/science-isnt-broken/) provides a nice general-audience overview of this problem, while Intel engineer Charles Lambdin wrote a scathing yet entertaining take-down of the details of typical mindsets around *p*-values in a 2012 article called [*Significance tests as sorcery: Science is empirical--significance tests are not*](http://psychology.okstate.edu/faculty/jgrice/psyc5314/SignificanceSorceryLambdin2012.pdf). Both are well worth the read, as are many of the the references in the latter. 
 A> 
 A> Effect sizes (and confidence intervals) get at what decision-makers really need to know. The following table shows why these, and not *p*-values, provide that knowledge:
 A> 
@@ -395,7 +395,7 @@ The rapid increase in computing power in recent years has put previously-intract
 
 You'll need to install [JAGS](http://mcmc-jags.sourceforge.net/) to your system before starting, and also install the R package `rjags` to allow R to converse with JAGS.
 
-`BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from Github if you haven't already done so:
+`BayesianFirstAid` provides one-line Bayesian alternatives to common R functions for CIs ("credible intervals") and basic effect sizes. It's in development at the time of this writing and needs to be installed from GitHub if you haven't already done so:
 
 ```
 devtools::install_github("rasmusab/bayesian_first_aid")
@@ -417,7 +417,7 @@ plot(workday_diff_bayes)
 ```
 workday_diff_bayes
 
-    Bayesian First Aid propotion test
+    Bayesian First Aid proportion test
 
 data: casual_workingday_use$Yes out of casual_workingday_use$sum
 number of successes:  118354, 184931
@@ -551,7 +551,7 @@ y_pred: predicted distribution for a new datapoint
 
 ## Effect sizes: Measuring *similarities* between groups
 
-The other basic analytics question aims to understand relationships: how similar are two groups? Correlation is the primary (standardized) tool here, although a wide variety of other approaches exist; of particular use are regression coeffients to answer the question: what's the incremental effect of one variable on another?
+The other basic analytics question aims to understand relationships: how similar are two groups? Correlation is the primary (standardized) tool here, although a wide variety of other approaches exist; of particular use are regression coefficients to answer the question: what's the incremental effect of one variable on another?
 
 
 ### Correlation
@@ -632,7 +632,7 @@ A> Historically, Spearman's was often used because it was easier to calculate an
 A> 
 A> Computers have since rendered the first reason irrelevant, and statisticians have determined the second one to be statistically naive: Spearman's is less robust and less efficient than Kendall's approach, especially when trying to compute standard errors---there is still no widely accepted way to do it with Spearman's coefficient. Kendall's coefficient estimates a population value, while Spearman's does not. Spearman's approach also breaks down in the presence of only a few large deviations between pairs of values, even when most of the pairs in the data are fairly close. In addition, there is no intuitive interpretation of what Spearman's coefficient *really* means (only that "further from zero is better"), while Kendall's can be directly interpreted as a probability.
 A> 
-A> As for the third and fourth reasons... well, as analysts we should be honest and not use Spearman's or any other statistic just because it looks better (you're just *asking* for trouble down the road). Off-the-cuff explanation of Kendall's in business settings *is* tough, though a simple tranformation can help: using the formula:  **&tau; + (0.5 * ( 1 - &tau;))**. For example, using the Kendall's &tau; value above---`0.43 + (0.5 * (1 - 0.43))`---we can determine that there is a positive association between 71% of all possible pairs of data points. Still not as easy as dropping Spearman's coefficient and leaving it to the audience, but hey, it's your choice as an analyst when it's worth it to "move the needle"[^really] of managerial stats literacy...
+A> As for the third and fourth reasons... well, as analysts we should be honest and not use Spearman's or any other statistic just because it looks better (you're just *asking* for trouble down the road). Off-the-cuff explanation of Kendall's in business settings *is* tough, though a simple transformation can help: using the formula:  **&tau; + (0.5 * ( 1 - &tau;))**. For example, using the Kendall's &tau; value above---`0.43 + (0.5 * (1 - 0.43))`---we can determine that there is a positive association between 71% of all possible pairs of data points. Still not as easy as dropping Spearman's coefficient and leaving it to the audience, but hey, it's your choice as an analyst when it's worth it to "move the needle"[^really] of managerial stats literacy...
 
 
 ### Bootstrapping BCa CIs for non-parametric correlation
@@ -870,7 +870,7 @@ We can see that for every 1 degree increase in air temperature, we get an increa
 
 ### *R^2^*: Proportion of variance explained 
  
-The *R^2^* effect size is simply the correlation coeffient squared, of course, but oddly enough there does not seem to be a built-in function to readily obtain the CIs for it. We can use the `boot` package to create one, thanks to [a function by Rob Kabacoff](http://www.statmethods.net/advstats/bootstrapping.html):
+The *R^2^* effect size is simply the correlation coefficient squared, of course, but oddly enough there does not seem to be a built-in function to readily obtain the CIs for it. We can use the `boot` package to create one, thanks to [a function by Rob Kabacoff](http://www.statmethods.net/advstats/bootstrapping.html):
  
 ```
 library(boot)
