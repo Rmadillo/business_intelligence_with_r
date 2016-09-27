@@ -327,7 +327,7 @@ banks_dist = dist(banks[,3:11])
 
 banks_hclust = hclust(banks_dist, method="ward.D")
 
-plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, banks$NUMERO, sep="-"))
+plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, banks$Numero, sep="-"))
 ```
 
 ![](images/0815OS_05_01.png)
@@ -346,7 +346,7 @@ ggplot() +
   draw.dendrogram(banks_hclust) +
   scale_color_manual(name="Status: ", values=c("darkred", "blue"),
     labels=c("Bankrupt ", "Solvent ")) +
-  geom_text(aes(x=0.75, y=banks_hclust$order, label=banks$NUMERO, 
+  geom_text(aes(x=0.75, y=banks_hclust$order, label=banks$Numero, 
     color=factor(banks$Output)), size=4) +
   ggtitle("Cluster Dendrogram (Ward's) - Spanish Banking Crisis") +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
@@ -383,7 +383,7 @@ require(NeatMap)
 
 banks_pos = banks_mds$points # nMDS results from above
 
-draw.dendrogram3d(banks_hclust, banks_pos, labels=banks$NUMERO, 
+draw.dendrogram3d(banks_hclust, banks_pos, labels=banks$Numero, 
   label.colors=banks$Output+3, label.size=1)
 ```
 
@@ -415,7 +415,7 @@ aggregate(banks[,3:11], by=list(cluster=bank_clusters), median)
 2       2 0.36585 0.23295 0.38455 0.0152 -0.0380 -0.9390 -0.0397 1.30815 -0.01630
 
 # Plot dendrogram
-plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, banks$NUMERO, sep="-"), 
+plot(banks_hclust, hang=-1, labels=paste(banks$BANCO, banks$Numero, sep="-"), 
    cex=0.9)
 
 # Add cluster boxes to dendrogram
@@ -805,7 +805,7 @@ ggplot(multishapes, aes(x, y)) +
 
 We often find that we have many, many variables, and are not sure of the extent to which they add value or noise to the clustering process. The `clustvarsel` package---created by the same folks who created `mclust`---provides a way to assess this.
 
-We'll use the famous Wisconson Breast Cancer data set, which consists of nine diagnostic cell features measured on a 1-10 ordinal scale that was automatically computed from biopsy tissue images (see [this paper](http://dollar.biz.uiowa.edu/~street/research/hu_path95/hp95.pdf) for more details). Higher values are linked with higher chances of a tumor being malignant, and lower values are more likely from benign tissue.  
+We'll use the famous Wisconsin Breast Cancer data set, which consists of nine diagnostic cell features measured on a 1-10 ordinal scale that was automatically computed from biopsy tissue images (see [this paper](http://dollar.biz.uiowa.edu/~street/research/hu_path95/hp95.pdf) for more details). Higher values are linked with higher chances of a tumor being malignant, and lower values are more likely from benign tissue.  
 
 ```
 require(clustvarsel)
@@ -894,7 +894,7 @@ W> If you run all of the clustering algorithms in this chapter on the same datas
 W> 
 W> For example, if you run the variable selection algorithm from the full set of variables, removing variables one-by-one *backwards*, you'll get different (and poorer) results than seen above with the default "forward" algorithm.  
 W> 
-W> Some sort of senstitivity analysis of cluster analysis results is *always* warranted.  
+W> Some sort of sensitivity analysis of cluster analysis results is *always* warranted.  
 
 
 ### Error-checking cluster results with known outcomes 
@@ -959,7 +959,7 @@ It seems that the use of all of the variables contributes some noise to the clas
 
 On the flip side of the coin of similarity is the exploration of outliers. If anyone has ever asked you for an "automatic outlier detection" data product, you immediately realized that they probably don't understand analytics. What counts as an outlier is completely dependent on context. That said, sometimes you need to explore what might count as an outlier across enough variables that visualization becomes difficult, if not impossible. Other times, you might want to get a head-start on investigating a potential outlier or trend before it wrecks things. Or perhaps you need to understand the probabilities associated with unusual but possible events. Multivariate outlier exploration, extreme value analysis, and anomaly detection are useful exploratory tools for these purposes. 
 
-Outliers are easy enough to explore with standard EDA methds when you have three or fewer dimensions, but after that you need ways to detect and explore multivariate outliers. `mvoutlier` and `lof` are two packages that make it fairly simple. But don't ever forget that what constitutes a *real* outlier is completely contextual---think of these tools as a way to explore, not as a way to define. 
+Outliers are easy enough to explore with standard EDA methods when you have three or fewer dimensions, but after that you need ways to detect and explore multivariate outliers. `mvoutlier` and `lof` are two packages that make it fairly simple. But don't ever forget that what constitutes a *real* outlier is completely contextual---think of these tools as a way to explore, not as a way to define. 
 
 ### Identifying outliers with distance functions
 
@@ -993,7 +993,7 @@ require(ggplot2)
 require(plotly)
   
 p1 = ggplot(banks, aes(mv_md, text = paste("Bank: ",
-    banks$NUMERO, "<br>Solvency: ", Output))) +
+    banks$Numero, "<br>Solvency: ", Output))) +
   xlab("Mahalanobis Distance") + 
   geom_histogram() + 
   facet_wrap(~mv_outlier, ncol=1, scales="free_y") 
@@ -1026,7 +1026,7 @@ banks$lof = lofactor(banks[,3:11], k=4)
 ```
 # Plot the lof results interactively
 p_lof = ggplot(banks, aes(lof, text = paste("Bank: ",
-    banks$NUMERO, "<br>Solvency: ", Output))) +
+    banks$Numero, "<br>Solvency: ", Output))) +
   xlab("Local Outlier Factor") + 
   geom_histogram() 
 
@@ -1079,7 +1079,7 @@ require(dplyr)
 
 data("damage", package="extRemes")
 
-hurricane_cost = damage %>% group_by(Year) %>% summarise(total_damage = sum(Dam))
+hurricane_cost = damage %>% group_by(Year) %>% summarize(total_damage = sum(Dam))
 
 yearz = data.frame(Year = seq(1926, 1995, 1))
 
@@ -1212,7 +1212,7 @@ distLplot(hurr_quant, cdf=T, main="Total Annual Hurricane Damages
 A great feature of this package is the easy of calculating and plotting return/recurrence interval estimates. Use the `distLextreme` function with your desired return levels set with the `RP` option. 
 
 ```
-# Calcluate return intervals. 
+# Calculate return intervals. 
 hurr_returns = distLextreme(hurricane_cost$total_damage, RPs = c(2,10,50,100))
 
 # View top five model results
