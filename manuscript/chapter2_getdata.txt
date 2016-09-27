@@ -121,7 +121,7 @@ datasets = system.file("extdata/datasets.xlsx", package = "readxl")
 iris_xl = read_excel(datasets, sheet = 1)
 ```
 
-The `XLConnect` package makes it easy to read and write to and from Excel files in Windows. For sake of reproducibility and data permanency, you should always save data as plain text, e.g., as a csv, and not in proprietrary or non-text formats like Excel. So if you must write/save *into* Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
+The `XLConnect` package makes it easy to read and write to and from Excel files in Windows. For sake of reproducibility and data permanency, you should always save data as plain text, e.g., as a csv, and not in proprietary or non-text formats like Excel. So if you must write/save *into* Excel, `XLConnect` will do it... but you'll have to figure that out on your own. 
 
 ```
 # Load the package
@@ -214,7 +214,7 @@ Of course, whichever works best for you is the method to use.
 
 ### Reading XML files
 
-We see a way to bring in specific tables from websites below, in the Web section, but this recipe provides an overview of bringing in a complete XML file. For a simple example, we'll use the 2010 Patient Satisfaction results from the Veterans Health Adminstration's [Hospital Report Card](http://www1.va.gov/health/HospitalReportCard.asp). 
+We see a way to bring in specific tables from websites below, in the Web section, but this recipe provides an overview of bringing in a complete XML file. For a simple example, we'll use the 2010 Patient Satisfaction results from the Veterans Health Administration's [Hospital Report Card](http://www1.va.gov/health/HospitalReportCard.asp). 
 
 ```
 require(XML)
@@ -226,7 +226,7 @@ vha_pt_sat_raw = readLines("http://www1.va.gov/VETDATA/docs/Datagov/
 VHA_Patient_Satisfaction = xmlToDataFrame(vha_pt_sat_raw)
 ```
 
-When there are more complex structures in the file, you may have to use another approach. Here we'll use the Federal Housing Finance Agency's [House Price Index (HPI)](http://www.fhfa.gov/DataTools/Downloads/Pages/House-Price-Index.aspx), which measures average price changes in repeat sales or refinancings on single-family homes. If you try the simple approach shown above, it will fail, with the warning `'data' must be of a vector type, was 'NULL'`. Going through a list first and then into a data frame can often make these types of xml files import successfully:
+When there are more complex structures in the file, you may have to use another approach. Here we'll use the Federal Housing Finance Agency's [House Price Index (HPI)](http://www.fhfa.gov/DataTools/Downloads/Pages/House-Price-Index.aspx), which measures average price changes in repeat sales or refinancings on single-family homes. If you try the simple approach shown above, it will fail, with the warning `'data' must be of a vector type, was 'NULL'`. Going through a list first and then into a data frame can often make these types of XML files import successfully:
 
 ```
 # Read the file from the web
@@ -244,7 +244,7 @@ FHFA_HPI = data.frame(do.call(rbind, FHFA_HPI_list),
 
 ### Reading JSON files 
 
-JSON data can be really useful for nested data, so it is becoming more popular for data visualizations (e.g., in d3-based web apps) and other applications where the usual tidy, *row x column* format would make for a large and unweidly data structure. Still, sometimes we need to work with these data structures in R, so reading them into a data frame is required. The `jsonlite` package is probably the best way to do this. 
+JSON data can be really useful for nested data, so it is becoming more popular for data visualizations (e.g., in d3-based web apps) and other applications where the usual tidy, *row x column* format would make for a large and unwieldy data structure. Still, sometimes we need to work with these data structures in R, so reading them into a data frame is required. The `jsonlite` package is probably the best way to do this. 
 
 ```
 # Load the jsonlite package
@@ -282,7 +282,7 @@ download.file("http://jsonstudio.com/wp-content/uploads/2014/02/enron.zip",
 # Unzip it
 unzip("enron.zip")
 
-# Bring in the streaming json as a data frame
+# Bring in the streaming JSON as a data frame
 enron = stream_in(file("enron.json"))
 ```
 
@@ -304,7 +304,7 @@ As there are dozens of database platforms, all with their own system-specific dr
 5. Leave it as Integrated Windows Authentication unless for some reason you like doing things manually. Click Next.
 6. Choose the database to match the specific one on the server you wish to access. If you have read/write privs to the data, leave that box as is. Otherwise, change `READWRITE` to `READONLY` in the dropdown list. Click Next.
 7. Adjust settings as you prefer or just click Finish.
-8. Click `Test Data Source`. Click OK. Click OK again to close the data source adminsitrator.
+8. Click `Test Data Source`. Click OK. Click OK again to close the data source administrator.
 
 Once the appropriate DSNs are available for you, you can use the `RODBC` package to access your databases:
 
@@ -504,7 +504,7 @@ sqldf("SELECT * FROM sqlite_master", dbname = "PSES_database.sqlite")
 To see names of columns in a particular table:
 
 ```
-# Note: PRAMA and TABLE_INFO are SQLite-specific statements
+# Note: PRAGMA and TABLE_INFO are SQLite-specific statements
 sqldf("PRAGMA TABLE_INFO(Questions)", dbname = "PSES_database.sqlite")$name
 ```
 
@@ -637,7 +637,7 @@ Sometimes your proxy lets you through for some things but not others; this happe
 
 ### Scraping data from a web table
 
-Sometimes, webpages have a treasure trove of data in tables... but they don't have an option to download it as a text or Excel file. And while data scraping addins are avilable for modern web browsers like Chrome (*Scraper*) or Firefox (*Table2Clipboard* and *TableTools2*) that make it as easy as point-and-click, if the tables aren't set up for easy download or a simple cut-and-paste, you can use the `XML` package to grab what you need.
+Sometimes, webpages have a treasure trove of data in tables... but they don't have an option to download it as a text or Excel file. And while data scraping add-ins are available for modern web browsers like Chrome (*Scraper*) or Firefox (*Table2Clipboard* and *TableTools2*) that make it as easy as point-and-click, if the tables aren't set up for easy download or a simple cut-and-paste, you can use the `XML` package to grab what you need.
 
 While there are a few R packages that allow scraping, the `XML` package is the simplest to begin with, and may serve all your needs anyway.
 
@@ -645,14 +645,14 @@ While there are a few R packages that allow scraping, the `XML` package is the s
 require(XML)
 ```
 
-As a simple example, we can explore the [2010 National Survey on Drug Use and Health](http://archive.samhsa.gov/data/NSDUH/2k10nsduh/tabs/Sect1peTabs1to46.htm). Like many websites, it has pages that contain multiple tables. Say we just want Table 1.1A. First, read in the raw html:
+As a simple example, we can explore the [2010 National Survey on Drug Use and Health](http://archive.samhsa.gov/data/NSDUH/2k10nsduh/tabs/Sect1peTabs1to46.htm). Like many websites, it has pages that contain multiple tables. Say we just want Table 1.1A. First, read in the raw HTML:
 
 ```
 drug_use_2010 = readLines("http://archive.samhsa.gov/data/NSDUH/
   2k10nsduh/tabs/Sect1peTabs1to46.htm")
 ```
 
-Then read in the first table (`which=1`) part of the html:
+Then read in the first table (`which=1`) part of the HTML:
 
 ```
 drug_use_table1_1 = readHTMLTable(drug_use_2010, header=T, which=1, 
@@ -705,7 +705,7 @@ This result still needs some cleaning before we can move to analysis---Chapter 3
 
 ### Working with APIs
 
-Many data-oriented sites have APIs that make it easy to pull in data to R. Some are wide open, but most true APIs  require keys. And of course, each one has its own terms of service and ways to implement. 
+Many data-oriented sites have APIs that make it easy to pull in data to R. Some are wide open, but most true APIs require keys. And of course, each one has its own terms of service and ways to implement. 
 
 A good example of a typical API is via the US Census Bureau's American Community Survey (ACS). First, go to their [*Terms of Service* page](http://www.census.gov/data/developers/about/terms-of-service.html), and if you agree with those terms, click the **Request a KEY** button at the bottom of the left side menu bar. A pop-up will ask for your organization and email address (and agreement to the *Terms*, of course), and it will return a key to that email within a few minutes. 
 
@@ -782,7 +782,7 @@ In Table A, we've created a customer demographic and sales dataset. The `sample`
 
 Table B, we've downloaded and unzipped some 2012 County Business Patterns data from the US Census to create a "locations" lookup table. (Metadata for this dataset is online [here](https://www.census.gov/econ/cbp/download/noise_layout/ZIP_Totals_Layout10.txt); in addition to the city/state/zip fields, we've also kept the `est` field, which is the number of business establishments in this zip code in the first quarter of 2012.)
 
-Table C is just a systematic selection designating a survey response from each customer. This could also be done randomly, but is done this way here simply for illustraion. 
+Table C is just a systematic selection designating a survey response from each customer. This could also be done randomly, but is done this way here simply for illustration. 
 
 Finally, Table D takes advantage of R's built-in data from the `datasets` package to generate a lookup table of states and state regions.
 
