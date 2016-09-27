@@ -351,7 +351,7 @@ acf(UK_births_ts)
 
 ![](images/autocorrelation.png)
 
-What's often underappreciated is that autocorrelated data, temporal or not, will make standard confidence intervals *too small*. In other words, if you want to plot a trend from autocorrelated data and use the default confidence intervals, you'll underestimate the actual uncertainty associated with that trend. 
+What's often under-appreciated is that autocorrelated data, temporal or not, will make standard confidence intervals *too small*. In other words, if you want to plot a trend from autocorrelated data and use the default confidence intervals, you'll underestimate the actual uncertainty associated with that trend. 
 
 
 ### Plotting monthly and seasonal patterns
@@ -382,7 +382,7 @@ seasonplot(UK_births_ts, main="Seasonal Trends in UK Births (2003-2012)",
 
 ### Plotting seasonal adjustment on the fly
 
-The `ggseas` package provides an easy way to plot seasonally-adjusted data in `ggplot2`. There are a variety of ways to adjust for seasonality, so review [its Guthub site](https://github.com/ellisp/ggseas) for more details and options that come with this package.
+The `ggseas` package provides an easy way to plot seasonally-adjusted data in `ggplot2`. There are a variety of ways to adjust for seasonality, so review [its GitHub site](https://github.com/ellisp/ggseas) for more details and options that come with this package.
 
 ```
 require(ggseas)
@@ -728,14 +728,14 @@ power$Month = as.Date(paste0(power$Month, "-01"))
 power$Global_active_power_locf = na.locf(power$Global_active_power)
 
 power_group = group_by(power, Month)
-power_monthly = summarise(power_group, 
+power_monthly = summarize(power_group, 
   Total_Use_kWh = sum(Global_active_power_locf)/60)
 power_monthly = power_monthly[2:47,]
 
 total_use_ts = ts(power_monthly$Total_Use_kWh, start=c(2007,1), frequency=12)
 ```
 
-The main function of the `forecast` package is `forecast`; you can also be more specific by calling `forecast.ets` or `auto,arima` for explicitly forecasting the time series based on the expontential smoothing model family or ARMIA models, respectively.
+The main function of the `forecast` package is `forecast`; you can also be more specific by calling `forecast.ets` or `auto.arima` for explicitly forecasting the time series based on the exponential smoothing model family or ARMIA models, respectively.
 
 Once you have a time series object, forecasting is a breeze:
 
