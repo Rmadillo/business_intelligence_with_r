@@ -2,7 +2,7 @@
 title: ""
 output: html_document
 ---
-## Six Month Electricty Use Forecast for Hauteville House: November 2010 - April 2011
+## Six Month Electricity Use Forecast for Hauteville House: November 2010 - April 2011
 *27 November 2010*  
 
 Prepared For  | Prepared By
@@ -19,7 +19,7 @@ Describe past monthly power usage and forecast potential usage for the coming si
 
 ### Results
 
-**Total monthly power use follows a predictable annual cycle, with winter peaks and summer troughs. In coming months, usage will peak between 900-1200 kWh (95% prediction range) in December and January, then steadily fall over the winter and early spring.**   
+**Total monthly power use follows a predictable annual cycle, with winter peaks and summer troughs. In coming months, usage will peak between 950-1150 kWh (80% prediction range) in December and January, then steadily fall over the winter and early spring.**   
 
 <br>
 
