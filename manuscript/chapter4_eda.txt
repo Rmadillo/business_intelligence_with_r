@@ -265,9 +265,9 @@ ggplot(bike_share_daily, aes(mnth, casual, fill=workingday)) +
 
 ### Beanplots
 
-Violin plots have been considered a more useful alternative to boxplots, as you can see the shape of the distribution, not just its major quantiles. Unfortunately, violin plots can sometimes look like a series of genetalia, which pretty much precludes its use in business settings. 
+Violin plots have been considered a more useful alternative to boxplots, as you can see the shape of the distribution, not just its major quantiles. Unfortunately, violin plots can sometimes look like a series of genitalia, which pretty much precludes its use in business settings. 
 
-Fortunately, bean plots allow you to create "half" violin plots, or more accurately, comparitive density histograms. The `side` option allows you to only plot the density on one side of a line; using `side="first"` has the height of each curve going to the left side of the plot. By playing with the `what` options, you can determine what pieces of the bean plot are shown. One of those pieces is a reference line, which defaults to the mean; `overallline="median"` allows you to use that statistic instead. 
+Fortunately, bean plots allow you to create "half" violin plots, or more accurately, comparative density histograms. The `side` option allows you to only plot the density on one side of a line; using `side="first"` has the height of each curve going to the left side of the plot. By playing with the `what` options, you can determine what pieces of the bean plot are shown. One of those pieces is a reference line, which defaults to the mean; `overallline="median"` allows you to use that statistic instead. 
 
 ```
 beanplot(casual ~ mnth, data = bike_share_daily, side="first", 
@@ -379,7 +379,7 @@ ggplot(bike_share_daily, aes(casual, fill=workingday, color=workingday)) +
 
 Pareto charts are a mainstay of BI work, though the effort to create them can often outweigh the time a decision-maker spends with the result. The `qcc` library makes their creation simple. 
 
-The bike share data doesn't lend itself to pareto chart use, so we'll use data from unplanned hospital readmissions in Hong Kong (Table 2 in [Wong et al. 2011](http://bmchealthservres.biomedcentral.com/articles/10.1186/1472-6963-11-149)). 
+The bike share data doesn't lend itself to Pareto chart use, so we'll use data from unplanned hospital readmissions in Hong Kong (Table 2 in [Wong et al. 2011](http://bmchealthservres.biomedcentral.com/articles/10.1186/1472-6963-11-149)). 
 
 ```
 require(qcc)
@@ -453,7 +453,7 @@ Still, they do provide useful points of reference to help interpret graphical re
 require(psych)
 ```
 
-For numeric variables, the `describe` and `describeBy` functions do all the work for you, although you do need to specify which columns are quantitative—or which columns you want summary stats on---or it will return (non-sensically) all of them.
+For numeric variables, the `describe` and `describeBy` functions do all the work for you, although you do need to specify which columns are quantitative—or which columns you want summary stats on---or it will return (nonsensically) all of them.
 
 Basic `describe`:
 
