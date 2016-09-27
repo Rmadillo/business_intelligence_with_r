@@ -49,7 +49,7 @@ With respect to variable naming, I tend to use `pothole_case` for variable, data
 
 ## What you need 
 
-This is not the best book for a never-used-R-and-need-to-teach-myself analyst. Perhaps you've had an intro course or workshop already---you don't need to be an expert to get value from this book but you will probably struggle without a more detailed overview of how to use R. Rob Kabakoff's stellar *[R in Action](http://www.manning.com/kabacoff2/)* is a good book to introduce new users to R, and it works well as a self-teaching or classroom text. There are also a wide variety of websites, videos, and online training programs that can give beginners the initial understanding of R that will make this book more useful. 
+This is not the best book for a never-used-R-and-need-to-teach-myself analyst. Perhaps you've had an intro course or workshop already---you don't need to be an expert to get value from this book but you will probably struggle without a more detailed overview of how to use R. Rob Kabacoff's stellar *[R in Action](http://www.manning.com/kabacoff2/)* is a good book to introduce new users to R, and it works well as a self-teaching or classroom text. There are also a wide variety of websites, videos, and online training programs that can give beginners the initial understanding of R that will make this book more useful. 
 
 You don't need to be an R programmer, however; **this book is aimed at people who use R to accomplish day-to-day analytic ends for business purposes**, *not* for those who want to improve their code efficiency, create custom algorithms, or develop new packages.
 
@@ -57,11 +57,11 @@ To get the most from this book, you should already be aware of basic R use for a
 
 Of course, you can always use `?` in front of any function to learn more about its use, syntax, and outputs.  
 
-You should also be familiar with the ideas behind many of the tools used in anaytics and data science; for the most part, this book does not explain the intricacies of how the methods work or what the results of the examples mean. There are many fine resources out there covering theory and tools, but are necessarily limited in methodological scope as a result. In addition, many data science R  books often use a case-study approach, focusing on a few major problems or themes in order to explain the methods and results in greater depth. Again, this book is aimed at providing comprehensive cookbook for common business intelligence and data science tasks, and given how many tools there are, there just isn't the space here to provide recipes, interpretation, *and* theory.
+You should also be familiar with the ideas behind many of the tools used in analytics and data science; for the most part, this book does not explain the intricacies of how the methods work or what the results of the examples mean. There are many fine resources out there covering theory and tools, but are necessarily limited in methodological scope as a result. In addition, many data science R  books often use a case-study approach, focusing on a few major problems or themes in order to explain the methods and results in greater depth. Again, this book is aimed at providing comprehensive cookbook for common business intelligence and data science tasks, and given how many tools there are, there just isn't the space here to provide recipes, interpretation, *and* theory.
 
 This book uses R, RStudio, and Git software. I used R 3.3 and RStudio 0.99 to create this book. If you are on a Windows system, you'll need to ensure either Perl and/or Java are installed to use some of the Excel import functions (if you are using Mac or Unix/Linux, Perl was probably installed with the OS). Make sure that the architecture for Perl/Java you have or install matches that of your R install, i.e., if you are using 64-bit R make sure your Java is also x64. 
 
-You can find the installation list for the packages used at the start this book or on [Github](https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_install_package_list.R). 
+You can find the installation list for the packages used at the start this book or on [GitHub](https://github.com/Rmadillo/business_intelligence_with_r/blob/master/manuscript/code/BIWR_install_package_list.R). 
 
 
 ## Acknowledgments 
@@ -78,13 +78,13 @@ The [cover photo](https://pixabay.com/en/toronto-ontario-canada-road-1439133/) w
 ## Website/Code
 
 {icon=download}
-G> The code is available at [this book's Github site](https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code).
+G> The code is available at [this book's GitHub site](https://github.com/Rmadillo/business_intelligence_with_r/tree/master/manuscript/code).
 
-Due to page width constraints, some lines of code *as printed in the book* have unnecessary line breaks, primarily in long URLs to acquire data or code from the web. The book's code on Github does not contain these line breaks, so it should work as-is. So, if you cut & paste from the book, note that long URLs may require that you remove a line break for the code to function correctly. 
+Due to page width constraints, some lines of code *as printed in the book* have unnecessary line breaks, primarily in long URLs to acquire data or code from the web. The book's code on GitHub does not contain these line breaks, so it should work as-is. So, if you cut & paste from the book, note that long URLs may require that you remove a line break for the code to function correctly. 
 
 This book will be updated with additional functions and ideas on an ad hoc basis---check the *About* page to see the version number and differences from previous versions. 
 
-Feedback, criticism, and improvements are always welcome; send me an email to dbarryanalytics at gmail dot com, or submit pull requests or issues on [Github](https://github.com/Rmadillo/business_intelligence_with_r).   
+Feedback, criticism, and improvements are always welcome; send me an email to dbarryanalytics at gmail dot com, or submit pull requests or issues on [GitHub](https://github.com/Rmadillo/business_intelligence_with_r).   
 
 ## Happy coding!
 
