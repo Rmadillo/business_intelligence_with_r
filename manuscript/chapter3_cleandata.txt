@@ -172,7 +172,7 @@ In many cases the data frame will require a little clean up after it's loaded. C
 
 `gsub` is probably the most useful general purpose approach to regular expressions in R. You should look at the help files for `?gsub` for regular expressions, `?strsplit` for splitting a character string, and `?substr` for extracting a portion of a string (as well as the links in their *See Also* sections) to get more details on those and similar or otherwise related functions.
 
-There are many possible approaches to cleaning, so as an example, the following code does some cleaning of the Pro Publica *Nursing Home Deficiencies* data set scraped from the web in the previous chapter, using a few different functions:
+There are many possible approaches to cleaning, so as an example, the following code does some cleaning of the ProPublica *Nursing Home Deficiencies* data set scraped from the web in the previous chapter, using a few different functions:
 
 ```
 # Create cleaner column names
@@ -191,7 +191,7 @@ nursing_home_deficiencies$Home = gsub(" (REPORT)  Home Info", "",
 nursing_home_deficiencies$Severity = substr(nursing_home_deficiencies$Severity,
   1, 1)
     
-# Clean the date information and convert to date objcet
+# Clean the date information and convert to date object
 nursing_home_deficiencies$Date = gsub(".", "", nursing_home_deficiencies$Date,
   fixed = TRUE)
 
@@ -305,7 +305,7 @@ A> ```
 
 We've already touched on merging tables inside a SQLite database to create a dataframe in Chapter 2, but more often you usually need to merge two dataframes inside R.
 
-The best package to do this in R is `dplyr`, and part of its greatness is that it works on dataframes in the same way as it does on databases. However, SQL jockies may still prefer to use `sqldf`. I tend to use the former in R-heavy projects and the latter in projects where I need to work from a database or want to streamline the join results. 
+The best package to do this in R is `dplyr`, and part of its greatness is that it works on dataframes in the same way as it does on databases. However, SQL jockeys may still prefer to use `sqldf`. I tend to use the former in R-heavy projects and the latter in projects where I need to work from a database or want to streamline the join results. 
 
 Of course, `base` R has native joining abilities as well via the `merge` function, but it tends to be somewhat clunkier than `dplyr` or `sqldf`. 
 
@@ -388,10 +388,10 @@ Obviously, there's more to life than left joins. The following table lays out th
 | Left | ![Left join](images/Ch3_sql_01.png) | `left_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.x=TRUE)` | `SELECT * FROM A LEFT JOIN B ON A.key = B.key` |
 | Inner | ![Inner join](images/Ch3_sql_02.png) | `inner_join(A, B, by=c("A.key" ="B.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all=FALSE)` | `SELECT * FROM A INNER JOIN B ON A.key = B.key` |
 | Full (Outer) | ![Full join](images/Ch3_sql_03.png) | *Not yet implemented* | `merge(A, B, by.x="A.key", by.y="B.key", all=TRUE)` | *Not yet implemented* | 
-| Semi | ![Semi join](images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key iS NULL` | 
+| Semi | ![Semi join](images/Ch3_sql_04.png) | `semi_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | `SELECT * FROM A LEFT JOIN B ON A.key = B.key WHERE B.key IS NULL` | 
 | Anti | ![Anti join](images/Ch3_sql_05.png) | `anti_join(A, B, by=c("A.key" ="B.key"))` | *n/a* | *Not yet implemented* | 
 | Right** | ![Right join](images/Ch3_sql_06.png) | `left_join(B, A, by=c("B.key" ="A.key"))` | `merge(A, B, by.x="A.key", by.y="B.key", all.y=TRUE)` | `SELECT * FROM B LEFT JOIN A ON B.key = A.key` |
-| Right Anti** | ![Right anti join](images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM B LEFT JOIN A ON B.key = A.key WHERE A.key iS NULL` |
+| Right Anti** | ![Right anti join](images/Ch3_sql_07.png) | `semi_join(B, A, by=c("B.key" ="A.key"))` | *n/a* | `SELECT * FROM B LEFT JOIN A ON B.key = A.key WHERE A.key IS NULL` |
 
 \*\* Although `dplyr` doesn't have a formal right join function, simply reversing the table order and using left join serves the same purpose. Though why you'd want to use a right join anyway is beyond me---right joins are just backwards left joins and it makes more sense to focus on your primary dataset as the "A" table.
 
@@ -519,7 +519,7 @@ You can use regular expressions in filtering with the `grepl` function:
 customers_in_lake_cities = filter(customer_survey, grepl('lake', tolower(city)))
 ```
 
-Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some built-in SQL "like" type of access to make selection of columns from a large dataset more managable:
+Need to reduce the data to just some of the variables without having to spell them all out? Use `select`, which provides some built-in SQL "like" type of access to make selection of columns from a large dataset more manageable:
 
 ```
 # Subset the data to only columns with names that start with "customer"
@@ -750,7 +750,7 @@ A useful additional feature of `dplyr` is that you can string together a bunch o
 
 ```
 # For customers who've purchased more than $500, get count, mean, 
-# sd, and sum for each state, and calculate the coeffient of
+# sd, and sum for each state, and calculate the coefficient of
 # variation, rounded to 2 decimal places
 customer_500_piped = customer_survey %>%  
   filter(customer_purchases >= 500) %>%   
