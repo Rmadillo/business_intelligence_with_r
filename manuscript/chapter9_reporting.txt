@@ -157,7 +157,7 @@ output: ioslides_presentation
 
 ![](images/default_css_slide.png)
 
-`ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the grey text. As an example of how to change this, get the latest `ioslides` style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
+`ioslides` has a great default style, but I've found that some rooms (especially those with a lot of natural light) aren't amenable to the gray text. As an example of how to change this, get the latest `ioslides` style sheet (as of this writing it is [here](rmarkdown/inst/rmd/ioslides/ioslides-13.5.1/theme/css/default.css)), and save it as a `.css` file into the same directory where you are saving your `.Rmd` file. I change the grey to black for these types of rooms by making these changes in the stylesheet:
 
 | Line | Style block | Original setting | Change to: |
 | ---- | ----------- | ---------------- | ---------- |
@@ -165,7 +165,7 @@ output: ioslides_presentation
 | 454 | `h2` | `color: #515151;` | `color: black;` |
 | 463 | `h3` | `color: #797979;` | `color: black;` |
 | 1339 | `.title-slide hgroup h1` | `color: #515151;` | `color: black;` |
-| 1344 | `.title-slide hgroup h2` | `color: darkgrey;` | `color: black;` |
+| 1344 | `.title-slide hgroup h2` | `color: darkgray;` | `color: black;` |
 | 1339 | `.title-slide hgroup p` | `color: #797979;` | `color: black;` |
 
 I save this new stylesheet as `default_black.css`. Then, in the YAML header of your `.Rmd` file, change `output: ioslides_presentation` to (line breaks and spacing matters!):
