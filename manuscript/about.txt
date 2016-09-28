@@ -25,7 +25,7 @@ Running under: Windows Server 2008 R2 x64 (build 7601) Service Pack 1
 
 ### Version Info
 
-Version 0.9.9 for final review, September 2016
+Version 1.0, September 2016
 
 {footnotes-off}
 
